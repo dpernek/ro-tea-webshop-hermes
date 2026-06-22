@@ -1,20 +1,25 @@
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { db } from "@/lib/db";
-import { ProductForm } from "@/components/admin/ProductForm";
+import { Card } from "@/components/ui/Card";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
-export default async function NewProductPage() {
+export default async function AdminNewProductPage() {
   const session = await auth();
   if (!session?.user) redirect("/admin/login");
 
-  const categories = await db.category.findMany({ orderBy: { name: "asc" } });
-  const brands = await db.brand.findMany({ orderBy: { name: "asc" } });
-
   return (
-    <ProductForm
-      product={null}
-      categories={categories.map((c) => ({ id: c.id, name: c.name }))}
-      brands={brands.map((b) => ({ id: b.id, name: b.name }))}
-    />
+    <div>
+      <div className="mb-6 flex items-center gap-4">
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/admin/products"><ArrowLeft className="mr-1 h-4 w-4" /> Natrag</Link>
+        </Button>
+        <h1 className="text-2xl font-bold text-slate-900">Novi proizvod</h1>
+      </div>
+      <Card>
+        <p className="p-8 text-center text-slate-500">Forma za dodavanje proizvoda — bit će dostupna uskoro.</p>
+      </Card>
+    </div>
   );
 }
