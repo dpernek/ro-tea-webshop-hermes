@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { db } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 const BASE_URL = "https://ro-tea-webshop-hermes.vercel.app";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
