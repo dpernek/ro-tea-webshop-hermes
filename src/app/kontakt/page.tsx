@@ -6,7 +6,14 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { SectionTitle } from "@/components/ui/SectionTitle";
-import { Mail, Phone, MapPin, Clock, CheckCircle } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  CheckCircle,
+  Building2,
+} from "lucide-react";
 import { site } from "@/lib/data";
 
 export default function ContactPage() {
@@ -17,8 +24,6 @@ export default function ContactPage() {
     subject: "",
     message: "",
   });
-
-  const phoneHref = `tel:${site.contact.phoneDisplay.replace(/\s/g, "")}`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +37,7 @@ export default function ContactPage() {
         <AnimatedSection>
           <SectionTitle
             title="Kontakt"
-            subtitle="Imate pitanje o proizvodima, dostavi ili velikoj narudžbi? Javite nam se."
+            subtitle="Vaša su pitanja dobrodošla. Za sve upite i informacije budite slobodni kontaktirati nas."
           />
         </AnimatedSection>
 
@@ -118,14 +123,13 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-semibold text-slate-900">Telefon</h3>
                   <a
-                    href={phoneHref}
+                    href={`tel:${site.contact.phoneDisplay.replace(/\s/g, "")}`}
                     className="hover:text-brand mt-1 block text-slate-600"
                   >
                     {site.contact.phoneDisplay}
                   </a>
                 </div>
               </div>
-
               <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-6">
                 <Mail className="text-brand mt-1 h-5 w-5 shrink-0" />
                 <div>
@@ -138,15 +142,15 @@ export default function ContactPage() {
                   </a>
                 </div>
               </div>
-
               <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-6">
                 <MapPin className="text-brand mt-1 h-5 w-5 shrink-0" />
                 <div>
                   <h3 className="font-semibold text-slate-900">Adresa</h3>
-                  <p className="mt-1 text-slate-600">{site.contact.address}</p>
+                  <p className="mt-1 text-slate-600">
+                    Badalićeva 26b, 10000 Zagreb
+                  </p>
                 </div>
               </div>
-
               <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-6">
                 <Clock className="text-brand mt-1 h-5 w-5 shrink-0" />
                 <div>
@@ -158,6 +162,29 @@ export default function ContactPage() {
                     <br />
                     Sub: 08:00 - 12:00
                   </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-6">
+                <Building2 className="text-brand mt-1 h-5 w-5 shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-slate-900">
+                    RO-TEA d.o.o.
+                  </h3>
+                  <div className="mt-1 space-y-0.5 text-sm text-slate-600">
+                    <p>OIB: {site.contact.oib}</p>
+                    {site.contact.iban && <p>IBAN: {site.contact.iban}</p>}
+                    {site.contact.pdvId && <p>PDV ID: {site.contact.pdvId}</p>}
+                    {site.contact.sudUpisa && <p>{site.contact.sudUpisa}</p>}
+                    {site.contact.temeljniKapital && (
+                      <p>{site.contact.temeljniKapital}</p>
+                    )}
+                    {site.contact.uprava && (
+                      <p>Uprava: {site.contact.uprava}</p>
+                    )}
+                    {site.contact.osnivac && (
+                      <p>Osnivač: {site.contact.osnivac}</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
