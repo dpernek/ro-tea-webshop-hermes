@@ -33,8 +33,8 @@ Projekt predstavlja početnu (MVP) verziju produkcijski spremne web trgovine s:
 
 ```bash
 # 1. Kloniraj repozitorij
-git clone https://github.com/dpernek/ro-tea-webshop.git
-cd ro-tea-webshop
+git clone https://github.com/dpernek/ro-tea-webshop-hermes.git
+cd ro-tea-webshop-hermes
 
 # 2. Instaliraj ovisnosti
 npm install
@@ -62,7 +62,7 @@ npm start
 ### Opcija A: Vercel dashboard (preporučeno)
 
 1. Posjeti [https://vercel.com/new](https://vercel.com/new)
-2. Odaberi `dpernek/ro-tea-webshop` repozitorij
+2. Odaberi `dpernek/ro-tea-webshop-hermes` repozitorij
 3. Klikni **Import**
 4. Ostavi defaultne postavke (Framework Preset: Next.js)
 5. Klikni **Deploy**
@@ -83,7 +83,7 @@ npx vercel --prod
 
 1. Uđi u Vercel dashboard: [https://vercel.com/dashboard](https://vercel.com/dashboard)
 2. Klikni **Add New... > Project**
-3. Pod **Import Git Repository** odaberi `ro-tea-webshop`
+3. Pod **Import Git Repository** odaberi `ro-tea-webshop-hermes`
 4. Klikni **Import**
 5. U postavkama projekta (`Settings > Git`) provjeri:
    - **Production Branch:** `main`
@@ -139,7 +139,7 @@ Kategorije se dodaju na sličan način u `src/data/categories.json`.Ukupan broj 
 ## Struktura projekta
 
 ```
-ro-tea-webshop/
+ro-tea-webshop-hermes/
 ├── public/images/           # Slike proizvoda i kategorija (placeholder SVG-ovi)
 ├── src/
 │   ├── app/                 # Next.js App Router stranice
@@ -205,8 +205,8 @@ ro-tea-webshop/
 
 ## Deployment
 
-- **Repo:** https://github.com/dpernek/ro-tea-webshop
-- **Live URL:** https://ro-tea-webshop.vercel.app
+- **Repo:** https://github.com/dpernek/ro-tea-webshop-hermes
+- **Live URL:** https://ro-tea-webshop-hermes.vercel.app
 
 ---
 
