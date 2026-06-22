@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import re
+import html
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -34,6 +35,10 @@ def clean_html(raw: str) -> str:
     text = raw or ""
     # Remove shortcodes
     text = re.sub(r"\[\/?[^\]]+\]", "", text)
+    # Remove HTML tags
+    text = re.sub(r"<[^>]+>", "", text)
+    # Decode HTML entities
+    text = html.unescape(text)
     # Remove excessive whitespace
     text = re.sub(r"\n\s*\n+", "\n\n", text).strip()
     return text
