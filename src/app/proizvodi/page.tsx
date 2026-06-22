@@ -1,65 +1,44 @@
-"use client";
+import type { Metadata } from "next";
+import { loadInitialCatalog } from "./actions";
+import { CatalogContent } from "@/components/products/CatalogContent";
 
-import { useState, useEffect, useCallback } from "react";
-import { ProductGrid } from "@/components/products/ProductGrid";
-import { AnimatedSection } from "@/components/ui/AnimatedSection";
+export const metadata: Metadata = {
+  title: "Katalog proizvoda | RO-TEA",
+  description:
+    "Pregledajte kompletnu ponudu alata i opreme za obradu metala – brusni alati, zaštitna oprema, ručni alat i više.",
+  openGraph: {
+    title: "Katalog proizvoda | RO-TEA",
+    description:
+      "Pregledajte kompletnu ponudu alata i opreme za obradu metala – brusni alati, zaštitna oprema, ručni alat i više.",
+  },
+};
 
-export default function CatalogPage() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [total, setTotal] = useState(0);
+interface PageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
 
-  const loadProducts = useCallback(async () => {
-    const params = new URLSearchParams({ page: "1", limit: "1000" });
-    const res = await fetch(`/api/catalog/products?${params}`);
-    const data = await res.json();
-    setProducts(data.products);
-    setTotal(data.total);
-  }, []);
+export default async function CatalogPage({ searchParams }: PageProps) {
+  const params = await searchParams;
 
-  useEffect(() => {
-    const load = async () => {
-      const [cRes] = await Promise.all([fetch("/api/catalog/categories")]);
-      setCategories(await cRes.json());
-    };
-    load();
-  }, []);
+  const q = typeof params.q === "string" ? params.q : "";
+  const cat = typeof params.cat === "string" ? params.cat : "";
+  const brand = typeof params.brand === "string" ? params.brand : "";
+  const sort = typeof params.sort === "string" ? params.sort : "name-asc";
 
-  useEffect(() => {
-    setLoading(true);
-    loadProducts().finally(() => setLoading(false));
-  }, [loadProducts]);
+  const data = await loadInitialCatalog({
+    search: q || undefined,
+    categorySlug: cat || undefined,
+    brandSlug: brand || undefined,
+    sort,
+  });
 
   return (
-    <div className="bg-white">
-      <div className="border-b border-slate-100 bg-slate-50">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-          <AnimatedSection>
-            <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">Katalog proizvoda</h1>
-            <p className="mt-2 text-slate-600">{loading ? "Učitavanje..." : `${total} proizvoda`}</p>
-          </AnimatedSection>
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        {loading ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="animate-pulse rounded-2xl border border-slate-100 bg-white shadow-sm">
-                <div className="aspect-[4/3] bg-slate-100 rounded-t-2xl" />
-                <div className="p-5 space-y-3">
-                  <div className="h-5 w-20 rounded-full bg-slate-100" />
-                  <div className="h-5 w-3/4 rounded bg-slate-100" />
-                  <div className="h-10 w-full rounded-lg bg-slate-100" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <ProductGrid products={products} categories={categories} />
-        )}
-      </div>
-    </div>
+    <CatalogContent
+      key={`${q}|${cat}|${brand}|${sort}`}
+      initialProducts={data.products}
+      total={data.total}
+      categories={data.categories}
+      brands={data.brands}
+    />
   );
 }

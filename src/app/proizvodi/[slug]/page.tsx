@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { AddToCartButton } from "@/components/product/AddToCartButton";
 import { VariableProductOptions } from "@/components/product/VariableProductOptions";
 import { ProductGallery } from "@/components/product/ProductGallery";
+import { ReadMore } from "@/components/ui/ReadMore";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -372,8 +373,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <h2 className="mb-6 text-2xl font-bold text-slate-900">
               Opis proizvoda
             </h2>
-            <div className="prose prose-slate max-w-none whitespace-pre-line leading-relaxed text-slate-600">
-              {product.description}
+            <div className="mt-6 leading-relaxed text-slate-600">
+              <ReadMore text={product.description} maxLines={3} />
             </div>
           </div>
         )}

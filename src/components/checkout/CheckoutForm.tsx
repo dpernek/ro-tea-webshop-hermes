@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
@@ -8,19 +9,18 @@ import { useCartStore } from "@/store/cartStore";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/lib/actions/orders";
 
-interface CheckoutFormProps {
-  onSuccess: (orderNumber: string) => void;
-}
-
 interface FormErrors {
   [key: string]: string;
 }
+
+const SHIPPING_PRICE = 6.64;
+const FREE_SHIPPING_THRESHOLD = 66.36;
 
 const SHIPPING_METHODS = [
   {
     id: "dostava-kurirskom-sluzbom",
     name: "Dostava kurirskom službom",
-    price: 7.0,
+    price: SHIPPING_PRICE,
   },
   { id: "osobno-preuzimanje", name: "Osobno preuzimanje", price: 0 },
 ];
@@ -31,7 +31,8 @@ const PAYMENT_METHODS = [
   { value: "cod", label: "Pouzeće" },
 ];
 
-export function CheckoutForm({ onSuccess }: CheckoutFormProps) {
+export function CheckoutForm() {
+  const router = useRouter();
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,7 +58,12 @@ export function CheckoutForm({ onSuccess }: CheckoutFormProps) {
   const shippingMethod = SHIPPING_METHODS.find(
     (sm) => sm.id === formData.shippingMethod
   );
-  const shippingPrice = shippingMethod?.price ?? 0;
+  const shippingPrice =
+    shippingMethod?.id === "osobno-preuzimanje"
+      ? 0
+      : subtotal >= FREE_SHIPPING_THRESHOLD
+        ? 0
+        : SHIPPING_PRICE;
   const total = subtotal + shippingPrice;
 
   const validate = (): boolean => {
@@ -135,7 +141,7 @@ export function CheckoutForm({ onSuccess }: CheckoutFormProps) {
       });
 
       clearCart();
-      onSuccess(order.orderNumber);
+      router.push(`/checkout/uspjeh?orderNumber=${encodeURIComponent(order.orderNumber)}`);
     } catch (err) {
       setErrors({
         form: "Došlo je do greške prilikom slanja narudžbe. Pokušajte ponovno.",
@@ -151,6 +157,7 @@ export function CheckoutForm({ onSuccess }: CheckoutFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
+      noValidate
       className="space-y-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm sm:p-8"
     >
       <h2 className="text-xl font-semibold text-slate-900">
@@ -158,71 +165,89 @@ export function CheckoutForm({ onSuccess }: CheckoutFormProps) {
       </h2>
 
       {errors.form && (
-        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">
           {errors.form}
         </div>
       )}
 
       <div className="grid gap-6 sm:grid-cols-2">
         <Input
-          label="Ime i prezime *"
+          label="Ime i prezime"
           name="fullName"
           value={formData.fullName}
           onChange={handleChange}
           error={errors.fullName}
           placeholder="Ivan Horvat"
+          required
+          aria-required="true"
+          autoComplete="name"
         />
         <Input
-          label="E-mail *"
+          label="E-mail"
           name="email"
           type="email"
           value={formData.email}
           onChange={handleChange}
           error={errors.email}
           placeholder="ivan.horvat@email.hr"
+          required
+          aria-required="true"
+          autoComplete="email"
         />
         <Input
-          label="Telefon *"
+          label="Telefon"
           name="phone"
           type="tel"
           value={formData.phone}
           onChange={handleChange}
           error={errors.phone}
           placeholder="+385 91 123 4567"
+          required
+          aria-required="true"
+          autoComplete="tel"
         />
         <div className="sm:col-span-2">
           <Input
-            label="Adresa *"
+            label="Adresa"
             name="address"
             value={formData.address}
             onChange={handleChange}
             error={errors.address}
             placeholder="Ulica i kućni broj"
+            required
+            aria-required="true"
+            autoComplete="street-address"
           />
         </div>
         <Input
-          label="Grad *"
+          label="Grad"
           name="city"
           value={formData.city}
           onChange={handleChange}
           error={errors.city}
           placeholder="Zagreb"
+          required
+          aria-required="true"
+          autoComplete="address-level2"
         />
         <Input
-          label="Poštanski broj *"
+          label="Poštanski broj"
           name="postalCode"
           value={formData.postalCode}
           onChange={handleChange}
           error={errors.postalCode}
           placeholder="10000"
+          required
+          aria-required="true"
+          autoComplete="postal-code"
         />
       </div>
 
       {/* Shipping method */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700">
-          Način dostave *
-        </label>
+      <fieldset>
+        <legend className="mb-2 text-sm font-medium text-slate-700">
+          Način dostave
+        </legend>
         <div className="space-y-2">
           {SHIPPING_METHODS.map((sm) => (
             <label
@@ -241,24 +266,28 @@ export function CheckoutForm({ onSuccess }: CheckoutFormProps) {
                   checked={formData.shippingMethod === sm.id}
                   onChange={handleChange}
                   className="text-[#0055a8]"
+                  required
+                  aria-required="true"
                 />
                 <span className="text-sm font-medium text-slate-900">
                   {sm.name}
                 </span>
               </div>
               <span className="text-sm text-slate-600">
-                {sm.price === 0 ? "Besplatno" : formatPrice(sm.price)}
+                {shippingPrice === 0 && formData.shippingMethod === sm.id
+                  ? "Besplatno"
+                  : formatPrice(sm.price)}
               </span>
             </label>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {/* Payment method */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-slate-700">
-          Način plaćanja *
-        </label>
+      <fieldset>
+        <legend className="mb-2 text-sm font-medium text-slate-700">
+          Način plaćanja
+        </legend>
         <div className="space-y-2">
           {PAYMENT_METHODS.map((pm) => (
             <label
@@ -276,6 +305,8 @@ export function CheckoutForm({ onSuccess }: CheckoutFormProps) {
                 checked={formData.paymentMethod === pm.value}
                 onChange={handleChange}
                 className="text-[#0055a8]"
+                required
+                aria-required="true"
               />
               <span className="ml-2 text-sm font-medium text-slate-900">
                 {pm.label}
@@ -283,7 +314,7 @@ export function CheckoutForm({ onSuccess }: CheckoutFormProps) {
             </label>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       <Textarea
         label="Napomena"
@@ -295,59 +326,52 @@ export function CheckoutForm({ onSuccess }: CheckoutFormProps) {
       />
 
       {/* Terms checkbox */}
-      <label className="flex cursor-pointer items-start gap-2">
-        <input
-          type="checkbox"
-          checked={acceptedTerms}
-          onChange={(e) => setAcceptedTerms(e.target.checked)}
-          className="mt-1 text-[#0055a8]"
-        />
-        <span className="text-sm text-slate-600">
-          Prihvaćam{" "}
-          <a
-            href="/uvjeti-kupnje"
-            className="text-[#0055a8] underline hover:text-blue-800"
-          >
-            uvjete kupnje
-          </a>{" "}
-          i{" "}
-          <a
-            href="/politika-privatnosti"
-            className="text-[#0055a8] underline hover:text-blue-800"
-          >
-            politiku privatnosti
-          </a>
-          .
-        </span>
-      </label>
-      {errors.terms && <p className="text-sm text-red-600">{errors.terms}</p>}
-
-      <div className="border-t border-slate-100 pt-6">
-        <div className="flex items-center justify-between text-sm text-slate-600">
-          <span>Ukupno proizvoda</span>
-          <span>{formatPrice(subtotal)}</span>
-        </div>
-        <div className="mt-2 flex items-center justify-between text-sm text-slate-600">
-          <span>Dostava</span>
-          <span>
-            {shippingPrice === 0 ? "Besplatno" : formatPrice(shippingPrice)}
+      <div>
+        <label className="flex cursor-pointer items-start gap-2">
+          <input
+            type="checkbox"
+            checked={acceptedTerms}
+            onChange={(e) => setAcceptedTerms(e.target.checked)}
+            className="mt-1 text-[#0055a8]"
+            required
+            aria-required="true"
+            aria-describedby="terms-error"
+          />
+          <span className="text-sm text-slate-600">
+            Prihvaćam{" "}
+            <a
+              href="/uvjeti-kupnje"
+              className="text-[#0055a8] underline hover:text-blue-800"
+            >
+              uvjete kupnje
+            </a>{" "}
+            i{" "}
+            <a
+              href="/politika-privatnosti"
+              className="text-[#0055a8] underline hover:text-blue-800"
+            >
+              politiku privatnosti
+            </a>
+            .
           </span>
-        </div>
-        <div className="mt-4 flex items-center justify-between text-lg font-semibold text-slate-900">
-          <span>Ukupno za platiti</span>
-          <span>{formatPrice(total)}</span>
-        </div>
-        {formData.paymentMethod === "bank_transfer" && (
-          <p className="mt-3 text-sm text-slate-500">
-            Nakon slanja narudžbe dobit ćete upute za plaćanje na e-mail.
-          </p>
-        )}
-        {formData.paymentMethod === "cod" && (
-          <p className="mt-3 text-sm text-slate-500">
-            Plaćanje pouzećem prilikom preuzimanja paketa.
+        </label>
+        {errors.terms && (
+          <p id="terms-error" className="mt-1.5 text-sm text-red-600" role="alert">
+            {errors.terms}
           </p>
         )}
       </div>
+
+      {formData.paymentMethod === "bank_transfer" && (
+        <p className="text-sm text-slate-500">
+          Nakon slanja narudžbe dobit ćete upute za plaćanje na e-mail.
+        </p>
+      )}
+      {formData.paymentMethod === "cod" && (
+        <p className="text-sm text-slate-500">
+          Plaćanje pouzećem prilikom preuzimanja paketa.
+        </p>
+      )}
 
       <Button
         type="submit"
