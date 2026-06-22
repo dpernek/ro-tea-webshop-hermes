@@ -11,7 +11,7 @@ import Image from "next/image";
 
 const navItems = [
   { href: "/", label: "Početna" },
-  { href: "/proizvodi", label: "Proizvodi" },
+  { href: "/proizvodi", label: "Trgovina" },
   { href: "/usluga-brusenja", label: "Usluga brušenja" },
   { href: "/o-nama", label: "O nama" },
   { href: "/katalozi", label: "Katalozi" },
