@@ -5,20 +5,29 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createClient(): PrismaClient {
-  const url = process.env.POSTGRES_PRISMA_URL || process.env.DATABASE_URL || "";
+  let url = process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL || process.env.DATABASE_URL || "";
 
-  if (url.startsWith("postgres")) {
-    // @ts-ignore - dynamic require for pg adapter
-    const pgModule = require("@prisma/adapter-pg");
-    const { PrismaPg } = pgModule;
+  if (url.startsWith("postgres") && url.includes("supabase.co")) {
+    const sep = url.includes("?") ? /* & */ String.fromCharCode(38) : "?";
+    url = url + sep + "sslmode=no-verify";
+    // @ts-ignore
+    const { PrismaPg } = require("@prisma/adapter-pg");
     return new (PrismaClient as any)({
       adapter: new (PrismaPg as any)({ connectionString: url }),
     });
   }
 
-  // @ts-ignore - SQLite fallback
-  const sqliteModule = require("@prisma/adapter-better-sqlite3");
-  const { PrismaBetterSqlite3 } = sqliteModule;
+  if (url.startsWith("postgres")) {
+    // @ts-ignore
+    const { PrismaPg } = require("@prisma/adapter-pg");
+    return new (PrismaClient as any)({
+      adapter: new (PrismaPg as any)({ connectionString: url }),
+    });
+  }
+
+  // SQLite fallback
+  // @ts-ignore
+  const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3");
   return new (PrismaClient as any)({
     adapter: new (PrismaBetterSqlite3 as any)({ url: url.replace("file:", "") || "./prisma/dev.db" }),
   });
