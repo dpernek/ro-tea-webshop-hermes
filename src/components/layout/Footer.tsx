@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { site } from "@/lib/data";
 import { Mail, Phone, MapPin } from "lucide-react";
+import Image from "next/image";
 
 const footerLinks = {
   shop: [
@@ -23,8 +24,14 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
-            <Link href="/" className="text-brand text-2xl font-bold">
-              {site.name}
+            <Link href="/" className="inline-block">
+              <Image
+                src="/images/rotea-logo.webp"
+                alt="RO-TEA"
+                width={156}
+                height={24}
+                className="h-6 w-auto"
+              />
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-slate-600">
               {site.description}

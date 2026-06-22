@@ -7,6 +7,7 @@ import { useCartStore } from "@/store/cartStore";
 import { Menu, X, ShoppingCart, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { site } from "@/lib/data";
+import Image from "next/image";
 
 const navItems = [
   { href: "/", label: "Početna" },
@@ -31,9 +32,14 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-slate-100 bg-white/95 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-brand text-2xl font-bold tracking-tight">
-            {site.name}
-          </span>
+          <Image
+            src="/images/rotea-logo.webp"
+            alt="RO-TEA"
+            width={182}
+            height={28}
+            className="h-7 w-auto"
+            priority
+          />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
