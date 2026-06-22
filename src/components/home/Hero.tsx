@@ -82,10 +82,10 @@ export function Hero() {
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
         <div className="max-w-3xl">
           <p className="hero-animate text-sm font-semibold tracking-[0.2em] text-[#0055a8] uppercase">
-            {site.tagline}
+            {site.name} d.o.o.
           </p>
           <h1 className="hero-animate mt-6 text-4xl leading-tight font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-            {site.tagline}
+            Profesionalni alati za industriju i obrt
           </h1>
           <p className="hero-animate mt-6 max-w-xl text-lg leading-relaxed text-slate-200">
             Široka ponuda provjerenih proizvoda za profesionalce, obrtnike i
