@@ -1,29 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Input } from "@/components/ui/Input";
-import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { SectionTitle } from "@/components/ui/SectionTitle";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Clock,
-  CheckCircle,
-  Building2,
-} from "lucide-react";
+import { Mail, Phone, MapPin, Clock, CheckCircle, Building2 } from "lucide-react";
 import { site } from "@/lib/data";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,166 +16,115 @@ export default function ContactPage() {
     setFormData({ name: "", email: "", subject: "", message: "" });
   };
 
+  const contactItems = [
+    { icon: Phone, label: "Telefon", value: site.contact.phoneDisplay, href: `tel:${site.contact.phoneDisplay.replace(/\s/g, "")}` },
+    { icon: Mail, label: "E-mail", value: site.contact.email, href: `mailto:${site.contact.email}` },
+    { icon: MapPin, label: "Adresa", value: "Badalićeva 26b, 10000 Zagreb" },
+    { icon: Clock, label: "Radno vrijeme", value: "Pon-Pet: 08:00 - 16:00\nSub: 08:00 - 12:00" },
+  ];
+
   return (
-    <div className="bg-white py-16 sm:py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <AnimatedSection>
-          <SectionTitle
-            title="Kontakt"
-            subtitle="Vaša su pitanja dobrodošla. Za sve upite i informacije budite slobodni kontaktirati nas."
-          />
-        </AnimatedSection>
-
-        <div className="grid gap-12 lg:grid-cols-3">
-          <AnimatedSection delay={0.1} className="lg:col-span-2">
-            <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm sm:p-8">
-              {submitted ? (
-                <div className="flex flex-col items-center py-12 text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
-                    <CheckCircle className="h-8 w-8 text-green-600" />
-                  </div>
-                  <h3 className="mt-4 text-xl font-semibold text-slate-900">
-                    Poruka poslana
-                  </h3>
-                  <p className="mt-2 text-slate-600">
-                    Hvala vam na upitu. Odgovorit ćemo vam u najkraćem mogućem
-                    roku.
-                  </p>
-                  <Button
-                    variant="outline"
-                    className="mt-6"
-                    onClick={() => setSubmitted(false)}
-                  >
-                    Pošalji novu poruku
-                  </Button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid gap-6 sm:grid-cols-2">
-                    <Input
-                      label="Ime i prezime"
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      placeholder="Vaše ime"
-                    />
-                    <Input
-                      label="E-mail"
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      placeholder="vas@email.hr"
-                    />
-                  </div>
-                  <Input
-                    label="Predmet"
-                    type="text"
-                    required
-                    value={formData.subject}
-                    onChange={(e) =>
-                      setFormData({ ...formData, subject: e.target.value })
-                    }
-                    placeholder="Na što se odnosi upit"
-                  />
-                  <Textarea
-                    label="Poruka"
-                    required
-                    rows={5}
-                    value={formData.message}
-                    onChange={(e) =>
-                      setFormData({ ...formData, message: e.target.value })
-                    }
-                    placeholder="Napišite nam detalje upita..."
-                  />
-                  <Button type="submit" size="lg" className="w-full sm:w-auto">
-                    Pošalji upit
-                  </Button>
-                </form>
-              )}
-            </div>
-          </AnimatedSection>
-
-          <AnimatedSection delay={0.2}>
-            <div className="space-y-6">
-              <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-6">
-                <Phone className="text-brand mt-1 h-5 w-5 shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-slate-900">Telefon</h3>
-                  <a
-                    href={`tel:${site.contact.phoneDisplay.replace(/\s/g, "")}`}
-                    className="hover:text-brand mt-1 block text-slate-600"
-                  >
-                    {site.contact.phoneDisplay}
-                  </a>
-                </div>
-              </div>
-              <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-6">
-                <Mail className="text-brand mt-1 h-5 w-5 shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-slate-900">E-mail</h3>
-                  <a
-                    href={`mailto:${site.contact.email}`}
-                    className="hover:text-brand mt-1 block text-slate-600"
-                  >
-                    {site.contact.email}
-                  </a>
-                </div>
-              </div>
-              <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-6">
-                <MapPin className="text-brand mt-1 h-5 w-5 shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-slate-900">Adresa</h3>
-                  <p className="mt-1 text-slate-600">
-                    Badalićeva 26b, 10000 Zagreb
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-6">
-                <Clock className="text-brand mt-1 h-5 w-5 shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-slate-900">
-                    Radno vrijeme
-                  </h3>
-                  <p className="mt-1 text-slate-600">
-                    Pon-Pet: 08:00 - 16:00
-                    <br />
-                    Sub: 08:00 - 12:00
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-6">
-                <Building2 className="text-brand mt-1 h-5 w-5 shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-slate-900">
-                    RO-TEA d.o.o.
-                  </h3>
-                  <div className="mt-1 space-y-0.5 text-sm text-slate-600">
-                    <p>OIB: {site.contact.oib}</p>
-                    {site.contact.iban && <p>IBAN: {site.contact.iban}</p>}
-                    {site.contact.pdvId && <p>PDV ID: {site.contact.pdvId}</p>}
-                    {site.contact.sudUpisa && <p>{site.contact.sudUpisa}</p>}
-                    {site.contact.temeljniKapital && (
-                      <p>{site.contact.temeljniKapital}</p>
-                    )}
-                    {site.contact.uprava && (
-                      <p>Uprava: {site.contact.uprava}</p>
-                    )}
-                    {site.contact.osnivac && (
-                      <p>Osnivač: {site.contact.osnivac}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+    <div className="bg-slate-950">
+      <section className="border-b border-slate-800">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+          <AnimatedSection>
+            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">Kontakt</h1>
+            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-slate-400">
+              Vaša su pitanja dobrodošla. Za sve upite i informacije slobodno nas kontaktirajte.
+            </p>
           </AnimatedSection>
         </div>
-      </div>
+      </section>
+
+      <section>
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-3">
+            {/* Form */}
+            <AnimatedSection delay={0.1} className="lg:col-span-2">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 sm:p-8">
+                {submitted ? (
+                  <div className="flex flex-col items-center py-12 text-center">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#0055a8]/20">
+                      <CheckCircle className="h-8 w-8 text-[#0055a8]" />
+                    </div>
+                    <h2 className="mt-4 text-xl font-semibold text-white">Poruka poslana</h2>
+                    <p className="mt-2 text-slate-400">Hvala vam na upitu. Odgovorit ćemo vam u najkraćem mogućem roku.</p>
+                    <Button variant="outline" className="mt-6 border-slate-600 text-slate-300 hover:border-slate-500 hover:text-white" onClick={() => setSubmitted(false)}>
+                      Pošalji novu poruku
+                    </Button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid gap-6 sm:grid-cols-2">
+                      <div>
+                        <label className="mb-1.5 block text-sm font-medium text-slate-300">Ime i prezime</label>
+                        <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })}
+                          placeholder="Vaše ime"
+                          className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#0055a8] focus:ring-2 focus:ring-[#0055a8]/20 focus:outline-none" />
+                      </div>
+                      <div>
+                        <label className="mb-1.5 block text-sm font-medium text-slate-300">E-mail</label>
+                        <input type="email" required value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })}
+                          placeholder="vas@email.hr"
+                          className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#0055a8] focus:ring-2 focus:ring-[#0055a8]/20 focus:outline-none" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-slate-300">Predmet</label>
+                      <input type="text" required value={formData.subject} onChange={e => setFormData({ ...formData, subject: e.target.value })}
+                        placeholder="Na što se odnosi upit"
+                        className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#0055a8] focus:ring-2 focus:ring-[#0055a8]/20 focus:outline-none" />
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-sm font-medium text-slate-300">Poruka</label>
+                      <textarea required rows={5} value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })}
+                        placeholder="Napišite nam detalje upita..."
+                        className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#0055a8] focus:ring-2 focus:ring-[#0055a8]/20 focus:outline-none resize-none" />
+                    </div>
+                    <Button type="submit" size="lg" className="w-full sm:w-auto">Pošalji upit</Button>
+                  </form>
+                )}
+              </div>
+            </AnimatedSection>
+
+            {/* Contact info */}
+            <AnimatedSection delay={0.2}>
+              <div className="space-y-4">
+                {contactItems.map((item) => (
+                  <div key={item.label} className="flex items-start gap-4 rounded-2xl border border-slate-800 bg-slate-900/50 p-5">
+                    <item.icon className="mt-0.5 h-5 w-5 shrink-0 text-[#0055a8]" />
+                    <div>
+                      <h3 className="font-semibold text-white">{item.label}</h3>
+                      {item.href ? (
+                        <a href={item.href} className="mt-1 block text-sm text-slate-400 hover:text-[#0055a8] transition-colors whitespace-pre-line">
+                          {item.value}
+                        </a>
+                      ) : (
+                        <p className="mt-1 text-sm text-slate-400 whitespace-pre-line">{item.value}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                <div className="flex items-start gap-4 rounded-2xl border border-slate-800 bg-slate-900/50 p-5">
+                  <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-[#0055a8]" />
+                  <div>
+                    <h3 className="font-semibold text-white">RO-TEA d.o.o.</h3>
+                    <div className="mt-1 space-y-0.5 text-sm text-slate-400">
+                      <p>OIB: {site.contact.oib}</p>
+                      {site.contact.iban && <p>IBAN: {site.contact.iban}</p>}
+                      {site.contact.pdvId && <p>PDV ID: {site.contact.pdvId}</p>}
+                      {site.contact.sudUpisa && <p>{site.contact.sudUpisa}</p>}
+                      {site.contact.temeljniKapital && <p>{site.contact.temeljniKapital}</p>}
+                      {site.contact.uprava && <p>Uprava: {site.contact.uprava}</p>}
+                      {site.contact.osnivac && <p>Osnivač: {site.contact.osnivac}</p>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AnimatedSection>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
