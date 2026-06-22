@@ -8,8 +8,10 @@ import { Button } from "@/components/ui/Button";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { AddToCartButton } from "@/components/product/AddToCartButton";
+import { VariableProductOptions } from "@/components/product/VariableProductOptions";
 import { products } from "@/lib/data";
 import { categories } from "@/lib/data";
+import { formatPrice } from "@/lib/utils";
 import type { Product } from "@/types";
 
 interface ProductPageProps {
@@ -129,11 +131,24 @@ export default async function ProductPage({ params }: ProductPageProps) {
             )}
 
             <div className="mt-6">
-              <PriceDisplay
-                price={product.price}
-                oldPrice={product.oldPrice}
-                size="lg"
-              />
+              {product.type === "variable" && product.priceRange ? (
+                <div className="text-2xl font-bold text-slate-900 sm:text-3xl">
+                  {product.priceRange.min === product.priceRange.max ? (
+                    <PriceDisplay price={product.priceRange.min} size="lg" />
+                  ) : (
+                    <span>
+                      {formatPrice(product.priceRange.min)} –{" "}
+                      {formatPrice(product.priceRange.max)}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <PriceDisplay
+                  price={product.price}
+                  oldPrice={product.oldPrice}
+                  size="lg"
+                />
+              )}
             </div>
 
             {product.shortDescription && (
@@ -144,14 +159,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             <div className="mt-8">
               {product.type === "variable" ? (
-                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-                  <p className="text-slate-700">
-                    Ovaj proizvod dostupan je u više varijacija.
-                  </p>
-                  <Button asChild variant="outline" className="mt-3">
-                    <Link href="/kontakt">Pošaljite upit</Link>
-                  </Button>
-                </div>
+                <VariableProductOptions product={product} />
               ) : (
                 <AddToCartButton product={product} />
               )}
@@ -164,13 +172,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
             </div>
 
-            {Object.keys(product.specifications).length > 0 && (
+            {Object.keys(product.specifications || {}).length > 0 && (
               <div className="mt-10 rounded-2xl border border-slate-100 bg-slate-50 p-6">
                 <h2 className="text-lg font-semibold text-slate-900">
                   Specifikacije
                 </h2>
                 <dl className="mt-4 divide-y divide-slate-200">
-                  {Object.entries(product.specifications).map(
+                  {Object.entries(product.specifications || {}).map(
                     ([key, value]) => (
                       <div
                         key={key}

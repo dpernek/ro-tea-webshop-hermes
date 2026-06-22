@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 interface BadgeProps {
   children: React.ReactNode;
   className?: string;
-  variant?: "default" | "outline" | "accent";
+  variant?: "default" | "outline" | "accent" | "secondary" | "info";
 }
 
 export function Badge({
@@ -15,6 +15,8 @@ export function Badge({
     default: "bg-brand text-white",
     outline: "border border-slate-200 bg-white text-slate-700",
     accent: "bg-amber-400 text-slate-900",
+    secondary: "bg-slate-100 text-slate-700",
+    info: "bg-sky-100 text-sky-700",
   };
 
   return (

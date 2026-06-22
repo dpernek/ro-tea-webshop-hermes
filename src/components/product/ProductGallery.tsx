@@ -15,7 +15,7 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
     images.length > 0 ? images : ["/images/placeholder.svg"];
 
   return (
-    <div className="space-y-4">
+    <div className="mx-auto max-w-xl space-y-4">
       <div className="relative aspect-square overflow-hidden rounded-2xl bg-slate-50">
         <Image
           src={displayImages[selected]}

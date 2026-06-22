@@ -16,6 +16,12 @@ export function CartItem({ item }: CartItemProps) {
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeItem = useCartStore((state) => state.removeItem);
 
+  const attributeLabel = item.selectedAttributes
+    ? Object.entries(item.selectedAttributes)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(", ")
+    : null;
+
   return (
     <div className="flex gap-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:gap-6 sm:p-6">
       <Link
@@ -38,6 +44,11 @@ export function CartItem({ item }: CartItemProps) {
           >
             {item.product.name}
           </Link>
+          {attributeLabel && (
+            <p className="mt-1 text-sm font-medium text-slate-700">
+              {attributeLabel}
+            </p>
+          )}
           <p className="mt-1 line-clamp-2 text-sm text-slate-500">
             {item.product.shortDescription}
           </p>
@@ -45,7 +56,7 @@ export function CartItem({ item }: CartItemProps) {
         <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
           <QuantitySelector
             quantity={item.quantity}
-            onChange={(q) => updateQuantity(item.product.id, q)}
+            onChange={(q) => updateQuantity(item.id, q)}
             max={item.product.stock}
             size="sm"
           />
@@ -55,7 +66,7 @@ export function CartItem({ item }: CartItemProps) {
             </span>
             <button
               type="button"
-              onClick={() => removeItem(item.product.id)}
+              onClick={() => removeItem(item.id)}
               className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
               aria-label="Ukloni artikl"
             >

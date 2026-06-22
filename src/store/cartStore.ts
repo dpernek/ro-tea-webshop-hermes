@@ -7,12 +7,29 @@ import type { Product, CartItem } from "@/types";
 interface CartState {
   items: CartItem[];
   hydrated: boolean;
-  addItem: (product: Product, quantity?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  addItem: (
+    product: Product,
+    quantity?: number,
+    selectedAttributes?: Record<string, string>
+  ) => void;
+  removeItem: (itemId: string) => void;
+  updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+}
+
+function generateItemId(
+  productId: string,
+  selectedAttributes?: Record<string, string>
+): string {
+  if (!selectedAttributes || Object.keys(selectedAttributes).length === 0) {
+    return productId;
+  }
+  const ordered = Object.entries(selectedAttributes).sort(([a], [b]) =>
+    a.localeCompare(b)
+  );
+  return `${productId}::${JSON.stringify(ordered)}`;
 }
 
 export const useCartStore = create<CartState>()(
@@ -21,36 +38,40 @@ export const useCartStore = create<CartState>()(
       items: [],
       hydrated: false,
 
-      addItem: (product, quantity = 1) => {
+      addItem: (product, quantity = 1, selectedAttributes) => {
+        const itemId = generateItemId(product.id, selectedAttributes);
         set((state) => {
-          const existing = state.items.find((i) => i.product.id === product.id);
+          const existing = state.items.find((i) => i.id === itemId);
           if (existing) {
             return {
               items: state.items.map((i) =>
-                i.product.id === product.id
-                  ? { ...i, quantity: i.quantity + quantity }
-                  : i
+                i.id === itemId ? { ...i, quantity: i.quantity + quantity } : i
               ),
             };
           }
-          return { items: [...state.items, { product, quantity }] };
+          return {
+            items: [
+              ...state.items,
+              { id: itemId, product, quantity, selectedAttributes },
+            ],
+          };
         });
       },
 
-      removeItem: (productId) => {
+      removeItem: (itemId) => {
         set((state) => ({
-          items: state.items.filter((i) => i.product.id !== productId),
+          items: state.items.filter((i) => i.id !== itemId),
         }));
       },
 
-      updateQuantity: (productId, quantity) => {
+      updateQuantity: (itemId, quantity) => {
         if (quantity < 1) {
-          get().removeItem(productId);
+          get().removeItem(itemId);
           return;
         }
         set((state) => ({
           items: state.items.map((i) =>
-            i.product.id === productId ? { ...i, quantity } : i
+            i.id === itemId ? { ...i, quantity } : i
           ),
         }));
       },
@@ -69,7 +90,7 @@ export const useCartStore = create<CartState>()(
       },
     }),
     {
-      name: "ro-tea-cart-v1",
+      name: "ro-tea-cart-v2",
       skipHydration: true,
       partialize: (state) => ({ items: state.items }) as CartState,
     }

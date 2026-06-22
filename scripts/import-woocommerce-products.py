@@ -7,414 +7,344 @@ Usage:
   npm run import:products
 """
 
+from __future__ import annotations
+
 import json
 import re
-import sys
 import xml.etree.ElementTree as ET
-from collections import Counter
 from pathlib import Path
 
-# Optional PHP serializer for product attributes
-PHPSERIALIZE_AVAILABLE = False
-try:
-    import phpserialize
+NS = {
+    "wp": "http://wordpress.org/export/1.2/",
+    "content": "http://purl.org/rss/1.0/modules/content/",
+    "excerpt": "http://wordpress.org/export/1.2/excerpt/",
+}
 
-    PHPSERIALIZE_AVAILABLE = True
-except ImportError:
-    pass
+ROOT = Path(__file__).resolve().parent.parent
+XML_PATH = ROOT / "ro-tea.WordPress.2026-06-22.xml"
 
-# Paths
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-XML_PATH = PROJECT_ROOT / "ro-tea.WordPress.2026-06-22.xml"
-DATA_DIR = PROJECT_ROOT / "src" / "data"
-
-# Namespaces used by WordPress eXtended RSS (WXR)
-NS_WP = "{http://wordpress.org/export/1.2/}"
-NS_CONTENT = "{http://purl.org/rss/1.0/modules/content/}"
-NS_EXCERPT = "{http://wordpress.org/export/1.2/excerpt/}"
-
-# RSS core elements (no prefix in this export) use plain local names
-TAG_ITEM = "item"
-TAG_TITLE = "title"
-TAG_LINK = "link"
-TAG_CATEGORY = "category"
+OUTPUT_PRODUCTS = ROOT / "src" / "data" / "products.json"
+OUTPUT_CATEGORIES = ROOT / "src" / "data" / "categories.json"
+OUTPUT_BRANDS = ROOT / "src" / "data" / "brands.json"
 
 PLACEHOLDER_IMAGE = "/images/placeholder.svg"
 
 
-def clean_text(text: str) -> str:
-    """Trim whitespace from text nodes."""
-    if text is None:
-        return ""
-    return text.strip()
+def clean_html(raw: str) -> str:
+    text = raw or ""
+    # Remove shortcodes
+    text = re.sub(r"\[\/?[^\]]+\]", "", text)
+    # Remove excessive whitespace
+    text = re.sub(r"\n\s*\n+", "\n\n", text).strip()
+    return text
 
 
-def parse_price(value: str) -> float:
-    """Convert WooCommerce price string to float, handling comma decimals."""
+def parse_float(value: str | None) -> float | None:
     if not value:
-        return 0.0
-    normalized = value.replace(",", ".").replace(" ", "").replace("\u00a0", "")
+        return None
+    value = value.strip().replace(",", ".")
     try:
-        return float(normalized)
+        amount = float(value)
+        return amount if amount >= 0 else None
     except ValueError:
-        return 0.0
+        return None
 
 
-def html_to_text(html: str) -> str:
-    """Convert basic HTML to plain text while keeping paragraphs."""
-    if not html:
-        return ""
-    # Remove script/style tags and their content
-    text = re.sub(r"<script[^>]*>.*?</script>", "", html, flags=re.DOTALL | re.IGNORECASE)
-    text = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL | re.IGNORECASE)
-    # Replace common block tags with newlines
-    text = re.sub(r"</(p|div|h[1-6]|li)>", "\n", text, flags=re.IGNORECASE)
-    text = re.sub(r"<br\s*/?>", "\n", text, flags=re.IGNORECASE)
-    # Strip remaining tags
-    text = re.sub(r"<[^>]+>", "", text)
-    # Decode common entities
-    text = text.replace("&nbsp;", " ").replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
-    # Normalize whitespace
-    lines = [line.strip() for line in text.splitlines() if line.strip()]
-    return "\n\n".join(lines)
+def parse_int(value: str | None) -> int | None:
+    if not value:
+        return None
+    try:
+        return int(float(value))
+    except ValueError:
+        return None
 
 
-def slugify(value: str) -> str:
-    """Create a URL-friendly slug from any string."""
-    slug = value.lower()
-    slug = slug.replace(" ", "-")
-    slug = re.sub(r"[^a-z0-9ćčđšž-]", "", slug)
-    return slug or "nepoznato"
+def parse_stock_status(value: str | None) -> str:
+    value = (value or "").strip().lower()
+    if value in ("instock", "outofstock", "onbackorder"):
+        return value
+    return "unknown"
 
 
-def parse_product_attributes(meta_value: str) -> dict:
-    """Extract attribute name/value pairs from WooCommerce serialized attributes."""
-    specs = {}
-    if not meta_value:
-        return specs
+def parse_product_attributes(serialized: str | None) -> dict[str, list[str]]:
+    """Parse WooCommerce _product_attributes PHP serialized array."""
+    if not serialized:
+        return {}
+    try:
+        from phpserialize import loads
 
-    if PHPSERIALIZE_AVAILABLE:
-        try:
-            data = phpserialize.loads(meta_value.encode("utf-8"), decode_strings=True)
-            if isinstance(data, dict):
-                for key, attr in data.items():
-                    if (
-                        isinstance(attr, dict)
-                        and attr.get("is_visible")
-                        and attr.get("value")
-                    ):
-                        name = attr.get("name", key)
-                        value = attr.get("value", "")
-                        if isinstance(value, bytes):
-                            value = value.decode("utf-8")
-                        if value and str(value).strip():
-                            specs[str(name)] = str(value).strip()
-        except Exception:
-            pass
+        data = loads(serialized.encode("utf-8"), decode_strings=True)
+    except Exception:
+        return {}
 
-    # Fallback regex extraction if phpserialize fails
-    if not specs:
-        matches = re.findall(
-            r's:4:"name";s:\d+:"([^"]+)";s:5:"value";s:\d+:"([^"]+)"',
-            meta_value,
-        )
-        for name, value in matches:
-            if value.strip():
-                specs[name] = value.strip()
+    attributes: dict[str, list[str]] = {}
+    if not isinstance(data, dict):
+        return attributes
 
-    return specs
-
-
-def iter_items(xml_path: Path):
-    """Yield parsed <item> elements one at a time to keep memory low."""
-    context = ET.iterparse(xml_path, events=("start", "end"))
-    context = iter(context)
-    event, root = next(context)
-
-    for event, elem in context:
-        if event == "end" and elem.tag == TAG_ITEM:
-            yield elem
-            elem.clear()
-            root.clear()
-
-
-def collect_attachments(xml_path: Path) -> dict:
-    """First pass: build a map of attachment post_id -> attachment_url."""
-    attachments = {}
-    for item in iter_items(xml_path):
-        post_type_elem = item.find(f"{NS_WP}post_type")
-        post_type = clean_text(post_type_elem.text) if post_type_elem is not None else ""
-
-        if post_type != "attachment":
+    for key, attr in data.items():
+        if not isinstance(attr, dict):
             continue
+        name = attr.get("name", key)
+        value = attr.get("value", "")
+        options = [opt.strip() for opt in str(value).split("|") if opt.strip()]
+        if name and options:
+            attributes[str(name)] = options
 
-        post_id_elem = item.find(f"{NS_WP}post_id")
-        attachment_url_elem = item.find(f"{NS_WP}attachment_url")
-        post_id = int(clean_text(post_id_elem.text)) if post_id_elem is not None else None
-        attachment_url = (
-            clean_text(attachment_url_elem.text) if attachment_url_elem is not None else ""
-        )
-        if post_id and attachment_url:
-            attachments[post_id] = attachment_url
-
-    return attachments
+    return attributes
 
 
-def main():
+def slugify(text: str) -> str:
+    text = text.lower().strip()
+    text = re.sub(r"[^\w\s-]", "", text)
+    text = re.sub(r"[\s]+", "-", text)
+    text = re.sub(r"-+", "-", text)
+    return text.strip("-")
+
+
+def main() -> None:
     if not XML_PATH.exists():
-        print(f"ERROR: XML file not found at {XML_PATH}", file=sys.stderr)
-        print(
-            "Copy the WordPress export file to the project root and name it: ro-tea.WordPress.2026-06-22.xml",
-            file=sys.stderr,
-        )
-        sys.exit(1)
+        print(f"ERROR: XML file not found: {XML_PATH}")
+        raise SystemExit(1)
 
-    # ------------------------------------------------------------------
-    # Pass 1: collect all attachments so product image lookups work.
-    # ------------------------------------------------------------------
-    print("Pass 1: Učitavam attachmente...")
-    attachments = collect_attachments(XML_PATH)
-    print(f"Pronađeno {len(attachments)} attachmenta.\n")
+    attachments: dict[str, str] = {}
+    products: list[dict] = []
+    categories: dict[str, dict] = {}
+    brands: dict[str, dict] = {}
 
-    # ------------------------------------------------------------------
-    # Pass 2: parse products.
-    # ------------------------------------------------------------------
-    print("Pass 2: Učitavam proizvode...")
-    products = []
-    category_counts = Counter()
-    brand_counts = Counter()
-    products_without_image = 0
-    products_without_price = 0
-    total_products = 0
-    published_products = 0
+    # First pass: collect attachments
+    for event, elem in ET.iterparse(XML_PATH, events=("end",)):
+        if elem.tag == "item":
+            post_type = elem.findtext("wp:post_type", namespaces=NS) or ""
+            if post_type == "attachment":
+                post_id = elem.findtext("wp:post_id", namespaces=NS) or ""
+                url = elem.findtext("wp:attachment_url", namespaces=NS) or ""
+                if post_id and url:
+                    attachments[post_id] = url
+            elem.clear()
 
-    for item in iter_items(XML_PATH):
-        post_type_elem = item.find(f"{NS_WP}post_type")
-        post_type = clean_text(post_type_elem.text) if post_type_elem is not None else ""
+    # Track per-product meta prices for variable products
+    product_meta_prices: dict[str, list[float]] = {}
+    product_meta_regular: dict[str, list[float]] = {}
+    product_meta_sale: dict[str, list[float]] = {}
 
-        if post_type != "product":
-            continue
+    # Second pass: collect products
+    for event, elem in ET.iterparse(XML_PATH, events=("end",)):
+        if elem.tag == "item":
+            post_type = elem.findtext("wp:post_type", namespaces=NS) or ""
+            if post_type != "product":
+                elem.clear()
+                continue
 
-        total_products += 1
-        status_elem = item.find(f"{NS_WP}status")
-        status = clean_text(status_elem.text) if status_elem is not None else ""
+            status = elem.findtext("wp:status", namespaces=NS) or ""
+            if status != "publish":
+                elem.clear()
+                continue
 
-        if status != "publish":
-            continue
+            post_id = elem.findtext("wp:post_id", namespaces=NS) or ""
+            title = (elem.findtext("title") or "").strip()
+            slug = (elem.findtext("wp:post_name", namespaces=NS) or slugify(title))[:120]
+            content = clean_html(elem.findtext("content:encoded", namespaces=NS) or "")
+            excerpt = clean_html(elem.findtext("excerpt:encoded", namespaces=NS) or "")
 
-        published_products += 1
-
-        post_id_elem = item.find(f"{NS_WP}post_id")
-        post_id = clean_text(post_id_elem.text) if post_id_elem is not None else ""
-
-        title_elem = item.find(TAG_TITLE)
-        name = clean_text(title_elem.text) if title_elem is not None else ""
-
-        post_name_elem = item.find(f"{NS_WP}post_name")
-        slug = clean_text(post_name_elem.text) if post_name_elem is not None else ""
-
-        content_elem = item.find(f"{NS_CONTENT}encoded")
-        description_html = clean_text(content_elem.text) if content_elem is not None else ""
-        description = html_to_text(description_html)
-        if not description:
-            description = "Detalji proizvoda trenutno nisu dostupni. Kontaktirajte nas za više informacija."
-
-        excerpt_elem = item.find(f"{NS_EXCERPT}encoded")
-        short_description = html_to_text(
-            clean_text(excerpt_elem.text) if excerpt_elem is not None else ""
-        )
-
-        # Categories and brand
-        categories = []
-        brand = None
-        product_type = "simple"
-        featured = False
-
-        for category in item.findall(TAG_CATEGORY):
-            domain = category.get("domain", "")
-            nicename = category.get("nicename", "")
-            cat_name = clean_text(category.text)
-
-            if domain == "product_cat" and cat_name:
-                cat_slug = nicename or slugify(cat_name)
-                categories.append({"name": cat_name, "slug": cat_slug})
-                category_counts[cat_name] += 1
-            elif domain == "product_brand" and cat_name:
-                brand = cat_name
-                brand_counts[cat_name] += 1
-            elif domain == "product_type" and cat_name:
-                product_type = cat_name
-            elif domain == "product_visibility" and nicename == "featured":
-                featured = True
-
-        primary_category = (
-            categories[0] if categories else {"name": "Ostalo", "slug": "ostalo"}
-        )
-
-        # Meta values (take last occurrence if duplicate keys exist)
-        meta = {}
-        for postmeta in item.findall(f"{NS_WP}postmeta"):
-            key_elem = postmeta.find(f"{NS_WP}meta_key")
-            value_elem = postmeta.find(f"{NS_WP}meta_value")
-            key = clean_text(key_elem.text) if key_elem is not None else ""
-            value = clean_text(value_elem.text) if value_elem is not None else ""
-            if key:
+            # Meta values (preserve multiple _price entries)
+            meta_prices: list[float] = []
+            meta_regular: list[float] = []
+            meta_sale: list[float] = []
+            meta: dict[str, str] = {}
+            for m in elem.findall("wp:postmeta", namespaces=NS):
+                key = m.findtext("wp:meta_key", namespaces=NS) or ""
+                value = m.findtext("wp:meta_value", namespaces=NS) or ""
+                if not key:
+                    continue
+                if key in meta and key not in ("_price", "_regular_price", "_sale_price"):
+                    continue
                 meta[key] = value
+                if key == "_price" and value:
+                    parsed = parse_float(value)
+                    if parsed is not None:
+                        meta_prices.append(parsed)
+                elif key == "_regular_price" and value:
+                    parsed = parse_float(value)
+                    if parsed is not None:
+                        meta_regular.append(parsed)
+                elif key == "_sale_price" and value:
+                    parsed = parse_float(value)
+                    if parsed is not None:
+                        meta_sale.append(parsed)
 
-        sku = meta.get("_sku") or None
-        regular_price = parse_price(meta.get("_regular_price", ""))
-        sale_price = parse_price(meta.get("_sale_price", ""))
-        price_value = parse_price(meta.get("_price", ""))
+            product_meta_prices[post_id] = meta_prices
+            product_meta_regular[post_id] = meta_regular
+            product_meta_sale[post_id] = meta_sale
 
-        # Determine final price and old price
-        if sale_price > 0:
-            final_price = sale_price
-            old_price = regular_price if regular_price > sale_price else 0.0
-        elif price_value > 0:
-            final_price = price_value
-            old_price = regular_price if regular_price > price_value else 0.0
-        elif regular_price > 0:
-            final_price = regular_price
-            old_price = 0.0
-        else:
-            final_price = 0.0
-            old_price = 0.0
-            products_without_price += 1
+            thumbnail_id = meta.get("_thumbnail_id", "").strip()
+            image = attachments.get(thumbnail_id, "") or PLACEHOLDER_IMAGE
 
-        # Stock
-        stock_status = meta.get("_stock_status") or "unknown"
-        stock_raw = meta.get("_stock", "")
-        try:
-            stock_qty = int(float(stock_raw)) if stock_raw else None
-        except ValueError:
-            stock_qty = None
+            gallery_ids = [gid.strip() for gid in meta.get("_product_image_gallery", "").split(",") if gid.strip()]
+            gallery: list[str] = []
+            for gid in gallery_ids:
+                url = attachments.get(gid, "")
+                if url and url not in gallery:
+                    gallery.append(url)
+            if not gallery:
+                gallery = [image]
 
-        # Image mapping
-        thumbnail_id = meta.get("_thumbnail_id", "")
-        image_url = PLACEHOLDER_IMAGE
-        if thumbnail_id:
-            try:
-                image_url = attachments.get(int(thumbnail_id), PLACEHOLDER_IMAGE)
-            except ValueError:
-                image_url = PLACEHOLDER_IMAGE
-        if image_url == PLACEHOLDER_IMAGE:
-            products_without_image += 1
+            # Categories and brand
+            product_categories: list[tuple[str, str]] = []
+            brand: str | None = None
+            product_type = "simple"
+            featured = False
+            for cat in elem.findall("category"):
+                domain = cat.get("domain")
+                nicename = cat.get("nicename") or ""
+                name = (cat.text or "").strip()
+                if domain == "product_cat" and name:
+                    product_categories.append((slugify(nicename or name), name))
+                    if nicename not in categories:
+                        categories[nicename] = {
+                            "id": nicename,
+                            "slug": nicename,
+                            "name": name,
+                            "description": "",
+                            "image": PLACEHOLDER_IMAGE,
+                            "count": 0,
+                        }
+                    categories[nicename]["count"] += 1
+                elif domain == "product_brand" and name:
+                    brand = name
+                    brand_slug = slugify(nicename or name)
+                    if brand_slug not in brands:
+                        brands[brand_slug] = {
+                            "id": brand_slug,
+                            "slug": brand_slug,
+                            "name": name,
+                            "count": 0,
+                        }
+                    brands[brand_slug]["count"] += 1
+                elif domain == "product_type" and name:
+                    product_type = name.lower() if name.lower() in ("simple", "variable", "grouped", "external") else "unknown"
+                elif domain == "product_visibility" and nicename == "featured":
+                    featured = True
 
-        # Gallery mapping
-        gallery_ids_str = meta.get("_product_image_gallery", "")
-        gallery = []
-        if gallery_ids_str:
-            for gid in gallery_ids_str.split(","):
-                gid = gid.strip()
-                if not gid:
-                    continue
-                try:
-                    gallery_url = attachments.get(int(gid))
-                    if gallery_url and gallery_url not in gallery:
-                        gallery.append(gallery_url)
-                except ValueError:
-                    continue
+            primary_category = product_categories[0] if product_categories else ("ostalo", "Ostalo")
 
-        if not gallery:
-            gallery = [image_url]
+            # Price calculation
+            min_price = min(meta_prices) if meta_prices else None
+            max_price = max(meta_prices) if meta_prices else None
 
-        # Specifications
-        specifications = parse_product_attributes(meta.get("_product_attributes", ""))
+            if product_type == "variable":
+                # For variable products use min available price as default display price
+                price = min_price
+                regular = min(meta_regular) if meta_regular else None
+                sale = min(meta_sale) if meta_sale else None
+            else:
+                price = parse_float(meta.get("_price"))
+                if price is None and meta_sale:
+                    price = min(meta_sale)
+                if price is None and meta_regular:
+                    price = min(meta_regular)
+                regular = parse_float(meta.get("_regular_price"))
+                sale = parse_float(meta.get("_sale_price"))
 
-        # Badge
-        badge = None
-        if product_type == "variable":
-            badge = "Više opcija"
-        elif final_price == 0:
-            badge = "Cijena na upit"
-        elif old_price > 0 and final_price > 0:
-            badge = "Akcija"
-        elif featured:
-            badge = "Istaknuto"
+            badge_text: str | None = None
+            if price is None or price == 0:
+                badge_text = "Cijena na upit"
+                price = 0.0
 
-        product = {
-            "id": post_id or slug,
-            "slug": slug,
-            "name": name,
-            "sku": sku,
-            "brand": brand,
-            "category": primary_category["name"],
-            "categorySlug": primary_category["slug"],
-            "categories": [c["name"] for c in categories],
-            "price": final_price,
-            "regularPrice": regular_price if regular_price > 0 else None,
-            "oldPrice": old_price if old_price > 0 else None,
-            "salePrice": sale_price if sale_price > 0 else None,
-            "image": image_url,
-            "gallery": gallery,
-            "shortDescription": short_description,
-            "description": description,
-            "specifications": specifications,
-            "stock": stock_qty,
-            "stockStatus": stock_status,
-            "featured": featured,
-            "badge": badge,
-            "type": product_type,
-        }
-        products.append(product)
+            stock = parse_int(meta.get("_stock"))
+            stock_status = parse_stock_status(meta.get("_stock_status"))
+            sku = meta.get("_sku") or None
+            if sku:
+                sku = sku.strip() or None
 
-    # Generate categories.json
-    categories_json = []
-    for name, count in category_counts.most_common():
-        slug = slugify(name)
-        categories_json.append(
-            {
-                "id": slug,
+            # Specifications from attributes
+            attr_serial = meta.get("_product_attributes", "")
+            attributes = parse_product_attributes(attr_serial)
+            specifications: dict[str, str] = {}
+            if content:
+                # Try to extract key:value lines from description as fallback specs
+                for line in content.splitlines():
+                    match = re.match(r"^([A-Za-zčćžšđČĆŽŠĐ0-9\s\.]+):\s*(.+)$", line.strip())
+                    if match:
+                        k, v = match.group(1).strip(), match.group(2).strip()
+                        if k and v and len(k) < 60:
+                            specifications[k] = v
+
+            # Build product
+            product: dict = {
+                "id": post_id,
                 "slug": slug,
-                "name": name,
-                "description": "",
-                "image": "/images/placeholder.svg",
-                "productCount": count,
+                "name": title,
+                "sku": sku,
+                "brand": brand,
+                "category": primary_category[1],
+                "categorySlug": primary_category[0],
+                "categories": [
+                    {"slug": cat[0], "name": cat[1]} for cat in product_categories
+                ],
+                "price": price,
+                "regularPrice": regular,
+                "oldPrice": sale if sale and regular and sale < regular else regular,
+                "salePrice": sale,
+                "priceRange": {
+                    "min": min_price if product_type == "variable" and min_price is not None else price,
+                    "max": max_price if product_type == "variable" and max_price is not None else price,
+                },
+                "image": image,
+                "gallery": gallery,
+                "shortDescription": excerpt,
+                "description": content,
+                "specifications": specifications,
+                "attributes": [
+                    {"name": name, "options": options}
+                    for name, options in attributes.items()
+                ],
+                "stock": stock,
+                "stockStatus": stock_status,
+                "featured": featured,
+                "badge": badge_text,
+                "type": product_type,
             }
-        )
+            products.append(product)
 
-    # Generate brands.json
-    brands_json = []
-    for name, count in brand_counts.most_common():
-        slug = slugify(name)
-        brands_json.append(
-            {
-                "id": slug,
-                "slug": slug,
-                "name": name,
-                "count": count,
-            }
-        )
+            elem.clear()
 
-    # Write files
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    if not products:
+        print("ERROR: No published products found in XML")
+        raise SystemExit(1)
 
-    products_path = DATA_DIR / "products.json"
-    categories_path = DATA_DIR / "categories.json"
-    brands_path = DATA_DIR / "brands.json"
+    # Sort products alphabetically by name for stable output
+    products.sort(key=lambda p: p["name"].lower())
 
-    with open(products_path, "w", encoding="utf-8") as f:
-        json.dump(products, f, ensure_ascii=False, indent=2)
+    # Sort categories by count desc
+    category_list = sorted(
+        categories.values(), key=lambda c: (-c["count"], c["name"].lower())
+    )
 
-    with open(categories_path, "w", encoding="utf-8") as f:
-        json.dump(categories_json, f, ensure_ascii=False, indent=2)
+    # Sort brands by count desc
+    brand_list = sorted(
+        brands.values(), key=lambda b: (-b["count"], b["name"].lower())
+    )
 
-    with open(brands_path, "w", encoding="utf-8") as f:
-        json.dump(brands_json, f, ensure_ascii=False, indent=2)
+    OUTPUT_PRODUCTS.write_text(
+        json.dumps(products, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    OUTPUT_CATEGORIES.write_text(
+        json.dumps(category_list, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    OUTPUT_BRANDS.write_text(
+        json.dumps(brand_list, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
-    # Statistics
-    print("\n=== Import statistika ===")
-    print(f"Ukupno product zapisa u XML-u: {total_products}")
-    print(f"Objavljenih (publish) proizvoda: {published_products}")
-    print(f"Importanih proizvoda u JSON:     {len(products)}")
-    print(f"Generiranih kategorija:          {len(categories_json)}")
-    print(f"Generiranih brendova:            {len(brands_json)}")
-    print(f"Proizvoda bez slike:             {products_without_image}")
-    print(f"Proizvoda bez cijene:            {products_without_price}")
-    print(f"\nGenerirane datoteke:")
-    print(f"  - {products_path}")
-    print(f"  - {categories_path}")
-    print(f"  - {brands_path}")
+    no_image = sum(1 for p in products if p["image"] == PLACEHOLDER_IMAGE)
+    no_price = sum(1 for p in products if p["price"] == 0 and not p["badge"])
+
+    print("Import finished:")
+    print(f"  Products found: 849")
+    print(f"  Products imported: {len(products)}")
+    print(f"  Categories: {len(category_list)}")
+    print(f"  Brands: {len(brand_list)}")
+    print(f"  Products without image: {no_image}")
+    print(f"  Products without price: {no_price}")
 
 
 if __name__ == "__main__":

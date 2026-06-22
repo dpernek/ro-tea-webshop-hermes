@@ -1,19 +1,19 @@
 [
   {
-    "id": "festa",
-    "slug": "festa",
+    "id": "festa-alati",
+    "slug": "festa-alati",
     "name": "Festa",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 661
+    "count": 661
   },
   {
-    "id": "građevinski-alati",
-    "slug": "građevinski-alati",
+    "id": "gradevinski-alati",
+    "slug": "gradevinski-alati",
     "name": "Građevinski alati",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 305
+    "count": 305
   },
   {
     "id": "alati-za-radionice",
@@ -21,7 +21,7 @@
     "name": "Alati za radionice",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 304
+    "count": 304
   },
   {
     "id": "vrtni-alati",
@@ -29,31 +29,31 @@
     "name": "Vrtni alati",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 191
+    "count": 191
   },
   {
-    "id": "pferd",
-    "slug": "pferd",
+    "id": "pferd-alati",
+    "slug": "pferd-alati",
     "name": "Pferd",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 129
+    "count": 129
   },
   {
-    "id": "električni-alat",
-    "slug": "električni-alat",
+    "id": "elektricni-alat-festa",
+    "slug": "elektricni-alat-festa",
     "name": "Električni alat",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 62
+    "count": 62
   },
   {
-    "id": "metabo",
-    "slug": "metabo",
+    "id": "metabo-alati",
+    "slug": "metabo-alati",
     "name": "Metabo",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 54
+    "count": 54
   },
   {
     "id": "turpije",
@@ -61,7 +61,7 @@
     "name": "Turpije",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 41
+    "count": 41
   },
   {
     "id": "roto-glodala",
@@ -69,31 +69,23 @@
     "name": "Roto glodala",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 35
+    "count": 35
   },
   {
-    "id": "električni-alat",
-    "slug": "električni-alat",
+    "id": "elektricni-alat",
+    "slug": "elektricni-alat",
     "name": "Električni Alat",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 33
+    "count": 33
   },
   {
-    "id": "rezne-brusne-ploče-i-diskovi",
-    "slug": "rezne-brusne-ploče-i-diskovi",
+    "id": "rezne_brusne_diskovi",
+    "slug": "rezne_brusne_diskovi",
     "name": "Rezne, brusne ploče i diskovi",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 24
-  },
-  {
-    "id": "brusilice",
-    "slug": "brusilice",
-    "name": "Brusilice",
-    "description": "",
-    "image": "/images/placeholder.svg",
-    "productCount": 22
+    "count": 24
   },
   {
     "id": "baterijski-alat",
@@ -101,31 +93,47 @@
     "name": "Baterijski Alat",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 22
+    "count": 22
   },
   {
-    "id": "pferd-pogonski-strojevi",
-    "slug": "pferd-pogonski-strojevi",
+    "id": "brusilice",
+    "slug": "brusilice",
+    "name": "Brusilice",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "count": 22
+  },
+  {
+    "id": "pferd_pogonski_strojevi",
+    "slug": "pferd_pogonski_strojevi",
     "name": "PFERD pogonski strojevi",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 19
+    "count": 19
   },
   {
-    "id": "brušenje-i-poliranje",
-    "slug": "brušenje-i-poliranje",
+    "id": "brusnje_poliranje",
+    "slug": "brusnje_poliranje",
     "name": "Brušenje i poliranje",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 14
+    "count": 14
   },
   {
-    "id": "mjerni-uređaji",
-    "slug": "mjerni-uređaji",
+    "id": "mjerni-uredaji",
+    "slug": "mjerni-uredaji",
     "name": "Mjerni uređaji",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 13
+    "count": 13
+  },
+  {
+    "id": "busilice",
+    "slug": "busilice",
+    "name": "Bušilice",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "count": 5
   },
   {
     "id": "svrdla",
@@ -133,31 +141,23 @@
     "name": "Svrdla",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 5
+    "count": 5
   },
   {
-    "id": "bušilice",
-    "slug": "bušilice",
-    "name": "Bušilice",
-    "description": "",
-    "image": "/images/placeholder.svg",
-    "productCount": 5
-  },
-  {
-    "id": "zaštitna-oprema",
-    "slug": "zaštitna-oprema",
+    "id": "zastitna-oprema-delta-plus",
+    "slug": "zastitna-oprema-delta-plus",
     "name": "Zaštitna Oprema",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 3
+    "count": 3
   },
   {
-    "id": "četke",
-    "slug": "četke",
+    "id": "cetke",
+    "slug": "cetke",
     "name": "Četke",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 3
+    "count": 3
   },
   {
     "id": "pribor",
@@ -165,6 +165,6 @@
     "name": "Pribor",
     "description": "",
     "image": "/images/placeholder.svg",
-    "productCount": 1
+    "count": 1
   }
 ]

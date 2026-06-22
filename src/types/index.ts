@@ -2,6 +2,16 @@ export interface ProductSpecification {
   [key: string]: string;
 }
 
+export interface ProductAttribute {
+  name: string;
+  options: string[];
+}
+
+export interface ProductPriceRange {
+  min: number;
+  max: number;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -10,21 +20,23 @@ export interface Product {
   brand?: string | null;
   category: string;
   categorySlug: string;
-  categories: string[];
+  categories?: { slug: string; name: string }[];
   price: number;
   regularPrice?: number | null;
   oldPrice?: number | null;
   salePrice?: number | null;
+  priceRange?: ProductPriceRange;
   image: string;
   gallery: string[];
   shortDescription: string;
   description: string;
-  specifications: ProductSpecification;
+  specifications?: ProductSpecification;
+  attributes?: ProductAttribute[];
   stock?: number | null;
   stockStatus: "instock" | "outofstock" | "onbackorder" | "unknown";
   featured: boolean;
   badge?: string | null;
-  type: "simple" | "variable" | "grouped" | "external" | string;
+  type: "simple" | "variable" | "grouped" | "external" | "unknown";
 }
 
 export interface Category {
@@ -33,7 +45,7 @@ export interface Category {
   name: string;
   description: string;
   image: string;
-  productCount: number;
+  count: number;
 }
 
 export interface Brand {
@@ -49,10 +61,11 @@ export interface SiteConfig {
   description: string;
   url: string;
   contact: {
-    email: string;
-    phoneDisplay: string;
     address: string;
+    city: string;
     company: string;
+    phoneDisplay: string;
+    email: string;
     oib: string;
   };
   social: {
@@ -63,8 +76,10 @@ export interface SiteConfig {
 }
 
 export interface CartItem {
+  id: string;
   product: Product;
   quantity: number;
+  selectedAttributes?: Record<string, string>;
 }
 
 export interface CheckoutFormData {
