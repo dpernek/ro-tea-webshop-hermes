@@ -5,12 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
-// Top 4 categories with their images
 const featured = [
-  { name: "Festa", slug: "festa-alati", image: "/images/categories/openai_codex_gpt-image-2-low_20260622_164902_f63a5531.png", count: 661 },
-  { name: "Građevinski alati", slug: "gradevinski-alati", image: "/images/categories/openai_codex_gpt-image-2-low_20260622_165002_4ab5e684.png", count: 305 },
-  { name: "Alati za radionice", slug: "alati-za-radionice", image: "/images/categories/openai_codex_gpt-image-2-low_20260622_165101_942020b2.png", count: 304 },
-  { name: "Vrtni alati", slug: "vrtni-alati", image: "/images/categories/openai_codex_gpt-image-2-low_20260622_165234_c3a1e75f.png", count: 191 },
+  { name: "Festa", slug: "festa-alati", image: "/images/categories/openai_codex_gpt-image-2-high_20260622_165747_39242876.png", count: 661 },
+  { name: "Građevinski alati", slug: "gradevinski-alati", image: "/images/categories/openai_codex_gpt-image-2-high_20260622_165854_08d6d07d.png", count: 305 },
+  { name: "Alati za radionice", slug: "alati-za-radionice", image: "/images/categories/openai_codex_gpt-image-2-high_20260622_170003_90dae7e9.png", count: 304 },
+  { name: "Vrtni alati", slug: "vrtni-alati", image: "/images/categories/openai_codex_gpt-image-2-high_20260622_170123_564d16d3.png", count: 191 },
 ];
 
 export function FeaturedCategories() {
