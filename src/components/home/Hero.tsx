@@ -49,9 +49,9 @@ export function Hero() {
           </h1>
 
           <p className="hero-animate mt-6 max-w-xl text-lg leading-relaxed text-slate-200">
-            Široka ponuda provjerenih proizvoda za profesionalce i domaćinstva.
-            Brza dostava, detaljni opisi i jednostavna kupnja — sve na jednom
-            mjestu.
+            Široka ponuda provjerenih proizvoda za profesionalce, obrtnike i
+            industriju. Brza dostava, detaljni opisi i jednostavna kupnja —
+            sve na jednom mjestu.
           </p>
 
           <div className="hero-animate mt-10 flex flex-wrap gap-4">

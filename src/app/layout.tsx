@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartHydrator } from "@/components/cart/CartHydrator";
+import { CookieBanner } from "@/components/layout/CookieBanner";
 import { site } from "@/lib/data";
 
 const inter = Inter({
@@ -16,6 +17,13 @@ export const metadata: Metadata = {
   title: `${site.name} | ${site.tagline}`,
   description: site.description,
   metadataBase: new URL(site.url),
+  icons: {
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   openGraph: {
     title: `${site.name} | ${site.tagline}`,
     description: site.description,
@@ -35,6 +43,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <CookieBanner />
       </body>
     </html>
   );
