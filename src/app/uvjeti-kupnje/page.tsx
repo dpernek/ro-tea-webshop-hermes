@@ -14,6 +14,7 @@ const sections = [
   { num: "6.", title: "Povrat i reklamacije", text: "Sukladno Zakonu o zaštiti potrošača, kupac ima pravo na jednostrani raskid ugovora u roku od 14 dana od primitka proizvoda. Proizvod mora biti vraćen neoštećen i u originalnom pakiranju. Troškove povrata snosi kupac." },
   { num: "7.", title: "Zaštita podataka", text: "Osobni podaci kupaca obrađuju se sukladno Politici privatnosti i važećim propisima o zaštiti podataka (GDPR)." },
   { num: "8.", title: "Rješavanje sporova", text: "Svi sporovi nastali iz ovih uvjeta rješavaju se mirnim putem, a u slučaju nemogućnosti dogovora, nadležan je sud u Zagrebu." },
+  { num: "9.", title: "R1 račun za pravne osobe", text: "Za pravne osobe i obrtnike izdajemo R1 račun. Prilikom narudžbe unesite podatke tvrtke (naziv, OIB) u napomenu te ćete R1 račun dobiti uz isporuku proizvoda. Za dodatne informacije kontaktirajte nas na info@ro-tea.hr." },
 ];
 
 export default function TermsPage() {

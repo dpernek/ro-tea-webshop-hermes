@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { useCartStore } from "@/store/cartStore";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/lib/actions/orders";
+import { CreditCard, Building, Banknote } from "lucide-react";
 
 interface FormErrors {
   [key: string]: string;
@@ -26,9 +27,9 @@ const SHIPPING_METHODS = [
 ];
 
 const PAYMENT_METHODS = [
-  { value: "card", label: "Kartica" },
-  { value: "bank_transfer", label: "Bankovna uplata / predračun" },
-  { value: "cod", label: "Pouzeće" },
+  { value: "card", label: "Kartica", icon: CreditCard },
+  { value: "bank_transfer", label: "Bankovna uplata / predračun", icon: Building },
+  { value: "cod", label: "Pouzeće", icon: Banknote },
 ];
 
 export function CheckoutForm() {
@@ -308,6 +309,7 @@ export function CheckoutForm() {
                 required
                 aria-required="true"
               />
+              <pm.icon className="ml-2 h-4 w-4 shrink-0 text-slate-400" />
               <span className="ml-2 text-sm font-medium text-slate-900">
                 {pm.label}
               </span>

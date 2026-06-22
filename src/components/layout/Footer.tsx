@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { site } from "@/lib/data";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Truck, CreditCard, RotateCcw, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 
 const footerLinks = {
@@ -104,6 +104,46 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Trust blocks: Shipping / Payment / Returns / Warranty */}
+        <div className="mt-12 grid gap-6 border-t border-slate-200 pt-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="flex items-start gap-3">
+            <Truck className="mt-0.5 h-5 w-5 shrink-0 text-[#0055a8]" />
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900">Dostava</h4>
+              <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                6,64 €. Besplatna dostava za narudžbe iznad 66,36 €.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <CreditCard className="mt-0.5 h-5 w-5 shrink-0 text-[#0055a8]" />
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900">Plaćanje</h4>
+              <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                Bankovna uplata, pouzeće i kartično plaćanje.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <RotateCcw className="mt-0.5 h-5 w-5 shrink-0 text-[#0055a8]" />
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900">Povrat</h4>
+              <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                14 dana pravo na povrat bez navođenja razloga.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#0055a8]" />
+            <div>
+              <h4 className="text-sm font-semibold text-slate-900">Jamstvo</h4>
+              <p className="mt-1 text-sm leading-relaxed text-slate-600">
+                Jamstvo na sve proizvode sukladno zakonskim propisima.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="mt-12 border-t border-slate-200 pt-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <p className="text-sm text-slate-500">
@@ -112,6 +152,7 @@ export function Footer() {
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-500">
               <span>OIB: {site.contact.oib}</span>
+              {site.contact.iban && <span>IBAN: {site.contact.iban}</span>}
               <Link href="/politika-privatnosti" className="hover:text-brand">
                 Pravila privatnosti
               </Link>

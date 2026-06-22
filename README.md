@@ -12,7 +12,7 @@ Kompletna web trgovina s admin panelom za RO-TEA — specijaliziranu trgovinu te
 | Baza       | Prisma 7 + SQLite (dev) / PostgreSQL (prod) |
 | Auth       | NextAuth.js v5 (Credentials)                |
 | State      | Zustand + persist                           |
-| Validacija | Zod, React Hook Form                        |
+| Validacija | Zod, React Hook Form (checkout) — admin forme: osnovna HTML validacija |
 | Animacije  | GSAP                                        |
 | Ikone      | Lucide React                                |
 | Deploy     | Vercel                                      |
@@ -56,6 +56,8 @@ Kopiraj `.env.example` u `.env` i postavi:
 | `ADMIN_ORDER_EMAIL`                  | Email za primanje notifikacija narudžbi                    |
 
 ## Baza podataka
+
+> **Napomena**: `prisma/schema.prisma` trenutno koristi `provider = "postgresql"`. Za lokalni dev sa SQLite, promijenite provider u `"sqlite"` i maknite `@updatedAt` atribute.
 
 ### Lokalno (SQLite)
 
@@ -128,10 +130,13 @@ Koristite email i lozinku definirane u `.env` (`ADMIN_EMAIL` i `ADMIN_PASSWORD`)
 | `/admin/orders`             | Pregled narudžbi                        |
 | `/admin/orders/[id]`        | Detalji narudžbe, promjena statusa      |
 | `/admin/customers`          | Pregled kupaca                          |
-| `/admin/payments`           | Pregled uplata                          |
+| `/admin/payments`           | Pregled uplata (⚠️ API ruta nedostaje — stranica prazna) |
 | `/admin/shipping`           | Upravljanje metodama dostave            |
 | `/admin/coupons`            | Upravljanje kuponima                    |
 | `/admin/settings`           | Postavke webshopa                       |
+| `/admin/katalozi`           | Upravljanje katalozima                  |
+| `/admin/katalozi/novi`      | Dodavanje novog kataloga                |
+| `/admin/katalozi/[id]/uredi`| Uređivanje kataloga                     |
 
 ## Frontend rute
 
@@ -149,6 +154,8 @@ Koristite email i lozinku definirane u `.env` (`ADMIN_EMAIL` i `ADMIN_PASSWORD`)
 | `/politika-privatnosti`  | Politika privatnosti (GDPR)                 |
 | `/pravila-dostave`       | Pravila dostave                             |
 | `/povrati-i-reklamacije` | Povrati i reklamacije                       |
+| `/usluga-brusenja`       | Usluga brušenja                             |
+| `/katalozi`              | Pregled PDF kataloga                        |
 
 ## Checkout flow
 
@@ -184,8 +191,8 @@ Upravlja se iz admin panela (`/admin/shipping`). Podržane metode:
 
 Za dodavanje slika proizvoda u admin panelu:
 
-- Trenutno: unesite URL slike (npr. `https://ro-tea.hr/wp-content/uploads/...`)
-- Planirano: Vercel Blob ili Cloudinary upload
+- **Trenutno**: samo URL slike (npr. `https://ro-tea.hr/wp-content/uploads/...`). Nema file upload route.
+- **Planirano**: Vercel Blob ili Cloudinary upload (treba dodati API rutu za upload).
 
 Za Next.js Image optimizaciju, dodani su `remotePatterns` za `ro-tea.hr` u `next.config.ts`.
 
@@ -210,8 +217,10 @@ Placeholder u admin postavkama. Za implementaciju u Hrvatskoj potrebno:
 
 - Frontend webshop s 848+ proizvoda
 - Admin panel s autentikacijom
-- CRUD za proizvode, kategorije, brendove
+- CRUD za proizvode, kategorije, brendove, kataloge
 - Upravljanje narudžbama i statusima
+- Upravljanje kuponima (admin CRUD)
+- Upravljanje metodama dostave
 - Checkout s kreiranjem narudžbi u bazi
 - Upravljanje zalihama
 - GDPR stranice
@@ -220,10 +229,13 @@ Placeholder u admin postavkama. Za implementaciju u Hrvatskoj potrebno:
 
 - Stripe/Monri/Corvus integracija (trenutno samo manual payment i pouzeće)
 - Email obavijesti (Resend/SendGrid)
-- Upload slika (Vercel Blob/Cloudinary)
+- Upload slika (Vercel Blob/Cloudinary) — trenutno samo URL slike
+- Validacija u admin formama (Zod/RHF) — trenutno samo osnovna HTML validacija
 - Varijacije proizvoda (XML export ne sadrži `product_variation` zapise)
 - Fiskalizacija
-- Kuponi — funkcionalnost na checkoutu
+- Kuponi — integracija na checkoutu (admin CRUD radi)
+- `/api/admin/payments` ruta — nedostaje, payments stranica je prazna
+- `/admin/brands/edit` — nema zasebnu edit stranicu, koristi inline edit
 
 ## npm skripte
 

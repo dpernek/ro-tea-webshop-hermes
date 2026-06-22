@@ -90,6 +90,22 @@ export default function ContactPage() {
             {/* Contact info */}
             <AnimatedSection delay={0.2}>
               <div className="space-y-4">
+                {/* B2B section */}
+                <div className="rounded-2xl border border-[#0055a8]/30 bg-[#0055a8]/5 p-5">
+                  <div className="flex items-start gap-3">
+                    <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-[#0055a8]" />
+                    <div>
+                      <h3 className="font-semibold text-white">Poslovni upiti (B2B)</h3>
+                      <p className="mt-1 text-sm leading-relaxed text-slate-300">
+                        Za veleprodajne upite i poslovnu suradnju kontaktirajte nas na{" "}
+                        <a href="mailto:info@ro-tea.hr" className="text-[#0055a8] hover:underline">info@ro-tea.hr</a>{" "}
+                        ili{" "}
+                        <a href="tel:+38513820113" className="text-[#0055a8] hover:underline">+385 1 3820 113</a>
+                        .
+                      </p>
+                    </div>
+                  </div>
+                </div>
                 {contactItems.map((item) => (
                   <div key={item.label} className="flex items-start gap-4 rounded-2xl border border-slate-800 bg-slate-900/50 p-5">
                     <item.icon className="mt-0.5 h-5 w-5 shrink-0 text-[#0055a8]" />

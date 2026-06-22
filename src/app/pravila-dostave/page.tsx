@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Pravila dostave | RO-TEA" };
 const sections = [
   { num: "1.", title: "Načini dostave", text: "Dostava se vrši putem kurirske službe na adresu koju ste naveli prilikom narudžbe ili osobnim preuzimanjem u poslovnici (po dogovoru)." },
   { num: "2.", title: "Rok isporuke", text: "Očekivani rok isporuke je 3-7 radnih dana od potvrde narudžbe. U slučaju kašnjenja, bit ćete obaviješteni e-mailom ili telefonom." },
-  { num: "3.", title: "Cijena dostave", text: "Cijena dostave ovisi o odabranoj metodi i izračunava se prilikom checkouta. Za narudžbe iznad definiranog iznosa dostava može biti besplatna." },
+  { num: "3.", title: "Cijena dostave", text: "Cijena dostave kurirskom službom iznosi 6,64 € (PDV uključen). Za narudžbe iznad 66,36 € dostava je besplatna. Osobno preuzimanje u poslovnici je besplatno (po dogovoru)." },
   { num: "4.", title: "Dostupne lokacije", text: "Dostava je dostupna na području Republike Hrvatske. Za dostavu u druge države kontaktirajte nas putem e-maila." },
 ];
 
