@@ -43,7 +43,7 @@ export default function AboutPage() {
         <AnimatedSection>
           <SectionTitle
             title="O nama"
-            subtitle="RO-TEA je specijalizirana trgovina tehničkom opremom, alatima, elektro materijalom, rasvjetom i rješenjima za pametnu kuću."
+            subtitle="RO-TEA je specijalizirana trgovina profesionalnim alatima, tehničkom opremom, brusnim materijalima i priborom za industriju, radionice i obrtnike."
           />
         </AnimatedSection>
 

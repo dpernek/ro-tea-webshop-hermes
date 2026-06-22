@@ -41,7 +41,7 @@ export function Hero() {
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
         <div className="max-w-3xl">
           <p className="hero-animate text-sm font-semibold tracking-[0.2em] text-[#0055a8] uppercase">
-            Tehnička oprema · Alati · Pametna kuća
+            Tehnička oprema · Alati · Brusni materijali
           </p>
 
           <h1 className="hero-animate mt-6 text-4xl leading-tight font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">

@@ -14,7 +14,7 @@ export function FeaturedCategories() {
         <AnimatedSection>
           <SectionTitle
             title="Istaknute kategorije"
-            subtitle="Pronađite opremu prema svojim potrebama — od alata do pametne kuće."
+            subtitle="Pronađite opremu prema svojim potrebama — od alata do brusnih materijala."
           />
         </AnimatedSection>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
