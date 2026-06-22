@@ -41,6 +41,9 @@ export function AdminSidebar() {
   const { data: session } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Hide on login page
+  if (pathname === "/admin/login") return null;
+
   return (
     <>
       {/* Mobile toggle */}
@@ -64,7 +67,7 @@ export function AdminSidebar() {
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-200 bg-white shadow-sm transition-transform duration-200 lg:relative lg:translate-x-0",
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
+          mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
         {/* Brand */}
@@ -79,25 +82,18 @@ export function AdminSidebar() {
         </div>
 
         {/* Navigation */}
-        <nav
-          className="flex-1 overflow-y-auto p-4"
-          onClick={() => setMobileOpen(false)}
-        >
+        <nav className="flex-1 overflow-y-auto p-4" onClick={() => setMobileOpen(false)}>
           <ul className="space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive =
-                pathname === item.href ||
-                (item.href !== "/admin" && pathname.startsWith(item.href));
+              const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
                     className={cn(
                       "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-[#0055a8]/10 text-[#0055a8]"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                      isActive ? "bg-[#0055a8]/10 text-[#0055a8]" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
                     )}
                   >
                     <Icon className="h-4 w-4 shrink-0" />
@@ -112,12 +108,8 @@ export function AdminSidebar() {
         {/* User + Logout */}
         <div className="border-t border-slate-200 p-4">
           <div className="mb-3 rounded-lg bg-slate-50 p-3">
-            <p className="truncate text-xs font-medium text-slate-800">
-              {session?.user?.name || "Admin"}
-            </p>
-            <p className="truncate text-xs text-slate-500">
-              {session?.user?.email}
-            </p>
+            <p className="truncate text-xs font-medium text-slate-800">{session?.user?.name || "Admin"}</p>
+            <p className="truncate text-xs text-slate-500">{session?.user?.email}</p>
           </div>
           <button
             type="button"
