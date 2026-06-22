@@ -12,7 +12,7 @@ interface ProductGalleryProps {
 export function ProductGallery({ images, alt }: ProductGalleryProps) {
   const [selected, setSelected] = useState(0);
   const displayImages =
-    images.length > 0 ? images : ["/images/placeholder.svg"];
+    images.length > 0 ? images : ["/images/category-placeholder.svg"];
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
