@@ -131,23 +131,6 @@ function CatalogContent() {
               </button>
             ))}
           </nav>
-
-          {/* Featured toggle */}
-          <button
-            onClick={() => setShowFeaturedOnly(!showFeaturedOnly)}
-            className={`mt-4 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-              showFeaturedOnly
-                ? "bg-[#0055a8]/10 text-[#0055a8]"
-                : "text-slate-600 hover:bg-slate-100"
-            }`}
-          >
-            <span
-              className={showFeaturedOnly ? "text-amber-500" : "text-slate-400"}
-            >
-              ★
-            </span>
-            Istaknuti proizvodi
-          </button>
         </div>
       </aside>
 
