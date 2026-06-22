@@ -47,9 +47,9 @@ const STOCK_STATUS: Record<
 };
 
 const FALLBACK_STOCK = {
-  label: "Nepoznato",
-  dot: "bg-slate-400",
-  badge: "bg-slate-50 text-slate-600",
+  label: "Dostupno",
+  dot: "bg-emerald-500",
+  badge: "bg-emerald-50 text-emerald-700",
 };
 
 // --- Helpers ---
