@@ -71,3 +71,8 @@ export type Coupon = Prisma.CouponModel;
  *
  */
 export type StoreSettings = Prisma.StoreSettingsModel;
+/**
+ * Model Catalog
+ *
+ */
+export type Catalog = Prisma.CatalogModel;

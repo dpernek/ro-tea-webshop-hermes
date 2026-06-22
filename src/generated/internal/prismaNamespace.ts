@@ -423,6 +423,7 @@ export const ModelName = {
   ShippingMethod: "ShippingMethod",
   Coupon: "Coupon",
   StoreSettings: "StoreSettings",
+  Catalog: "Catalog",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -455,7 +456,8 @@ export type TypeMap<
       | "payment"
       | "shippingMethod"
       | "coupon"
-      | "storeSettings";
+      | "storeSettings"
+      | "catalog";
     txIsolationLevel: TransactionIsolationLevel;
   };
   model: {
@@ -1295,6 +1297,82 @@ export type TypeMap<
         };
       };
     };
+    Catalog: {
+      payload: Prisma.$CatalogPayload<ExtArgs>;
+      fields: Prisma.CatalogFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.CatalogFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CatalogPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.CatalogFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CatalogPayload>;
+        };
+        findFirst: {
+          args: Prisma.CatalogFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CatalogPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.CatalogFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CatalogPayload>;
+        };
+        findMany: {
+          args: Prisma.CatalogFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CatalogPayload>[];
+        };
+        create: {
+          args: Prisma.CatalogCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CatalogPayload>;
+        };
+        createMany: {
+          args: Prisma.CatalogCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.CatalogCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CatalogPayload>[];
+        };
+        delete: {
+          args: Prisma.CatalogDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CatalogPayload>;
+        };
+        update: {
+          args: Prisma.CatalogUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CatalogPayload>;
+        };
+        deleteMany: {
+          args: Prisma.CatalogDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.CatalogUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.CatalogUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CatalogPayload>[];
+        };
+        upsert: {
+          args: Prisma.CatalogUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CatalogPayload>;
+        };
+        aggregate: {
+          args: Prisma.CatalogAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCatalog>;
+        };
+        groupBy: {
+          args: Prisma.CatalogGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.CatalogGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.CatalogCountArgs<ExtArgs>;
+          result:
+            | runtime.Types.Utils.Optional<Prisma.CatalogCountAggregateOutputType>
+            | number;
+        };
+      };
+    };
   };
 } & {
   other: {
@@ -1537,6 +1615,21 @@ export const StoreSettingsScalarFieldEnum = {
 export type StoreSettingsScalarFieldEnum =
   (typeof StoreSettingsScalarFieldEnum)[keyof typeof StoreSettingsScalarFieldEnum];
 
+export const CatalogScalarFieldEnum = {
+  id: "id",
+  name: "name",
+  brand: "brand",
+  description: "description",
+  fileUrl: "fileUrl",
+  active: "active",
+  sortOrder: "sortOrder",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+} as const;
+
+export type CatalogScalarFieldEnum =
+  (typeof CatalogScalarFieldEnum)[keyof typeof CatalogScalarFieldEnum];
+
 export const SortOrder = {
   asc: "asc",
   desc: "desc",
@@ -1724,6 +1817,7 @@ export type GlobalOmitConfig = {
   shippingMethod?: Prisma.ShippingMethodOmit;
   coupon?: Prisma.CouponOmit;
   storeSettings?: Prisma.StoreSettingsOmit;
+  catalog?: Prisma.CatalogOmit;
 };
 
 /* Types for Logging */

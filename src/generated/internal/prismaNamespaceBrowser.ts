@@ -65,6 +65,7 @@ export const ModelName = {
   ShippingMethod: "ShippingMethod",
   Coupon: "Coupon",
   StoreSettings: "StoreSettings",
+  Catalog: "Catalog",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -285,6 +286,21 @@ export const StoreSettingsScalarFieldEnum = {
 
 export type StoreSettingsScalarFieldEnum =
   (typeof StoreSettingsScalarFieldEnum)[keyof typeof StoreSettingsScalarFieldEnum];
+
+export const CatalogScalarFieldEnum = {
+  id: "id",
+  name: "name",
+  brand: "brand",
+  description: "description",
+  fileUrl: "fileUrl",
+  active: "active",
+  sortOrder: "sortOrder",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+} as const;
+
+export type CatalogScalarFieldEnum =
+  (typeof CatalogScalarFieldEnum)[keyof typeof CatalogScalarFieldEnum];
 
 export const SortOrder = {
   asc: "asc",

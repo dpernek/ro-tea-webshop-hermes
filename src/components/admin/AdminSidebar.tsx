@@ -13,6 +13,7 @@ import {
   CreditCard,
   Truck,
   TicketPercent,
+  FileText,
   Settings,
   LogOut,
   Menu,
@@ -31,6 +32,7 @@ const navItems = [
   { href: "/admin/payments", label: "Plaćanja", icon: CreditCard },
   { href: "/admin/shipping", label: "Dostava", icon: Truck },
   { href: "/admin/coupons", label: "Kuponi", icon: TicketPercent },
+  { href: "/admin/katalozi", label: "Katalozi", icon: FileText },
   { href: "/admin/settings", label: "Postavke", icon: Settings },
 ];
 

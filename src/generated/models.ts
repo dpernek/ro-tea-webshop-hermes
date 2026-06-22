@@ -18,4 +18,5 @@ export type * from "./models/Payment";
 export type * from "./models/ShippingMethod";
 export type * from "./models/Coupon";
 export type * from "./models/StoreSettings";
+export type * from "./models/Catalog";
 export type * from "./commonInputTypes";

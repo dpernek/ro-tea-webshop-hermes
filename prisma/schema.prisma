@@ -189,8 +189,20 @@ model StoreSettings {
   currency            String   @default("EUR")
   defaultTaxRate      Float    @default(25.0)
   freeShippingThreshold Float?
-  paymentMethods      String   @default("[]")    // JSON
-  shippingSettings    String   @default("{}")    // JSON
-  invoiceSettings     String   @default("{}")    // JSON
+  paymentMethods      String   @default("[]")
+  shippingSettings    String   @default("{}")
+  invoiceSettings     String   @default("{}")
   updatedAt           DateTime @updatedAt
+}
+
+model Catalog {
+  id          String   @id @default(cuid())
+  name        String
+  brand       String
+  description String   @default("")
+  fileUrl     String
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
