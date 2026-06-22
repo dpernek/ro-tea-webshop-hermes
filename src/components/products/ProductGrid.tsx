@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/Button";
 import type { Product, Category } from "@/types";
 import { ChevronDown, Grid3X3, X } from "lucide-react";
 
+const PAGE_SIZE = 24;
+
 interface ProductGridProps {
   products: Product[];
   categories?: Category[];
@@ -21,6 +23,7 @@ export function ProductGrid({ products, categories, currentCategory }: ProductGr
   const initialCategory = currentCategory?.slug ?? null;
   const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory);
   const [sortBy, setSortBy] = useState("name-asc");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   // filtering
@@ -44,23 +47,30 @@ export function ProductGrid({ products, categories, currentCategory }: ProductGr
     });
   }, [filtered, sortBy]);
 
-  // category counts
-  const categoryCounts = useMemo(() => {
+  const visibleProducts = sorted.slice(0, visibleCount);
+  const hasMore = visibleCount < sorted.length;
+  const remaining = sorted.length - visibleCount;
+
+  const handleCategorySelect = (slug: string | null) => {
+    setSelectedCategory(slug);
+    setVisibleCount(PAGE_SIZE);
+    setMobileFilterOpen(false);
+  };
+
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+    setVisibleCount(PAGE_SIZE);
+  };
+
+  const loadMore = () => setVisibleCount((prev) => prev + PAGE_SIZE);
+
+  const displayCount = (cat: Category): number => {
     const counts: Record<string, number> = {};
     for (const p of products) {
       const key = getCategoryKey(p as Product & Record<string, unknown>);
       if (key) counts[key] = (counts[key] || 0) + 1;
     }
-    return counts;
-  }, [products]);
-
-  const handleCategorySelect = (slug: string | null) => {
-    setSelectedCategory(slug);
-    setMobileFilterOpen(false);
-  };
-
-  const displayCount = (cat: Category): number => {
-    const live = categoryCounts[cat.slug] ?? categoryCounts[cat.id];
+    const live = counts[cat.slug] ?? counts[cat.id];
     return live ?? cat.count;
   };
 
@@ -108,7 +118,7 @@ export function ProductGrid({ products, categories, currentCategory }: ProductGr
                 <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${mobileFilterOpen ? "rotate-180" : ""}`} />
               </Button>
             )}
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
+            <select value={sortBy} onChange={(e) => handleSortChange(e.target.value)}
               className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-[#0055a8] focus:outline-none focus:ring-1 focus:ring-[#0055a8]">
               <option value="name-asc">Naziv: A-Z</option>
               <option value="name-desc">Naziv: Z-A</option>
@@ -142,13 +152,22 @@ export function ProductGrid({ products, categories, currentCategory }: ProductGr
           </div>
         )}
 
-        {/* Products */}
-        {sorted.length > 0 ? (
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {sorted.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+        {/* Products grid */}
+        {visibleProducts.length > 0 ? (
+          <>
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {visibleProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+            {hasMore && (
+              <div className="mt-8 text-center">
+                <Button variant="outline" size="lg" onClick={loadMore}>
+                  Učitaj dodatnih {Math.min(PAGE_SIZE, remaining)} ({remaining} preostalo)
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
           <EmptyState title="Nema proizvoda" description="U ovoj kategoriji trenutno nema proizvoda."
             action={<Button asChild variant="outline"><a href="/proizvodi">Svi proizvodi</a></Button>} />
