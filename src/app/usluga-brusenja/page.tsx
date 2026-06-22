@@ -49,9 +49,9 @@ export default function UslugaBrusenjaPage() {
               </p>
             </div>
             <div className="rounded-2xl bg-slate-50 p-8">
-              <h3 className="text-xl font-semibold text-slate-900">
+              <h2 className="text-xl font-semibold text-slate-900">
                 Što nudimo
-              </h3>
+              </h2>
               <ul className="mt-6 space-y-4">
                 {[
                   "Brušenje svrdla svih dimenzija i profila",
