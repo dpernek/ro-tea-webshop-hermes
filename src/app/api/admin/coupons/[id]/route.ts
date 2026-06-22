@@ -1,0 +1,4 @@
+import { NextRequest, NextResponse } from "next/server"; import { auth } from "@/lib/auth"; import { db } from "@/lib/db";
+export const dynamic = "force-dynamic";
+export async function PATCH(req:NextRequest,{params}:{params:Promise<{id:string}>}){const s=await auth();if(!s?.user)return NextResponse.json({error:"Unauthorized"},{status:401});const{id}=await params;const b=await req.json();if(b.startsAt)b.startsAt=new Date(b.startsAt);if(b.endsAt)b.endsAt=new Date(b.endsAt);await db.coupon.update({where:{id},data:b});return NextResponse.json({ok:true});}
+export async function DELETE(_:NextRequest,{params}:{params:Promise<{id:string}>}){const s=await auth();if(!s?.user)return NextResponse.json({error:"Unauthorized"},{status:401});const{id}=await params;await db.coupon.delete({where:{id}});return NextResponse.json({ok:true});}

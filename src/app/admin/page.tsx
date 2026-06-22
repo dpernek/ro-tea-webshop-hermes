@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { db } from "@/lib/db";
+import { Card, CardContent } from "@/components/ui/Card";
 import { ShoppingCart, ShoppingBag, Users, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
@@ -8,12 +9,23 @@ export default async function AdminDashboardPage() {
   const session = await auth();
   if (!session?.user) redirect("/admin/login");
 
-  // Stats - placeholder until DB connection works
+  let productCount = 0, orderCount = 0, customerCount = 0, revenue = 0;
+
+  try {
+    [productCount, orderCount, customerCount] = await Promise.all([
+      db.product.count({ where: { status: "ACTIVE" } }),
+      db.order.count(),
+      db.customer.count(),
+    ]);
+    const rev = await db.order.aggregate({ _sum: { total: true }, where: { status: { notIn: ["CANCELLED", "REFUNDED"] } } });
+    revenue = rev._sum.total || 0;
+  } catch {}
+
   const stats = [
-    { title: "Ukupna prodaja", value: "0,00 €", icon: TrendingUp, color: "text-green-600 bg-green-100" },
-    { title: "Narudžbe", value: 0, icon: ShoppingCart, color: "text-blue-600 bg-blue-100" },
-    { title: "Proizvodi", value: 848, icon: ShoppingBag, color: "text-orange-600 bg-orange-100" },
-    { title: "Kupci", value: 0, icon: Users, color: "text-purple-600 bg-purple-100" },
+    { title: "Ukupna prodaja", value: `${revenue.toFixed(2)} €`, icon: TrendingUp, color: "text-green-600 bg-green-100" },
+    { title: "Narudžbe", value: orderCount, icon: ShoppingCart, color: "text-blue-600 bg-blue-100" },
+    { title: "Proizvodi", value: productCount, icon: ShoppingBag, color: "text-orange-600 bg-orange-100" },
+    { title: "Kupci", value: customerCount, icon: Users, color: "text-purple-600 bg-purple-100" },
   ];
 
   return (
@@ -21,18 +33,13 @@ export default async function AdminDashboardPage() {
       <h1 className="mb-8 text-2xl font-bold text-slate-900">Dashboard</h1>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
+        {stats.map(s => {
+          const Icon = s.icon;
           return (
-            <Card key={stat.title}>
+            <Card key={s.title}>
               <CardContent className="flex items-center gap-4 p-6">
-                <div className={`rounded-xl p-3 ${stat.color}`}>
-                  <Icon className="h-6 w-6" />
-                </div>
-                <div>
-                  <p className="text-sm text-slate-500">{stat.title}</p>
-                  <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
-                </div>
+                <div className={`rounded-xl p-3 ${s.color}`}><Icon className="h-6 w-6" /></div>
+                <div><p className="text-sm text-slate-500">{s.title}</p><p className="text-2xl font-bold text-slate-900">{s.value}</p></div>
               </CardContent>
             </Card>
           );
@@ -40,21 +47,19 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="mt-8">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900">Brzi linkovi</h2>
-        </div>
+        <h2 className="mb-4 text-lg font-semibold text-slate-900">Brzi linkovi</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            { href: "/admin/products/new", label: "Novi proizvod", desc: "Dodaj proizvod u katalog" },
-            { href: "/admin/orders", label: "Narudžbe", desc: "Pregledaj sve narudžbe" },
-            { href: "/admin/products", label: "Proizvodi", desc: "Upravljaj proizvodima" },
-            { href: "/admin/categories", label: "Kategorije", desc: "Uredi kategorije" },
-            { href: "/admin/settings", label: "Postavke", desc: "Postavke webshopa" },
+            { href: "/admin/products", label: "Proizvodi", desc: `${productCount} proizvoda u katalogu` },
+            { href: "/admin/orders", label: "Narudžbe", desc: `${orderCount} narudžbi` },
+            { href: "/admin/categories", label: "Kategorije", desc: "Upravljaj kategorijama" },
+            { href: "/admin/brands", label: "Brendovi", desc: "Upravljaj brendovima" },
             { href: "/admin/katalozi", label: "Katalozi", desc: "Upravljaj katalozima" },
-          ].map((link) => (
-            <Link key={link.href} href={link.href} className="rounded-xl border border-slate-200 p-5 hover:border-[#0055a8] hover:shadow-sm transition-all">
-              <h3 className="font-semibold text-slate-900">{link.label}</h3>
-              <p className="mt-1 text-sm text-slate-500">{link.desc}</p>
+            { href: "/admin/settings", label: "Postavke", desc: "Postavke webshopa" },
+          ].map(l => (
+            <Link key={l.href} href={l.href} className="rounded-xl border border-slate-200 p-5 hover:border-[#0055a8] hover:shadow-sm transition-all">
+              <h3 className="font-semibold text-slate-900">{l.label}</h3>
+              <p className="mt-1 text-sm text-slate-500">{l.desc}</p>
             </Link>
           ))}
         </div>
