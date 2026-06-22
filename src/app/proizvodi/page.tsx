@@ -3,29 +3,19 @@
 import { useState, useEffect, useCallback } from "react";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { Button } from "@/components/ui/Button";
 
 export default function CatalogPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
 
-  const loadProducts = useCallback(async (pageNum: number, append = false) => {
-    const params = new URLSearchParams({ page: String(pageNum), limit: String(24) });
+  const loadProducts = useCallback(async () => {
+    const params = new URLSearchParams({ page: "1", limit: "100" });
     const res = await fetch(`/api/catalog/products?${params}`);
     const data = await res.json();
-    if (append) {
-      setProducts(prev => [...prev, ...data.products]);
-    } else {
-      setProducts(data.products);
-    }
+    setProducts(data.products);
     setTotal(data.total);
-    setHasMore(pageNum < data.pages);
-    setPage(pageNum);
   }, []);
 
   useEffect(() => {
@@ -38,14 +28,8 @@ export default function CatalogPage() {
 
   useEffect(() => {
     setLoading(true);
-    loadProducts(1).finally(() => setLoading(false));
+    loadProducts().finally(() => setLoading(false));
   }, [loadProducts]);
-
-  const loadMore = async () => {
-    setLoadingMore(true);
-    await loadProducts(page + 1, true);
-    setLoadingMore(false);
-  };
 
   return (
     <div className="bg-white">
@@ -73,16 +57,7 @@ export default function CatalogPage() {
             ))}
           </div>
         ) : (
-          <>
-            <ProductGrid products={products} allCategories={categories} />
-            {hasMore && (
-              <div className="mt-8 text-center">
-                <Button variant="outline" size="lg" onClick={loadMore} disabled={loadingMore}>
-                  {loadingMore ? "Učitavanje..." : `Učitaj još (${total - products.length} proizvoda)`}
-                </Button>
-              </div>
-            )}
-          </>
+          <ProductGrid products={products} categories={categories} />
         )}
       </div>
     </div>
