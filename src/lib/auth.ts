@@ -17,43 +17,33 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const email = String(credentials.email).toLowerCase().trim();
         const password = String(credentials.password);
 
-        const user = await db.user.findUnique({ where: { email } });
-        if (!user) return null;
+        try {
+          const user = await db.user.findUnique({ where: { email } });
+          if (!user) return null;
 
-        const validPassword = await bcrypt.compare(password, user.passwordHash);
-        if (!validPassword) return null;
+          const validPassword = await bcrypt.compare(password, user.passwordHash);
+          if (!validPassword) return null;
 
-        // Only ADMIN and STAFF can access admin
-        if (user.role !== "ADMIN" && user.role !== "STAFF") return null;
+          if (user.role !== "ADMIN" && user.role !== "STAFF") return null;
 
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        };
+          return { id: user.id, name: user.name, email: user.email, role: user.role };
+        } catch {
+          return null;
+        }
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token.role = (user as { role?: string }).role;
-      }
+      if (user) token.role = (user as any).role;
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        (session.user as { role?: string }).role = token.role as string;
-      }
+      if (session.user) (session.user as any).role = (token as any).role;
       return session;
     },
   },
-  pages: {
-    signIn: "/admin/login",
-  },
-  session: {
-    strategy: "jwt",
-  },
-  secret: process.env.NEXTAUTH_SECRET,
+  pages: { signIn: "/admin/login" },
+  session: { strategy: "jwt" },
+  trustHost: true,
 });
