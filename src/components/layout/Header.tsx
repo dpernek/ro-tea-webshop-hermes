@@ -13,6 +13,7 @@ const navItems = [
   { href: "/", label: "Početna" },
   { href: "/proizvodi", label: "Proizvodi" },
   { href: "/o-nama", label: "O nama" },
+  { href: "/katalozi", label: "Katalozi" },
   { href: "/kontakt", label: "Kontakt" },
 ];
 
