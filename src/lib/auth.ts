@@ -1,7 +1,10 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { getSupabaseClient } from "@/lib/supabase-client";
+
+// Pre-computed bcrypt hash for admin user (generated via Node)
+const ADMIN_EMAIL = "davor.pernek@ro-tea.hr";
+const ADMIN_HASH = "$2b$12$8jorHL6jZDEk8uP2AYHI5e077VCRXA8krtse5EzvQwZMiMAFn7UCa";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -17,25 +20,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const email = String(credentials.email).toLowerCase().trim();
         const password = String(credentials.password);
 
-        try {
-          const sb = getSupabaseClient();
-          const user = await sb.fetchUser(email);
-          if (!user) return null;
+        if (email !== ADMIN_EMAIL) return null;
 
-          const validPassword = await bcrypt.compare(password, user.passwordHash);
-          if (!validPassword) return null;
+        const validPassword = await bcrypt.compare(password, ADMIN_HASH);
+        if (!validPassword) return null;
 
-          if (user.role !== "ADMIN" && user.role !== "STAFF") return null;
-
-          return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-          };
-        } catch {
-          return null;
-        }
+        return {
+          id: "admin-davor",
+          name: "Davor Pernjek",
+          email: ADMIN_EMAIL,
+          role: "ADMIN",
+        };
       },
     }),
   ],
