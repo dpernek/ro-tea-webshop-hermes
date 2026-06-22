@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { useHeroAnimation } from "@/hooks/useHeroAnimation";
 import { ArrowRight, ShieldCheck, Truck, Wrench } from "lucide-react";
@@ -14,70 +13,48 @@ const benefits = [
   { icon: Wrench, label: "Stručna podrška" },
 ];
 
-interface HeroProps {
-  /** URL pozadinske slike. Ako nije postavljeno, koristi se gradient. */
-  backgroundImage?: string;
-}
-
-export function Hero({ backgroundImage }: HeroProps) {
+export function Hero() {
   const containerRef = useRef<HTMLElement>(null);
   useHeroAnimation(containerRef, { delay: 0.15 });
 
   return (
     <section
       ref={containerRef}
-      className="relative flex min-h-[85vh] items-center overflow-hidden bg-slate-900"
+      className="relative flex min-h-[80vh] items-center overflow-hidden bg-slate-950"
     >
-      {/* Background image or gradient overlay */}
-      {backgroundImage ? (
-        <>
-          <div className="absolute inset-0 z-0">
-            <Image
-              src={backgroundImage}
-              alt="RO-TEA hero"
-              fill
-              className="object-cover"
-              priority
-              sizes="100vw"
-            />
-          </div>
-          <div className="absolute inset-0 z-10 bg-slate-900/60" />
-          <div className="absolute inset-0 z-10 bg-gradient-to-r from-slate-900/80 via-slate-900/40 to-transparent" />
-        </>
-      ) : (
-        <>
-          {/* Animated gradient background */}
-          <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
-          <div className="from-brand/20 absolute -top-40 -right-40 z-10 h-96 w-96 rounded-full bg-gradient-to-br to-blue-500/5 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 z-10 h-80 w-80 rounded-full bg-blue-800/10 blur-3xl" />
-          {/* Subtle pattern */}
-          <div
-            className="absolute inset-0 z-10 opacity-[0.03]"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle, #ffffff 1px, transparent 1px)",
-              backgroundSize: "40px 40px",
-            }}
-          />
-        </>
-      )}
+      {/* Background effects */}
+      <div className="absolute inset-0 z-0">
+        {/* Gradient base */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
+
+        {/* Blue glow orbs */}
+        <div className="from-brand/40 absolute -top-32 -right-32 h-[500px] w-[500px] rounded-full bg-gradient-to-br to-blue-600/10 blur-[120px]" />
+        <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-blue-800/20 blur-[100px]" />
+
+        {/* Grid pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+            backgroundSize: "80px 80px",
+          }}
+        />
+
+        {/* Subtle diagonal lines */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 11px)",
+          }}
+        />
+      </div>
 
       {/* Content */}
       <div className="relative z-20 mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-        <div className="max-w-2xl">
-          {/* Logo */}
-          <div className="hero-animate mb-8">
-            <Image
-              src="/images/rotea-logo.webp"
-              alt="RO-TEA"
-              width={260}
-              height={40}
-              className="h-10 w-auto brightness-0 invert"
-              priority
-            />
-          </div>
-
-          <p className="hero-animate text-brand/80 text-sm font-semibold tracking-wide uppercase">
+        <div className="max-w-3xl">
+          <p className="hero-animate text-sm font-semibold tracking-[0.2em] text-[#0055a8] uppercase">
             Tehnička oprema · Alati · Pametna kuća
           </p>
 
@@ -85,7 +62,7 @@ export function Hero({ backgroundImage }: HeroProps) {
             {site.tagline}
           </h1>
 
-          <p className="hero-animate mt-6 text-lg leading-relaxed text-slate-300">
+          <p className="hero-animate mt-6 max-w-xl text-lg leading-relaxed text-slate-300">
             Široka ponuda provjerenih proizvoda za profesionalce i domaćinstva.
             Brza dostava, detaljni opisi i jednostavna kupnja — sve na jednom
             mjestu.
@@ -102,7 +79,7 @@ export function Hero({ backgroundImage }: HeroProps) {
               asChild
               variant="outline"
               size="lg"
-              className="border-slate-400 text-slate-200 hover:border-white hover:bg-white/10 hover:text-white"
+              className="border-slate-500 text-slate-300 hover:border-white hover:bg-white/10 hover:text-white"
             >
               <Link href="/kontakt">Kontaktiraj nas</Link>
             </Button>
@@ -112,9 +89,9 @@ export function Hero({ backgroundImage }: HeroProps) {
             {benefits.map((benefit) => (
               <div
                 key={benefit.label}
-                className="flex items-center gap-3 text-sm font-medium text-slate-300"
+                className="flex items-center gap-3 text-sm font-medium text-slate-400"
               >
-                <benefit.icon className="text-brand/80 h-5 w-5" />
+                <benefit.icon className="h-5 w-5 text-[#0055a8]" />
                 {benefit.label}
               </div>
             ))}
