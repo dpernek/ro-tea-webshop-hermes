@@ -16,6 +16,8 @@ const footerLinks = {
 };
 
 export function Footer() {
+  const phoneHref = `tel:${site.contact.phoneDisplay.replace(/\s/g, "")}`;
+
   return (
     <footer className="mt-auto border-t border-slate-100 bg-slate-50">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -72,10 +74,7 @@ export function Footer() {
             <ul className="mt-4 space-y-3">
               <li className="flex items-start gap-3 text-sm text-slate-600">
                 <Phone className="text-brand mt-0.5 h-4 w-4 shrink-0" />
-                <a
-                  href={`tel:${site.contact.phoneHref}`}
-                  className="hover:text-brand"
-                >
+                <a href={phoneHref} className="hover:text-brand">
                   {site.contact.phoneDisplay}
                 </a>
               </li>

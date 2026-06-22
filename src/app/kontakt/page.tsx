@@ -18,6 +18,8 @@ export default function ContactPage() {
     message: "",
   });
 
+  const phoneHref = `tel:${site.contact.phoneDisplay.replace(/\s/g, "")}`;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
@@ -116,7 +118,7 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-semibold text-slate-900">Telefon</h3>
                   <a
-                    href={`tel:${site.contact.phoneHref}`}
+                    href={phoneHref}
                     className="hover:text-brand mt-1 block text-slate-600"
                   >
                     {site.contact.phoneDisplay}

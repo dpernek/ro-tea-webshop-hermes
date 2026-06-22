@@ -25,6 +25,8 @@ export function Header() {
     setMounted(true);
   }, []);
 
+  const phoneHref = `tel:${site.contact.phoneDisplay.replace(/\s/g, "")}`;
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-100 bg-white/95 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -51,7 +53,7 @@ export function Header() {
 
         <div className="flex items-center gap-3">
           <a
-            href={`tel:${site.contact.phoneHref}`}
+            href={phoneHref}
             className="hover:text-brand hidden items-center gap-1.5 text-sm font-medium text-slate-700 lg:flex"
           >
             <Phone className="h-4 w-4" />
@@ -103,7 +105,7 @@ export function Header() {
               </Link>
             ))}
             <a
-              href={`tel:${site.contact.phoneHref}`}
+              href={phoneHref}
               className="mt-2 flex items-center gap-2 rounded-lg px-3 py-2.5 text-base font-medium text-slate-700 hover:bg-slate-50"
             >
               <Phone className="h-4 w-4" />

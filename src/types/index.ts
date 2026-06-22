@@ -37,7 +37,6 @@ export interface SiteConfig {
   contact: {
     email: string;
     phoneDisplay: string;
-    phoneHref: string;
     address: string;
     company: string;
     oib: string;
