@@ -16,7 +16,7 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <div className="relative aspect-square overflow-hidden rounded-2xl bg-slate-50">
+      <div className="relative aspect-square overflow-hidden rounded-2xl bg-slate-200">
         <Image
           src={displayImages[selected]}
           alt={alt}

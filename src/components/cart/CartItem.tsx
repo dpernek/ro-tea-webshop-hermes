@@ -26,7 +26,7 @@ export function CartItem({ item }: CartItemProps) {
     <div className="flex gap-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:gap-6 sm:p-6">
       <Link
         href={`/proizvodi/${item.product.slug}`}
-        className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-xl bg-slate-50 sm:w-32"
+        className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-xl bg-slate-200 sm:w-32"
       >
         <Image
           src={item.product.image}

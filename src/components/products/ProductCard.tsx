@@ -29,7 +29,7 @@ export function ProductCard({ product }: ProductCardProps) {
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:shadow-md">
       <Link
         href={`/proizvodi/${product.slug}`}
-        className="relative aspect-[4/3] overflow-hidden bg-slate-50"
+        className="relative aspect-[4/3] overflow-hidden bg-slate-200"
       >
         <Image
           src={product.image}
