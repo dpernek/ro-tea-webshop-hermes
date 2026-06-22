@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
+import { getSupabaseClient } from "@/lib/supabase-client";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -18,7 +18,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const password = String(credentials.password);
 
         try {
-          const user = await db.user.findUnique({ where: { email } });
+          const sb = getSupabaseClient();
+          const user = await sb.fetchUser(email);
           if (!user) return null;
 
           const validPassword = await bcrypt.compare(password, user.passwordHash);
@@ -26,7 +27,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           if (user.role !== "ADMIN" && user.role !== "STAFF") return null;
 
-          return { id: user.id, name: user.name, email: user.email, role: user.role };
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          };
         } catch {
           return null;
         }
