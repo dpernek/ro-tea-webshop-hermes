@@ -4,31 +4,28 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-function createPrismaClient() {
-  const url = process.env.DATABASE_URL || "";
-
-  if (url.startsWith("postgresql://") || url.startsWith("postgres://")) {
-    // PostgreSQL via Supabase
-    const { PrismaPg } = require("@prisma/adapter-pg") as {
-      PrismaPg: new (url: string) => unknown;
-    };
+function createPrismaClient(): PrismaClient {
+  if (process.env.DATABASE_URL?.startsWith("postgres")) {
+    const { PrismaPg } = require("@prisma/adapter-pg") as any;
     return new PrismaClient({
-      adapter: new PrismaPg({ connectionString: url }),
+      adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
     });
   }
-
-  // SQLite (local dev)
-  const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3") as {
-    PrismaBetterSqlite3: new (config: { url: string }) => unknown;
-  };
-  const dbPath = url.replace(/^file:/, "") || "./prisma/dev.db";
+  const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3");
   return new PrismaClient({
-    adapter: new PrismaBetterSqlite3({ url: dbPath }),
+    adapter: new PrismaBetterSqlite3({ url: process.env.DATABASE_URL || "./prisma/dev.db" }),
   });
 }
 
-export const db = globalForPrisma.prisma ?? createPrismaClient();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = db;
+function getDb(): PrismaClient {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = createPrismaClient();
+  }
+  return globalForPrisma.prisma;
 }
+
+export const db = new Proxy({} as PrismaClient, {
+  get(_, prop: string) {
+    return (getDb() as any)[prop];
+  },
+});
