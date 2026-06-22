@@ -13,9 +13,9 @@ import Link from "next/link";
 
 export default function CheckoutPage() {
   const items = useCartStore((state) => state.items);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  if (items.length === 0 && !success) {
+  if (items.length === 0 && success === null) {
     return (
       <div className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -38,7 +38,7 @@ export default function CheckoutPage() {
     );
   }
 
-  if (success) {
+  if (success !== null) {
     return (
       <div className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
@@ -50,6 +50,9 @@ export default function CheckoutPage() {
               <h1 className="mt-6 text-2xl font-semibold text-slate-900 sm:text-3xl">
                 Narudžba zaprimljena
               </h1>
+              <p className="mt-4 text-lg font-medium text-slate-800">
+                Broj narudžbe: {success}
+              </p>
               <p className="mt-4 text-slate-600">
                 Hvala vam na povjerenju. Kontaktirat ćemo vas u najkraćem
                 mogućem roku s potvrdom narudžbe i detaljima dostave.
@@ -76,7 +79,9 @@ export default function CheckoutPage() {
 
         <div className="grid gap-8 lg:grid-cols-3">
           <AnimatedSection delay={0.1} className="lg:col-span-2">
-            <CheckoutForm onSuccess={() => setSuccess(true)} />
+            <CheckoutForm
+              onSuccess={(orderNumber) => setSuccess(orderNumber)}
+            />
           </AnimatedSection>
           <AnimatedSection delay={0.2}>
             <CartSummary showCheckoutButton={false} />

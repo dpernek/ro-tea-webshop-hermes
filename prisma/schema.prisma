@@ -1,0 +1,196 @@
+
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("ADMIN")  // ADMIN, STAFF, CUSTOMER
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Product {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  name             String
+  sku              String?
+  brandId          String?
+  brand            Brand?            @relation(fields: [brandId], references: [id])
+  categoryId       String?
+  category         Category?         @relation(fields: [categoryId], references: [id])
+  price            Float
+  regularPrice     Float?
+  salePrice        Float?
+  taxRate          Float?            @default(25.0)
+  image            String
+  gallery          String            @default("[]")
+  shortDescription String            @default("")
+  description      String            @default("")
+  specifications   String            @default("{}")
+  stock            Int?
+  stockStatus      String            @default("UNKNOWN")  // INSTOCK, OUTOFSTOCK, ONBACKORDER, UNKNOWN
+  status           String            @default("ACTIVE")   // DRAFT, ACTIVE, ARCHIVED
+  featured         Boolean           @default(false)
+  badge            String?
+  type             String            @default("SIMPLE")   // SIMPLE, VARIABLE, UNKNOWN
+  weight           Float?
+  width            Float?
+  height           Float?
+  depth            Float?
+  metaTitle        String?
+  metaDescription  String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  orderItems       OrderItem[]
+  attributes       String            @default("[]")       // JSON: ProductAttribute[]
+  priceRangeMin    Float?
+  priceRangeMax    Float?
+  categories       String            @default("[]")       // JSON: {slug, name}[]
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String    @default("")
+  parentId    String?
+  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  image       String?
+  sortOrder   Int       @default(0)
+  status      String    @default("ACTIVE")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+}
+
+model Brand {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String    @default("")
+  image       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+}
+
+model Customer {
+  id              String   @id @default(cuid())
+  name            String
+  email           String?
+  phone           String?
+  billingAddress  String?
+  shippingAddress String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  orders          Order[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  customerId      String?
+  customer        Customer?   @relation(fields: [customerId], references: [id])
+  customerEmail   String
+  customerName    String
+  customerPhone   String
+  billingAddress  String?
+  shippingAddress String?
+  subtotal        Float
+  shippingTotal   Float       @default(0)
+  taxTotal        Float       @default(0)
+  discountTotal   Float       @default(0)
+  total           Float
+  currency        String      @default("EUR")
+  status          String      @default("PENDING")     // PENDING, CONFIRMED, PROCESSING, SHIPPED, COMPLETED, CANCELLED, REFUNDED
+  paymentStatus   String      @default("UNPAID")      // UNPAID, PENDING, PAID, FAILED, REFUNDED
+  paymentMethod   String      @default("bank_transfer")
+  shippingMethod  String?
+  note            String?
+  adminNote       String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  items           OrderItem[]
+  payments        Payment[]
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  order       Order   @relation(fields: [orderId], references: [id])
+  productId   String
+  product     Product @relation(fields: [productId], references: [id])
+  productName String
+  sku         String?
+  quantity    Int
+  unitPrice   Float
+  total       Float
+  attributes  String? // JSON: selectedAttributes
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  orderId       String
+  order         Order    @relation(fields: [orderId], references: [id])
+  provider      String   @default("manual")   // manual, stripe, monri, corvus
+  method        String   @default("bank_transfer")
+  status        String   @default("PENDING")
+  transactionId String?
+  amount        Float
+  currency      String   @default("EUR")
+  rawResponse   String?                       // JSON
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ShippingMethod {
+  id              String   @id @default(cuid())
+  name            String
+  description     String   @default("")
+  price           Float    @default(0)
+  freeAboveAmount Float?
+  active          Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Coupon {
+  id                String    @id @default(cuid())
+  code              String    @unique
+  type              String    @default("PERCENTAGE")  // PERCENTAGE, FIXED
+  value             Float
+  active            Boolean   @default(true)
+  startsAt          DateTime?
+  endsAt            DateTime?
+  usageLimit        Int?
+  usedCount         Int       @default(0)
+  minimumOrderAmount Float?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model StoreSettings {
+  id                  String   @id @default(cuid())
+  storeName           String   @default("RO-TEA")
+  storeEmail          String   @default("info@ro-tea.hr")
+  storePhone          String   @default("+385 1 2345 678")
+  storeAddress        String   @default("")
+  currency            String   @default("EUR")
+  defaultTaxRate      Float    @default(25.0)
+  freeShippingThreshold Float?
+  paymentMethods      String   @default("[]")    // JSON
+  shippingSettings    String   @default("{}")    // JSON
+  invoiceSettings     String   @default("{}")    // JSON
+  updatedAt           DateTime @updatedAt
+}
