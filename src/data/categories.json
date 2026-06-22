@@ -4,7 +4,7 @@
     "slug": "festa-alati",
     "name": "Festa",
     "description": "",
-    "image": "/images/products/alat-za-pljevljenje.webp",
+    "image": "/images/categories/elektricni-alat.png",
     "count": 661
   },
   {
@@ -12,7 +12,7 @@
     "slug": "gradevinski-alati",
     "name": "Građevinski alati",
     "description": "",
-    "image": "/images/category-placeholder.svg",
+    "image": "/images/categories/elektricni-alat.png",
     "count": 305
   },
   {
@@ -20,7 +20,7 @@
     "slug": "alati-za-radionice",
     "name": "Alati za radionice",
     "description": "",
-    "image": "/images/products/adapter-festa.webp",
+    "image": "/images/categories/elektricni-alat.png",
     "count": 304
   },
   {
@@ -28,7 +28,7 @@
     "slug": "vrtni-alati",
     "name": "Vrtni alati",
     "description": "",
-    "image": "/images/products/Cilindar-30x30_1.png",
+    "image": "/images/categories/vrtni-alati.png",
     "count": 191
   },
   {
@@ -36,7 +36,7 @@
     "slug": "pferd-alati",
     "name": "Pferd",
     "description": "",
-    "image": "/images/products/e-115-7-psf-steelox-rgb.jpg",
+    "image": "/images/categories/brusne-ploce.png",
     "count": 129
   },
   {
@@ -44,7 +44,7 @@
     "slug": "elektricni-alat-festa",
     "name": "Električni alat",
     "description": "",
-    "image": "/images/products/aku115.webp",
+    "image": "/images/categories/elektricni-alat.png",
     "count": 62
   },
   {
@@ -52,7 +52,7 @@
     "slug": "metabo-alati",
     "name": "Metabo",
     "description": "",
-    "image": "/images/category-placeholder.svg",
+    "image": "/images/categories/elektricni-alat.png",
     "count": 54
   },
   {
@@ -60,7 +60,7 @@
     "slug": "turpije",
     "name": "Turpije",
     "description": "",
-    "image": "/images/category-placeholder.svg",
+    "image": "/images/categories/brusne-ploce.png",
     "count": 41
   },
   {
@@ -68,7 +68,7 @@
     "slug": "roto-glodala",
     "name": "Roto glodala",
     "description": "",
-    "image": "/images/category-placeholder.svg",
+    "image": "/images/categories/svrdla.png",
     "count": 35
   },
   {
@@ -76,7 +76,7 @@
     "slug": "elektricni-alat",
     "name": "Električni Alat",
     "description": "",
-    "image": "/images/products/STEB65.webp",
+    "image": "/images/categories/elektricni-alat.png",
     "count": 33
   },
   {
@@ -84,7 +84,7 @@
     "slug": "rezne_brusne_diskovi",
     "name": "Rezne, brusne ploče i diskovi",
     "description": "",
-    "image": "/images/category-placeholder.svg",
+    "image": "/images/categories/brusne-ploce.png",
     "count": 24
   },
   {
@@ -92,7 +92,7 @@
     "slug": "baterijski-alat",
     "name": "Baterijski Alat",
     "description": "",
-    "image": "/images/products/baterija-2ah.webp",
+    "image": "/images/categories/elektricni-alat.png",
     "count": 22
   },
   {
@@ -100,7 +100,7 @@
     "slug": "brusilice",
     "name": "Brusilice",
     "description": "",
-    "image": "/images/products/SXE3125.webp",
+    "image": "/images/categories/brusne-ploce.png",
     "count": 22
   },
   {
@@ -108,7 +108,7 @@
     "slug": "pferd_pogonski_strojevi",
     "name": "PFERD pogonski strojevi",
     "description": "",
-    "image": "/images/category-placeholder.svg",
+    "image": "/images/categories/elektricni-alat.png",
     "count": 19
   },
   {
@@ -116,7 +116,7 @@
     "slug": "brusnje_poliranje",
     "name": "Brušenje i poliranje",
     "description": "",
-    "image": "/images/products/cc-fs-115-a-50-kombi-rgb.webp",
+    "image": "/images/categories/brusne-ploce.png",
     "count": 14
   },
   {
@@ -124,7 +124,7 @@
     "slug": "mjerni-uredaji",
     "name": "Mjerni uređaji",
     "description": "",
-    "image": "/images/category-placeholder.svg",
+    "image": "/images/categories/mjerni-uredaji.png",
     "count": 13
   },
   {
@@ -132,7 +132,7 @@
     "slug": "busilice",
     "name": "Bušilice",
     "description": "",
-    "image": "/images/products/BEV1300.webp",
+    "image": "/images/categories/svrdla.png",
     "count": 5
   },
   {
@@ -140,7 +140,7 @@
     "slug": "svrdla",
     "name": "Svrdla",
     "description": "",
-    "image": "/images/category-placeholder.svg",
+    "image": "/images/categories/svrdla.png",
     "count": 5
   },
   {
@@ -148,7 +148,7 @@
     "slug": "zastitna-oprema-delta-plus",
     "name": "Zaštitna Oprema",
     "description": "",
-    "image": "/images/products/VE630.png",
+    "image": "/images/categories/zastitna-oprema.png",
     "count": 3
   },
   {
@@ -156,7 +156,7 @@
     "slug": "cetke",
     "name": "Četke",
     "description": "",
-    "image": "/images/products/hbg-10-inox-0-30-rgb.webp",
+    "image": "/images/categories/cetke.png",
     "count": 3
   },
   {
@@ -164,7 +164,7 @@
     "slug": "pribor",
     "name": "Pribor",
     "description": "",
-    "image": "/images/category-placeholder.svg",
+    "image": "/images/categories/cetke.png",
     "count": 1
   }
 ]
