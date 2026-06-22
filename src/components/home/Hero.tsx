@@ -9,14 +9,14 @@ import { ArrowRight, ShieldCheck, Truck, Wrench, Pause, Play } from "lucide-reac
 import { site } from "@/lib/data";
 
 const heroImages = [
-  { src: "/images/hero/hero-welder.jpg", alt: "Zavarivanje - profesionalni alati" },
-  { src: "/images/hero/hero-warehouse.jpg", alt: "Skladište profesionalnih alata" },
-  { src: "/images/hero/hero-grinding.jpg", alt: "Brušenje metala - precizni alati" },
-  { src: "/images/hero/hero-workshop.jpg", alt: "Radionica - RO-TEA alati" },
+  { src: "/images/hero/hero-welder-1920w.webp", alt: "Zavarivanje - profesionalni alati" },
+  { src: "/images/hero/hero-warehouse-1920w.webp", alt: "Skladište profesionalnih alata" },
+  { src: "/images/hero/hero-grinding-1920w.webp", alt: "Brušenje metala - precizni alati" },
+  { src: "/images/hero/hero-workshop-1920w.webp", alt: "Radionica - RO-TEA alati" },
 ];
 
-const INTERVAL = 6000; // 6 seconds
-const FADE_DURATION = 1000; // 1s crossfade
+const INTERVAL = 6000;
+const FADE_DURATION = 1000;
 
 const benefits = [
   { icon: Truck, label: "Brza dostava" },
@@ -28,6 +28,7 @@ export function Hero() {
   const containerRef = useRef<HTMLElement>(null);
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState<Set<number>>(new Set([0]));
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useHeroAnimation(containerRef, { delay: 0.15 });
@@ -49,28 +50,45 @@ export function Hero() {
     };
   }, [isPaused, nextSlide]);
 
+  // Track image loads
+  const onImageLoad = (i: number) => {
+    setImagesLoaded((prev) => {
+      const next = new Set(prev);
+      next.add(i);
+      return next;
+    });
+  };
+
   return (
     <section
       ref={containerRef}
-      className="relative flex min-h-[80vh] items-center overflow-hidden"
+      className="relative flex min-h-[80vh] items-center overflow-hidden bg-slate-950"
     >
       {/* Slideshow images */}
-      {heroImages.map((img, i) => (
-        <Image
-          key={img.src}
-          src={img.src}
-          alt={img.alt}
-          fill
-          className="object-cover transition-opacity"
-          style={{
-            opacity: i === current ? 1 : 0,
-            transitionDuration: `${FADE_DURATION}ms`,
-            transitionTimingFunction: "ease-in-out",
-          }}
-          priority={i === 0}
-          sizes="100vw"
-        />
-      ))}
+      {heroImages.map((img, i) => {
+        const isActive = i === current;
+        const isFirst = i === 0;
+        return (
+          <Image
+            key={img.src}
+            src={img.src}
+            alt={img.alt}
+            fill
+            className="object-cover transition-opacity"
+            style={{
+              opacity: isActive ? 1 : 0,
+              transitionDuration: `${FADE_DURATION}ms`,
+              transitionTimingFunction: "ease-in-out",
+            }}
+            priority={isFirst}
+            fetchPriority={isFirst ? "high" : "auto"}
+            loading={isFirst ? undefined : "lazy"}
+            sizes="100vw"
+            quality={80}
+            onLoad={() => onImageLoad(i)}
+          />
+        );
+      })}
 
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-slate-950/70" />
@@ -116,7 +134,7 @@ export function Hero() {
                 key={benefit.label}
                 className="flex items-center gap-3 text-sm font-medium text-slate-300"
               >
-                <benefit.icon className="h-5 w-5 text-[#0055a8]" />
+                <benefit.icon className="h-5 w-5 text-[#0055a8]" aria-hidden="true" />
                 {benefit.label}
               </div>
             ))}
@@ -125,41 +143,43 @@ export function Hero() {
       </div>
 
       {/* Slide controls */}
-      <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3">
-        {/* Dots */}
-        <div className="flex items-center gap-2">
+      <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1">
+        <div className="flex items-center">
           {heroImages.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                i === current
-                  ? "w-8 bg-[#0055a8]"
-                  : "w-2 bg-white/40 hover:bg-white/70"
-              }`}
+              className="flex h-12 w-12 items-center justify-center"
               aria-label={`Slika ${i + 1} od ${heroImages.length}`}
-            />
+            >
+              <span
+                className={`block rounded-full transition-all duration-300 ${
+                  i === current
+                    ? "h-2.5 w-8 bg-[#0055a8]"
+                    : "h-2.5 w-2.5 bg-white/40 hover:bg-white/70"
+                }`}
+              />
+            </button>
           ))}
         </div>
 
-        {/* Play/Pause */}
         <button
           onClick={() => setIsPaused((p) => !p)}
-          className="ml-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/60 transition-colors hover:bg-white/20 hover:text-white"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white/60 transition-colors hover:bg-white/20 hover:text-white"
           aria-label={isPaused ? "Pokreni slideshow" : "Pauziraj slideshow"}
         >
           {isPaused ? (
-            <Play className="h-3.5 w-3.5" />
+            <Play className="h-4 w-4" />
           ) : (
-            <Pause className="h-3.5 w-3.5" />
+            <Pause className="h-4 w-4" />
           )}
         </button>
       </div>
 
-      {/* Arrow navigation */}
+      {/* Arrow navigation — visible on hover/focus, 48px touch targets */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 z-20 hidden -translate-y-1/2 rounded-full bg-white/10 p-2 text-white/60 backdrop-blur-sm transition-colors hover:bg-white/20 hover:text-white sm:block"
+        className="absolute left-2 top-1/2 z-20 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white/60 backdrop-blur-sm transition-all hover:bg-white/25 hover:text-white hover:scale-105 sm:flex"
         aria-label="Prethodna slika"
       >
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -168,7 +188,7 @@ export function Hero() {
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 z-20 hidden -translate-y-1/2 rounded-full bg-white/10 p-2 text-white/60 backdrop-blur-sm transition-colors hover:bg-white/20 hover:text-white sm:block"
+        className="absolute right-2 top-1/2 z-20 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white/60 backdrop-blur-sm transition-all hover:bg-white/25 hover:text-white hover:scale-105 sm:flex"
         aria-label="Sljedeća slika"
       >
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

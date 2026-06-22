@@ -38,6 +38,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="hr" className={`${inter.variable} h-full antialiased`}>
+      <head>
+        {/* Preconnect to critical origins */}
+        <link rel="preconnect" href="https://ro-tea-webshop-hermes.vercel.app" />
+        {/* DNS-prefetch for external resources */}
+        <link rel="dns-prefetch" href="https://ro-tea-webshop-hermes.vercel.app" />
+        {/* Preload LCP hero image (first slide) */}
+        <link
+          rel="preload"
+          as="image"
+          href="/images/hero/hero-welder-1920w.webp"
+          fetchPriority="high"
+        />
+      </head>
       <body className="flex min-h-full flex-col font-sans">
         <CartHydrator />
         <Header />

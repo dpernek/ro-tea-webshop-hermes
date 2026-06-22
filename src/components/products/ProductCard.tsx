@@ -51,12 +51,14 @@ export function ProductCard({ product }: ProductCardProps) {
           {isVariable && <Badge variant="info">Više opcija</Badge>}
         </div>
 
-        <Link
-          href={`/proizvodi/${product.slug}`}
-          className="hover:text-brand mb-2 line-clamp-2 text-lg font-semibold text-slate-900"
-        >
-          {product.name}
-        </Link>
+        <h3 className="mb-2">
+          <Link
+            href={`/proizvodi/${product.slug}`}
+            className="hover:text-brand line-clamp-2 text-lg font-semibold text-slate-900"
+          >
+            {product.name}
+          </Link>
+        </h3>
 
         <p className="mb-4 line-clamp-2 text-sm text-slate-500">
           {product.shortDescription}

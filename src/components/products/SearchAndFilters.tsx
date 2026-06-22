@@ -117,6 +117,7 @@ export function SearchAndFilters({
             <select
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value as SortOption)}
+              aria-label="Sortiraj proizvode"
               className="cursor-pointer border-0 bg-transparent text-slate-700 focus:outline-none"
             >
               <option value="default">Preporučeno</option>
