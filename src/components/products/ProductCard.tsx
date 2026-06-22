@@ -12,9 +12,10 @@ import type { Product } from "@/types";
 
 interface ProductCardProps {
   product: Product;
+  index?: number;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, index }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
   const [added, setAdded] = useState(false);
   const isVariable = product.type === "variable";
@@ -35,6 +36,7 @@ export function ProductCard({ product }: ProductCardProps) {
           src={product.image}
           alt={product.name}
           fill
+          loading={index !== undefined && index >= 4 ? "lazy" : undefined}
           className="object-contain p-4 [mix-blend-mode:multiply] transition-transform duration-500 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />

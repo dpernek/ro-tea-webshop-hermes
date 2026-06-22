@@ -11,7 +11,13 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   const { slug } = await params;
   const cat = await db.category.findUnique({ where: { slug } });
   if (!cat) return { title: "Kategorija | RO-TEA" };
-  return { title: `${cat.name} | RO-TEA`, description: cat.description || "" };
+  return {
+    title: `${cat.name} | RO-TEA`,
+    description: cat.description || "",
+    alternates: {
+      canonical: `/kategorije/${slug}`,
+    },
+  };
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {

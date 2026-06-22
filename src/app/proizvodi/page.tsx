@@ -6,10 +6,14 @@ export const metadata: Metadata = {
   title: "Katalog proizvoda | RO-TEA",
   description:
     "Pregledajte kompletnu ponudu alata i opreme za obradu metala – brusni alati, zaštitna oprema, ručni alat i više.",
+  alternates: {
+    canonical: "/proizvodi",
+  },
   openGraph: {
     title: "Katalog proizvoda | RO-TEA",
     description:
       "Pregledajte kompletnu ponudu alata i opreme za obradu metala – brusni alati, zaštitna oprema, ručni alat i više.",
+    type: "website",
   },
 };
 

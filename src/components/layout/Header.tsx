@@ -44,7 +44,7 @@ export function Header() {
           />
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-8 md:flex" aria-hidden={!mobileOpen ? "true" : undefined}>
           {navItems.map((item) => (
             <Link
               key={item.href}

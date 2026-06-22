@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ProductCard } from "./ProductCard";
 import { Button } from "@/components/ui/Button";
@@ -94,6 +94,15 @@ export function CatalogContent({
   const [total, setTotal] = useState(serverTotal);
   const [loadingMore, setLoadingMore] = useState(false);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [showAllCat, setShowAllCat] = useState(false);
+  const [showAllBrands, setShowAllBrands] = useState(false);
+
+  // reset toggles when filter panel closes
+  const closeMobileFilter = () => {
+    setMobileFilterOpen(false);
+    setShowAllCat(false);
+    setShowAllBrands(false);
+  };
 
   // when initialProducts changes (URL-driven server re‑fetch), reset
   useEffect(() => {
@@ -125,8 +134,9 @@ export function CatalogContent({
   const handleCategoryChange = useCallback(
     (slug: string | null) => {
       updateUrl({ cat: slug });
-      setMobileFilterOpen(false);
+      closeMobileFilter();
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [updateUrl],
   );
   const handleBrandChange = useCallback(
@@ -158,7 +168,7 @@ export function CatalogContent({
         skip: loadedProducts.length,
         take: PAGE_SIZE,
       });
-      setLoadedProducts((prev) => [...prev, ...result.products]);
+      setLoadedProducts(result.products);
       setTotal(result.total);
     } catch (err) {
       console.error("Load more failed:", err);
@@ -417,7 +427,7 @@ export function CatalogContent({
                   </h4>
                   <button
                     type="button"
-                    onClick={() => setMobileFilterOpen(false)}
+                    onClick={closeMobileFilter}
                     className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
                   >
                     <X className="h-4 w-4" />
@@ -441,7 +451,7 @@ export function CatalogContent({
                       >
                         Sve kategorije ({total})
                       </button>
-                      {categories.map((c) => (
+                      {(showAllCat ? categories : categories.slice(0, 6)).map((c) => (
                         <button
                           key={c.slug}
                           type="button"
@@ -459,6 +469,17 @@ export function CatalogContent({
                         </button>
                       ))}
                     </nav>
+                    {categories.length > 6 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllCat(!showAllCat)}
+                        className="mt-1 w-full rounded-lg px-3 py-1.5 text-xs font-medium text-[#0055a8] transition-colors hover:bg-[#0055a8]/5"
+                      >
+                        {showAllCat
+                          ? "Prikaži manje"
+                          : `Prikaži sve (${categories.length})`}
+                      </button>
+                    )}
                   </div>
                   {/* Brands in mobile panel */}
                   {brands.length > 0 && (
@@ -478,7 +499,7 @@ export function CatalogContent({
                         >
                           Svi brendovi
                         </button>
-                        {brands.map((b) => (
+                        {(!showAllBrands ? brands.slice(0, 6) : brands).map((b) => (
                           <button
                             key={b.slug}
                             type="button"
@@ -493,14 +514,25 @@ export function CatalogContent({
                           </button>
                         ))}
                       </nav>
-                    </div>
+                    {brands.length > 6 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllBrands(!showAllBrands)}
+                        className="mt-1 w-full rounded-lg px-3 py-1.5 text-xs font-medium text-[#0055a8] transition-colors hover:bg-[#0055a8]/5"
+                      >
+                        {showAllBrands
+                          ? "Prikaži manje"
+                          : `Prikaži sve (${brands.length})`}
+                      </button>
+                    )}
+                  </div>
                   )}
                   {hasFilters && (
                     <button
                       type="button"
                       onClick={() => {
                         handleClear();
-                        setMobileFilterOpen(false);
+                        closeMobileFilter();
                       }}
                       className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50"
                     >
@@ -514,9 +546,9 @@ export function CatalogContent({
             {/* Products grid */}
             {loadedProducts.length > 0 ? (
               <>
-                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {loadedProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                <div className="grid gap-3 grid-cols-1 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {loadedProducts.map((product, i) => (
+                    <ProductCard key={product.id} product={product} index={i} />
                   ))}
                 </div>
                 {hasMore && (
