@@ -8,6 +8,9 @@ import { AddToCartButton } from "@/components/product/AddToCartButton";
 import { VariableProductOptions } from "@/components/product/VariableProductOptions";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ReadMore } from "@/components/ui/ReadMore";
+import specsData from "@/data/product-specs.json";
+
+const SPECS_MAP = specsData as Record<string, Record<string, string>>;
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -158,15 +161,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const stockInfo = getStockInfo(product.stockStatus);
 
-  // --- Specifications ---
-  const specs = parseSpecs(product.specifications);
-  const displaySpecs =
-    Object.keys(specs).length > 0
-      ? specs
-      : generatePlaceholderSpecs({
-          name: product.name,
-          category: product.category,
-        });
+  const displaySpecs = SPECS_MAP[slug] || {};
 
   // Price logic: prefer salePrice, then regular price vs. price
   const effectivePrice =
@@ -515,6 +510,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         )}
 
         {/* ===== Specifications table ===== */}
+        {Object.keys(displaySpecs).length > 0 && (
         <div className="mt-16 border-t border-slate-200 pt-12">
           <h2 className="mb-6 text-2xl font-bold text-slate-900">
             Specifikacije
@@ -536,6 +532,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </table>
           </div>
         </div>
+        )}
 
         {/* ===== Related products ===== */}
         {relatedProducts.length > 0 && (

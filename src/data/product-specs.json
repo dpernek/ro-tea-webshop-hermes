@@ -1,0 +1,126 @@
+{
+  "rezna-ploca-eht-psf-steelox": {
+    "Dimenzija": "115 | 125 | 230",
+    "Debljina": "1.0 | 1.6 | 1.9"
+  },
+  "rezna-ploca-eht-psf-alustone": {
+    "Dimenzija": "125",
+    "Debljina": "1.0"
+  },
+  "rezna-ploca-eht-sg-steelox": {
+    "Dimenzija": "115 | 125",
+    "Debljina": "1.0 | 1.6"
+  },
+  "lamelasti-brusni-disk-pfc-psf-steelox": {
+    "Dimenzija": "115 | 125",
+    "Granulacija": "40 | 60"
+  },
+  "lamelasti-brusni-disk-pfc-sg-power-steelox": {
+    "Dimenzija": "115 | 125",
+    "Granulacija": "40 | 60"
+  },
+  "brusna-ploca-e-psf-steelox": {
+    "Dimenzija": "115 | 125",
+    "Debljina": "7.2"
+  },
+  "cilindar-za-bravu-30-30": {
+    "Dimenzija": "115 | 125",
+    "Granulacija": "40 | 60"
+  },
+  "rukavice_ve630": {
+    "Veličina": "8 | 9 | 10"
+  },
+  "spiralno-svrdlo-din-338-hssg-n-celik": {
+    "Dimenzija": "1.0 | 1.5 | 1.6 | 2.0 | 2.5 | 3.0 | 3.2 | 3.3 | 3.5 | 4.0 | 4.2 | 4.5 | 5.0 | 5.5 | 6.0 | 6.5 | 6.8 | 7.0 | 7.5 | 8.0 | 8.5 | 9.0 | 9.5 | 10.0 | 10.3 | 10.5 | 11.0 | 11.5 | 12.0 | 12.5 | 13.0",
+    "Količina": "5 | 10"
+  },
+  "radionicka-turpija-1112-plosnata": {
+    "Nasjek": "1 | 2 | 3 | PLUS CUT",
+    "Drška": "FH3 | FH4/1 | FH5/1 | Bez drške",
+    "Dužina": "100mm | 150mm | 200mm | 250mm | 300mm | 350mm"
+  },
+  "radionicka-turpija-1132-trokutasta": {
+    "Nasjek": "1 | 2 | 3 | PLUS CUT",
+    "Drška": "FH3 | FH4/1 | FH5/1 | Bez drške",
+    "Dužina": "100mm | 150mm | 200mm | 250mm | 300mm | 350mm"
+  },
+  "radionicka-turpija-1142-cetvrtasta": {
+    "Nasjek": "1 | 2 | 3 | PLUS CUT",
+    "Drška": "FH3 | FH4/1 | FH5/1 | Bez drške",
+    "Dužina": "100mm | 150mm | 200mm | 250mm | 300mm | 350mm"
+  },
+  "fiber-brusni-disk-a-pakiranje-25kom": {
+    "Dimenzija": "115 | 125",
+    "Granulacija": "16 | 24 | 36 | 50 | 60 | 80 | 100 | 120"
+  },
+  "fiber-brusni-disk-z-pakiranje-25kom": {
+    "Dimenzija": "115 | 125",
+    "Granulacija": "24 | 36 | 50 | 60 | 80 | 120"
+  },
+  "fiber-brusni-disk-victograin-pakiranje-25kom": {
+    "Dimenzija": "115 | 125",
+    "Granulacija": "36 | 60 | 80"
+  },
+  "nosac-fiber-diskova-gt": {
+    "Dimenzija": "115 | 125"
+  },
+  "nosac-fiber-diskova-h-gt": {
+    "Dimenzija": "115 | 125"
+  },
+  "nosac-fiber-diskova-ht-gt": {
+    "Dimenzija": "115 | 125"
+  },
+  "combiclick-brusni-disk-a-pakiranje-25kom": {
+    "Dimenzija": "115 | 125",
+    "Granulacija": "24 | 36 | 50 | 60 | 80 | 120"
+  },
+  "combiclick-brusni-disk-z-pakiranje-25kom": {
+    "Dimenzija": "115 | 125",
+    "Granulacija": "24 | 36 | 50 | 60 | 80 | 120"
+  },
+  "combiclick-brusni-disk-victograin-pakiranje-25kom": {
+    "Dimenzija": "115 | 125",
+    "Granulacija": "36 | 60 | 80"
+  },
+  "combiclick-nosac-brusnog-diska-cc-gt-cc-h-gt": {
+    "Dimenzija": "115-125",
+    "Tvrdoća": "SREDNJE TVRDI | TVRDI"
+  },
+  "cicak-brusni-disk-kr-115-125-a-pakiranje-50kom": {
+    "Dimenzija": "115 | 125",
+    "Granulacija": "40 | 60 | 80 | 120 | 150 | 180"
+  },
+  "nosac-cicak-brusnih-diskova-115-125mm-m14": {
+    "Dimenzija": "115 | 125"
+  },
+  "rezno-brusna-ploca-duodisc-10-1": {
+    "Dimenzija": "115 | 125",
+    "Debljina": "1.9 | 2.8"
+  },
+  "brusna-ploca-sg-alu": {
+    "Dimenzija": "115 | 125",
+    "Debljina": "7.2"
+  },
+  "cc-grind-solid-brusni-disk-celik-steel": {
+    "Dimenzija": "115 | 125 | 180"
+  },
+  "cc-grind-solid-brusni-disk-inox": {
+    "Dimenzija": "115 | 125 | 180"
+  },
+  "lamelasti-brusni-disk-radijusni-pfr-sgp-zirkoni-40-curve-steelox": {
+    "Dimenzija": "115 | 125",
+    "Radijus": "M (>5mm) | L (>8mm)"
+  },
+  "lamelasti-brusni-disk-radijusni-pfr-sgp-ceramic-60-curve-steelox": {
+    "Dimenzija": "115 | 125",
+    "Radijus": "M (>5mm) | L (>8mm)"
+  },
+  "rucna-cetka-jednoredna-hbg-10": {
+    "Redovi žice": "1",
+    "Materijal žice": "čelik | inox | mesing"
+  },
+  "rucna-cetka-univerzalna-hbu": {
+    "Redovi žice": "3 | 4 | 5",
+    "Materijal žice": "čelik | inox | mesing"
+  }
+}
