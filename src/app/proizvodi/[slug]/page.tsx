@@ -57,9 +57,9 @@ const STOCK_STATUS: Record<
 };
 
 const FALLBACK_STOCK = {
-  label: "Dostupnost na upit",
-  dot: "bg-blue-400",
-  badge: "bg-blue-50 text-blue-700",
+  label: "Dostupno",
+  dot: "bg-emerald-500",
+  badge: "bg-emerald-50 text-emerald-700",
 };
 
 // --- Helpers ---

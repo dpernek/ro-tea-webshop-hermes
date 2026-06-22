@@ -12,49 +12,49 @@ export function ReadMore({ text, maxLines = 3 }: ReadMoreProps) {
   const [needsTruncation, setNeedsTruncation] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const clampedStyle = !expanded
-    ? {
-        display: "-webkit-box",
-        WebkitLineClamp: maxLines,
-        WebkitBoxOrient: "vertical" as const,
-        overflow: "hidden",
-      }
-    : {};
+  // Normalize whitespace: collapse multiple consecutive newlines into single ones
+  const normalized = text.replace(/\n{3,}/g, "\n\n").replace(/\n{2,}/g, "\n").trim();
 
   useEffect(() => {
     if (contentRef.current) {
       const el = contentRef.current;
-      // Check if content exceeds maxLines
-      const lineHeight = parseFloat(getComputedStyle(el).lineHeight) || el.scrollHeight / 3;
+      const lineHeight = parseFloat(getComputedStyle(el).lineHeight) || el.scrollHeight / maxLines;
       const maxHeight = lineHeight * maxLines;
-      setNeedsTruncation(el.scrollHeight > maxHeight + 2);
+      setNeedsTruncation(el.scrollHeight > maxHeight + 4);
     }
   }, [text, maxLines]);
 
-  // Short text — show all, no toggle
-  if (text.length < 200 || !needsTruncation) {
-    return (
-      <div className="prose prose-slate max-w-none leading-relaxed text-slate-600 whitespace-pre-line">
-        {text}
-      </div>
-    );
+  // Short text - show all
+  if (normalized.length < 200 && !needsTruncation) {
+    return <div className="leading-relaxed text-slate-600 whitespace-pre-line">{normalized}</div>;
   }
 
   return (
     <div>
       <div
         ref={contentRef}
-        style={clampedStyle}
-        className="prose prose-slate max-w-none leading-relaxed text-slate-600 whitespace-pre-line"
+        style={
+          !expanded
+            ? {
+                display: "-webkit-box",
+                WebkitLineClamp: maxLines,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }
+            : {}
+        }
+        className="leading-relaxed text-slate-600 whitespace-pre-line"
       >
-        {text}
+        {normalized}
       </div>
-      <button
-        className="mt-2 text-sm font-medium text-[#0055a8] hover:text-[#003d7a] hover:underline transition-colors"
-        onClick={() => setExpanded(!expanded)}
-      >
-        {expanded ? "Prikaži manje" : "Prikaži više"}
-      </button>
+      {needsTruncation && (
+        <button
+          className="mt-2 text-sm font-medium text-[#0055a8] hover:text-[#003d7a] hover:underline"
+          onClick={() => setExpanded(!expanded)}
+        >
+          {expanded ? "Prikaži manje" : "Prikaži više"}
+        </button>
+      )}
     </div>
   );
 }
