@@ -65,7 +65,7 @@ export default function CatalogPage() {
         <div className="flex gap-8">
           <aside className="hidden w-56 shrink-0 lg:block">
             <div className="sticky top-24">
-              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-900">Kategorije</h3>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-900">Kategorije</h2>
               <nav className="space-y-0.5">
                 {categories.map(c => (
                   <button key={c.id} onClick={() => setSelectedCategory(c.id === selectedCategory ? null : c.id)}
