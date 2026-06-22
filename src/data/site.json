@@ -3,6 +3,7 @@
   "tagline": "Tehnička oprema za profesionalce i domaćinstva",
   "description": "RO-TEA je specijalizirana trgovina tehničkom opremom, alatima, elektro materijalom, rasvjetom, vodoinstalacijama i pametnom kućom. Brza dostava, stručna podrška i pouzdani proizvodi.",
   "url": "https://ro-tea-webshop-hermes.vercel.app",
+  "heroImage": "",
   "contact": {
     "email": "info@ro-tea.hr",
     "phoneDisplay": "+385 1 2345 678",

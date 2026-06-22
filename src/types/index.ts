@@ -60,6 +60,7 @@ export interface SiteConfig {
   tagline: string;
   description: string;
   url: string;
+  heroImage?: string;
   contact: {
     address: string;
     city: string;
