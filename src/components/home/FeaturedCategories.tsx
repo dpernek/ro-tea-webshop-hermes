@@ -1,18 +1,32 @@
 "use client";
 
-import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-
-const featured = [
-  { name: "Festa", slug: "festa-alati", image: "/images/categories/openai_codex_gpt-image-2-high_20260622_165747_39242876.png", count: 661 },
-  { name: "Građevinski alati", slug: "gradevinski-alati", image: "/images/categories/openai_codex_gpt-image-2-high_20260622_165854_08d6d07d.png", count: 305 },
-  { name: "Alati za radionice", slug: "alati-za-radionice", image: "/images/categories/openai_codex_gpt-image-2-high_20260622_170003_90dae7e9.png", count: 304 },
-  { name: "Vrtni alati", slug: "vrtni-alati", image: "/images/categories/openai_codex_gpt-image-2-high_20260622_170123_564d16d3.png", count: 191 },
-];
+import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
 export function FeaturedCategories() {
+  const [cats, setCats] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/catalog/categories")
+      .then(r => r.json())
+      .then(data => {
+        // Only show categories with products, top 4
+        const withProducts = data.filter((c: any) => c.count > 0).sort((a: any, b: any) => b.count - a.count).slice(0, 4);
+        setCats(withProducts);
+      });
+  }, []);
+
+  // Fallback images for categories without specific images
+  const fallbacks = [
+    "/images/categories/openai_codex_gpt-image-2-high_20260622_165747_39242876.png",
+    "/images/categories/openai_codex_gpt-image-2-high_20260622_165854_08d6d07d.png",
+    "/images/categories/openai_codex_gpt-image-2-high_20260622_170003_90dae7e9.png",
+    "/images/categories/openai_codex_gpt-image-2-high_20260622_170123_564d16d3.png",
+  ];
+
   return (
     <section className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -33,14 +47,14 @@ export function FeaturedCategories() {
         </AnimatedSection>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {featured.map((cat, i) => (
-            <AnimatedSection key={cat.slug} delay={i * 0.1}>
+          {cats.map((cat, i) => (
+            <AnimatedSection key={cat.id} delay={i * 0.1}>
               <Link
                 href={`/kategorije/${cat.slug}`}
                 className="group relative block h-48 overflow-hidden rounded-2xl sm:h-56"
               >
                 <Image
-                  src={cat.image}
+                  src={cat.image || fallbacks[i]}
                   alt={cat.name}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
