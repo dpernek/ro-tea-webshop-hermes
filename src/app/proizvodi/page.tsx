@@ -1,8 +1,9 @@
-import { Suspense } from "react";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { db } from "@/lib/db";
 import type { Metadata } from "next";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Katalog proizvoda | RO-TEA",
@@ -31,7 +32,6 @@ export default async function CatalogPage() {
           </AnimatedSection>
         </div>
       </div>
-
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <ProductGrid products={products as any} allCategories={categories as any} />
       </div>
