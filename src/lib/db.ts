@@ -5,24 +5,22 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createClient(): PrismaClient {
-  const pgUrl = process.env.POSTGRES_PRISMA_URL;
+  const url = process.env.POSTGRES_PRISMA_URL || process.env.DATABASE_URL || "";
 
-  if (pgUrl) {
-    // Vercel + Supabase: PostgreSQL via pg adapter
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const m = require(String.fromCharCode(64, 112, 114, 105, 115, 109, 97, 47, 97, 100, 97, 112, 116, 101, 114, 45, 112, 103));
-    const { PrismaPg } = m;
-    return new PrismaClient({
-      adapter: new PrismaPg({ connectionString: pgUrl }),
+  if (url.startsWith("postgres")) {
+    // @ts-ignore - dynamic require for pg adapter
+    const pgModule = require("@prisma/adapter-pg");
+    const { PrismaPg } = pgModule;
+    return new (PrismaClient as any)({
+      adapter: new (PrismaPg as any)({ connectionString: url }),
     });
   }
 
-  // Local dev: SQLite
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const m = require(String.fromCharCode(64, 112, 114, 105, 115, 109, 97, 47, 97, 100, 97, 112, 116, 101, 114, 45, 98, 101, 116, 116, 101, 114, 45, 115, 113, 108, 105, 116, 101, 51));
-  const { PrismaBetterSqlite3 } = m;
-  return new PrismaClient({
-    adapter: new PrismaBetterSqlite3({ url: "./prisma/dev.db" }),
+  // @ts-ignore - SQLite fallback
+  const sqliteModule = require("@prisma/adapter-better-sqlite3");
+  const { PrismaBetterSqlite3 } = sqliteModule;
+  return new (PrismaClient as any)({
+    adapter: new (PrismaBetterSqlite3 as any)({ url: url.replace("file:", "") || "./prisma/dev.db" }),
   });
 }
 
