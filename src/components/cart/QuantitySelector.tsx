@@ -7,7 +7,7 @@ interface QuantitySelectorProps {
   quantity: number;
   onChange: (quantity: number) => void;
   min?: number;
-  max?: number;
+  max?: number | null;
   size?: "sm" | "md";
   className?: string;
 }
@@ -29,6 +29,8 @@ export function QuantitySelector({
     sm: "h-3.5 w-3.5",
     md: "h-4 w-4",
   };
+
+  const effectiveMax = max ?? 99;
 
   return (
     <div
@@ -54,8 +56,8 @@ export function QuantitySelector({
       </span>
       <button
         type="button"
-        onClick={() => onChange(Math.min(max, quantity + 1))}
-        disabled={quantity >= max}
+        onClick={() => onChange(Math.min(effectiveMax, quantity + 1))}
+        disabled={quantity >= effectiveMax}
         className={cn(
           "flex items-center justify-center text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40",
           sizeClasses[size]

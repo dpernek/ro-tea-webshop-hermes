@@ -92,49 +92,76 @@ npx vercel --prod
 
 Svaki sljedeći `git push` na `main` automatski će pokrenuti novi deploy.
 
-## Kako mijenjati proizvode u JSON-u
+## Import proizvoda iz WooCommerce XML-a
 
-Proizvodi, kategorije i osnovni podaci o trgovini nalaze se u `src/data/`:
+Proizvodi se ne unose ručno — generiraju se automatski iz WordPress/WooCommerce XML exporta.
+
+### Preduvjeti
+
+- Python 3 dostupan u terminalu
+- WordPress export datoteka mora se zvati `ro-tea.WordPress.YYYY-MM-DD.xml` i nalaziti u rootu projekta
+- Za parsiranje atributa koristi se `phpserialize` (instalira se ručno ako nije dostupan):
+  ```bash
+  pip3 install phpserialize
+  ```
+
+### Pokretanje importa
+
+```bash
+npm run import:products
+```
+
+Skripta čita XML, izdvaja:
+
+- objavljene proizvode (`post_type = product`, `status = publish`)
+- kategorije (`product_cat`)
+- brendove (`product_brand`)
+- slike preko `_thumbnail_id` → WordPress attachment zapisi
+- galerije preko `_product_image_gallery`
+- cijene, zalihe, SKU, opise i specifikacije
+
+...i generira:
+
+```
+src/data/products.json   # svi importani proizvodi
+src/data/categories.json # jedinstvene kategorije s brojem proizvoda
+src/data/brands.json     # jedinstveni brendovi s brojem proizvoda
+```
+
+### Kako rade slike
+
+Slike se ne skidaju lokalno u ovoj fazi. U generiranim JSON datotekama ostaju originalni `https://ro-tea.hr/wp-content/uploads/...` URL-ovi. Next.js `<Image>` komponenta učitava i optimizira te slike preko Vercela zahvaljujući `remotePatterns` konfiguraciji u `next.config.ts`.
+
+### Proizvodi bez slike ili cijene
+
+- Ako proizvod nema `_thumbnail_id` ili attachment ne postoji, koristi se `/images/placeholder.svg`
+- Ako proizvod nema niti jednu cijenu, dodaje se značka **Cijena na upit** i `price: 0`
+
+### Ponovni import nakon novog exporta
+
+1. Preimenuj/prebaci novu XML datoteku u root projekta kao `ro-tea.WordPress.2026-06-22.xml` (ili ažuriraj ime u `scripts/import-woocommerce-products.py`)
+2. Pokreni `npm run import:products`
+3. Pokreni `npm run build`
+4. Commitaj i pushaj promjene — Vercel će automatski redeployati
+
+### Ručno ažuriranje (nakon importa)
+
+Ako želiš naknadno promijeniti generirane JSON datoteke:
 
 ```
 src/data/
   products.json    # svi proizvodi
   categories.json  # sve kategorije
+  brands.json      # svi brendovi
   site.json        # brand podaci, kontakt, društvene mreže
 ```
 
-Za dodavanje novog proizvoda:
+Svaka promjena zahtijeva novi `npm run build` i `git push` da postane vidljiva online.
 
-1. Otvori `src/data/products.json`
-2. Dodaj novi objekt prema postojećem modelu:
+### Ograničenja
 
-```json
-{
-  "id": "p-15",
-  "slug": "ime-proizvoda",
-  "name": "Ime proizvoda",
-  "category": "Alati",
-  "categorySlug": "alati",
-  "price": 599.0,
-  "oldPrice": 699.0,
-  "image": "/images/product-slug.svg",
-  "gallery": ["/images/product-slug.svg"],
-  "shortDescription": "Kratki opis.",
-  "description": "Dugi opis proizvoda.",
-  "specifications": {
-    "Ključ": "Vrijednost"
-  },
-  "stock": 10,
-  "featured": true,
-  "badge": "Novo"
-}
-```
-
-3. Dodaj odgovarajuću sliku u `public/images/`
-4. Pokreni `npm run build` da provjeriš izmjene
-5. Commitaj i pushaj promjene
-
-Kategorije se dodaju na sličan način u `src/data/categories.json`.Ukupan broj proizvoda po kategoriji ažurira se automatski u runtimeu.
+- **Varijabilni proizvodi** (`type = variable`) prikazuju se bez odabira varijacija. Na stranici proizvoda nalazi se gumb za upit umjesto gumba za izravnu kupnju. Potpuna podrška za varijacije zahtijeva dodatni razvoj.
+- Količina zalihe (`_stock`) nije uvijek prisutna u exportu. Ako nedostaje, količina u košarici nije ograničena gornjim limitom.
 
 ## Struktura projekta
 
@@ -177,7 +204,7 @@ ro-tea-webshop-hermes/
 ## Glavne funkcionalnosti
 
 - ✅ Homepage s hero sekcijom, kategorijama, popularnim proizvodima i prednostima
-- ✅ Katalog s pretragom, filterom po kategoriji i sortiranjem
+- ✅ Katalog s pretragom, filterom po kategoriji, filterom po brendu, sortiranjem i paginacijom
 - ✅ Stranica proizvoda s galerijom, specifikacijama i košaricom
 - ✅ Pregled kategorije s filtriranim proizvodima
 - ✅ Košarica s dodavanjem, uklanjanjem, promjenom količine i trajnim spremanjem

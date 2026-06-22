@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "import:products": "python3 scripts/import-woocommerce-products.py"
   },
   "dependencies": {
     "clsx": "^2.1.1",

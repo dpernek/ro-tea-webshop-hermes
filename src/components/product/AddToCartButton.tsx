@@ -22,7 +22,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
     setTimeout(() => setAdded(false), 2000);
   };
 
-  if (product.stock <= 0) {
+  if (product.stockStatus === "outofstock") {
     return (
       <Button disabled className="w-full sm:w-auto">
         Trenutno nedostupno

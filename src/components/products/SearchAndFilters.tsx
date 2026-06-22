@@ -1,8 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Search, SlidersHorizontal, ArrowUpDown } from "lucide-react";
-import type { Category } from "@/types";
+import { Search, ArrowUpDown, Star } from "lucide-react";
+import type { Category, Brand } from "@/types";
 
 export type SortOption =
   | "default"
@@ -13,8 +13,13 @@ export type SortOption =
 
 interface SearchAndFiltersProps {
   categories: Category[];
+  brands?: Brand[];
   selectedCategory: string | null;
+  selectedBrand: string | null;
+  showFeaturedOnly: boolean;
   onCategoryChange: (slug: string | null) => void;
+  onBrandChange: (slug: string | null) => void;
+  onFeaturedChange: (value: boolean) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
   sortBy: SortOption;
@@ -24,8 +29,13 @@ interface SearchAndFiltersProps {
 
 export function SearchAndFilters({
   categories,
+  brands = [],
   selectedCategory,
+  selectedBrand,
+  showFeaturedOnly,
   onCategoryChange,
+  onBrandChange,
+  onFeaturedChange,
   searchQuery,
   onSearchChange,
   sortBy,
@@ -66,34 +76,85 @@ export function SearchAndFilters({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={() => onCategoryChange(null)}
-          className={cn(
-            "rounded-full px-4 py-2 text-sm font-medium transition-colors",
-            selectedCategory === null
-              ? "bg-brand text-white"
-              : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
-          )}
-        >
-          Sve
-        </button>
-        {categories.map((category) => (
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center gap-2">
           <button
-            key={category.slug}
             type="button"
-            onClick={() => onCategoryChange(category.slug)}
+            onClick={() => onCategoryChange(null)}
             className={cn(
               "rounded-full px-4 py-2 text-sm font-medium transition-colors",
-              selectedCategory === category.slug
+              selectedCategory === null
                 ? "bg-brand text-white"
                 : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
             )}
           >
-            {category.name}
+            Sve kategorije
           </button>
-        ))}
+          {categories.map((category) => (
+            <button
+              key={category.slug}
+              type="button"
+              onClick={() => onCategoryChange(category.slug)}
+              className={cn(
+                "rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                selectedCategory === category.slug
+                  ? "bg-brand text-white"
+                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+              )}
+            >
+              {category.name}
+            </button>
+          ))}
+        </div>
+
+        {(brands.length > 0 || showFeaturedOnly) && (
+          <div className="flex flex-wrap items-center gap-2">
+            {brands.length > 0 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onBrandChange(null)}
+                  className={cn(
+                    "rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                    selectedBrand === null
+                      ? "bg-brand text-white"
+                      : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+                  )}
+                >
+                  Svi brendovi
+                </button>
+                {brands.map((brand) => (
+                  <button
+                    key={brand.slug}
+                    type="button"
+                    onClick={() => onBrandChange(brand.slug)}
+                    className={cn(
+                      "rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                      selectedBrand === brand.slug
+                        ? "bg-brand text-white"
+                        : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+                    )}
+                  >
+                    {brand.name}
+                  </button>
+                ))}
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => onFeaturedChange(!showFeaturedOnly)}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                showFeaturedOnly
+                  ? "bg-amber-400 text-slate-900"
+                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+              )}
+            >
+              <Star className="h-3.5 w-3.5" />
+              Istaknuto
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

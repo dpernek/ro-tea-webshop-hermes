@@ -1,50 +1,170 @@
 [
   {
-    "id": "cat-1",
-    "slug": "alati",
-    "name": "Alati",
-    "description": "Profesionalni i kućni alati za svaku vrstu radova. Pouzdani proizvodi za precizan i učinkovit rad.",
-    "image": "/images/category-tools.svg",
-    "productCount": 4
+    "id": "festa",
+    "slug": "festa",
+    "name": "Festa",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 661
   },
   {
-    "id": "cat-2",
-    "slug": "elektro-materijal",
-    "name": "Elektro materijal",
-    "description": "Kabeli, utičnice, prekidači i sva potrebna oprema za elektroinstalacije.",
-    "image": "/images/category-electrical.svg",
-    "productCount": 2
+    "id": "građevinski-alati",
+    "slug": "građevinski-alati",
+    "name": "Građevinski alati",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 305
   },
   {
-    "id": "cat-3",
-    "slug": "rasvjeta",
-    "name": "Rasvjeta",
-    "description": "Moderna LED rješenja, paneli i industrijske lampe za dom, posao i vanjski prostor.",
-    "image": "/images/category-lighting.svg",
-    "productCount": 2
+    "id": "alati-za-radionice",
+    "slug": "alati-za-radionice",
+    "name": "Alati za radionice",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 304
   },
   {
-    "id": "cat-4",
-    "slug": "vodoinstalacije",
-    "name": "Vodoinstalacije",
-    "description": "Cijevi, slavine, ventili i pribor za sve vrste vodoinstalaterskih radova.",
-    "image": "/images/category-plumbing.svg",
-    "productCount": 2
+    "id": "vrtni-alati",
+    "slug": "vrtni-alati",
+    "name": "Vrtni alati",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 191
   },
   {
-    "id": "cat-5",
-    "slug": "oprema-za-dom",
-    "name": "Oprema za dom",
-    "description": "Praktična oprema za održavanje doma, organizaciju i svakodnevne zadatke.",
-    "image": "/images/category-home.svg",
-    "productCount": 1
+    "id": "pferd",
+    "slug": "pferd",
+    "name": "Pferd",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 129
   },
   {
-    "id": "cat-6",
-    "slug": "pametna-kuca",
-    "name": "Pametna kuća",
-    "description": "Pametni termostati, utičnice, senzori i druga oprema za povezani dom.",
-    "image": "/images/category-smart.svg",
+    "id": "električni-alat",
+    "slug": "električni-alat",
+    "name": "Električni alat",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 62
+  },
+  {
+    "id": "metabo",
+    "slug": "metabo",
+    "name": "Metabo",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 54
+  },
+  {
+    "id": "turpije",
+    "slug": "turpije",
+    "name": "Turpije",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 41
+  },
+  {
+    "id": "roto-glodala",
+    "slug": "roto-glodala",
+    "name": "Roto glodala",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 35
+  },
+  {
+    "id": "električni-alat",
+    "slug": "električni-alat",
+    "name": "Električni Alat",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 33
+  },
+  {
+    "id": "rezne-brusne-ploče-i-diskovi",
+    "slug": "rezne-brusne-ploče-i-diskovi",
+    "name": "Rezne, brusne ploče i diskovi",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 24
+  },
+  {
+    "id": "brusilice",
+    "slug": "brusilice",
+    "name": "Brusilice",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 22
+  },
+  {
+    "id": "baterijski-alat",
+    "slug": "baterijski-alat",
+    "name": "Baterijski Alat",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 22
+  },
+  {
+    "id": "pferd-pogonski-strojevi",
+    "slug": "pferd-pogonski-strojevi",
+    "name": "PFERD pogonski strojevi",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 19
+  },
+  {
+    "id": "brušenje-i-poliranje",
+    "slug": "brušenje-i-poliranje",
+    "name": "Brušenje i poliranje",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 14
+  },
+  {
+    "id": "mjerni-uređaji",
+    "slug": "mjerni-uređaji",
+    "name": "Mjerni uređaji",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 13
+  },
+  {
+    "id": "svrdla",
+    "slug": "svrdla",
+    "name": "Svrdla",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 5
+  },
+  {
+    "id": "bušilice",
+    "slug": "bušilice",
+    "name": "Bušilice",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 5
+  },
+  {
+    "id": "zaštitna-oprema",
+    "slug": "zaštitna-oprema",
+    "name": "Zaštitna Oprema",
+    "description": "",
+    "image": "/images/placeholder.svg",
     "productCount": 3
+  },
+  {
+    "id": "četke",
+    "slug": "četke",
+    "name": "Četke",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 3
+  },
+  {
+    "id": "pribor",
+    "slug": "pribor",
+    "name": "Pribor",
+    "description": "",
+    "image": "/images/placeholder.svg",
+    "productCount": 1
   }
 ]

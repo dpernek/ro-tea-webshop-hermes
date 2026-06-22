@@ -10,9 +10,12 @@ import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { products } from "@/lib/data";
 import { categories } from "@/lib/data";
+import { brands } from "@/lib/data";
 
 function CatalogContent() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("default");
 
@@ -23,13 +26,26 @@ function CatalogContent() {
       result = result.filter((p) => p.categorySlug === selectedCategory);
     }
 
+    if (selectedBrand) {
+      result = result.filter((p) => {
+        if (!p.brand) return false;
+        const brandSlug = p.brand.toLowerCase().replace(/\s+/g, "-");
+        return brandSlug === selectedBrand;
+      });
+    }
+
+    if (showFeaturedOnly) {
+      result = result.filter((p) => p.featured);
+    }
+
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(query) ||
-          p.shortDescription.toLowerCase().includes(query) ||
-          p.category.toLowerCase().includes(query)
+          (p.shortDescription || "").toLowerCase().includes(query) ||
+          p.category.toLowerCase().includes(query) ||
+          (p.brand || "").toLowerCase().includes(query)
       );
     }
 
@@ -49,15 +65,20 @@ function CatalogContent() {
     }
 
     return result;
-  }, [selectedCategory, searchQuery, sortBy]);
+  }, [selectedCategory, selectedBrand, showFeaturedOnly, searchQuery, sortBy]);
 
   return (
     <>
       <AnimatedSection>
         <SearchAndFilters
           categories={categories}
+          brands={brands}
           selectedCategory={selectedCategory}
+          selectedBrand={selectedBrand}
+          showFeaturedOnly={showFeaturedOnly}
           onCategoryChange={setSelectedCategory}
+          onBrandChange={setSelectedBrand}
+          onFeaturedChange={setShowFeaturedOnly}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           sortBy={sortBy}

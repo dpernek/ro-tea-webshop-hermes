@@ -1,0 +1,20 @@
+[
+  {
+    "id": "festa",
+    "slug": "festa",
+    "name": "Festa",
+    "count": 661
+  },
+  {
+    "id": "pferd",
+    "slug": "pferd",
+    "name": "Pferd",
+    "count": 130
+  },
+  {
+    "id": "metabo",
+    "slug": "metabo",
+    "name": "Metabo",
+    "count": 55
+  }
+]

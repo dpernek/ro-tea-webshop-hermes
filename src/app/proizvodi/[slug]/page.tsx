@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
 import { ProductGallery } from "@/components/product/ProductGallery";
@@ -34,6 +33,27 @@ export async function generateMetadata({
     title: `${product.name} | RO-TEA`,
     description: product.shortDescription,
   };
+}
+
+function StockLabel({ status }: { status: Product["stockStatus"] }) {
+  if (status === "instock") {
+    return <span className="text-sm font-medium text-green-600">Dostupno</span>;
+  }
+  if (status === "outofstock") {
+    return (
+      <span className="text-sm font-medium text-red-600">Nije dostupno</span>
+    );
+  }
+  if (status === "onbackorder") {
+    return (
+      <span className="text-sm font-medium text-amber-600">Na narudžbu</span>
+    );
+  }
+  return (
+    <span className="text-sm font-medium text-slate-600">
+      Provjeriti dostupnost
+    </span>
+  );
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
@@ -93,21 +113,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <AnimatedSection delay={0.15}>
             <div className="flex flex-wrap items-center gap-3">
               <Badge variant="outline">{product.category}</Badge>
-              {product.badge && <Badge variant="accent">{product.badge}</Badge>}
-              {product.stock > 0 ? (
-                <span className="text-sm font-medium text-green-600">
-                  Dostupno ({product.stock} kom)
-                </span>
-              ) : (
-                <span className="text-sm font-medium text-red-600">
-                  Rasprodano
-                </span>
+              {product.brand && (
+                <Badge variant="outline">{product.brand}</Badge>
               )}
+              {product.badge && <Badge variant="accent">{product.badge}</Badge>}
+              <StockLabel status={product.stockStatus} />
             </div>
 
             <h1 className="mt-5 text-3xl leading-tight font-semibold tracking-tight text-slate-900 sm:text-4xl">
               {product.name}
             </h1>
+
+            {product.sku && (
+              <p className="mt-2 text-sm text-slate-500">SKU: {product.sku}</p>
+            )}
 
             <div className="mt-6">
               <PriceDisplay
@@ -117,27 +136,54 @@ export default async function ProductPage({ params }: ProductPageProps) {
               />
             </div>
 
-            <p className="mt-6 text-lg leading-relaxed text-slate-600">
-              {product.description}
-            </p>
+            {product.shortDescription && (
+              <p className="mt-6 text-lg leading-relaxed text-slate-600">
+                {product.shortDescription}
+              </p>
+            )}
 
             <div className="mt-8">
-              <AddToCartButton product={product} />
+              {product.type === "variable" ? (
+                <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+                  <p className="text-slate-700">
+                    Ovaj proizvod dostupan je u više varijacija.
+                  </p>
+                  <Button asChild variant="outline" className="mt-3">
+                    <Link href="/kontakt">Pošaljite upit</Link>
+                  </Button>
+                </div>
+              ) : (
+                <AddToCartButton product={product} />
+              )}
             </div>
 
             <div className="mt-10 rounded-2xl border border-slate-100 bg-slate-50 p-6">
-              <h2 className="text-lg font-semibold text-slate-900">
-                Specifikacije
-              </h2>
-              <dl className="mt-4 divide-y divide-slate-200">
-                {Object.entries(product.specifications).map(([key, value]) => (
-                  <div key={key} className="flex justify-between py-3 text-sm">
-                    <dt className="text-slate-500">{key}</dt>
-                    <dd className="font-medium text-slate-900">{value}</dd>
-                  </div>
-                ))}
-              </dl>
+              <h2 className="text-lg font-semibold text-slate-900">Opis</h2>
+              <div className="mt-4 whitespace-pre-line text-slate-600">
+                {product.description}
+              </div>
             </div>
+
+            {Object.keys(product.specifications).length > 0 && (
+              <div className="mt-10 rounded-2xl border border-slate-100 bg-slate-50 p-6">
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Specifikacije
+                </h2>
+                <dl className="mt-4 divide-y divide-slate-200">
+                  {Object.entries(product.specifications).map(
+                    ([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex justify-between py-3 text-sm"
+                      >
+                        <dt className="text-slate-500">{key}</dt>
+                        <dd className="font-medium text-slate-900">{value}</dd>
+                      </div>
+                    )
+                  )}
+                </dl>
+              </div>
+            )}
           </AnimatedSection>
         </div>
       </div>

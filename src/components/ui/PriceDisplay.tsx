@@ -3,7 +3,7 @@ import { formatPrice } from "@/lib/utils";
 
 interface PriceDisplayProps {
   price: number;
-  oldPrice?: number;
+  oldPrice?: number | null;
   size?: "sm" | "md" | "lg";
   className?: string;
 }
