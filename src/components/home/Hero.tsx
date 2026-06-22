@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { useHeroAnimation } from "@/hooks/useHeroAnimation";
 import { ArrowRight, ShieldCheck, Truck, Wrench } from "lucide-react";
@@ -20,39 +21,24 @@ export function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative flex min-h-[80vh] items-center overflow-hidden bg-slate-950"
+      className="relative flex min-h-[80vh] items-center overflow-hidden"
     >
-      {/* Background effects */}
-      <div className="absolute inset-0 z-0">
-        {/* Gradient base */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
-
-        {/* Blue glow orbs */}
-        <div className="from-brand/40 absolute -top-32 -right-32 h-[500px] w-[500px] rounded-full bg-gradient-to-br to-blue-600/10 blur-[120px]" />
-        <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-blue-800/20 blur-[100px]" />
-
-        {/* Grid pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-            backgroundSize: "80px 80px",
-          }}
-        />
-
-        {/* Subtle diagonal lines */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 11px)",
-          }}
-        />
-      </div>
+      {/* Background image */}
+      <Image
+        src="/images/hero-bg.jpg"
+        alt=""
+        fill
+        className="object-cover"
+        priority
+        sizes="100vw"
+      />
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 bg-slate-950/70" />
+      {/* Gradient fade for better look */}
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/50 to-slate-950/30" />
 
       {/* Content */}
-      <div className="relative z-20 mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
         <div className="max-w-3xl">
           <p className="hero-animate text-sm font-semibold tracking-[0.2em] text-[#0055a8] uppercase">
             Tehnička oprema · Alati · Pametna kuća
@@ -62,7 +48,7 @@ export function Hero() {
             {site.tagline}
           </h1>
 
-          <p className="hero-animate mt-6 max-w-xl text-lg leading-relaxed text-slate-300">
+          <p className="hero-animate mt-6 max-w-xl text-lg leading-relaxed text-slate-200">
             Široka ponuda provjerenih proizvoda za profesionalce i domaćinstva.
             Brza dostava, detaljni opisi i jednostavna kupnja — sve na jednom
             mjestu.
@@ -79,7 +65,7 @@ export function Hero() {
               asChild
               variant="outline"
               size="lg"
-              className="border-slate-500 text-slate-300 hover:border-white hover:bg-white/10 hover:text-white"
+              className="border-slate-400 text-white hover:border-white hover:bg-white/10"
             >
               <Link href="/kontakt">Kontaktiraj nas</Link>
             </Button>
@@ -89,7 +75,7 @@ export function Hero() {
             {benefits.map((benefit) => (
               <div
                 key={benefit.label}
-                className="flex items-center gap-3 text-sm font-medium text-slate-400"
+                className="flex items-center gap-3 text-sm font-medium text-slate-300"
               >
                 <benefit.icon className="h-5 w-5 text-[#0055a8]" />
                 {benefit.label}
