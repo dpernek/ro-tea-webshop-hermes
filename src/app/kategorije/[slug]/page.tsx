@@ -19,7 +19,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const cat = await db.category.findUnique({ where: { slug } });
   if (!cat) notFound();
 
-  const cats = await db.category.findMany({ orderBy: { sortOrder: "asc" } });
+  const allCats = await db.category.findMany({ orderBy: { sortOrder: "asc" } });
   const products = await db.product.findMany({ where: { categoryId: cat.id, status: "ACTIVE" }, orderBy: { createdAt: "desc" } });
 
   return (
@@ -39,24 +39,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="flex gap-8">
-          <aside className="hidden w-56 shrink-0 lg:block">
-            <div className="sticky top-24">
-              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-900">Kategorije</h3>
-              <nav className="space-y-0.5">
-                {cats.map(c => (
-                  <Link key={c.id} href={`/kategorije/${c.slug}`}
-                    className={`block rounded-lg px-3 py-2 text-sm transition-colors ${c.id === cat.id ? "bg-[#0055a8]/10 font-medium text-[#0055a8]" : "text-slate-600 hover:bg-slate-100"}`}>
-                    {c.name}
-                  </Link>
-                ))}
-              </nav>
-            </div>
-          </aside>
-          <div className="min-w-0 flex-1">
-            <ProductGrid products={products as any} />
-          </div>
-        </div>
+        <ProductGrid products={products as any} allCategories={allCats as any} currentCategory={cat as any} />
       </div>
     </div>
   );
