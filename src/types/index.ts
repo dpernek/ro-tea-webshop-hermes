@@ -66,8 +66,15 @@ export interface SiteConfig {
     city: string;
     company: string;
     phoneDisplay: string;
+    phoneHref?: string;
     email: string;
     oib: string;
+    iban?: string;
+    pdvId?: string;
+    sudUpisa?: string;
+    temeljniKapital?: string;
+    uprava?: string;
+    osnivac?: string;
   };
   social: {
     facebook?: string;

@@ -4,21 +4,20 @@ import { Mail, Phone, MapPin } from "lucide-react";
 import Image from "next/image";
 
 const footerLinks = {
-  shop: [
-    { href: "/proizvodi", label: "Svi proizvodi" },
-    { href: "/kategorije/alati", label: "Alati" },
-    { href: "/kategorije/rasvjeta", label: "Rasvjeta" },
-    { href: "/kategorije/pametna-kuca", label: "Pametna kuća" },
-  ],
-  company: [
+  informacije: [
     { href: "/o-nama", label: "O nama" },
+    { href: "/uvjeti-kupnje", label: "Uvjeti kupovine" },
+    { href: "/politika-privatnosti", label: "Pravila o privatnosti" },
+    { href: "/proizvodi", label: "Trgovina" },
+  ],
+  podrska: [
     { href: "/kontakt", label: "Kontakt" },
+    { href: "/povrati-i-reklamacije", label: "Povrat i zamjena" },
+    { href: "/pravila-dostave", label: "Dostava" },
   ],
 };
 
 export function Footer() {
-  const phoneHref = `tel:${site.contact.phoneDisplay.replace(/\s/g, "")}`;
-
   return (
     <footer className="mt-auto border-t border-slate-100 bg-slate-50">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -34,16 +33,16 @@ export function Footer() {
               />
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-slate-600">
-              {site.description}
+              Profesionalni alati i oprema za industriju, radionice i obrtnike.
             </p>
           </div>
 
           <div>
             <h4 className="text-sm font-semibold tracking-wide text-slate-900 uppercase">
-              Trgovina
+              Informacije
             </h4>
             <ul className="mt-4 space-y-3">
-              {footerLinks.shop.map((link) => (
+              {footerLinks.informacije.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -58,10 +57,10 @@ export function Footer() {
 
           <div>
             <h4 className="text-sm font-semibold tracking-wide text-slate-900 uppercase">
-              Tvrtka
+              Podrška
             </h4>
             <ul className="mt-4 space-y-3">
-              {footerLinks.company.map((link) => (
+              {footerLinks.podrska.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
@@ -76,16 +75,23 @@ export function Footer() {
 
           <div>
             <h4 className="text-sm font-semibold tracking-wide text-slate-900 uppercase">
-              Kontakt
+              RO-TEA d.o.o.
             </h4>
-            <ul className="mt-4 space-y-3">
-              <li className="flex items-start gap-3 text-sm text-slate-600">
+            <div className="mt-4 space-y-3 text-sm text-slate-600">
+              <p className="flex items-start gap-2">
+                <MapPin className="text-brand mt-0.5 h-4 w-4 shrink-0" />
+                <span>{site.contact.address}</span>
+              </p>
+              <p className="flex items-start gap-2">
                 <Phone className="text-brand mt-0.5 h-4 w-4 shrink-0" />
-                <a href={phoneHref} className="hover:text-brand">
+                <a
+                  href={`tel:${site.contact.phoneDisplay.replace(/\s/g, "")}`}
+                  className="hover:text-brand"
+                >
                   {site.contact.phoneDisplay}
                 </a>
-              </li>
-              <li className="flex items-start gap-3 text-sm text-slate-600">
+              </p>
+              <p className="flex items-start gap-2">
                 <Mail className="text-brand mt-0.5 h-4 w-4 shrink-0" />
                 <a
                   href={`mailto:${site.contact.email}`}
@@ -93,12 +99,8 @@ export function Footer() {
                 >
                   {site.contact.email}
                 </a>
-              </li>
-              <li className="flex items-start gap-3 text-sm text-slate-600">
-                <MapPin className="text-brand mt-0.5 h-4 w-4 shrink-0" />
-                {site.contact.address}
-              </li>
-            </ul>
+              </p>
+            </div>
           </div>
         </div>
 
@@ -108,7 +110,15 @@ export function Footer() {
               © {new Date().getFullYear()} {site.contact.company}. Sva prava
               pridržana.
             </p>
-            <p className="text-sm text-slate-500">OIB: {site.contact.oib}</p>
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-500">
+              <span>OIB: {site.contact.oib}</span>
+              <Link href="/politika-privatnosti" className="hover:text-brand">
+                Pravila privatnosti
+              </Link>
+              <Link href="/uvjeti-kupnje" className="hover:text-brand">
+                Uvjeti kupovine
+              </Link>
+            </div>
           </div>
         </div>
       </div>

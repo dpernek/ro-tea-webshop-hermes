@@ -1,19 +1,27 @@
 {
   "name": "RO-TEA",
-  "tagline": "Tehnička oprema za profesionalce i domaćinstva",
-  "description": "RO-TEA je specijalizirana trgovina tehničkom opremom, alatima, elektro materijalom, rasvjetom, vodoinstalacijama i pametnom kućom. Brza dostava, stručna podrška i pouzdani proizvodi.",
+  "tagline": "Profesionalni alati i oprema za industriju, radionice i obrtnike",
+  "description": "RO-TEA je specijalizirana trgovina profesionalnim alatima, opremom za industriju, radionice i obrtnike. PFERD, Metabo, Festa - brza dostava i stručna podrška.",
   "url": "https://ro-tea-webshop-hermes.vercel.app",
-  "heroImage": "https://ro-tea.hr/wp-content/uploads/2025/10/LSVset.webp",
+  "heroImage": "",
   "contact": {
     "email": "info@ro-tea.hr",
-    "phoneDisplay": "+385 1 2345 678",
-    "address": "Ulica Tehničke opreme 12, 10000 Zagreb",
+    "phoneDisplay": "+385 1 3820 113",
+    "phoneHref": "tel:+38513820113",
+    "address": "Badalićeva 26b, 10000 Zagreb",
+    "city": "Zagreb",
     "company": "RO-TEA d.o.o.",
-    "oib": "12345678901"
+    "oib": "82282361229",
+    "iban": "HR8923600001101238701",
+    "pdvId": "HR82282361229",
+    "sudUpisa": "Trgovački sud u Zagrebu, MBS 08018500",
+    "temeljniKapital": "53.700,00 kn uplaćen u cjelosti",
+    "uprava": "mag. ing. stroj. Mihael Račić",
+    "osnivac": "Josip Čarapina"
   },
   "social": {
-    "facebook": "https://facebook.com/rotea",
-    "instagram": "https://instagram.com/rotea",
-    "linkedin": "https://linkedin.com/company/rotea"
+    "facebook": "https://www.facebook.com/rotea.hr",
+    "instagram": "https://www.instagram.com/ro_tea_alati",
+    "linkedin": "https://www.linkedin.com/company/ro-tea-d-o-o-"
   }
 }
