@@ -16,12 +16,12 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <div className="relative aspect-square overflow-hidden rounded-2xl bg-slate-200">
+      <div className="relative aspect-square overflow-hidden rounded-2xl bg-white">
         <Image
           src={displayImages[selected]}
           alt={alt}
           fill
-          className="object-contain p-4"
+          className="object-contain p-4 [mix-blend-mode:multiply]"
           sizes="(max-width: 1024px) 100vw, 50vw"
           priority
         />
@@ -45,7 +45,7 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
                 src={image}
                 alt={`${alt} - slika ${index + 1}`}
                 fill
-                className="object-contain p-2"
+                className="object-contain p-2 [mix-blend-mode:multiply]"
                 sizes="120px"
               />
             </button>

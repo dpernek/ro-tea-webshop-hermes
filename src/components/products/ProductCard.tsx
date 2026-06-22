@@ -29,13 +29,13 @@ export function ProductCard({ product }: ProductCardProps) {
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:shadow-md">
       <Link
         href={`/proizvodi/${product.slug}`}
-        className="relative aspect-[4/3] overflow-hidden bg-slate-200"
+        className="relative aspect-[4/3] overflow-hidden bg-white"
       >
         <Image
           src={product.image}
           alt={product.name}
           fill
-          className="object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+          className="object-contain p-4 transition-transform duration-500 group-hover:scale-105 [mix-blend-mode:multiply]"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
       </Link>

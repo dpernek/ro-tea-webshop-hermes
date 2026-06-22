@@ -26,13 +26,13 @@ export function CartItem({ item }: CartItemProps) {
     <div className="flex gap-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:gap-6 sm:p-6">
       <Link
         href={`/proizvodi/${item.product.slug}`}
-        className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-xl bg-slate-200 sm:w-32"
+        className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-xl bg-white sm:w-32"
       >
         <Image
           src={item.product.image}
           alt={item.product.name}
           fill
-          className="object-contain p-2"
+          className="object-contain p-2 [mix-blend-mode:multiply]"
           sizes="(max-width: 640px) 96px, 128px"
         />
       </Link>
