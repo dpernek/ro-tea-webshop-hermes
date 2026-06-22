@@ -122,5 +122,1712 @@
   "rucna-cetka-univerzalna-hbu": {
     "Redovi žice": "3 | 4 | 5",
     "Materijal žice": "čelik | inox | mesing"
+  },
+  "aku-kutna-brusilica-festa-share20v-115mm-bez-baterije-i-punjaca": {
+    "Promjer": "115mm",
+    "Napon": "20V"
+  },
+  "automatski-skidac-izolacije-075-25mm": {
+    "Promjer": "2,5mm"
+  },
+  "bat-1000g-fiberglass": {
+    "Težina": "1000g"
+  },
+  "bat-2000g-fiberglass": {
+    "Težina": "2000g"
+  },
+  "bat-guma-340g-tpr-fiber-drska-290mm": {
+    "Promjer": "290mm",
+    "Težina": "340g"
+  },
+  "bat-guma-680g-tpr-fiber-drska-320mm-crno-bijeli": {
+    "Promjer": "320mm",
+    "Težina": "680g"
+  },
+  "bat-guma-680g-tpr-fiber-drska-340mm": {
+    "Promjer": "340mm",
+    "Težina": "680g"
+  },
+  "bat-guma-900g-tpr-fiber-drska-350mm": {
+    "Promjer": "350mm",
+    "Težina": "900g"
+  },
+  "bat-guma-bijela-fiberglass-600g": {
+    "Težina": "600g"
+  },
+  "baterija-18v-2-0ah-li-ion": {
+    "Napon": "18V",
+    "Kapacitet": "2.0Ah"
+  },
+  "baterija-18v-8-0ah-lihd": {
+    "Napon": "18V",
+    "Kapacitet": "8.0Ah"
+  },
+  "baterija-18v-2-x-lihdx-8-0-ah-asc-290-metabox-145": {
+    "Napon": "18V",
+    "Kapacitet": "8.0 Ah"
+  },
+  "baterija-18v-2x55-lihd-basic-set-asc-145-30-36v": {
+    "Napon": "18V",
+    "Volumen": "5,5 L"
+  },
+  "baterija-18v-4-0-ah-li-ion": {
+    "Napon": "18V",
+    "Kapacitet": "4.0 Ah"
+  },
+  "baterija-18v-5-2-ah-li-ion": {
+    "Napon": "18V",
+    "Kapacitet": "5.2 Ah"
+  },
+  "baterija-aku-worcraft-clb-20v-20-2000mah": {
+    "Napon": "20V"
+  },
+  "baterija-aku-worcraft-clb-20v-40-4000-mah": {
+    "Napon": "20V"
+  },
+  "baterija-worcraft-clb-20v-6000mah": {
+    "Napon": "20V"
+  },
+  "baterija-za-aku-alate-festa-share20v-4-0ah": {
+    "Napon": "20V",
+    "Kapacitet": "4.0Ah"
+  },
+  "bit-ph2x25mm1-4-za-gipsane-ploce-2-1": {
+    "Promjer": "25mm",
+    "Dimenzije": "2x25mm"
+  },
+  "bit-torzijski-festa-industry-ph2-50mm1-4-2-1": {
+    "Promjer": "50mm"
+  },
+  "bit-torzijski-festa-industry-t25-50mm1-4-2-1": {
+    "Promjer": "50mm"
+  },
+  "brus-za-kosu-205x15-mm": {
+    "Promjer": "15 mm",
+    "Dimenzije": "205x15 mm"
+  },
+  "brusilica-aku-multifunkcionalna-festa-aku-share20vbez-baterije-i-punjaca": {
+    "Napon": "20V"
+  },
+  "brusilica-aku-worcraft-cag-s20li-115mm-20v": {
+    "Promjer": "115mm",
+    "Napon": "20V",
+    "Volumen": "20L"
+  },
+  "brusilica-aku-wvb-18-lt-bl-11-125-quick-metabox-165-l-bez-baterija-i-punjaca": {
+    "Volumen": "18 L"
+  },
+  "brusilica-aku-wvb-18-ltx-bl-15-125-quick-metabox-165-l": {
+    "Volumen": "18 L"
+  },
+  "brusilica-ekscentar-sxe3125-elektronik-125mm-310w": {
+    "Promjer": "125mm",
+    "Snaga": "310W"
+  },
+  "brusilica-ekscentar-sxe3150-elektronik-150mm-310w": {
+    "Promjer": "150mm",
+    "Snaga": "310W"
+  },
+  "brusilica-ekscentar-sxe450-duo-turbotec-elektronik-150mm-350w": {
+    "Promjer": "150mm",
+    "Snaga": "350W"
+  },
+  "brusilica-ekscentricnaelektricna-worcraft-wprs104-430w-150-mmregulacija": {
+    "Promjer": "150 mm",
+    "Snaga": "430W"
+  },
+  "brusilica-el-worcraft-ag08-125p710w125mmm142-ploce": {
+    "Promjer": "125mm",
+    "Snaga": "710W"
+  },
+  "brusilica-elektricna-worcraft-ag08-1255820w125mm": {
+    "Promjer": "125mm",
+    "Snaga": "820W"
+  },
+  "brusilica-kutna-aku-festa-bez-cetkicashare20v125mm-bez-baterije-i-punjaca": {
+    "Promjer": "125mm",
+    "Napon": "20V"
+  },
+  "brusilica-kutna-elek-worcraft-ag24-230h-2400w-230-mm-softstart-industrijska": {
+    "Promjer": "230 mm",
+    "Snaga": "2400W"
+  },
+  "brusilica-kutna-w11-125-quick-1100w": {
+    "Snaga": "1100W"
+  },
+  "brusilica-kutna-wev850-125-s-regulacijom-125-mm-850-w": {
+    "Promjer": "125 mm",
+    "Snaga": "850 W"
+  },
+  "brusilica-kutna-worcraft-cag-s20libs-125mm-20v-regulacija-brzine-bez-cetkica": {
+    "Promjer": "125mm",
+    "Napon": "20V",
+    "Volumen": "20L"
+  },
+  "brusilica-sa-dugim-vratom-lsv5-225-asr-35l-acppapir-brusni-fi-225-p-120": {
+    "Volumen": "35L"
+  },
+  "brusilica-stolna-worcraft-bg20-150-200w-150x20x127-mm": {
+    "Promjer": "12,7 mm",
+    "Snaga": "200W",
+    "Dimenzije": "20x12,7 mm"
+  },
+  "brusilica-w750-115-kutna-115-mm-750-w": {
+    "Promjer": "115 mm",
+    "Snaga": "750 W"
+  },
+  "brusilica-worcraft-emg01-42135w-mini": {
+    "Snaga": "42,135W"
+  },
+  "busilica-elektricna-worcraft-id-800800-w": {
+    "Snaga": "800,800 W"
+  },
+  "busilica-elektronik-bev-1300-2-1-300w": {
+    "Snaga": "1.300W"
+  },
+  "busilica-elektronik-bev-1300-2-1-300w-brzostezna-glava": {
+    "Snaga": "1.300W"
+  },
+  "busilica-elektronik-sbe650-rl-vibracijska-650w": {
+    "Snaga": "650W"
+  },
+  "busilica-odvijac-aku-bs18-lt-bl-2x4-0ah-punjac-metabox-145": {
+    "Kapacitet": "4.0Ah",
+    "Volumen": "18 L"
+  },
+  "busilica-odvijac-aku-bs18-lt-bl-quick-bez-baterija-i-punjaca": {
+    "Volumen": "18 L"
+  },
+  "busilica-odvijac-aku-bs18-ltx-bez-baterija": {
+    "Volumen": "18 L"
+  },
+  "busilica-odvijac-aku-udarna-sb18-lt-bl-bez-baterija-i-punjaca": {
+    "Volumen": "18 L"
+  },
+  "busilica-cekic-aku-festa-sds-share20v12jbez-baterije-i-punjaca": {
+    "Napon": "20V"
+  },
+  "busilica-cekic-aku-festa-share20v-bez-baterije-i-punjaca": {
+    "Napon": "20V"
+  },
+  "cjevasti-kljucevi-6-22-mm-10-1": {
+    "Promjer": "22 mm"
+  },
+  "crijevo-vrtno-sunflex-13mm-1-2-25m": {
+    "Promjer": "13mm"
+  },
+  "crijevo-vrtno-sunflex-19x2-5mm-3-4-25m": {
+    "Promjer": "2.5mm",
+    "Dimenzije": "19x2.5mm"
+  },
+  "crijevo-za-kompresor-s-prikljuccima-9-15-mm-10m": {
+    "Promjer": "15 mm"
+  },
+  "crijevo-za-kompresor-s-prikljuccima-9-15-mm-15m": {
+    "Promjer": "15 mm"
+  },
+  "crijevo-za-kompresor-s-prikljuccima-9-15-mm-20m": {
+    "Promjer": "15 mm"
+  },
+  "crijevo-za-kompresor-s-prikljuccima-9-15-mm-5m": {
+    "Promjer": "15 mm"
+  },
+  "dijamantna-ploca-extra-long-life-125x24x22-2mm": {
+    "Promjer": "22.2mm",
+    "Dimenzije": "2,4x22.2mm"
+  },
+  "dijamantna-ploca-extra-thin-125x1x22-2mm": {
+    "Promjer": "22.2mm",
+    "Dimenzije": "1x22.2mm"
+  },
+  "dijamantna-ploca-festa-industry-115x18x222mm": {
+    "Promjer": "22,2mm",
+    "Dimenzije": "1,8x22,2mm"
+  },
+  "dijamantna-ploca-festa-industry-125x1-2x22-2mm": {
+    "Promjer": "22.2mm",
+    "Dimenzije": "1.2x22.2mm"
+  },
+  "dijamantna-rezna-ploca-segm-festa-125-222-22mm": {
+    "Promjer": "2,2mm"
+  },
+  "drzac-brusne-mrezice-za-teleskop-230x80mm": {
+    "Promjer": "80mm",
+    "Dimenzije": "230x80mm"
+  },
+  "drzac-s-2-lista-pile-hcs-za-metal300mm": {
+    "Promjer": "300mm",
+    "Volumen": "2 l"
+  },
+  "drzac-vakuumski-festa-s-manometrom-200mm": {
+    "Promjer": "200mm"
+  },
+  "drzac-vakuumski-westberg-200mm-liion-3-6v-2-0ah-ce": {
+    "Promjer": "200mm",
+    "Napon": "3.6V",
+    "Kapacitet": "2.0Ah"
+  },
+  "drzac-valjka-100-mm-pr-6mm-28cm-u10-09326": {
+    "Promjer": "100 mm"
+  },
+  "drzac-valjka-100-mm-pr-6mm-40cm-u10-k-09319": {
+    "Promjer": "100 mm"
+  },
+  "drzac-valjka-100-mm-pr-6mm-55cm": {
+    "Promjer": "100 mm"
+  },
+  "drzac-valjka-240-mm-pr-6mm-25cm": {
+    "Promjer": "240 mm"
+  },
+  "drzac-valjka-55-mm-pr-6mm-19cm-u5-09302": {
+    "Promjer": "55 mm"
+  },
+  "drzaci-alata-magnetni-200-300-460mm-3-1": {
+    "Promjer": "460mm"
+  },
+  "fangla-inox-180mm": {
+    "Promjer": "180mm"
+  },
+  "gladilica-plast-s-grubom-spuzvom-280x140-30mm": {
+    "Promjer": "30mm"
+  },
+  "gladilica-plast-s-gumenom-pjenom-280x140-8mm": {
+    "Promjer": "8mm"
+  },
+  "gladilica-plast-s-molitan-spuzvom-280x140-30mm": {
+    "Promjer": "30mm"
+  },
+  "gladilica-plasticna-230mm": {
+    "Promjer": "230mm"
+  },
+  "gladilica-plasticna-230mm-z6": {
+    "Promjer": "230mm"
+  },
+  "gladilica-plasticna-230mm-zt": {
+    "Promjer": "230mm"
+  },
+  "gleter-inox-venecijaner-200x80mm-gumena-rucka": {
+    "Promjer": "80mm",
+    "Dimenzije": "200x80mm"
+  },
+  "gleter-inox-hn10-270x125mm": {
+    "Promjer": "125mm",
+    "Dimenzije": "270x125mm"
+  },
+  "gleter-inox-hn15-280x130mm": {
+    "Promjer": "130mm",
+    "Dimenzije": "280x130mm"
+  },
+  "gleter-inox-hn15-280x130mm-e10": {
+    "Promjer": "130mm",
+    "Dimenzije": "280x130mm"
+  },
+  "gleter-inox-hn15-280x130mm-e12": {
+    "Promjer": "130mm",
+    "Dimenzije": "280x130mm"
+  },
+  "gleter-inox-hn15-280x130mm-e4": {
+    "Promjer": "130mm",
+    "Dimenzije": "280x130mm"
+  },
+  "gleter-inox-hn15-280x130mm-e6": {
+    "Promjer": "130mm",
+    "Dimenzije": "280x130mm"
+  },
+  "gleter-inox-hn15-280x130mm-e8": {
+    "Promjer": "130mm",
+    "Dimenzije": "280x130mm"
+  },
+  "gleter-inox-hn30-280x130mm-drvena-rucka": {
+    "Promjer": "130mm",
+    "Dimenzije": "280x130mm"
+  },
+  "gleter-inox-hn30-280x130mmzaobljen-rubskin-touchrucka": {
+    "Promjer": "130mm",
+    "Dimenzije": "280x130mm"
+  },
+  "gleter-inox-hn60-480x130mm": {
+    "Promjer": "130mm",
+    "Dimenzije": "480x130mm"
+  },
+  "glodalo-za-drvo-festa-35mm": {
+    "Promjer": "35mm"
+  },
+  "grablje-plasticne-50-cm-22-lamele": {
+    "Volumen": "22 l"
+  },
+  "herbicidno-veliko-zvono-370x140x200-mm": {
+    "Promjer": "200 mm",
+    "Dimenzije": "140x200 mm"
+  },
+  "imbusi-crv-15-6-mm-7-1": {
+    "Promjer": "6 mm"
+  },
+  "imbusi-crv-produzeni-15-10mm9-1": {
+    "Promjer": "10mm"
+  },
+  "imbusi-komplet-crv-15-10mm-9-1": {
+    "Promjer": "10mm"
+  },
+  "imbusi-s-glavom-crv-15-10mm-9-1": {
+    "Promjer": "10mm"
+  },
+  "imbusi-s-glavom-crv-15-10mm-9-1-2": {
+    "Promjer": "10mm"
+  },
+  "imbusi-s-glavom-produzeni-crv-15-10mm-9-1": {
+    "Promjer": "10mm"
+  },
+  "karoserijska-turpija-ekstra-gruba-350mm-299b-350-c00": {
+    "Promjer": "350mm"
+  },
+  "karoserijska-turpija-fina-350mm-299b-350-c3": {
+    "Promjer": "350mm"
+  },
+  "karoserijska-turpija-gruba-350mm-299b-350-c1": {
+    "Promjer": "350mm"
+  },
+  "karoserijska-turpija-srednje-gruba-350mm-299b-350-c2": {
+    "Promjer": "350mm"
+  },
+  "karoserijska-turpija-vrlo-gruba-350mm-299b-350-c0": {
+    "Promjer": "350mm"
+  },
+  "kist-pvc-100mm": {
+    "Promjer": "100mm"
+  },
+  "kist-pvc-20mm": {
+    "Promjer": "20mm"
+  },
+  "kist-pvc-30mm": {
+    "Promjer": "30mm"
+  },
+  "kist-pvc-50mm": {
+    "Promjer": "50mm"
+  },
+  "kist-pvc-70mm": {
+    "Promjer": "70mm"
+  },
+  "kistovi-1525406080mm-5-1-plast-rucka": {
+    "Promjer": "60,80mm"
+  },
+  "kistovi-203050mm-3-1-plasticna-rucka": {
+    "Promjer": "30,50mm"
+  },
+  "klamerica-aku-worcraft-cns-s20li-spremnik-100-kom": {
+    "Volumen": "20L"
+  },
+  "klamerica-festa-profi-tw-st301-4-14-mm": {
+    "Promjer": "14 mm"
+  },
+  "klijesta-festa-kombinirana-180-mm": {
+    "Promjer": "180 mm"
+  },
+  "klijesta-festa-sjekaca-180-mm": {
+    "Promjer": "180 mm"
+  },
+  "klijesta-kombinirana-160-mm-festa-vde": {
+    "Promjer": "160 mm"
+  },
+  "klijesta-kombinirana-180-mm-festa-vde": {
+    "Promjer": "180 mm"
+  },
+  "klijesta-radio-160-mm": {
+    "Promjer": "160 mm"
+  },
+  "klijesta-siko-250mm-crv-0-30mm": {
+    "Promjer": "250mm"
+  },
+  "klijesta-sjekaca-160-mm-festa-vde": {
+    "Promjer": "160 mm"
+  },
+  "klijesta-sjekaca-festa-220mm": {
+    "Promjer": "220mm"
+  },
+  "klijesta-sjekaca-festa-crv-200mm": {
+    "Promjer": "200mm"
+  },
+  "klijesta-stezna-u-220mm": {
+    "Promjer": "220mm"
+  },
+  "klijesta-stezna-220mm": {
+    "Promjer": "220mm"
+  },
+  "klijesta-stezna-220mm-2": {
+    "Promjer": "220mm"
+  },
+  "klijesta-stezna-270mm": {
+    "Promjer": "270mm"
+  },
+  "klijesta-za-pvc-cijevi-do-42-mm": {
+    "Promjer": "42 mm"
+  },
+  "klijesta-za-sajlu-200-mm": {
+    "Promjer": "200 mm"
+  },
+  "klijesta-za-skidanje-izolacije-160-mm-festa-vde": {
+    "Promjer": "160 mm"
+  },
+  "klijesta-spic-ravna-160-mm-festa-vde": {
+    "Promjer": "160 mm"
+  },
+  "klijesta-spic-zavinuta-160-mm-festa-vde": {
+    "Promjer": "160 mm"
+  },
+  "klijesta-kljuc-festa-crv-250mm-0-52mm": {
+    "Promjer": "250mm"
+  },
+  "klijesta-skare-za-pvc-cijevi-festa-max-32mm": {
+    "Promjer": "32mm"
+  },
+  "kljuc-brzi-festa-s-nastavcima-8-19mm": {
+    "Promjer": "19mm"
+  },
+  "kljuc-montazni-za-skele-19mm": {
+    "Promjer": "19mm"
+  },
+  "kljuc-za-skele-festa-19-i-22mm-4u1": {
+    "Promjer": "22mm"
+  },
+  "kljucevi-obostrano-vilicasti-6-17-mm-6-1": {
+    "Promjer": "17 mm"
+  },
+  "kljucevi-obostrano-vilicasti-6-22-mm-8-1": {
+    "Promjer": "22 mm"
+  },
+  "kljucevi-obostrano-vilicasti-6-32-mm-12-1": {
+    "Promjer": "32 mm"
+  },
+  "kombinirani-kljucevi-festa6-22-mm12-1": {
+    "Promjer": "22 mm"
+  },
+  "kombinirani-kljucevi-festa6-24-mm18-1": {
+    "Promjer": "24 mm"
+  },
+  "kombinirani-kljucevi-festa6-32-mm25-1": {
+    "Promjer": "32 mm"
+  },
+  "kombinirani-kljucevi-10-17-mm-6-1": {
+    "Promjer": "17 mm"
+  },
+  "kombinirani-kljucevi-8-19-mm-8-1": {
+    "Promjer": "19 mm"
+  },
+  "komplet-moltopren-100mm-perlon-100mmdrzackadica": {
+    "Promjer": "100mm"
+  },
+  "komplet-valjak-240mmdrzacmrezica": {
+    "Promjer": "240mm"
+  },
+  "komplet-valjak-moltopren-100mmdrzackadica": {
+    "Promjer": "100mm"
+  },
+  "kompresor-aku-worcraft-cac-s20li-20v160-psi-11-bar-led-svjetlo": {
+    "Napon": "20V",
+    "Volumen": "20L",
+    "Tlak": "11 Bar"
+  },
+  "kompresor-rucni-150-psi-10-bara-led-svjetlo": {
+    "Tlak": "10 bar"
+  },
+  "konop-juteni-100g-75m": {
+    "Težina": "100g"
+  },
+  "konop-juteni-200g-150m": {
+    "Težina": "200g"
+  },
+  "konop-juteni-80g-60m": {
+    "Težina": "80g"
+  },
+  "konop-polypropylen-80g-40m": {
+    "Težina": "80g"
+  },
+  "kontrolno-ogledalo-westbergteleskop-290-880mmled": {
+    "Promjer": "880mm"
+  },
+  "kramp-25-kg-drzalo-95-cm": {
+    "Težina": "2,5 kg"
+  },
+  "kramp-25kg": {
+    "Težina": "2,5kg"
+  },
+  "kramp-kovani-15-kg-s-drzalom-95cm": {
+    "Težina": "1,5 kg"
+  },
+  "lemilica-westberg-175w": {
+    "Snaga": "175W"
+  },
+  "lijevak-s-filterom-140mm": {
+    "Promjer": "140mm"
+  },
+  "list-za-ubod-pilu-75mm-145mm-hcs-25-12mm-5-1": {
+    "Promjer": "75mm"
+  },
+  "list-za-ubodnu-pilu-100mm-13mm-hss-2mm-5-1": {
+    "Promjer": "100mm"
+  },
+  "list-za-ubodnu-pilu-100mm-1mm-hss-12mm-5-1": {
+    "Promjer": "100mm"
+  },
+  "list-za-ubodnu-pilu-105mm-145mm-hcs-4mm-5-1": {
+    "Promjer": "105mm"
+  },
+  "list-za-ubodnu-pilu-120mm-13mm-bim-18-24mm-5-1": {
+    "Promjer": "120mm"
+  },
+  "list-za-ubodnu-pilu-120mm-13mm-hcs-4mm-5-1": {
+    "Promjer": "120mm"
+  },
+  "list-za-ubodnu-pilu-50mm-10mm-5-1": {
+    "Promjer": "50mm"
+  },
+  "list-za-ubodnu-pilu-50mm-1mm-hss-07mm-5-1": {
+    "Promjer": "50mm"
+  },
+  "list-za-ubodnu-pilu-50mm-1mm-hss-12mm-5-1": {
+    "Promjer": "50mm"
+  },
+  "list-za-ubodnu-pilu-50mm-1mm-hss-2mm-5-1": {
+    "Promjer": "50mm"
+  },
+  "list-za-ubodnu-pilu-75mm-10mm-5-1": {
+    "Promjer": "75mm"
+  },
+  "list-za-ubodnu-pilu-75mm-13mm-hcs-4mm-5-1": {
+    "Promjer": "75mm"
+  },
+  "list-za-ubodnu-pilu-75mm-13mm-hcs-4mm-5-1-2": {
+    "Promjer": "75mm"
+  },
+  "list-za-ubodnu-pilu-75mm-145mm-hcs-25mm-5-1": {
+    "Promjer": "75mm"
+  },
+  "list-za-ubodnu-pilu-75mm-145mm-hcs-25mm-5-1-2": {
+    "Promjer": "75mm"
+  },
+  "list-za-ubodnu-pilu-75mm-145mm-hcs-4mm-5-1": {
+    "Promjer": "75mm"
+  },
+  "list-za-ubodnu-pilu-75mm-145mm-hss-2mm-5-1": {
+    "Promjer": "75mm"
+  },
+  "list-za-ubodnu-pilu-75mm-17mm-hcs-4mm-5-1": {
+    "Promjer": "75mm"
+  },
+  "list-za-ubodnu-pilu-75mm-1mm-hss-3mm-5-1": {
+    "Promjer": "75mm"
+  },
+  "list-za-ubodnu-pilu-85mm-145mm-hcs-3mm-5-1": {
+    "Promjer": "85mm"
+  },
+  "list-za-ubodnu-pilu-85mm-145mm-hcs-4mm-5-1": {
+    "Promjer": "85mm"
+  },
+  "list-za-ubodnu-pilu-karbid-55mm-5-1": {
+    "Promjer": "55mm"
+  },
+  "ljestve-teleskopske-32m-11-gazistaalu": {
+    "Težina": "11 g"
+  },
+  "ljestve-teleskopske-38m-13-gazistaalu": {
+    "Težina": "13 g"
+  },
+  "lopata-kamperska-410-mm": {
+    "Promjer": "410 mm"
+  },
+  "lopatica-fasadna-200mm": {
+    "Promjer": "200mm"
+  },
+  "lopatica-fasadna-250mm": {
+    "Promjer": "250mm"
+  },
+  "lopatica-fasadna-300mm": {
+    "Promjer": "300mm"
+  },
+  "lopatica-inox-st40-100mm": {
+    "Promjer": "100mm"
+  },
+  "lopatica-inox-st40-130mm": {
+    "Promjer": "130mm"
+  },
+  "lopatica-inox-st40-160mm": {
+    "Promjer": "160mm"
+  },
+  "lopatica-inox-st40-190mm": {
+    "Promjer": "190mm"
+  },
+  "lopatica-inox-st40-60mm": {
+    "Promjer": "60mm"
+  },
+  "lopatica-inox-st40-80mm": {
+    "Promjer": "80mm"
+  },
+  "lopatica-inox-st60-380mm": {
+    "Promjer": "380mm"
+  },
+  "lopatica-inox-st60-480mm": {
+    "Promjer": "480mm"
+  },
+  "lopatica-inox-st60-580mm": {
+    "Promjer": "580mm"
+  },
+  "lopatica-rost-frei-100mm": {
+    "Promjer": "100mm"
+  },
+  "lopatica-rost-frei-40mm": {
+    "Promjer": "40mm"
+  },
+  "lopatica-rost-frei-60mm": {
+    "Promjer": "60mm"
+  },
+  "lopatica-rost-frei-80mm": {
+    "Promjer": "80mm"
+  },
+  "lopatica-s-bitom-ph2-200mm": {
+    "Promjer": "200mm"
+  },
+  "lopatica-zeljezna-3-1-305080mm": {
+    "Promjer": "50,80mm"
+  },
+  "lovacki-noz-230-mm": {
+    "Promjer": "230 mm"
+  },
+  "magnetni-nastavak-za-bit-zglobnicrv1-490mm": {
+    "Promjer": "90mm"
+  },
+  "magnetni-nastavak-za-bitove-1-4-60mm-granicnik": {
+    "Promjer": "60mm"
+  },
+  "magnetni-nastavak-za-bitove-1-465mmgranicnik-5-1-18799": {
+    "Promjer": "65mm"
+  },
+  "magnetski-drzac-alata-610-mm": {
+    "Promjer": "610 mm"
+  },
+  "metabo-aku-busilica-izvijac-bs-18-li-2xaku-18v-20ah": {
+    "Napon": "18V",
+    "Kapacitet": "2,0Ah",
+    "Volumen": "18 L"
+  },
+  "metabo-brusilica-kutna-aku-w-18-lt-bl-11-125-bez-baterije-i-punjaca": {
+    "Volumen": "18 L"
+  },
+  "metabo-brusilica-kutna-w13-125-quick-1-350w": {
+    "Snaga": "1.350W"
+  },
+  "metabo-brusilica-kutna-we2000-230mm-2-000w": {
+    "Promjer": "230mm",
+    "Snaga": "2.000W"
+  },
+  "metabo-brusilica-kutna-we24-230-mvt-quick-2-400w": {
+    "Snaga": "2.400W"
+  },
+  "metabo-brusilica-kutna-we26-230-mvt-quick-2-600w": {
+    "Snaga": "2.600W"
+  },
+  "metabo-brusilica-kutna-wev-11-125-quick-1-100w-s-regulacijom": {
+    "Snaga": "1.100W"
+  },
+  "metabo-busilica-odvijac-aku-bs18-l-2x20ah-sc30": {
+    "Kapacitet": "2,0Ah",
+    "Volumen": "18 L"
+  },
+  "metabo-kutna-brusilica-125-mm-w-750-125": {
+    "Promjer": "125 mm"
+  },
+  "metabo-kutna-brusilica-w1100-125-1-100w": {
+    "Snaga": "1.100W"
+  },
+  "metabo-kutna-brusilica-we15-125-quick-125mm-1550w": {
+    "Promjer": "125mm",
+    "Snaga": "1550W"
+  },
+  "metabo-kutna-brusilica-we15-125-quick-125mm-1550w-s-potenciometrom": {
+    "Promjer": "125mm",
+    "Snaga": "1550W"
+  },
+  "metabo-kutna-brusilica-we17-125-quick-125mm-1700w": {
+    "Promjer": "125mm",
+    "Snaga": "1700W"
+  },
+  "metabo-kutna-brusilica-we17-125-quick-125mm-1700w-s-potenciometrom": {
+    "Promjer": "125mm",
+    "Snaga": "1700W"
+  },
+  "metabo-kutna-brusilica-we19-180-quick-rt-1900w-180mm": {
+    "Promjer": "180mm",
+    "Snaga": "1900W"
+  },
+  "metabo-kutna-brusilica-we24-180-mvt-2400w-180mm": {
+    "Promjer": "180mm",
+    "Snaga": "2400W"
+  },
+  "metar-ergo-3m16mm": {
+    "Promjer": "16mm"
+  },
+  "metar-ergo-5m16mm": {
+    "Promjer": "16mm"
+  },
+  "metar-magnetic-gumeno-kuciste-10m25mm": {
+    "Promjer": "25mm"
+  },
+  "metar-savitljivi-magnet-5m25mm": {
+    "Promjer": "25mm"
+  },
+  "mijesalica-pocincana-100mm": {
+    "Promjer": "100mm"
+  },
+  "mijesalica-pocincana-propeler-75mm": {
+    "Promjer": "75mm"
+  },
+  "mijesalica-s-dugom-spiralom-100-mm-sds": {
+    "Promjer": "100 mm"
+  },
+  "mijesalica-s-dugom-spiralom-100-x-500mm": {
+    "Promjer": "500mm",
+    "Dimenzije": "100 x 500mm"
+  },
+  "mijesalica-s-dugom-spiralom-80x500mm": {
+    "Promjer": "500mm",
+    "Dimenzije": "80x500mm"
+  },
+  "mjerni-listici-005-1mm-20-listica": {
+    "Promjer": "1mm",
+    "Volumen": "20 l"
+  },
+  "mjesalica-m14-burley-140mm": {
+    "Promjer": "140mm"
+  },
+  "mjesalica-s-dugom-spiralom-120x500mm": {
+    "Promjer": "500mm",
+    "Dimenzije": "120x500mm"
+  },
+  "mjesac-elektricni-westberg-1600w-230v": {
+    "Snaga": "1600W",
+    "Napon": "230V"
+  },
+  "molitan-valjak-fini-180mm-rezervni": {
+    "Promjer": "180mm"
+  },
+  "molitan-valjak-grubi-180mm-rezervni": {
+    "Promjer": "180mm"
+  },
+  "moltopren-valjak-100mm-rezervni-m10-w": {
+    "Promjer": "100mm",
+    "Snaga": "10 W"
+  },
+  "moltopren-valjak-55mm-rezervni": {
+    "Promjer": "55mm"
+  },
+  "motika-95mm-s-drzalom-27cm": {
+    "Promjer": "95mm"
+  },
+  "motika-kovana-600g": {
+    "Težina": "600g"
+  },
+  "multifunkcionalna-brusilica-worcraft-cmt-s20lib-20v-bez-cetkica-bez-baterije": {
+    "Napon": "20V",
+    "Volumen": "20L"
+  },
+  "multifunkcionalni-rezac-brusilica-worcraft-cmt-s20li20v-li-ion": {
+    "Napon": "20V",
+    "Volumen": "20L"
+  },
+  "municija-za-klamericu-1000-1-10mm": {
+    "Promjer": "10mm"
+  },
+  "municija-za-klamericu-1000-1-12mm": {
+    "Promjer": "12mm"
+  },
+  "municija-za-klamericu-1000-1-14mm": {
+    "Promjer": "14mm"
+  },
+  "municija-za-klamericu-1000-1-4mm": {
+    "Promjer": "4mm"
+  },
+  "municija-za-klamericu-1000-1-6mm": {
+    "Promjer": "6mm"
+  },
+  "municija-za-klamericu-1000-1-8mm": {
+    "Promjer": "8mm"
+  },
+  "najlonsko-uze-4mm-x-20m": {
+    "Promjer": "4mm"
+  },
+  "najlonsko-uze-8-mm-x-50-m": {
+    "Promjer": "8 mm"
+  },
+  "naprava-za-ostrenje-lanca-motorne-pile-d32mm-cs-x-32": {
+    "Promjer": "3,2mm"
+  },
+  "naprava-za-ostrenje-lanca-motorne-pile-d40mm-cs-x-40": {
+    "Promjer": "4,0mm"
+  },
+  "naprava-za-ostrenje-lanca-motorne-pile-d48mm-cs-x-48": {
+    "Promjer": "4,8mm"
+  },
+  "naprava-za-ostrenje-lanca-motorne-pile-d516mm-cs-x-516": {
+    "Promjer": "5,16mm"
+  },
+  "naprava-za-ostrenje-lanca-motorne-pile-d55mm-cs-x-55": {
+    "Promjer": "5,5mm"
+  },
+  "nasadni-kljuc-11-32mm-1-2adapter": {
+    "Promjer": "32mm"
+  },
+  "nasadni-kljuc-7-19mm-3-8adapter": {
+    "Promjer": "19mm"
+  },
+  "nasadni-kljucglava-podesiva-crv-1-2-10-19mm": {
+    "Promjer": "19mm"
+  },
+  "odvijac-aku-mini-npt-sdd3-6v12-bitova": {
+    "Napon": "3.6V"
+  },
+  "odvijac-aku-warcraft-chd-s20liba20v-li-ionbez-cetkica": {
+    "Napon": "20V",
+    "Volumen": "20L"
+  },
+  "odvijac-aku-worcraft-cd-12-lia-2x-li-ion-13ah": {
+    "Kapacitet": "1,3Ah",
+    "Volumen": "12 L"
+  },
+  "odvijac-aku-worcraft-cs-12li-li-ion-15-ahled-svjetlo": {
+    "Kapacitet": "1,5 Ah",
+    "Volumen": "12L"
+  },
+  "odvijac-mini-aku-worcraft-sd-36-lib-36v": {
+    "Napon": "3,6V",
+    "Volumen": "3,6 L"
+  },
+  "odvijac-udarni-aku-ssd-18-ltx-200-bl-bez-baterije-i-punjaca": {
+    "Volumen": "18 L"
+  },
+  "odvijac-udarni-aku-ssw-18-ltx-400-bl-bez-baterije-i-punjaca-cordless": {
+    "Volumen": "18 L"
+  },
+  "odvijac-udarni-aku-worcraft-cis-s20li20v1-4-hex-3xled": {
+    "Napon": "20V",
+    "Volumen": "20L"
+  },
+  "odvijac-udarni-festa-1-4share20v150nmbez-baterije-i-punjaca": {
+    "Napon": "20V"
+  },
+  "odvijac-udarni-worcraft-ciw-s20lib-450nm1-2bez-cetkica": {
+    "Volumen": "20L"
+  },
+  "odvijac-vde-ph-0x60mm": {
+    "Promjer": "60mm",
+    "Dimenzije": "0x60mm"
+  },
+  "odvijac-vde-ph-2x100mm": {
+    "Promjer": "100mm",
+    "Dimenzije": "2x100mm"
+  },
+  "odvijac-worcraft-chd-s20libatli-ion-bez-cetkica-set": {
+    "Volumen": "20L"
+  },
+  "odvijac-busilica-festa-share20vset-2x-baterija-2-0ahpunjackofer": {
+    "Napon": "20V",
+    "Kapacitet": "0Ah"
+  },
+  "okasti-kljucevi-6-22-mm-8-1-2": {
+    "Promjer": "22 mm"
+  },
+  "okasti-kljucevi-6-22-mm-8-1": {
+    "Promjer": "22 mm"
+  },
+  "olovka-celicna-festa-grafitni-ulozak-hb-180mm": {
+    "Promjer": "180mm"
+  },
+  "pajser-1000mm-14-x-23-dijametar": {
+    "Promjer": "1000mm"
+  },
+  "pajser-400mm-14-x-23-dijametar": {
+    "Promjer": "400mm"
+  },
+  "pajser-600mm-14-x-23-dijametar": {
+    "Promjer": "600mm"
+  },
+  "pajser-800mm-14-x-23-dijametar": {
+    "Promjer": "800mm"
+  },
+  "perforirana-traka-12x06x1000mm": {
+    "Promjer": "1000mm",
+    "Dimenzije": "0,6x1000mm"
+  },
+  "perforirana-traka-17x06x1000mm": {
+    "Promjer": "1000mm",
+    "Dimenzije": "0,6x1000mm"
+  },
+  "pferd-combiclick-set-115mm-m14": {
+    "Promjer": "115mm"
+  },
+  "pila-sabljasta-aku-worcraft-css-12li12v2x-2-0ah-li-ion-baterijapunjac": {
+    "Napon": "12V",
+    "Kapacitet": "2.0Ah",
+    "Volumen": "12L"
+  },
+  "pila-lisicji-rep-aku-worcraft-css-s20li20v-li-ion": {
+    "Napon": "20V",
+    "Volumen": "20L"
+  },
+  "pila-aku-festa-share20v-lisicji-rep-bez-baterije-i-punjaca": {
+    "Napon": "20V"
+  },
+  "pila-elektricna-worcraft-rs07-115-650w-lisicji-rep": {
+    "Snaga": "650W"
+  },
+  "pila-ubodana-aku-st-18-l-90-18v-cordless-bez-baterije-i-punjaca": {
+    "Napon": "18V",
+    "Volumen": "18 L"
+  },
+  "pila-ubodna-aku-festa-share20v-bez-baterije-i-punjaca": {
+    "Napon": "20V"
+  },
+  "pila-ubodna-aku-worcraft-cjs-s20li-20vli-ion": {
+    "Napon": "20V",
+    "Volumen": "20L"
+  },
+  "pila-ubodna-elektronik-steb65-quick-450w": {
+    "Snaga": "450W"
+  },
+  "pila-ubodna-worcraft-js06-65550w": {
+    "Snaga": "550W"
+  },
+  "pila-ubodna-worcraft-js06-65550w-2": {
+    "Snaga": "65,550W"
+  },
+  "pila-za-gipsane-ploce-150mm": {
+    "Promjer": "150mm"
+  },
+  "pila-za-grane-350mm-nasadna": {
+    "Promjer": "350mm"
+  },
+  "pila-za-ytong-750mm-34z-17sk": {
+    "Promjer": "750mm"
+  },
+  "pila-za-suplju-ciglu-550mm": {
+    "Promjer": "550mm"
+  },
+  "pila-za-zeljezo-260-mm": {
+    "Promjer": "260 mm"
+  },
+  "pistolj-worcraft-za-bojucsg-s20li-20v-700ml-aku": {
+    "Napon": "20V",
+    "Volumen": "20L"
+  },
+  "pistolj-za-silikon-aku-worcraft-ccg-s20li-20v-li-ion": {
+    "Napon": "20V",
+    "Volumen": "20L"
+  },
+  "pistolj-za-vruce-lijepljenje-worcraft-aku7mm-usb-kabel": {
+    "Promjer": "7mm"
+  },
+  "pistolj-za-vruce-lijepljenje-worcraft-clg-s20lisharesys20v-11mm": {
+    "Promjer": "11mm",
+    "Napon": "20V",
+    "Volumen": "20L"
+  },
+  "pistolj-za-vruci-zrak-2000w-set-u-koferu": {
+    "Snaga": "2000W"
+  },
+  "plamenik-55mm-s-crijevom-3m-55-cm": {
+    "Promjer": "55mm"
+  },
+  "plamenik-55mm-s-crijevom-3m-85-cm": {
+    "Promjer": "55mm"
+  },
+  "plamenik-festa-12kw-35x350mm-s-crijevom-3m": {
+    "Promjer": "350mm",
+    "Snaga": "12kW",
+    "Dimenzije": "35x350mm"
+  },
+  "plamenik-kemper-75-kw": {
+    "Snaga": "7,5 kW"
+  },
+  "plasticna-mrezica-180mm-kmm-09265": {
+    "Promjer": "180mm"
+  },
+  "plasticna-mrezica-270mm-kmd-09258": {
+    "Promjer": "270mm"
+  },
+  "plasticna-vezica-u-boji-150x25mm-100-1": {
+    "Promjer": "2,5mm",
+    "Dimenzije": "150x2,5mm"
+  },
+  "pobirac-otpada-80cm-max-4kg": {
+    "Težina": "4kg"
+  },
+  "podesavajuci-kljuc-200-mm": {
+    "Promjer": "200 mm"
+  },
+  "podesavajuci-kljuc-250-mm": {
+    "Promjer": "250 mm"
+  },
+  "podesavajuci-kljuc-300-mm": {
+    "Promjer": "300 mm"
+  },
+  "podesavajuci-kljuc-profi-festa200-mmraspon-0-29mm": {
+    "Promjer": "200 mm"
+  },
+  "podesavajuci-kljuc-profi-festa250-mmraspon-0-33mm": {
+    "Promjer": "250 mm"
+  },
+  "podesavajuci-kljuc-profi-festa300-mmraspon-0-38mm": {
+    "Promjer": "300 mm"
+  },
+  "pomicno-mjerilo-skala-inox-150-002mm": {
+    "Promjer": "0,02mm"
+  },
+  "pomicno-mjerilo-digitalna-skala-150-001mm": {
+    "Promjer": "0,01mm"
+  },
+  "posuda-za-boju-8-litara": {
+    "Volumen": "8 l"
+  },
+  "potplat-sa-siljcima-25-mm": {
+    "Promjer": "25 mm"
+  },
+  "privjesak-s-magnetom-led-60lm-75x30mm": {
+    "Promjer": "30mm",
+    "Dimenzije": "75x30mm",
+    "Volumen": "60l"
+  },
+  "prskalica-tlacna-3l": {
+    "Volumen": "3l"
+  },
+  "prskalica-tlacna-5l": {
+    "Volumen": "5l"
+  },
+  "prskalica-tlacna-8l": {
+    "Volumen": "8l"
+  },
+  "puder-180g-crveni": {
+    "Težina": "180g"
+  },
+  "puder-180g-plavi": {
+    "Težina": "180g"
+  },
+  "punjac-brzi-worcraft-clc-20v-4-5": {
+    "Napon": "20V"
+  },
+  "punjac-festa-share20v-2-4a": {
+    "Napon": "20V"
+  },
+  "punjac-worcraft-clc-20v-24": {
+    "Napon": "20V"
+  },
+  "rasprsivac-05l": {
+    "Volumen": "0,5l"
+  },
+  "rasprsivac-075-l": {
+    "Volumen": "0,75 l"
+  },
+  "rasprsivac-2-l": {
+    "Volumen": "2 l"
+  },
+  "rasprsivac-goodfarm-bella-2l": {
+    "Volumen": "2l"
+  },
+  "reflektor-led-aku-festa-1800lm-6000k-share20vbez-baterije-i-punjaca": {
+    "Napon": "20V",
+    "Volumen": "1800L"
+  },
+  "reflektor-led-na-teleskopskom-stalku-20w-1300lm": {
+    "Snaga": "20W",
+    "Volumen": "1300l"
+  },
+  "reflektor-led-na-teleskopskom-stalku-2x20w-1300lm": {
+    "Snaga": "20W",
+    "Volumen": "1300l"
+  },
+  "reflektor-led-s-drzacem-20w-1300lm": {
+    "Snaga": "20W",
+    "Volumen": "1300l"
+  },
+  "reflektor-na-teleskopskom-stalku-2x400w": {
+    "Snaga": "400W"
+  },
+  "reflektor-na-teleskopskom-stalku-400w": {
+    "Snaga": "400W"
+  },
+  "reflektor-s-drzacem-120w": {
+    "Snaga": "120W"
+  },
+  "reflektor-s-drzacem-500w": {
+    "Snaga": "500W"
+  },
+  "rezac-plasticnih-cijevi-20-50mm": {
+    "Promjer": "50mm"
+  },
+  "rezacica-za-zidne-utore-125mm-mfe-40-1900w": {
+    "Promjer": "125mm",
+    "Snaga": "1900W"
+  },
+  "rezacica-za-zidne-utore-mfe-40-125mm-1900w-dia-ploce": {
+    "Promjer": "125mm",
+    "Snaga": "1900W"
+  },
+  "rezacica-za-zidne-utore-mfe-40-125mm-1900w-dia-ploce-usisavac-asr-35-l-acp": {
+    "Promjer": "125mm",
+    "Snaga": "1900W",
+    "Volumen": "35 L"
+  },
+  "rezervni-nozic-keramicki-18mm-5-1": {
+    "Promjer": "18mm"
+  },
+  "rezervni-nozici-crni18-07-mm-10-1": {
+    "Promjer": "0,7 mm"
+  },
+  "rotaciona-raspa-za-drvo-festa-fina-125-222mm": {
+    "Promjer": "22,2mm"
+  },
+  "rucna-led-svjetiljka-120lm-2172758": {
+    "Volumen": "120l"
+  },
+  "rucna-vaga-100-kg": {
+    "Težina": "100 kg"
+  },
+  "rucna-vaga-125-kg": {
+    "Težina": "12,5 kg"
+  },
+  "rucna-vaga-150-kg": {
+    "Težina": "150 kg"
+  },
+  "rucna-vaga-25-kg": {
+    "Težina": "25 kg"
+  },
+  "rucna-vaga-50-kg": {
+    "Težina": "50 kg"
+  },
+  "rucna-vaga-50-kg-analogna": {
+    "Težina": "50 kg"
+  },
+  "sajla-za-elektricare-5mmx10m": {
+    "Promjer": "5mm"
+  },
+  "set-baterija-18v-basic-set-lihd-1-x-4-0-ah-1-x-5-5-ah-punjac-asc-55": {
+    "Napon": "18V",
+    "Kapacitet": "4.0 Ah"
+  },
+  "set-bitova-festa-industry-ph-pz-txs21-450mm10-1": {
+    "Promjer": "50mm"
+  },
+  "set-dijamantnih-kruna-festa-industry-6-8-25-35-40-50-68mm": {
+    "Promjer": "68mm"
+  },
+  "set-iglicastih-turpija-266-14-p-140-h1-140mm": {
+    "Promjer": "140mm"
+  },
+  "set-iglicastih-turpija-266-16-p-160-h1-160mm": {
+    "Promjer": "160mm"
+  },
+  "set-radionickih-turpija-532-wr-200mm-nasjek-2": {
+    "Promjer": "200mm",
+    "Snaga": "532 W"
+  },
+  "set-radionickih-turpija-532-wr-250mm-nasjek-2": {
+    "Promjer": "250mm",
+    "Snaga": "532 W"
+  },
+  "set-rotoglodala-za-generalnu-upotrebu-1504-z3-plus-prihvat-3mm-3-1": {
+    "Promjer": "3mm"
+  },
+  "set-torzijski-bitova-festa-industry-25mm-s2": {
+    "Promjer": "25mm"
+  },
+  "set-za-ostrenje-lanca-motorne-pile-cs-sls-40-d40mm": {
+    "Promjer": "4,0mm"
+  },
+  "set-za-ostrenje-lanca-motorne-pile-cs-sls-48-d48mm": {
+    "Promjer": "4,8mm"
+  },
+  "set-za-ostrenje-lanca-motorne-pile-cs-sls-516-d516mm": {
+    "Promjer": "5,16mm"
+  },
+  "set-za-ostrenje-lanca-motorne-pile-cs-sls-55-d55mm": {
+    "Promjer": "5,5mm"
+  },
+  "sjekac-lopatica-festa-sds-130x445mm": {
+    "Promjer": "445mm",
+    "Dimenzije": "130x445mm"
+  },
+  "sjekira-1000g": {
+    "Težina": "1000g"
+  },
+  "sjekira-1500g": {
+    "Težina": "1500g"
+  },
+  "sjekira-600g": {
+    "Težina": "600g"
+  },
+  "sjekira-800g": {
+    "Težina": "800g"
+  },
+  "sjekira-festa-2000g": {
+    "Težina": "2000g"
+  },
+  "sjekira-fiberglass-1000g": {
+    "Težina": "1000g"
+  },
+  "sjekira-fiberglass-1250g": {
+    "Težina": "1250g"
+  },
+  "sjekira-fiberglass-1400g": {
+    "Težina": "1400g"
+  },
+  "sjekira-fiberglass-1600g": {
+    "Težina": "1600g"
+  },
+  "sjekira-fiberglass-2000g": {
+    "Težina": "2000g"
+  },
+  "sjekira-fiberglass-600g": {
+    "Težina": "600g"
+  },
+  "sjekira-fiberglass-600g-2": {
+    "Težina": "600g"
+  },
+  "sjekira-fiberglass-800g": {
+    "Težina": "800g"
+  },
+  "sjekira-kalac-3000g": {
+    "Težina": "3000g"
+  },
+  "sjekira-kalac-3000g-fiberglass": {
+    "Težina": "3000g"
+  },
+  "sjekira-kalac-4000g": {
+    "Težina": "4000g"
+  },
+  "sjekira-kalac-4000g-fiberglass": {
+    "Težina": "4000g"
+  },
+  "sjekira-profi-1000g": {
+    "Težina": "1000g"
+  },
+  "sjekira-profi-1250g": {
+    "Težina": "1250g"
+  },
+  "sjekira-profi-1400g": {
+    "Težina": "1400g"
+  },
+  "sjekira-profi-1600g": {
+    "Težina": "1600g"
+  },
+  "sjekira-profi-2000g": {
+    "Težina": "2000g"
+  },
+  "sjekira-profi-600g": {
+    "Težina": "600g"
+  },
+  "sjekira-profi-800g": {
+    "Težina": "800g"
+  },
+  "skalpel-18-mm": {
+    "Promjer": "18 mm"
+  },
+  "skalpel-18mm-keramicka-ostrica": {
+    "Promjer": "18mm"
+  },
+  "skalpel-18mm-metalni-5-rez-sjeciva": {
+    "Promjer": "18mm"
+  },
+  "skalpel-festa-industry-18mm": {
+    "Promjer": "18mm"
+  },
+  "spiralno-crijevo-s-prikljuccima-8mmx10m": {
+    "Promjer": "8mm"
+  },
+  "spiralno-crijevo-s-prikljuccima-8mmx15m": {
+    "Promjer": "8mm"
+  },
+  "spiralno-crijevo-s-prikljuccima-8mmx5m": {
+    "Promjer": "8mm"
+  },
+  "spiralno-crijevo-s-prikljuccima-8mmx5m-2": {
+    "Promjer": "8mm"
+  },
+  "stezaljka-9-230mmomeksana-ptr-gumabravica": {
+    "Promjer": "230mm"
+  },
+  "stezaljka-quick-grip-150mm-6": {
+    "Promjer": "150mm"
+  },
+  "stezaljka-quick-grip-300mm-12": {
+    "Promjer": "300mm"
+  },
+  "stezaljka-quick-grip-450mm-18": {
+    "Promjer": "450mm"
+  },
+  "stezaljka-quick-grip-600mm-24": {
+    "Promjer": "600mm"
+  },
+  "stretch-folija-rucna-us-12my-500mmx350m-2kg": {
+    "Promjer": "500mm",
+    "Težina": "2kg"
+  },
+  "strugac-stakla-produzeni-100-x-300-mm": {
+    "Promjer": "300 mm",
+    "Dimenzije": "100 x 300 mm"
+  },
+  "strugac-stiropora-i-zbuke-270x130mm": {
+    "Promjer": "130mm",
+    "Dimenzije": "270x130mm"
+  },
+  "strugac-stiropora-i-zbuke-400x180mmdrveni": {
+    "Promjer": "180mm",
+    "Dimenzije": "400x180mm"
+  },
+  "strugac-stiropora-i-zbuke-dr-400x180mm": {
+    "Promjer": "180mm",
+    "Dimenzije": "400x180mm"
+  },
+  "strugac-stiropora-i-zbuke-pl-270x130mm": {
+    "Promjer": "130mm",
+    "Dimenzije": "270x130mm"
+  },
+  "struna-za-kosilicu-27mm-x-15m-okrugla": {
+    "Promjer": "2,7mm"
+  },
+  "svjetiljka-led-100250lm2200mah-magnetusb-punjenje": {
+    "Volumen": "250l"
+  },
+  "svjetiljka-naglavnat62xpe-led300lm1200mah-usb-punjenje": {
+    "Volumen": "300l"
+  },
+  "svjetiljka-spotlight-slr135-led-smd-140lmopal-300lm2x1800mahusb-punjenje": {
+    "Volumen": "135, L"
+  },
+  "svjetiljka-strazarska-plr753-xpg-led-400lmusb-punjenje": {
+    "Volumen": "400l"
+  },
+  "svrdlo-za-staklo-i-keramiku-6mm": {
+    "Promjer": "6mm"
+  },
+  "tockalo-automatsko-25-mm": {
+    "Promjer": "2,5 mm"
+  },
+  "trimer-rucni-aku-worcraft-cgt-s20li-30-cm": {
+    "Volumen": "20L"
+  },
+  "turpija-za-ostrenje-lanca-motorne-pile-d35mm-412-200x35-classic": {
+    "Promjer": "3,5mm"
+  },
+  "turpija-za-ostrenje-lanca-motorne-pile-d40mm-412-200x40-classic-6-1": {
+    "Promjer": "4,0mm"
+  },
+  "turpija-za-ostrenje-lanca-motorne-pile-d45mm-412-200x45-classic-6-1": {
+    "Promjer": "4,5mm"
+  },
+  "turpija-za-ostrenje-lanca-motorne-pile-d48mm-412-200x48-classic-6-1": {
+    "Promjer": "4,8mm"
+  },
+  "turpija-za-ostrenje-lanca-motorne-pile-d516mm-412-200x516-classic-6-1": {
+    "Promjer": "5,16mm"
+  },
+  "turpija-za-ostrenje-lanca-motorne-pile-d55mm-412-200x55-classic-6-1": {
+    "Promjer": "5,5mm"
+  },
+  "turpija-za-ostrenje-lanca-motorne-pile-d63mm-412-200x63-classic-6-1": {
+    "Promjer": "6,3mm"
+  },
+  "turpija-za-ostrenje-lanca-motorne-pile-d70mm-412-200x70-classic-6-1": {
+    "Promjer": "7,0mm"
+  },
+  "turpija-za-ostrenje-lanca-motorne-pile-d79mm-412-200x79-classic-6-1": {
+    "Promjer": "7,9mm"
+  },
+  "upaljac-brener-mini-maskirni-75x45x120-mm": {
+    "Promjer": "120 mm",
+    "Dimenzije": "45x120 mm"
+  },
+  "usisavac-asr25-l-sc-1400w": {
+    "Snaga": "1400W",
+    "Volumen": "25 L"
+  },
+  "usisavac-asr35-l-acp-univerzalni-automatik-1400w": {
+    "Snaga": "1400W",
+    "Volumen": "35 L"
+  },
+  "usisavac-mokro-suho-worcraft-cvc-s20li-20l-20v-aku": {
+    "Napon": "20V",
+    "Volumen": "20L"
+  },
+  "usisavac-za-pepel-worcraft-cavc-s20li-18l-20v-hepa-filter": {
+    "Napon": "20V",
+    "Volumen": "20L"
+  },
+  "uze-za-obiljezavanje-30m-puder-150g": {
+    "Težina": "150g"
+  },
+  "valjak-flock-100mm-2-1": {
+    "Promjer": "100mm"
+  },
+  "valjak-janjeci-plis-250mm": {
+    "Promjer": "250mm"
+  },
+  "valjak-janjeci-plis-250mm-fasadni": {
+    "Promjer": "250mm"
+  },
+  "valjak-perfekta-100mm": {
+    "Promjer": "100mm"
+  },
+  "valjak-sparta-250mm-fasadni-f25-09111": {
+    "Promjer": "250mm"
+  },
+  "valjak-velur-250mm-48mm": {
+    "Promjer": "250mm"
+  },
+  "valjak-vestan-240mm-drzac-6mm": {
+    "Promjer": "240mm"
+  },
+  "valjak-za-podne-mase-69mmx25cm-igla-12mm": {
+    "Promjer": "69mm"
+  },
+  "valjak-za-podne-mase-69mmx40cm-igla-12mm": {
+    "Promjer": "69mm"
+  },
+  "valjak-za-zavrsne-mase-180x8x48mm": {
+    "Promjer": "48mm",
+    "Dimenzije": "8x48mm"
+  },
+  "valjak-za-zavrsne-mase-250x8x48mm": {
+    "Promjer": "48mm",
+    "Dimenzije": "8x48mm"
+  },
+  "velur-valjak-100mm-rezervni": {
+    "Promjer": "100mm"
+  },
+  "visokotlacni-cistac-festa-1800w": {
+    "Snaga": "1800W"
+  },
+  "vreca-za-sutu-55x110-80l": {
+    "Volumen": "80L"
+  },
+  "zavarivac-cijevi-750-1500w": {
+    "Snaga": "1500W"
+  },
+  "zavarivac-cijevi-800-1000w": {
+    "Snaga": "1000W"
+  },
+  "zastitna-traka-25mmx50m": {
+    "Promjer": "25mm"
+  },
+  "zracna-brusilica-kutna-pwas-1-800-dv-80-000rpm-75w": {
+    "Snaga": "75W"
+  },
+  "zracna-brusilica-kutna-pwas-1-800-hv-80-000rpm-75w": {
+    "Snaga": "75W"
+  },
+  "zracna-brusilica-kutna-pwas-2-200-dv-20-000rpm-230w": {
+    "Snaga": "230W"
+  },
+  "zracna-brusilica-kutna-pwas-2-200-hv-20-000rpm-230w": {
+    "Snaga": "230W"
+  },
+  "zracna-brusilica-pgas-1-550-hv-55-000rpm-100w": {
+    "Snaga": "100W"
+  },
+  "zracna-brusilica-pgas-1-700-dv-70-000rpm-100w": {
+    "Snaga": "100W"
+  },
+  "zracna-brusilica-pgas-1-700-hv-70-000rpm-100w": {
+    "Snaga": "100W"
+  },
+  "zracna-brusilica-pgas-2-5-ds-500rpm-160w": {
+    "Snaga": "160W"
+  },
+  "zracna-brusilica-pgas-2-800-e-dv-80-000rpm-110w": {
+    "Snaga": "110W"
+  },
+  "zracna-brusilica-pgas-2-800-e-hv-80-000rpm-110w": {
+    "Snaga": "110W"
+  },
+  "zracna-brusilica-pgas-3-350-dv-35-000rpm-290w": {
+    "Snaga": "290W"
+  },
+  "zracna-brusilica-pgas-3-350-hv-35-000rpm-290w": {
+    "Snaga": "290W"
+  },
+  "zracna-brusilica-pgas-3-380-e-dv-38-000rpm-290w": {
+    "Snaga": "290W"
+  },
+  "zracna-brusilica-pgas-3-380-e-hv-38-000rpm-290w": {
+    "Snaga": "290W"
+  },
+  "zracna-brusilica-pgas-4-190-hv-19-000rpm-370w": {
+    "Snaga": "370W"
+  },
+  "zracna-brusilica-tracna-pba-2-200-hv-za-trake-305mm-x-3-16mm": {
+    "Promjer": "305mm"
+  },
+  "zracna-brusilica-tracna-pba-4-160-hv-za-trake-520mm-x-3-20mm": {
+    "Promjer": "520mm"
+  },
+  "zvucnik-worcraft-cbts-s20li-bluetooth": {
+    "Volumen": "20L"
+  },
+  "cekic-1000g-profi": {
+    "Težina": "1000g"
+  },
+  "cekic-300g-profi": {
+    "Težina": "300g"
+  },
+  "cekic-500g-profi": {
+    "Težina": "500g"
+  },
+  "cekic-buseci-aku-kh-18-ltx-24-bez-baterija-i-punjaca-metabox-165-l": {
+    "Volumen": "18 L"
+  },
+  "cekic-buseci-aku-kh-18-ltx-bl-24-q-bez-baterija-i-punjaca-metabox-165l": {
+    "Volumen": "18 L"
+  },
+  "cekic-buseci-khe-2645-q-sds-plus-850-w": {
+    "Snaga": "850 W"
+  },
+  "cekic-buseci-uhev2860-2-quick-multi-sds-plus-1100w": {
+    "Snaga": "1100W"
+  },
+  "cekic-buseci-aku-kh-18-ltx-bl-24-bez-baterije-i-punjaca-metabox-165l": {
+    "Volumen": "18 L"
+  },
+  "cekic-postolarski-450g": {
+    "Težina": "450g"
+  },
+  "cekic-postolarski-600g-monolit-low-vibe": {
+    "Težina": "600g"
+  },
+  "cekic-tesarski-600g": {
+    "Težina": "600g"
+  },
+  "cekic-tesarski-600g-monolit-low-vibe": {
+    "Težina": "600g"
+  },
+  "cekic-varilacki-500g": {
+    "Težina": "500g"
+  },
+  "skare-profi-215mm-zavinute": {
+    "Promjer": "215mm"
+  },
+  "stihaca-kovana-22x25-cm-1350g": {
+    "Težina": "1350g"
+  },
+  "zlica-za-gips-inox-ln30-drvena-rucka-40mm": {
+    "Promjer": "40mm"
+  },
+  "zlica-za-gips-inox-ln30-drvena-rucka-80mm": {
+    "Promjer": "80mm"
+  },
+  "zlica-za-gips-inox-ln30-gumena-rucka-120mm": {
+    "Promjer": "120mm",
+    "Težina": "30, g"
+  },
+  "zlica-za-gips-inox-ln30-gumena-rucka-40mm": {
+    "Promjer": "40mm",
+    "Težina": "30, g"
+  },
+  "zlica-za-gips-inox-ln30-gumena-rucka-60mm": {
+    "Promjer": "60mm",
+    "Težina": "30, g"
+  },
+  "zlica-za-gips-inox-ln30-gumena-rucka-80mm": {
+    "Promjer": "80mm",
+    "Težina": "30, g"
+  },
+  "zlica-za-unutarnji-kut-inox-ln30-drvena-rucka-80x60mm": {
+    "Promjer": "60mm",
+    "Dimenzije": "80x60mm"
+  },
+  "zlica-za-unutarnji-kut-inox-ln30-gumena-rucka-80x60mm": {
+    "Promjer": "60mm",
+    "Težina": "30, g",
+    "Dimenzije": "80x60mm"
+  },
+  "zlica-za-vanjski-kut-inox-ln30-drvena-rucka-80x60mm": {
+    "Promjer": "60mm",
+    "Dimenzije": "80x60mm"
+  },
+  "zlica-za-vanjski-kut-inox-ln30-gumena-rucka-80x60mm": {
+    "Promjer": "60mm",
+    "Težina": "30, g",
+    "Dimenzije": "80x60mm"
+  },
+  "zlica-zaobljena-inox-ln30-drvena-rucka-140mm": {
+    "Promjer": "140mm"
+  },
+  "zlica-zaobljena-inox-ln30-gumena-rucka-140mm": {
+    "Promjer": "140mm",
+    "Težina": "30, g"
+  },
+  "zlica-zaobljena-inox-ln30-gumena-rucka-160mm": {
+    "Promjer": "160mm",
+    "Težina": "30, g"
+  },
+  "zlica-zidarska-inox-ln30-drvena-rucka-140mm": {
+    "Promjer": "140mm"
+  },
+  "zlica-zidarska-inox-ln30-drvena-rucka-180mm": {
+    "Promjer": "180mm"
+  },
+  "zlica-spic-inox-ln30-drvena-rucka-160mm": {
+    "Promjer": "160mm"
+  },
+  "zlica-spic-inox-ln30-gumena-rucka-160mm": {
+    "Promjer": "160mm",
+    "Težina": "30, g"
+  },
+  "brusilica-za-beton-kutna-rsev-19-125-rt-ploca": {
+    "Snaga": "1.900W",
+    "Težina": "3,5kg"
+  },
+  "drzacmotalicas-crijevom-5-16-pistoljem-i-spojnicama": {
+    "Radni tlak": "6 bar"
+  },
+  "grablje-za-lisce-45-cm-lamela-bez-drske": {
+    "Širina": "45 cm"
+  },
+  "kompresor-set-5-1": {
+    "Radni tlak": "5 bar"
+  },
+  "metabo-kutna-brusilica-w-11-125-quick": {
+    "Snaga": "1.100 W",
+    "Težina": "2,30 kg"
+  },
+  "nit-za-brtvljenje-navoja-festa-160m": {
+    "Duljina": "160 m"
+  },
+  "pila-za-porobeton-600-pl": {
+    "Duljina": "600 mm"
+  },
+  "plamenik-za-kartusu-navoj-7-16": {
+    "Snaga": "1,7 kW"
+  },
+  "plinski-plamenik-na-kartusu": {
+    "Snaga": "1,7 kW"
+  },
+  "tehnicki-noz-23cm": {
+    "Duljina": "230 mm"
+  },
+  "valoviti-karton-1x20m": {
+    "Širina": "100cm"
+  },
+  "zracna-turpija-pf-4-84": {
+    "Težina": "0,3 kg",
+    "Radni tlak": "6,3 bar",
+    "Duljina": "200 mm",
+    "Širina": "30 mm",
+    "Visina": "30 mm"
+  },
+  "zracna-turpija-pfga-07-220": {
+    "Težina": "0,18 kg",
+    "Radni tlak": "4 bar",
+    "Duljina": "220 mm",
+    "Širina": "28 mm",
+    "Visina": "28 mm"
+  },
+  "skare-rost-frei-19cm": {
+    "Duljina": "190 mm"
   }
 }
