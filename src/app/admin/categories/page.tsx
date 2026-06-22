@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Plus, Pencil, Trash2, Save, X } from "lucide-react";
+import { categorySchema, formatZodErrors } from "@/lib/validations";
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", description: "", sortOrder: 0 });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const load = async () => {
     setLoading(true);
@@ -21,10 +23,17 @@ export default function AdminCategoriesPage() {
   useEffect(() => { load(); }, []);
 
   const save = async () => {
+    setErrors({});
+    const result = categorySchema.safeParse(form);
+    if (!result.success) {
+      setErrors(formatZodErrors(result.error));
+      return;
+    }
+
     if (editId) {
-      await fetch(`/api/admin/categories/${editId}`, { method: "PATCH", body: JSON.stringify(form), headers: { "Content-Type": "application/json" } });
+      await fetch(`/api/admin/categories/${editId}`, { method: "PATCH", body: JSON.stringify(result.data), headers: { "Content-Type": "application/json" } });
     } else {
-      await fetch("/api/admin/categories", { method: "POST", body: JSON.stringify(form), headers: { "Content-Type": "application/json" } });
+      await fetch("/api/admin/categories", { method: "POST", body: JSON.stringify(result.data), headers: { "Content-Type": "application/json" } });
     }
     setEditId(null);
     setForm({ name: "", description: "", sortOrder: 0 });
@@ -40,24 +49,33 @@ export default function AdminCategoriesPage() {
   const startEdit = (c: any) => {
     setEditId(c.id);
     setForm({ name: c.name, description: c.description || "", sortOrder: c.sortOrder || 0 });
+    setErrors({});
   };
 
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900">Kategorije</h1>
-        <Button onClick={() => { setEditId(null); setForm({ name: "", description: "", sortOrder: 0 }); }}>
+        <Button onClick={() => { setEditId(null); setForm({ name: "", description: "", sortOrder: 0 }); setErrors({}); }}>
           <Plus className="mr-2 h-4 w-4" /> Nova kategorija
         </Button>
       </div>
 
       {editId !== null && (
         <Card className="mb-6 p-4">
-          <div className="flex gap-3">
-            <input className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Naziv" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
-            <input className="w-20 rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Red." type="number" value={form.sortOrder} onChange={e => setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 })} />
-            <Button size="sm" onClick={save}><Save className="mr-1 h-4 w-4" /> Spremi</Button>
-            <Button size="sm" variant="ghost" onClick={() => setEditId(null)}><X className="h-4 w-4" /></Button>
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <input className={`w-full rounded-lg border px-3 py-2 text-sm ${errors.name ? "border-red-400" : "border-slate-200"}`} placeholder="Naziv *" value={form.name} onChange={e => { setForm({ ...form, name: e.target.value }); if (errors.name) setErrors({ ...errors, name: "" }); }} />
+                {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
+              </div>
+              <div>
+                <input className={`w-20 rounded-lg border px-3 py-2 text-sm ${errors.sortOrder ? "border-red-400" : "border-slate-200"}`} placeholder="Red." type="number" value={form.sortOrder} onChange={e => { setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 }); if (errors.sortOrder) setErrors({ ...errors, sortOrder: "" }); }} />
+                {errors.sortOrder && <p className="mt-1 text-xs text-red-600">{errors.sortOrder}</p>}
+              </div>
+              <Button size="sm" onClick={save}><Save className="mr-1 h-4 w-4" /> Spremi</Button>
+              <Button size="sm" variant="ghost" onClick={() => { setEditId(null); setErrors({}); }}><X className="h-4 w-4" /></Button>
+            </div>
           </div>
         </Card>
       )}

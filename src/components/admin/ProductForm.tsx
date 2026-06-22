@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
+import { productSchema, formatZodErrors, type ProductFormData } from "@/lib/validations";
 
 interface ProductData {
   id?: string; name: string; slug: string; sku?: string; price: number;
@@ -21,6 +22,7 @@ export function ProductForm({ product, categories, brands }: {
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const isEdit = !!product;
 
   const [form, setForm] = useState<ProductData>({
@@ -43,14 +45,25 @@ export function ProductForm({ product, categories, brands }: {
     categoryId: product?.categoryId || "",
   });
 
-  const update = (k: keyof ProductData, v: any) => setForm({ ...form, [k]: v });
+  const update = (k: keyof ProductData, v: any) => {
+    setForm({ ...form, [k]: v });
+    if (errors[k]) setErrors({ ...errors, [k]: "" });
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
+
+    const result = productSchema.safeParse(form);
+    if (!result.success) {
+      setErrors(formatZodErrors(result.error));
+      return;
+    }
+
     setLoading(true);
     const url = isEdit ? `/api/admin/products/${product!.id}` : "/api/admin/products";
     const method = isEdit ? "PATCH" : "POST";
-    const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+    const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(result.data) });
     if (res.ok) { router.push("/admin/products"); router.refresh(); }
     setLoading(false);
   };
@@ -68,11 +81,13 @@ export function ProductForm({ product, categories, brands }: {
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium">Naziv *</label>
-              <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" value={form.name} onChange={e => update("name", e.target.value)} required />
+              <input className={`w-full rounded-lg border px-3 py-2 text-sm ${errors.name ? "border-red-400" : "border-slate-200"}`} value={form.name} onChange={e => update("name", e.target.value)} required />
+              {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">Slug</label>
-              <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" value={form.slug} onChange={e => update("slug", e.target.value)} />
+              <label className="mb-1 block text-sm font-medium">Slug *</label>
+              <input className={`w-full rounded-lg border px-3 py-2 text-sm ${errors.slug ? "border-red-400" : "border-slate-200"}`} value={form.slug} onChange={e => update("slug", e.target.value)} />
+              {errors.slug && <p className="mt-1 text-xs text-red-600">{errors.slug}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">SKU</label>
@@ -80,15 +95,16 @@ export function ProductForm({ product, categories, brands }: {
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Cijena (€) *</label>
-              <input type="number" step="0.01" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" value={form.price} onChange={e => update("price", parseFloat(e.target.value))} required />
+              <input type="number" step="0.01" className={`w-full rounded-lg border px-3 py-2 text-sm ${errors.price ? "border-red-400" : "border-slate-200"}`} value={form.price} onChange={e => update("price", parseFloat(e.target.value))} required />
+              {errors.price && <p className="mt-1 text-xs text-red-600">{errors.price}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Redovna cijena</label>
-              <input type="number" step="0.01" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" value={form.regularPrice || ""} onChange={e => update("regularPrice", e.target.value ? parseFloat(e.target.value) : undefined)} />
+              <input type="number" step="0.01" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" value={form.regularPrice ?? ""} onChange={e => update("regularPrice", e.target.value ? parseFloat(e.target.value) : undefined)} />
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Akcijska cijena</label>
-              <input type="number" step="0.01" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" value={form.salePrice || ""} onChange={e => update("salePrice", e.target.value ? parseFloat(e.target.value) : undefined)} />
+              <input type="number" step="0.01" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" value={form.salePrice ?? ""} onChange={e => update("salePrice", e.target.value ? parseFloat(e.target.value) : undefined)} />
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Zaliha</label>
@@ -155,10 +171,11 @@ export function ProductForm({ product, categories, brands }: {
         </Card>
 
         <Card className="p-6">
-          <h2 className="mb-4 text-lg font-semibold">Slika</h2>
+          <h2 className="mb-4 text-lg font-semibold">Slika *</h2>
           <div>
             <label className="mb-1 block text-sm font-medium">URL slike</label>
-            <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" value={form.image} onChange={e => update("image", e.target.value)} />
+            <input className={`w-full rounded-lg border px-3 py-2 text-sm ${errors.image ? "border-red-400" : "border-slate-200"}`} value={form.image} onChange={e => update("image", e.target.value)} />
+            {errors.image && <p className="mt-1 text-xs text-red-600">{errors.image}</p>}
           </div>
         </Card>
 
