@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"));
-  const limit = Math.min(100, Math.max(1, parseInt(url.searchParams.get("limit") || "24")));
+  const limit = Math.min(1000, Math.max(1, parseInt(url.searchParams.get("limit") || "1000")));
   const search = url.searchParams.get("search") || "";
 
   const where: any = { status: "ACTIVE" };

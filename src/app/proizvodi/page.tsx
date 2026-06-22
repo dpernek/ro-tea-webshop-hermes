@@ -11,7 +11,7 @@ export default function CatalogPage() {
   const [total, setTotal] = useState(0);
 
   const loadProducts = useCallback(async () => {
-    const params = new URLSearchParams({ page: "1", limit: "100" });
+    const params = new URLSearchParams({ page: "1", limit: "1000" });
     const res = await fetch(`/api/catalog/products?${params}`);
     const data = await res.json();
     setProducts(data.products);
