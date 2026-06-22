@@ -4,7 +4,7 @@
     "slug": "festa-alati",
     "name": "Festa",
     "description": "",
-    "image": "https://ro-tea.hr/wp-content/uploads/2026/01/alat-za-pljevljenje.webp",
+    "image": "/images/products/alat-za-pljevljenje.webp",
     "count": 661
   },
   {
@@ -20,7 +20,7 @@
     "slug": "alati-za-radionice",
     "name": "Alati za radionice",
     "description": "",
-    "image": "https://ro-tea.hr/wp-content/uploads/2026/02/adapter-festa.webp",
+    "image": "/images/products/adapter-festa.webp",
     "count": 304
   },
   {
@@ -28,7 +28,7 @@
     "slug": "vrtni-alati",
     "name": "Vrtni alati",
     "description": "",
-    "image": "https://ro-tea.hr/wp-content/uploads/2021/02/Cilindar-30x30_1.png",
+    "image": "/images/products/Cilindar-30x30_1.png",
     "count": 191
   },
   {
@@ -36,7 +36,7 @@
     "slug": "pferd-alati",
     "name": "Pferd",
     "description": "",
-    "image": "https://ro-tea.hr/wp-content/uploads/2020/02/e-115-7-psf-steelox-rgb.jpg",
+    "image": "/images/products/e-115-7-psf-steelox-rgb.jpg",
     "count": 129
   },
   {
@@ -44,7 +44,7 @@
     "slug": "elektricni-alat-festa",
     "name": "Električni alat",
     "description": "",
-    "image": "https://ro-tea.hr/wp-content/uploads/2025/09/aku115.webp",
+    "image": "/images/products/aku115.webp",
     "count": 62
   },
   {
@@ -76,7 +76,7 @@
     "slug": "elektricni-alat",
     "name": "Električni Alat",
     "description": "",
-    "image": "https://ro-tea.hr/wp-content/uploads/2025/10/STEB65.webp",
+    "image": "/images/products/STEB65.webp",
     "count": 33
   },
   {
@@ -92,7 +92,7 @@
     "slug": "baterijski-alat",
     "name": "Baterijski Alat",
     "description": "",
-    "image": "https://ro-tea.hr/wp-content/uploads/2025/10/baterija-2ah.webp",
+    "image": "/images/products/baterija-2ah.webp",
     "count": 22
   },
   {
@@ -100,7 +100,7 @@
     "slug": "brusilice",
     "name": "Brusilice",
     "description": "",
-    "image": "https://ro-tea.hr/wp-content/uploads/2025/10/SXE3125.webp",
+    "image": "/images/products/SXE3125.webp",
     "count": 22
   },
   {
@@ -116,7 +116,7 @@
     "slug": "brusnje_poliranje",
     "name": "Brušenje i poliranje",
     "description": "",
-    "image": "https://ro-tea.hr/wp-content/uploads/2026/01/cc-fs-115-a-50-kombi-rgb.webp",
+    "image": "/images/products/cc-fs-115-a-50-kombi-rgb.webp",
     "count": 14
   },
   {
@@ -132,7 +132,7 @@
     "slug": "busilice",
     "name": "Bušilice",
     "description": "",
-    "image": "https://ro-tea.hr/wp-content/uploads/2025/10/BEV1300.webp",
+    "image": "/images/products/BEV1300.webp",
     "count": 5
   },
   {
@@ -148,7 +148,7 @@
     "slug": "zastitna-oprema-delta-plus",
     "name": "Zaštitna Oprema",
     "description": "",
-    "image": "https://ro-tea.hr/wp-content/uploads/2023/01/VE630.png",
+    "image": "/images/products/VE630.png",
     "count": 3
   },
   {
@@ -156,7 +156,7 @@
     "slug": "cetke",
     "name": "Četke",
     "description": "",
-    "image": "https://ro-tea.hr/wp-content/uploads/2026/01/hbg-10-inox-0-30-rgb.webp",
+    "image": "/images/products/hbg-10-inox-0-30-rgb.webp",
     "count": 3
   },
   {
