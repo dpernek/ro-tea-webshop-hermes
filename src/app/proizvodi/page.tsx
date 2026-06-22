@@ -1,19 +1,17 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { SearchAndFilters, type SortOption } from "@/components/products/SearchAndFilters";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { Button } from "@/components/ui/Button";
 
 function SkeletonCard() {
   return (
     <div className="animate-pulse rounded-2xl border border-slate-100 bg-white shadow-sm">
       <div className="aspect-[4/3] bg-slate-100 rounded-t-2xl" />
       <div className="p-5 space-y-3">
-        <div className="flex gap-2">
-          <div className="h-5 w-20 rounded-full bg-slate-100" />
-          <div className="h-5 w-16 rounded-full bg-slate-100" />
-        </div>
+        <div className="flex gap-2"><div className="h-5 w-20 rounded-full bg-slate-100" /><div className="h-5 w-16 rounded-full bg-slate-100" /></div>
         <div className="h-5 w-3/4 rounded bg-slate-100" />
         <div className="h-4 w-full rounded bg-slate-100" />
         <div className="h-8 w-24 rounded bg-slate-100 mt-4" />
@@ -23,32 +21,15 @@ function SkeletonCard() {
   );
 }
 
-function SkeletonGrid() {
-  return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {Array.from({ length: 8 }).map((_, i) => (
-        <SkeletonCard key={i} />
-      ))}
-    </div>
-  );
-}
-
-function SkeletonSidebar() {
-  return (
-    <div className="animate-pulse space-y-1.5">
-      <div className="h-4 w-24 rounded bg-slate-100 mb-3" />
-      {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="h-9 w-full rounded-lg bg-slate-100" />
-      ))}
-    </div>
-  );
-}
-
 export default function CatalogPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
@@ -56,20 +37,42 @@ export default function CatalogPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("default");
 
+  const loadProducts = useCallback(async (pageNum: number, append = false) => {
+    const params = new URLSearchParams({ page: String(pageNum), limit: "24" });
+    const res = await fetch(`/api/catalog/products?${params}`);
+    const data = await res.json();
+    if (append) {
+      setProducts(prev => [...prev, ...data.products]);
+    } else {
+      setProducts(data.products);
+    }
+    setTotal(data.total);
+    setHasMore(pageNum < data.pages);
+    setPage(pageNum);
+  }, []);
+
   useEffect(() => {
     const load = async () => {
-      const [pRes, cRes, bRes] = await Promise.all([
-        fetch("/api/catalog/products"),
+      const [cRes, bRes] = await Promise.all([
         fetch("/api/catalog/categories"),
         fetch("/api/catalog/brands"),
       ]);
-      setProducts(await pRes.json());
       setCategories(await cRes.json());
       setBrands(await bRes.json());
-      setLoading(false);
     };
     load();
   }, []);
+
+  useEffect(() => {
+    setLoading(true);
+    loadProducts(1).finally(() => setLoading(false));
+  }, [loadProducts]);
+
+  const loadMore = async () => {
+    setLoadingMore(true);
+    await loadProducts(page + 1, true);
+    setLoadingMore(false);
+  };
 
   const filtered = useMemo(() => {
     let result = [...products];
@@ -104,8 +107,11 @@ export default function CatalogPage() {
         <div className="flex gap-8">
           <aside className="hidden w-56 shrink-0 lg:block">
             <div className="sticky top-24">
-              {loading ? (
-                <SkeletonSidebar />
+              {loading && !products.length ? (
+                <div className="animate-pulse space-y-1.5">
+                  <div className="h-4 w-24 rounded bg-slate-100 mb-3" />
+                  {Array.from({ length: 8 }).map((_, i) => (<div key={i} className="h-9 w-full rounded-lg bg-slate-100" />))}
+                </div>
               ) : (
                 <>
                   <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-900">Kategorije</h2>
@@ -136,11 +142,20 @@ export default function CatalogPage() {
             )}
             <div className="mt-6">
               {loading ? (
-                <SkeletonGrid />
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {Array.from({ length: 8 }).map((_, i) => (<SkeletonCard key={i} />))}
+                </div>
               ) : (
                 <ProductGrid products={filtered} />
               )}
             </div>
+            {hasMore && !loading && (
+              <div className="mt-8 text-center">
+                <Button variant="outline" size="lg" onClick={loadMore} disabled={loadingMore}>
+                  {loadingMore ? "Učitavanje..." : `Učitaj još (${total - products.length} preostalo)`}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
