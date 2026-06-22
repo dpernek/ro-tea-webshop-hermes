@@ -1,0 +1,358 @@
+[
+  {
+    "id": "p-1",
+    "slug": "profesionalna-busilica-800w",
+    "name": "Profesionalna bušilica 800 W",
+    "category": "Alati",
+    "categorySlug": "alati",
+    "price": 999.0,
+    "oldPrice": 1299.0,
+    "image": "/images/product-drill.svg",
+    "gallery": [
+      "/images/product-drill.svg",
+      "/images/product-drill-2.svg",
+      "/images/product-drill-3.svg"
+    ],
+    "shortDescription": "Snažna udarna bušilica za profesionalne i zahtjevne kućne radove.",
+    "description": "Profesionalna bušilica snage 800 W s metalnim kućištem i ergonomskom rukohvatom. Pogodna za bušenje u drvo, metal i zid. Elektronska regulacija brzine, prednja ručka za bolju kontrolu i brzo stezna glava za jednostavnu izmjenu nastavaka.",
+    "specifications": {
+      "Snaga": "800 W",
+      "Broj okretaja": "0-3000 okr/min",
+      "Stezna glava": "1,5-13 mm",
+      "Napon": "230 V",
+      "Garancija": "2 godine"
+    },
+    "stock": 12,
+    "featured": true,
+    "badge": "Akcija"
+  },
+  {
+    "id": "p-2",
+    "slug": "kutna-brusilica-125mm",
+    "name": "Kutna brusilica 125 mm",
+    "category": "Alati",
+    "categorySlug": "alati",
+    "price": 899.0,
+    "image": "/images/product-grinder.svg",
+    "gallery": [
+      "/images/product-grinder.svg",
+      "/images/product-grinder-2.svg",
+      "/images/product-grinder-3.svg"
+    ],
+    "shortDescription": "Kompaktna kutna brusilica za rezanje i brušenje u radionici i na gradilištu.",
+    "description": "Kutna brusilica promjera 125 mm snage 900 W s zaštitom od ponovnog pokretanja i niskim nivoom vibracija. Ergonomski D-ručica omogućuje siguran rad, a sustav za brzo mijenjanje ploče štedi vrijeme na poslu.",
+    "specifications": {
+      "Snaga": "900 W",
+      "Promjer ploče": "125 mm",
+      "Broj okretaja": "11000 okr/min",
+      "Navoj": "M14",
+      "Garancija": "2 godine"
+    },
+    "stock": 8,
+    "featured": true
+  },
+  {
+    "id": "p-3",
+    "slug": "set-preciznih-odvijaca-32-kom",
+    "name": "Set preciznih odvijača 32 kom",
+    "category": "Alati",
+    "categorySlug": "alati",
+    "price": 249.0,
+    "image": "/images/product-screwdrivers.svg",
+    "gallery": [
+      "/images/product-screwdrivers.svg",
+      "/images/product-screwdrivers-2.svg",
+      "/images/product-screwdrivers-3.svg"
+    ],
+    "shortDescription": "Komplet preciznih odvijača za elektroniku, satove i fine mehanizme.",
+    "description": "Set od 32 precizna odvijača izrađenih od kvalitetnog krom-vanadijskog čelika. Uključuje ravne, križne, torx i hex nastavke u različitim veličinama. Dolazi s magnetskim držačem i organiziranom kutijom za jednostavno nošenje.",
+    "specifications": {
+      "Broj komada": "32",
+      "Materijal": "Cr-V čelik",
+      "Vrste nastavaka": "ravni, križni, torx, hex",
+      "Držač": "magnetski",
+      "Garancija": "1 godina"
+    },
+    "stock": 25,
+    "featured": false
+  },
+  {
+    "id": "p-4",
+    "slug": "kabel-nym-3x15-100m",
+    "name": "Kabel NYM 3x1,5 mm² 100 m",
+    "category": "Elektro materijal",
+    "categorySlug": "elektro-materijal",
+    "price": 1150.0,
+    "oldPrice": 1290.0,
+    "image": "/images/product-cable.svg",
+    "gallery": [
+      "/images/product-cable.svg",
+      "/images/product-cable-2.svg",
+      "/images/product-cable-3.svg"
+    ],
+    "shortDescription": "Kvalitetan instalacijski kabel za unutarnje elektroinstalacije.",
+    "description": "Kabel NYM-J 3x1,5 mm² namijenjen je stalnom položaju u zidovima, podovima i stropovima. Izolacija je otporna na toplinu i mehanička oštećenja. Pakiranje od 100 metara omogućuje jednostavno planiranje većih projekata.",
+    "specifications": {
+      "Tip": "NYM-J",
+      "Presjek": "3 x 1,5 mm²",
+      "Napon": "300/500 V",
+      "Duljina": "100 m",
+      "Boja": "siva"
+    },
+    "stock": 6,
+    "featured": true,
+    "badge": "Akcija"
+  },
+  {
+    "id": "p-5",
+    "slug": "led-panel-60x60-40w",
+    "name": "LED panel 60x60 cm 40 W",
+    "category": "Rasvjeta",
+    "categorySlug": "rasvjeta",
+    "price": 189.0,
+    "image": "/images/product-led-panel.svg",
+    "gallery": [
+      "/images/product-led-panel.svg",
+      "/images/product-led-panel-2.svg",
+      "/images/product-led-panel-3.svg"
+    ],
+    "shortDescription": "Ugradni LED panel za uredski i komercijalni prostor.",
+    "description": "LED panel dimenzija 60x60 cm s neutralno-bijelom svjetlošću od 4000 K. Visoki CRI osigurava vjeran prikaz boja, a niska potrošnja energije smanjuje troškove. Pogodan za sustavne stropove s ugradnom dubinom od samo 35 mm.",
+    "specifications": {
+      "Snaga": "40 W",
+      "Dimenzije": "595 x 595 mm",
+      "Boja svjetlosti": "4000 K",
+      "Svjetlosni tok": "3600 lm",
+      "Garancija": "3 godine"
+    },
+    "stock": 18,
+    "featured": true
+  },
+  {
+    "id": "p-6",
+    "slug": "slavina-za-kupaonicu-stojeća",
+    "name": "Stojeća slavina za kupaonicu",
+    "category": "Vodoinstalacije",
+    "categorySlug": "vodoinstalacije",
+    "price": 459.0,
+    "image": "/images/product-faucet.svg",
+    "gallery": [
+      "/images/product-faucet.svg",
+      "/images/product-faucet-2.svg",
+      "/images/product-faucet-3.svg"
+    ],
+    "shortDescription": "Elegantna kupaonska slavina s keramičkim mehanizmom.",
+    "description": "Moderna stojeća slavina za umivaonik izrađena od mesinga s kvalitetnom krom-nikljevom površinom. Keramički mješač osigurava glatko upravljanje i dugovječnost. Uključeni su priključni crijeva i upute za montažu.",
+    "specifications": {
+      "Materijal": "mesing / krom-nikalj",
+      "Visina": "185 mm",
+      "Priključak": "G1/2",
+      "Mehanizam": "keramički mješač",
+      "Garancija": "5 godina"
+    },
+    "stock": 9,
+    "featured": false
+  },
+  {
+    "id": "p-7",
+    "slug": "pametni-termostat-wifi",
+    "name": "Pametni termostat WiFi",
+    "category": "Pametna kuća",
+    "categorySlug": "pametna-kuca",
+    "price": 749.0,
+    "image": "/images/product-thermostat.svg",
+    "gallery": [
+      "/images/product-thermostat.svg",
+      "/images/product-thermostat-2.svg",
+      "/images/product-thermostat-3.svg"
+    ],
+    "shortDescription": "Upravljanje grijanjem putem mobilne aplikacije.",
+    "description": "Pametni termostat s WiFi povezivnošću omogućuje daljinsko upravljanje grijanjem, postavljanje rasporeda i praćenje potrošnje energije. Kompatibilan je s većinom sustava grijanja i jednostavan za instalaciju preko postojećih dvopoložajnih ventila.",
+    "specifications": {
+      "Povezivost": "WiFi 2,4 GHz",
+      "Napon": "230 V",
+      "Kompatibilnost": "većina sustava grijanja",
+      "Aplikacija": "iOS / Android",
+      "Garancija": "2 godine"
+    },
+    "stock": 11,
+    "featured": true
+  },
+  {
+    "id": "p-8",
+    "slug": "pametna-uticnica-wifi-16a",
+    "name": "Pametna utičnica WiFi 16 A",
+    "category": "Pametna kuća",
+    "categorySlug": "pametna-kuca",
+    "price": 129.0,
+    "image": "/images/product-smart-plug.svg",
+    "gallery": [
+      "/images/product-smart-plug.svg",
+      "/images/product-smart-plug-2.svg",
+      "/images/product-smart-plug-3.svg"
+    ],
+    "shortDescription": "Udaljeno upravljanje uređajima i mjerenje potrošnje.",
+    "description": "Pametna utičnica s maksimalnom strujom od 16 A omogućuje uključivanje i isključivanje uređaja putem aplikacije ili glasovnih asistenata. Praćenje potrošnje pomaže u uštedi energije, a timer funkcija omogućuje automatizaciju svakodnevnih radnji.",
+    "specifications": {
+      "Maksimalna struja": "16 A",
+      "Maksimalna snaga": "3680 W",
+      "Povezivost": "WiFi 2,4 GHz",
+      "Aplikacija": "iOS / Android",
+      "Garancija": "2 godine"
+    },
+    "stock": 30,
+    "featured": false
+  },
+  {
+    "id": "p-9",
+    "slug": "set-alata-za-dom-75-kom",
+    "name": "Set alata za dom 75 kom",
+    "category": "Oprema za dom",
+    "categorySlug": "oprema-za-dom",
+    "price": 599.0,
+    "image": "/images/product-toolset.svg",
+    "gallery": [
+      "/images/product-toolset.svg",
+      "/images/product-toolset-2.svg",
+      "/images/product-toolset-3.svg"
+    ],
+    "shortDescription": "Kompletan set alata za popravke i održavanje u kućanstvu.",
+    "description": "Set od 75 dijelova uključuje čekić, kombinirke, ključeve, odvijače, metar, nivelir i sve potrebno za svakodnevne popravke u domaćinstvu. Alati su smješteni u izdržljivu torbu s pregradama za jednostavnu organizaciju.",
+    "specifications": {
+      "Broj komada": "75",
+      "Materijal": "Cr-V čelik",
+      "Torba": "poliesterska s pregradama",
+      "Težina": "2,8 kg",
+      "Garancija": "2 godine"
+    },
+    "stock": 14,
+    "featured": true
+  },
+  {
+    "id": "p-10",
+    "slug": "industrijska-led-lampa-100w",
+    "name": "Industrijska LED lampa 100 W",
+    "category": "Rasvjeta",
+    "categorySlug": "rasvjeta",
+    "price": 329.0,
+    "oldPrice": 399.0,
+    "image": "/images/product-industrial-lamp.svg",
+    "gallery": [
+      "/images/product-industrial-lamp.svg",
+      "/images/product-industrial-lamp-2.svg",
+      "/images/product-industrial-lamp-3.svg"
+    ],
+    "shortDescription": "Visoka svjetlosna učinkovitost za hale, skladišta i radionice.",
+    "description": "Industrijska LED lampa snage 100 W pruža jaku i ravnomjernu rasvjetu za velike prostore. Aluminijsko kućiše omogućuje učinkovito hlađenje, a IP65 zaštita čini je otpornom na prašinu i vlagu. Uštedljiva je i dugotrajna alternativa klasičnim svjetiljkama.",
+    "specifications": {
+      "Snaga": "100 W",
+      "Svjetlosni tok": "10000 lm",
+      "Boja svjetlosti": "5000 K",
+      "Zaštita": "IP65",
+      "Garancija": "3 godine"
+    },
+    "stock": 7,
+    "featured": true,
+    "badge": "Akcija"
+  },
+  {
+    "id": "p-11",
+    "slug": "pvc-cijev-50mm-3m",
+    "name": "PVC cijev 50 mm 3 m",
+    "category": "Vodoinstalacije",
+    "categorySlug": "vodoinstalacije",
+    "price": 24.9,
+    "image": "/images/product-pipe.svg",
+    "gallery": [
+      "/images/product-pipe.svg",
+      "/images/product-pipe-2.svg",
+      "/images/product-pipe-3.svg"
+    ],
+    "shortDescription": "Tvrda PVC cijev za odvodne vodoinstalacije.",
+    "description": "Tvrda PVC cijev promjera 50 mm i duljine 3 metra namijenjena je odvodnim instalacijama u kupaonicama, kuhinjama i drugim prostorima. Laka je za rezanje i spajanje, otporna na koroziju i kemikalije te pogodna za ugradnju u zidove i podove.",
+    "specifications": {
+      "Materijal": "PVC",
+      "Promjer": "50 mm",
+      "Duljina": "3 m",
+      "Namjena": "odvodne instalacije",
+      "Boja": "siva"
+    },
+    "stock": 48,
+    "featured": false
+  },
+  {
+    "id": "p-12",
+    "slug": "dvostruka-uticnica-s-okvirom",
+    "name": "Dvostruka utičnica s okvirom",
+    "category": "Elektro materijal",
+    "categorySlug": "elektro-materijal",
+    "price": 45.0,
+    "image": "/images/product-socket.svg",
+    "gallery": [
+      "/images/product-socket.svg",
+      "/images/product-socket-2.svg",
+      "/images/product-socket-3.svg"
+    ],
+    "shortDescription": "Kvalitetna dvostruka utičnica uključujući okvir i vijke.",
+    "description": "Dvostruka utičnica s okvirom za ugradnju u standardnu kutiju. Izrađena od kvalitetnog plastičnog materijala otpornog na udarce i toplinu. Elegantan dizajn koji odgovara većini interijera, jednostavna za montažu.",
+    "specifications": {
+      "Tip": "dvostruka utičnica",
+      "Napon": "250 V",
+      "Struja": "16 A",
+      "Boja": "bijela",
+      "Garancija": "2 godine"
+    },
+    "stock": 52,
+    "featured": false
+  },
+  {
+    "id": "p-13",
+    "slug": "pametni-detektor-dima-wifi",
+    "name": "Pametni detektor dima WiFi",
+    "category": "Pametna kuća",
+    "categorySlug": "pametna-kuca",
+    "price": 199.0,
+    "image": "/images/product-smoke-detector.svg",
+    "gallery": [
+      "/images/product-smoke-detector.svg",
+      "/images/product-smoke-detector-2.svg",
+      "/images/product-smoke-detector-3.svg"
+    ],
+    "shortDescription": "Rano upozorenje na dim s obavijestima na mobitel.",
+    "description": "Pametni detektor dima s WiFi povezivnošću šalje obavijesti na mobitel čim primijeti znakove požara. Jednostavan je za montažu na strop, a baterija traje do 24 mjeseca. Testiranje i resetiranje moguće su putem aplikacije.",
+    "specifications": {
+      "Senzor": "fotoelektrični",
+      "Povezivost": "WiFi 2,4 GHz",
+      "Napon": "baterija 3 V",
+      "Aplikacija": "iOS / Android",
+      "Garancija": "2 godine"
+    },
+    "stock": 20,
+    "featured": false
+  },
+  {
+    "id": "p-14",
+    "slug": "somicke-skare-za-zicu-180mm",
+    "name": "Štičke škare za žicu 180 mm",
+    "category": "Alati",
+    "categorySlug": "alati",
+    "price": 89.0,
+    "image": "/images/product-cutters.svg",
+    "gallery": [
+      "/images/product-cutters.svg",
+      "/images/product-cutters-2.svg",
+      "/images/product-cutters-3.svg"
+    ],
+    "shortDescription": "Precizne škare za žicu, žbice i tanke plastike.",
+    "description": "Štičke škare duljine 180 mm izrađene od kvalitetnog čelika otvrdnutog do 54 HRC. Ergonomski dvokomponentni ručnik omogućuje siguran hvat, a ostri rezni bridovi osiguravaju čisto rezanje žice do promjera 2 mm.",
+    "specifications": {
+      "Duljina": "180 mm",
+      "Materijal": "krom-vanadijski čelik",
+      "Tvrdoća": "54 HRC",
+      "Max promjer žice": "2 mm",
+      "Garancija": "1 godina"
+    },
+    "stock": 33,
+    "featured": false
+  }
+]

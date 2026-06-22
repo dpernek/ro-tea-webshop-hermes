@@ -1,0 +1,50 @@
+[
+  {
+    "id": "cat-1",
+    "slug": "alati",
+    "name": "Alati",
+    "description": "Profesionalni i kućni alati za svaku vrstu radova. Pouzdani proizvodi za precizan i učinkovit rad.",
+    "image": "/images/category-tools.svg",
+    "productCount": 4
+  },
+  {
+    "id": "cat-2",
+    "slug": "elektro-materijal",
+    "name": "Elektro materijal",
+    "description": "Kabeli, utičnice, prekidači i sva potrebna oprema za elektroinstalacije.",
+    "image": "/images/category-electrical.svg",
+    "productCount": 2
+  },
+  {
+    "id": "cat-3",
+    "slug": "rasvjeta",
+    "name": "Rasvjeta",
+    "description": "Moderna LED rješenja, paneli i industrijske lampe za dom, posao i vanjski prostor.",
+    "image": "/images/category-lighting.svg",
+    "productCount": 2
+  },
+  {
+    "id": "cat-4",
+    "slug": "vodoinstalacije",
+    "name": "Vodoinstalacije",
+    "description": "Cijevi, slavine, ventili i pribor za sve vrste vodoinstalaterskih radova.",
+    "image": "/images/category-plumbing.svg",
+    "productCount": 2
+  },
+  {
+    "id": "cat-5",
+    "slug": "oprema-za-dom",
+    "name": "Oprema za dom",
+    "description": "Praktična oprema za održavanje doma, organizaciju i svakodnevne zadatke.",
+    "image": "/images/category-home.svg",
+    "productCount": 1
+  },
+  {
+    "id": "cat-6",
+    "slug": "pametna-kuca",
+    "name": "Pametna kuća",
+    "description": "Pametni termostati, utičnice, senzori i druga oprema za povezani dom.",
+    "image": "/images/category-smart.svg",
+    "productCount": 3
+  }
+]
