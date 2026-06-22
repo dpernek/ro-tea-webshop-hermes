@@ -1,66 +1,123 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { db } from "@/lib/db";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { Plus } from "lucide-react";
+import { Card } from "@/components/ui/Card";
+import { Plus, Search, Pencil, Trash2, MoreHorizontal } from "lucide-react";
 
-export default async function AdminProductsPage() {
-  const session = await auth();
-  if (!session?.user) redirect("/admin/login");
+interface Product {
+  id: string; name: string; slug: string; price: number; status: string; image: string; sku: string;
+}
 
-  let products: any[] = [];
-  let error: string | null = null;
+export default function AdminProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const router = useRouter();
+  const limit = 20;
 
-  try {
-    products = await db.product.findMany({
-      take: 10,
-      orderBy: { createdAt: "desc" as any },
-      select: { id: true, name: true, slug: true, price: true, status: true, image: true },
-    });
-  } catch (e: any) {
-    error = e.message;
-  }
+  const load = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/products?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`);
+      if (!res.ok) throw new Error("Failed to fetch");
+      const data = await res.json();
+      setProducts(data.products);
+      setTotal(data.total);
+    } catch (e: any) {
+      setError(e.message);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, [page]);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Obrisati proizvod?")) return;
+    await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
+    load();
+  };
+
+  const totalPages = Math.ceil(total / limit);
 
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Proizvodi</h1>
-        <Button asChild>
-          <Link href="/admin/products/new"><Plus className="mr-2 h-4 w-4" /> Novi proizvod</Link>
-        </Button>
+        <h1 className="text-2xl font-bold text-slate-900">Proizvodi ({total})</h1>
+        <Button asChild><Link href="/admin/products/new"><Plus className="mr-2 h-4 w-4" /> Novi proizvod</Link></Button>
       </div>
 
-      {error && <p className="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-700">Greška: {error}</p>}
+      <div className="mb-4 flex gap-2">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input
+            className="w-full rounded-lg border border-slate-200 py-2 pl-10 pr-4 text-sm"
+            placeholder="Pretraži..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && (setPage(1), load())}
+          />
+        </div>
+        <Button variant="outline" size="sm" onClick={() => { setPage(1); load(); }}>Traži</Button>
+      </div>
 
-      {!error && products.length > 0 && (
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+      {error && <p className="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-700">{error}</p>}
+
+      <Card>
+        <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-slate-200 bg-slate-50">
               <tr>
                 <th className="px-4 py-3 font-medium text-slate-600">Slika</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Naziv</th>
+                <th className="px-4 py-3 font-medium text-slate-600">SKU</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Cijena</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Status</th>
+                <th className="px-4 py-3 text-right font-medium text-slate-600">Akcije</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {products.map((p: any) => (
+              {products.map((p) => (
                 <tr key={p.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3">{p.image ? <img src={p.image} className="h-10 w-10 rounded object-cover" alt="" /> : "-"}</td>
-                  <td className="px-4 py-3 font-medium text-slate-900">{p.name}</td>
-                  <td className="px-4 py-3">{p.price?.toFixed(2)} €</td>
-                  <td className="px-4 py-3"><span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">{p.status}</span></td>
+                  <td className="px-4 py-3">
+                    {p.image && <img src={p.image} className="h-10 w-10 rounded object-cover" alt="" />}
+                  </td>
+                  <td className="px-4 py-3 font-medium text-slate-900 max-w-[200px] truncate">{p.name}</td>
+                  <td className="px-4 py-3 text-slate-500 text-xs">{p.sku || "-"}</td>
+                  <td className="px-4 py-3">{p.price.toFixed(2)} €</td>
+                  <td className="px-4 py-3">
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${p.status === "ACTIVE" ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-600"}`}>
+                      {p.status === "ACTIVE" ? "Aktivno" : p.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex justify-end gap-1">
+                      <Button size="sm" variant="ghost" onClick={() => router.push(`/admin/products/${p.id}/edit`)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="text-red-600 hover:bg-red-50" onClick={() => handleDelete(p.id)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      )}
-
-      {!error && products.length === 0 && (
-        <p className="p-8 text-center text-slate-500">Nema proizvoda.</p>
-      )}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Prethodna</Button>
+            <span className="text-sm text-slate-500">Stranica {page} od {totalPages}</span>
+            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Sljedeća</Button>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }
