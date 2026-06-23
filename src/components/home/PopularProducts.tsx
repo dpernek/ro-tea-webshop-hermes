@@ -1,39 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import { products } from "@/lib/data";
 
-export default function PopularProducts() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [isFeatured, setIsFeatured] = useState(false);
+export function PopularProducts() {
+  const featured = products.filter((p) => p.featured);
+  const display =
+    featured.length > 0
+      ? featured.slice(0, 8)
+      : products
+          .filter((p) => p.price > 0 && p.image !== "/images/placeholder.svg")
+          .slice(0, 8);
 
-  useEffect(() => {
-    // Fetch loaded products, then filter featured on client-side
-    fetch("/api/catalog/products?limit=100")
-      .then((r) => r.json())
-      .then((data) => {
-        const all = data.products || [];
-        const featured = all.filter((p: any) => p.featured);
-        if (featured.length > 0) {
-          setProducts(featured.slice(0, 8));
-          setIsFeatured(true);
-        } else {
-          setProducts(all.filter((p: any) => p.price > 0).slice(0, 8));
-        }
-      })
-      .catch(() => {});
-  }, []);
-
-  if (products.length === 0) return null;
-
-  const title = isFeatured ? "Istaknuti proizvodi" : "Popularni proizvodi";
-  const subtitle = isFeatured
-    ? "Odabrani artikli iz naše ponude."
-    : "Najtraženiji artikli iz naše ponude.";
+  const title =
+    featured.length > 0 ? "Istaknuti proizvodi" : "Popularni proizvodi";
+  const subtitle =
+    featured.length > 0
+      ? "Odabrani artikli iz naše ponude."
+      : "Najtraženiji artikli iz naše ponude.";
 
   return (
     <section className="bg-slate-50 py-20">
@@ -42,7 +30,7 @@ export default function PopularProducts() {
           <SectionTitle title={title} subtitle={subtitle} />
         </AnimatedSection>
         <AnimatedSection delay={0.1}>
-          <ProductGrid products={products} />
+          <ProductGrid products={display} />
         </AnimatedSection>
         <AnimatedSection delay={0.2} className="mt-12 text-center">
           <Button asChild variant="outline" size="lg">
