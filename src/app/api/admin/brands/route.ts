@@ -1,7 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
-export async function GET() { const s=await auth(); if(!s?.user) return NextResponse.json({error:"Unauthorized"},{status:401}); return NextResponse.json(await db.brand.findMany({orderBy:{createdAt:"desc"}})); }
-export async function POST(req:NextRequest) { const s=await auth(); if(!s?.user) return NextResponse.json({error:"Unauthorized"},{status:401}); const b=await req.json(); b.slug=b.slug||b.name.toLowerCase().replace(/[^a-z0-9]+/g,"-"); b.id=b.slug; return NextResponse.json(await db.brand.create({data:b})); }
+
+function emptyStringToNull(val: unknown): unknown {
+  if (val === "" || val === undefined) return null;
+  return val;
+}
+
+const brandCreateSchema = z.object({
+  name: z.string().min(1, "Naziv brenda je obavezan"),
+  description: z.string().default(""),
+  image: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
+});
+
+export async function GET() {
+  const s = await auth();
+  if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  return NextResponse.json(await db.brand.findMany({ orderBy: { createdAt: "desc" } }));
+}
+
+export async function POST(req: NextRequest) {
+  const s = await auth();
+  if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const raw = await req.json();
+  const parsed = brandCreateSchema.safeParse(raw);
+
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const field = issue.path.join(".");
+      fieldErrors[field] = issue.message;
+    }
+    return NextResponse.json({ errors: fieldErrors }, { status: 400 });
+  }
+
+  const body = parsed.data;
+  const slug = body.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+  return NextResponse.json(await db.brand.create({ data: { ...body, slug, id: slug } }));
+}

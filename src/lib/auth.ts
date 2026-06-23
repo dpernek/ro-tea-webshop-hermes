@@ -1,10 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-
-// Pre-computed bcrypt hash for admin user (generated via Node)
-const ADMIN_EMAIL = "davor.pernek@ro-tea.hr";
-const ADMIN_HASH = "$2b$12$8jorHL6jZDEk8uP2AYHI5e077VCRXA8krtse5EzvQwZMiMAFn7UCa";
+import { db } from "@/lib/db";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -20,16 +17,44 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const email = String(credentials.email).toLowerCase().trim();
         const password = String(credentials.password);
 
-        if (email !== ADMIN_EMAIL) return null;
+        // --- First-run auto-seed: if DB has zero users and env vars are set ---
+        try {
+          const count = await db.user.count();
+          if (count === 0) {
+            const seedEmail = process.env.ADMIN_EMAIL;
+            const seedPassword = process.env.ADMIN_PASSWORD;
+            if (seedEmail && seedPassword) {
+              const hash = await bcrypt.hash(seedPassword, 12);
+              await db.user.create({
+                data: {
+                  name: "Admin",
+                  email: seedEmail.toLowerCase().trim(),
+                  passwordHash: hash,
+                  role: "ADMIN",
+                },
+              });
+              console.log(
+                "[auth] Auto-seeded admin user:",
+                seedEmail.toLowerCase().trim()
+              );
+            }
+          }
+        } catch (e) {
+          console.error("[auth] Auto-seed check failed:", e);
+        }
 
-        const validPassword = await bcrypt.compare(password, ADMIN_HASH);
+        // --- Verify against DB User table ---
+        const user = await db.user.findUnique({ where: { email } });
+        if (!user) return null;
+
+        const validPassword = await bcrypt.compare(password, user.passwordHash);
         if (!validPassword) return null;
 
         return {
-          id: "admin-davor",
-          name: "Davor Pernjek",
-          email: ADMIN_EMAIL,
-          role: "ADMIN",
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
         };
       },
     }),

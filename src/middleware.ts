@@ -1,29 +1,32 @@
+import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+export default auth((req) => {
+  const { pathname } = req.nextUrl;
 
-  // Allow auth API and login page
+  // Allow auth API and login page through
   if (pathname.startsWith("/api/auth") || pathname === "/admin/login") {
     return NextResponse.next();
   }
 
-  // Protect /admin routes - check for auth session cookie
-  if (pathname.startsWith("/admin")) {
-    const hasAuth =
-      request.cookies.has("authjs.session-token") ||
-      request.cookies.has("__Secure-authjs.session-token");
+  // No valid session → redirect to login
+  if (!req.auth) {
+    const url = new URL("/admin/login", req.url);
+    url.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(url);
+  }
 
-    if (!hasAuth) {
-      const url = new URL("/admin/login", request.url);
-      url.searchParams.set("callbackUrl", pathname);
-      return NextResponse.redirect(url);
-    }
+  // Session exists but user is not ADMIN → 403
+  const role = (req.auth.user as any)?.role;
+  if (role !== "ADMIN") {
+    return new NextResponse("Forbidden", {
+      status: 403,
+      headers: { "Content-Type": "text/plain" },
+    });
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: ["/admin/:path*"],

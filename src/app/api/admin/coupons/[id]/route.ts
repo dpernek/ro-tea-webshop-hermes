@@ -1,4 +1,51 @@
-import { NextRequest, NextResponse } from "next/server"; import { auth } from "@/lib/auth"; import { db } from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+
 export const dynamic = "force-dynamic";
-export async function PATCH(req:NextRequest,{params}:{params:Promise<{id:string}>}){const s=await auth();if(!s?.user)return NextResponse.json({error:"Unauthorized"},{status:401});const{id}=await params;const b=await req.json();if(b.startsAt)b.startsAt=new Date(b.startsAt);if(b.endsAt)b.endsAt=new Date(b.endsAt);await db.coupon.update({where:{id},data:b});return NextResponse.json({ok:true});}
-export async function DELETE(_:NextRequest,{params}:{params:Promise<{id:string}>}){const s=await auth();if(!s?.user)return NextResponse.json({error:"Unauthorized"},{status:401});const{id}=await params;await db.coupon.delete({where:{id}});return NextResponse.json({ok:true});}
+
+function emptyStringToNull(val: unknown): unknown {
+  if (val === "" || val === undefined) return null;
+  return val;
+}
+
+const couponUpdateSchema = z.object({
+  code: z.string().min(1, "Kod kupona je obavezan").max(50, "Kod kupona može imati najviše 50 znakova").optional(),
+  type: z.enum(["PERCENTAGE", "FIXED"], { error: "Tip kupona mora biti PERCENTAGE ili FIXED" }).optional(),
+  value: z.preprocess((v) => (v === "" ? undefined : Number(v)), z.number().min(0, "Vrijednost ne može biti negativna")).optional(),
+  active: z.boolean().optional(),
+  startsAt: z.preprocess((v) => (v === "" || v === null ? null : v === undefined ? undefined : new Date(v as string)), z.date().nullable().optional()),
+  endsAt: z.preprocess((v) => (v === "" || v === null ? null : v === undefined ? undefined : new Date(v as string)), z.date().nullable().optional()),
+  usageLimit: z.preprocess(emptyStringToNull, z.preprocess((v) => (v === "" ? undefined : Number(v)), z.number().int().min(0).nullable()).optional()),
+  minimumOrderAmount: z.preprocess(emptyStringToNull, z.preprocess((v) => (v === "" ? undefined : Number(v)), z.number().min(0).nullable()).optional()),
+});
+
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const s = await auth();
+  if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { id } = await params;
+
+  const raw = await req.json();
+  const parsed = couponUpdateSchema.safeParse(raw);
+
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const field = issue.path.join(".");
+      fieldErrors[field] = issue.message;
+    }
+    return NextResponse.json({ errors: fieldErrors }, { status: 400 });
+  }
+
+  await db.coupon.update({ where: { id }, data: parsed.data });
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const s = await auth();
+  if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { id } = await params;
+  await db.coupon.delete({ where: { id } });
+  return NextResponse.json({ ok: true });
+}

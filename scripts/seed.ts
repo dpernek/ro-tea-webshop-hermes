@@ -20,8 +20,13 @@ const prisma = new PrismaClient({
 });
 
 async function seedAdmin() {
-  const email = process.env.ADMIN_EMAIL || "davor@ro-tea.hr";
-  const password = process.env.ADMIN_PASSWORD || "admin123";
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD;
+
+  if (!email || !password) {
+    console.log("ADMIN_EMAIL and ADMIN_PASSWORD env vars not set, skipping admin seed");
+    return;
+  }
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
@@ -32,7 +37,7 @@ async function seedAdmin() {
   const passwordHash = await bcrypt.hash(password, 12);
   await prisma.user.create({
     data: {
-      name: "Davor Pernjek",
+      name: "Admin",
       email,
       passwordHash,
       role: "ADMIN",

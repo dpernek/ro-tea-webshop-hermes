@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { CartHydrator } from "@/components/cart/CartHydrator";
-import { CookieBanner } from "@/components/layout/CookieBanner";
+import { ConditionalPublicLayout } from "@/components/layout/ConditionalPublicLayout";
 import { site } from "@/lib/data";
 
 const inter = Inter({
@@ -52,11 +49,7 @@ export default function RootLayout({
         />
       </head>
       <body className="flex min-h-full flex-col font-sans">
-        <CartHydrator />
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <CookieBanner />
+        <ConditionalPublicLayout>{children}</ConditionalPublicLayout>
       </body>
     </html>
   );

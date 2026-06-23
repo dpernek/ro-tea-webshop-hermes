@@ -38,8 +38,9 @@ function LoginForm() {
   return (
     <>
       {error && (
-        <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
-          {error}
+        <div className="mb-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-200">
+          <p className="font-medium">Prijava nije uspjela</p>
+          <p className="mt-0.5 text-red-600">{error}</p>
         </div>
       )}
 
@@ -52,6 +53,7 @@ function LoginForm() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="admin@ro-tea.hr"
           required
+          autoComplete="email"
         />
         <Input
           label="Lozinka"
@@ -61,6 +63,7 @@ function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="••••••••"
           required
+          autoComplete="current-password"
         />
         <Button type="submit" className="w-full" size="lg" isLoading={loading}>
           Prijava
@@ -72,26 +75,38 @@ function LoginForm() {
 
 export default function AdminLoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-100">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50">
+      <div className="w-full max-w-sm">
+        {/* Logo */}
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#0055a8] text-lg font-bold text-white">
-            RT
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#0055a8] shadow-lg shadow-blue-500/20">
+            <span className="text-xl font-bold text-white">RT</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">RO-TEA Admin</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            RO-TEA Admin
+          </h1>
           <p className="mt-2 text-sm text-slate-500">
             Prijavite se za pristup admin panelu
           </p>
         </div>
-        <Suspense
-          fallback={
-            <div className="py-4 text-center text-sm text-slate-500">
-              Učitavanje...
-            </div>
-          }
-        >
-          <LoginForm />
-        </Suspense>
+
+        {/* Login card */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+          <Suspense
+            fallback={
+              <div className="py-4 text-center text-sm text-slate-500">
+                Učitavanje...
+              </div>
+            }
+          >
+            <LoginForm />
+          </Suspense>
+        </div>
+
+        {/* Footer */}
+        <p className="mt-8 text-center text-xs text-slate-400">
+          &copy; {new Date().getFullYear()} RO-TEA d.o.o. Sva prava pridržana.
+        </p>
       </div>
     </div>
   );

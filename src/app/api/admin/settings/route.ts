@@ -1,8 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
+
+function emptyStringToNull(val: unknown): unknown {
+  if (val === "" || val === undefined) return null;
+  return val;
+}
+
+const storeSettingsSchema = z.object({
+  storeName: z.string().min(1, "Naziv trgovine je obavezan").optional(),
+  storeEmail: z.string().email("Neispravna email adresa").optional().or(z.literal("")),
+  storePhone: z.string().optional(),
+  storeAddress: z.string().optional(),
+  currency: z.string().min(1, "Valuta je obavezna").optional(),
+  defaultTaxRate: z.preprocess((v) => (v === "" || v === undefined ? undefined : Number(v)), z.number().min(0, "Porezna stopa ne može biti negativna").max(100, "Porezna stopa ne može biti veća od 100")).optional(),
+  freeShippingThreshold: z.preprocess(emptyStringToNull, z.preprocess((v) => (v === "" ? undefined : Number(v)), z.number().min(0, "Prag besplatne dostave ne može biti negativan").nullable().optional())),
+});
 
 export async function GET() {
   const session = await auth();
@@ -20,22 +36,32 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await request.json();
+  const raw = await request.json();
+  const parsed = storeSettingsSchema.safeParse(raw);
+
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const field = issue.path.join(".");
+      fieldErrors[field] = issue.message;
+    }
+    return NextResponse.json({ errors: fieldErrors }, { status: 400 });
+  }
+
+  const body = parsed.data;
   const existing = await db.storeSettings.findFirst();
 
   if (existing) {
     await db.storeSettings.update({
       where: { id: existing.id },
       data: {
-        storeName: body.storeName,
-        storeEmail: body.storeEmail,
-        storePhone: body.storePhone,
-        storeAddress: body.storeAddress,
-        currency: body.currency,
-        defaultTaxRate: parseFloat(body.defaultTaxRate) || 25,
-        freeShippingThreshold: body.freeShippingThreshold
-          ? parseFloat(body.freeShippingThreshold)
-          : null,
+        storeName: body.storeName ?? existing.storeName,
+        storeEmail: body.storeEmail ?? existing.storeEmail,
+        storePhone: body.storePhone ?? existing.storePhone,
+        storeAddress: body.storeAddress ?? existing.storeAddress,
+        currency: body.currency ?? existing.currency,
+        defaultTaxRate: body.defaultTaxRate ?? existing.defaultTaxRate,
+        freeShippingThreshold: body.freeShippingThreshold !== undefined ? body.freeShippingThreshold : existing.freeShippingThreshold,
       },
     });
   } else {
@@ -46,10 +72,8 @@ export async function POST(request: NextRequest) {
         storePhone: body.storePhone || "",
         storeAddress: body.storeAddress || "",
         currency: body.currency || "EUR",
-        defaultTaxRate: parseFloat(body.defaultTaxRate) || 25,
-        freeShippingThreshold: body.freeShippingThreshold
-          ? parseFloat(body.freeShippingThreshold)
-          : null,
+        defaultTaxRate: body.defaultTaxRate ?? 25,
+        freeShippingThreshold: body.freeShippingThreshold ?? null,
       },
     });
   }
