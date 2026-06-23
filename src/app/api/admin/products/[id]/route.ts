@@ -13,8 +13,22 @@ export async function DELETE(
   if (!session?.user)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
-  await db.product.delete({ where: { id } });
-  return NextResponse.json({ ok: true });
+
+  // Check if product has orders — don't physically delete
+  const orderCount = await db.orderItem.count({ where: { productId: id } });
+  if (orderCount > 0) {
+    return NextResponse.json(
+      { error: "Proizvod je povezan s narudžbama. Umjesto brisanja arhivirajte ga (status = ARCHIVED)." },
+      { status: 400 }
+    );
+  }
+
+  // Soft delete: archive instead of physical delete
+  await db.product.update({
+    where: { id },
+    data: { status: "ARCHIVED" },
+  });
+  return NextResponse.json({ ok: true, archived: true });
 }
 
 export async function GET(
@@ -72,25 +86,35 @@ export async function PATCH(
 
   // Whitelist: only pass known fields to Prisma
   // Optional string fields use undefined (not null) for Prisma compatibility
-  const updateData = {
-    name: data.name,
-    slug: data.slug,
-    sku: data.sku || undefined,
-    price: data.price,
-    regularPrice: data.regularPrice ?? null,
-    salePrice: data.salePrice ?? null,
-    stock: data.stock ?? 0,
-    stockStatus: data.stockStatus,
-    status: data.status,
-    featured: data.featured,
-    badge: data.badge || undefined,
-    type: data.type,
-    shortDescription: data.shortDescription || undefined,
-    description: data.description || undefined,
-    image: data.image,
-    brandId: data.brandId || undefined,
-    categoryId: data.categoryId || undefined,
-  };
+  const updateData: Record<string, unknown> = {};
+
+  if (data.name !== undefined) updateData.name = data.name;
+  if (data.slug !== undefined) updateData.slug = data.slug;
+  if (data.sku !== undefined) updateData.sku = data.sku || undefined;
+  if (data.price !== undefined) updateData.price = data.price;
+  if (data.regularPrice !== undefined) updateData.regularPrice = data.regularPrice === null ? null : data.regularPrice;
+  if (data.salePrice !== undefined) updateData.salePrice = data.salePrice === null ? null : data.salePrice;
+  if (data.stock !== undefined) updateData.stock = data.stock === null ? 0 : (data.stock ?? 0);
+  if (data.stockStatus !== undefined) updateData.stockStatus = data.stockStatus;
+  if (data.status !== undefined) updateData.status = data.status;
+  if (data.featured !== undefined) updateData.featured = data.featured;
+  if (data.badge !== undefined) updateData.badge = data.badge || undefined;
+  if (data.type !== undefined) updateData.type = data.type;
+  if (data.shortDescription !== undefined) updateData.shortDescription = data.shortDescription || undefined;
+  if (data.description !== undefined) updateData.description = data.description || undefined;
+  if (data.image !== undefined) updateData.image = data.image;
+  if (data.brandId !== undefined) updateData.brandId = data.brandId || undefined;
+  if (data.categoryId !== undefined) updateData.categoryId = data.categoryId || undefined;
+
+  // Sale price validation
+  const effectiveRegPrice = (updateData.regularPrice as number | null | undefined) ?? (existing.regularPrice ?? existing.price);
+  const effectiveSalePrice = (updateData.salePrice as number | null | undefined) ?? existing.salePrice;
+  if (effectiveSalePrice != null && effectiveSalePrice > 0 && effectiveSalePrice >= effectiveRegPrice) {
+    return NextResponse.json(
+      { errors: { salePrice: "Akcijska cijena mora biti manja od redovne cijene." } },
+      { status: 400 }
+    );
+  }
 
   try {
     const updated = await db.product.update({
