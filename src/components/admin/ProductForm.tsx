@@ -52,11 +52,16 @@ export function ProductForm({ product, categories, brands }: {
         featured: form.get("featured") === "on",
         shortDescription: form.get("shortDescription") || "",
         description: form.get("description") || "",
-        brandId: form.get("brandId") || null,
-        categoryId: form.get("categoryId") || null,
-        sku: form.get("sku") || null,
-        badge: form.get("badge") || null,
+        brandId: form.get("brandId") || "",
+        categoryId: form.get("categoryId") || "",
+        sku: form.get("sku") || "",
+        badge: form.get("badge") || "",
       };
+
+      // Clean: remove empty optional strings
+      for (const key of ["sku", "badge", "brandId", "categoryId", "shortDescription", "description"]) {
+        if (!body[key]) delete body[key];
+      }
 
       // Optional numeric fields
       const rp = n(form.get("regularPrice") as string);
