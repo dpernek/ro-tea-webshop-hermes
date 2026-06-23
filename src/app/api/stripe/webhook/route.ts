@@ -30,8 +30,12 @@ export async function POST(req: NextRequest) {
       data: { id: event.id, type: event.type, objectId: (event.data.object as any)?.id, payload: JSON.stringify(event.data.object), processed: false },
     });
   } catch {
-    // Duplicate event — already processed
-    return NextResponse.json({ received: true, cached: true });
+    // Duplicate — check if previously processed
+    const existing = await db.stripeEvent.findUnique({ where: { id: event.id }, select: { processed: true } });
+    if (existing?.processed) {
+      return NextResponse.json({ received: true, cached: true });
+    }
+    // Previously unprocessed — retry processing
   }
 
   try {

@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
       const p = productMap.get(item.productId);
       if (!p) return NextResponse.json({ error: `Proizvod (${item.productId}) više nije dostupan.` }, { status: 400 });
       if (p.status !== "ACTIVE") return NextResponse.json({ error: `Proizvod "${p.name}" trenutno nije dostupan.` }, { status: 400 });
-      if (p.stock != null && p.stock > 0 && p.stock < item.quantity) return NextResponse.json({ error: `Proizvod "${p.name}" nema dovoljno zaliha.` }, { status: 400 });
+      if (p.stock != null && p.stock < item.quantity) return NextResponse.json({ error: `Proizvod "${p.name}" nema dovoljno zaliha.` }, { status: 400 });
     }
 
     // Unified server-side pricing
