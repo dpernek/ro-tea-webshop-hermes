@@ -50,7 +50,7 @@ export function CartSummary({ showCheckoutButton = true, shippingOverride }: Car
       </div>
       {showCheckoutButton && (
         <Button asChild className="mt-6 w-full" size="lg">
-          <Link href="/checkout">Nastavi na checkout</Link>
+          <Link href="/checkout">Nastavi na blagajnu</Link>
         </Button>
       )}
     </div>
