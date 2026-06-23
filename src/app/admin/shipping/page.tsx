@@ -55,6 +55,7 @@ export default function AdminShippingPage() {
         </Card>
       )}
       <Card>
+        <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50">
             <tr><th className="px-4 py-3 font-medium text-slate-600">Naziv</th><th className="px-4 py-3 font-medium text-slate-600">Cijena</th><th className="px-4 py-3 font-medium text-slate-600">Besplatno iznad</th><th className="px-4 py-3 font-medium text-slate-600">Aktivno</th><th className="px-4 py-3 text-right font-medium text-slate-600">Akcije</th></tr>
@@ -74,6 +75,7 @@ export default function AdminShippingPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </Card>
     </div>
   );

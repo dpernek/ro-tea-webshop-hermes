@@ -358,6 +358,7 @@ export default function AdminOrderDetailPage() {
           {/* Items */}
           <Card className="p-6">
             <h2 className="mb-4 text-lg font-semibold">Stavke narudžbe</h2>
+            <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50">
                 <tr>
@@ -380,6 +381,7 @@ export default function AdminOrderDetailPage() {
                 ))}
               </tbody>
             </table>
+            </div>
             <div className="mt-4 text-right">
               <p className="text-sm text-slate-500">Subtotal: {order.subtotal?.toFixed(2)} €</p>
               <p className="text-sm text-slate-500">Dostava: {order.shippingTotal?.toFixed(2)} €</p>

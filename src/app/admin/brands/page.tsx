@@ -49,6 +49,7 @@ export default function AdminBrandsPage() {
         </Card>
       )}
       <Card>
+        <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50">
             <tr><th className="px-4 py-3 font-medium text-slate-600">Naziv</th><th className="px-4 py-3 font-medium text-slate-600">Slug</th><th className="px-4 py-3 text-right font-medium text-slate-600">Akcije</th></tr>
@@ -66,6 +67,7 @@ export default function AdminBrandsPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </Card>
     </div>
   );

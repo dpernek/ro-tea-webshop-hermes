@@ -11,6 +11,7 @@ export default function AdminCustomersPage() {
     <div>
       <h1 className="mb-6 text-2xl font-bold text-slate-900">Kupci ({customers.length})</h1>
       <Card>
+        <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50">
             <tr><th className="px-4 py-3 font-medium text-slate-600">Ime</th><th className="px-4 py-3 font-medium text-slate-600">Email</th><th className="px-4 py-3 font-medium text-slate-600">Telefon</th><th className="px-4 py-3 font-medium text-slate-600">Datum</th></tr>
@@ -26,6 +27,7 @@ export default function AdminCustomersPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </Card>
     </div>
   );

@@ -60,6 +60,7 @@ export default function AdminCouponsPage() {
         </Card>
       )}
       <Card>
+        <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50">
             <tr><th className="px-4 py-3 font-medium text-slate-600">Kod</th><th className="px-4 py-3 font-medium text-slate-600">Vrsta</th><th className="px-4 py-3 font-medium text-slate-600">Vrijednost</th><th className="px-4 py-3 font-medium text-slate-600">Aktivno</th><th className="px-4 py-3 font-medium text-slate-600">Vrijedi do</th><th className="px-4 py-3 text-right font-medium text-slate-600">Akcije</th></tr>
@@ -80,6 +81,7 @@ export default function AdminCouponsPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </Card>
     </div>
   );
