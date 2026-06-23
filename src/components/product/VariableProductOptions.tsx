@@ -18,7 +18,15 @@ export function VariableProductOptions({
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [added, setAdded] = useState(false);
 
-  const attributes = product.attributes || [];
+  const rawAttr = product.attributes;
+  const attributes =
+    typeof rawAttr === "string"
+      ? (() => {
+          try { return JSON.parse(rawAttr || "[]"); } catch { return []; }
+        })()
+      : Array.isArray(rawAttr)
+        ? rawAttr
+        : [];
   const allSelected =
     attributes.length > 0 && attributes.every((attr) => selected[attr.name]);
 
