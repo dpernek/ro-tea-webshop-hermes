@@ -16,7 +16,7 @@ function mapProduct(p: any) {
     price: p.price,
     regularPrice: p.regularPrice ?? null,
     salePrice: p.salePrice ?? null,
-    oldPrice: p.salePrice ?? p.regularPrice ?? null,
+    oldPrice: p.salePrice != null && p.salePrice > 0 && p.salePrice < p.price ? p.price : null,
     image: p.image,
     gallery: [] as string[],
     shortDescription: p.shortDescription ?? "",
@@ -153,14 +153,16 @@ export async function loadInitialCatalog(params: {
   return {
     products: products.map(mapProduct),
     total,
-    categories: categories.map((c) => ({
-      id: c.id,
-      slug: c.slug,
-      name: c.name,
-      description: c.description,
-      image: c.image ?? "",
-      count: c._count.products,
-    })),
+    categories: categories
+      .map((c) => ({
+        id: c.id,
+        slug: c.slug,
+        name: c.name,
+        description: c.description,
+        image: c.image ?? "",
+        count: c._count.products,
+      }))
+      .filter((c) => c.count > 0),
     brands: brands
       .filter((b) => allowedBrands.includes(b.slug))
       .map((b) => ({
