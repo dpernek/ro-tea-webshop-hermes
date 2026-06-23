@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
@@ -537,12 +538,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   href={`/proizvodi/${rp.slug}`}
                   className="group rounded-xl border border-slate-200 bg-white p-4 transition-shadow hover:shadow-md"
                 >
-                  <div className="aspect-square overflow-hidden rounded-lg bg-slate-100">
-                    <img
+                  <div className="aspect-square overflow-hidden rounded-lg bg-slate-100 relative">
+                    <Image
                       src={rp.image}
                       alt={rp.name}
-                      className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                      loading="lazy"
+                      fill
+                      className="object-cover transition-transform group-hover:scale-105"
+                      sizes="100px"
                     />
                   </div>
                   <h3 className="mt-3 line-clamp-2 text-sm font-medium text-slate-900 group-hover:text-[#0055a8]">
