@@ -8,10 +8,26 @@ export async function POST() {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Delete test orders (those created during development/testing)
-  const result = await db.order.deleteMany({
-    where: { customerEmail: { in: ["t@t.hr", "davor@ro-tea.hr", "davor.pernek@ro-tea.hr", "test@ro-tea.hr"] } }
-  });
-
-  return NextResponse.json({ ok: true, deleted: result.count });
+  try {
+    const testEmails = ["t@t.hr", "davor@ro-tea.hr", "davor.pernek@ro-tea.hr", "test@ro-tea.hr"];
+    
+    // Find test orders
+    const orders = await db.order.findMany({
+      where: { customerEmail: { in: testEmails } },
+      select: { id: true }
+    });
+    const ids = orders.map(o => o.id);
+    
+    // Delete in order: OrderItems → Payments → Orders
+    await db.orderItem.deleteMany({ where: { orderId: { in: ids } } });
+    await db.payment.deleteMany({ where: { orderId: { in: ids } } });
+    const result = await db.order.deleteMany({ where: { id: { in: ids } } });
+    
+    // Reset any leftover orphan records
+    await db.orderItem.deleteMany({ where: { orderId: { notIn: ids } } });
+    
+    return NextResponse.json({ ok: true, deleted: result.count });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
 }
