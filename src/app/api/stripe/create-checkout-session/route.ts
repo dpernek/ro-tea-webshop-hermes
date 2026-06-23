@@ -232,7 +232,7 @@ export async function POST(req: NextRequest) {
     const siteUrl =
       process.env.NEXT_PUBLIC_SITE_URL ||
       process.env.VERCEL_URL ||
-      "http://localhost:3000";
+      "https://ro-tea-webshop-hermes.vercel.app";
     const baseUrl = siteUrl.startsWith("http")
       ? siteUrl
       : `https://${siteUrl}`;
