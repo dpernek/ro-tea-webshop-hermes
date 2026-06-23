@@ -126,6 +126,7 @@ model Order {
   paymentCancelledAt       DateTime?
   paymentErrorMessage      String?
   checkoutExpiresAt        DateTime?
+  viewed                   Boolean     @default(false)
   createdAt                DateTime    @default(now())
   updatedAt                DateTime    @updatedAt
   items                    OrderItem[]
