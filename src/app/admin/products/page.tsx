@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Plus, Search, Pencil, Trash2, MoreHorizontal } from "lucide-react";
+import { Plus, Search, Pencil, Trash2 } from "lucide-react";
 
 interface Product {
-  id: string; name: string; slug: string; price: number; status: string; image: string; sku: string;
+  id: string; name: string; slug: string;
+  price: number; salePrice: number | null; regularPrice: number | null;
+  status: string; image: string;
 }
 
 export default function AdminProductsPage() {
@@ -75,38 +77,53 @@ export default function AdminProductsPage() {
               <tr>
                 <th className="px-4 py-3 font-medium text-slate-600">Slika</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Naziv</th>
-                <th className="px-4 py-3 font-medium text-slate-600">SKU</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Cijena</th>
+                <th className="px-4 py-3 font-medium text-slate-600">Akcijska</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Status</th>
                 <th className="px-4 py-3 text-right font-medium text-slate-600">Akcije</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {products.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3">
-                    {p.image && <img src={p.image} className="h-10 w-10 rounded object-cover" alt="" />}
-                  </td>
-                  <td className="px-4 py-3 font-medium text-slate-900 max-w-[200px] truncate">{p.name}</td>
-                  <td className="px-4 py-3 text-slate-500 text-xs">{p.sku || "-"}</td>
-                  <td className="px-4 py-3">{p.price.toFixed(2)} €</td>
-                  <td className="px-4 py-3">
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${p.status === "ACTIVE" ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-600"}`}>
-                      {p.status === "ACTIVE" ? "Aktivno" : p.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex justify-end gap-1">
-                      <Button size="sm" variant="ghost" onClick={() => router.push(`/admin/products/${p.id}/edit`)}>
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button size="sm" variant="ghost" className="text-red-600 hover:bg-red-50" onClick={() => handleDelete(p.id)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {products.map((p) => {
+                const hasSale = p.salePrice != null && p.salePrice < p.price;
+                return (
+                  <tr key={p.id} className="hover:bg-slate-50">
+                    <td className="px-4 py-3">
+                      {p.image && <img src={p.image} className="h-10 w-10 rounded object-cover" alt="" />}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-slate-900 max-w-[200px] truncate">{p.name}</td>
+                    <td className="px-4 py-3">
+                      {hasSale ? (
+                        <span className="text-xs text-slate-400 line-through">{p.price.toFixed(2)} €</span>
+                      ) : (
+                        <span className="font-medium">{p.price.toFixed(2)} €</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      {hasSale ? (
+                        <span className="font-bold text-red-600">{p.salePrice!.toFixed(2)} €</span>
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${p.status === "ACTIVE" ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-600"}`}>
+                        {p.status === "ACTIVE" ? "Aktivno" : p.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button size="sm" variant="ghost" onClick={() => router.push(`/admin/products/${p.id}/edit`)}>
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="text-red-600 hover:bg-red-50" onClick={() => handleDelete(p.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
