@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { unstable_noStore as noStore } from "next/cache";
 import { Card, CardContent } from "@/components/ui/Card";
 import { ShoppingCart, ShoppingBag, Users, TrendingUp, Circle } from "lucide-react";
 import Link from "next/link";
@@ -8,6 +9,8 @@ import Link from "next/link";
 export default async function AdminDashboardPage() {
   const session = await auth();
   if (!session?.user) redirect("/admin/login");
+
+  noStore(); // Disable Prisma proxy cache
 
   let productCount = 0, orderCount = 0, customerCount = 0, revenue = 0, unreadOrders = 0;
 
@@ -17,11 +20,11 @@ export default async function AdminDashboardPage() {
       db.customer.count(),
       db.order.count({ where: { viewed: false } }),
     ]);
-    // Use raw SQL for accurate order count (Prisma proxy cache issue)
-    const oc = await db.$queryRawUnsafe<{count: bigint}[]>('SELECT COUNT(*)::int as count FROM \"Order\"');
-    orderCount = Number(oc[0]?.count ?? 0);
-    const rev = await db.$queryRawUnsafe<{total: number}[]>('SELECT COALESCE(SUM(total),0)::float as total FROM \"Order\" WHERE status NOT IN (\'CANCELLED\',\'REFUNDED\')');
-    revenue = rev[0]?.total || 0;
+    // Use raw SQL for accurate count (bypass Prisma proxy cache)
+    const oc = await db.$queryRawUnsafe('SELECT COUNT(*) as count FROM "Order"');
+    orderCount = Number((oc as any)[0]?.count ?? 0);
+    const rev = await db.$queryRawUnsafe("SELECT COALESCE(SUM(total),0) as total FROM \"Order\" WHERE status NOT IN ('CANCELLED','REFUNDED')");
+    revenue = (rev as any)[0]?.total || 0;
   } catch {}
 
   const stats = [
