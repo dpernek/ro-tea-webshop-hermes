@@ -277,8 +277,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: session.url });
   } catch (err: any) {
     console.error("Stripe checkout session error:", err);
+    const msg = err?.message || err?.raw?.message || "";
     return NextResponse.json(
-      { error: "Došlo je do greške prilikom kreiranja plaćanja." },
+      { error: `Greška: ${msg || "Došlo je do greške prilikom kreiranja plaćanja."}` },
       { status: 500 }
     );
   }
