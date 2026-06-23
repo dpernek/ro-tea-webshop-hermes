@@ -28,7 +28,7 @@ export async function POST() {
     try {
       await db.product.update({
         where: { id: p.id },
-        data: { sku, shortDescription: cleanDesc || undefined },
+        data: { sku, shortDescription: cleanDesc || "" },
       });
       updated++;
     } catch {
