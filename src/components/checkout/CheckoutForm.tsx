@@ -80,7 +80,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     if (!formData.fullName.trim() || formData.fullName.length < 3) {
       newErrors.fullName = "Unesite ime i prezime (minimalno 3 znaka).";
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim() || !emailRegex.test(formData.email)) {
       newErrors.email = "Unesite valjanu e-mail adresu.";
     }

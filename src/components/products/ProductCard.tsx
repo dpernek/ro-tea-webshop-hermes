@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cartStore";
 import { Badge } from "@/components/ui/Badge";
-import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { Button } from "@/components/ui/Button";
 import { ShoppingCart, Check, ArrowRight } from "lucide-react";
 import { useState } from "react";
@@ -26,6 +25,8 @@ export function ProductCard({ product, index }: ProductCardProps) {
     setTimeout(() => setAdded(false), 2000);
   };
 
+  const hasSale = product.oldPrice != null && product.oldPrice > product.price;
+
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:shadow-md">
       <Link
@@ -40,9 +41,14 @@ export function ProductCard({ product, index }: ProductCardProps) {
           className="object-contain p-4 [mix-blend-mode:multiply] transition-transform duration-500 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
-        {product.oldPrice && (
+        {hasSale && (
           <span className="absolute top-3 right-3 rounded-full bg-red-500 px-2.5 py-1 text-xs font-bold text-white shadow-sm">
             AKCIJA
+          </span>
+        )}
+        {product.featured && (
+          <span className="absolute top-3 left-3 rounded-full bg-blue-500 px-2.5 py-1 text-xs font-bold text-white shadow-sm">
+            Istaknuto
           </span>
         )}
       </Link>
@@ -53,7 +59,6 @@ export function ProductCard({ product, index }: ProductCardProps) {
           {product.brand && product.brand !== product.category && (
             <Badge variant="outline">{product.brand}</Badge>
           )}
-          {product.featured && <Badge variant="accent">Istaknuto</Badge>}
           {product.badge && <Badge variant="accent">{product.badge}</Badge>}
           {isVariable && <Badge variant="info">Više opcija</Badge>}
         </div>
@@ -75,7 +80,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
           {isVariable && product.priceRange ? (
             <div className="text-lg font-semibold text-slate-900">
               {product.priceRange.min === product.priceRange.max ? (
-                <PriceDisplay price={product.priceRange.min} />
+                <span>{formatPrice(product.priceRange.min)}</span>
               ) : (
                 <span>
                   Raspon cijena: {formatPrice(product.priceRange.min)} –{" "}
@@ -84,7 +89,32 @@ export function ProductCard({ product, index }: ProductCardProps) {
               )}
             </div>
           ) : (
-            <PriceDisplay price={product.price} oldPrice={product.oldPrice} />
+            <div className="flex flex-wrap items-baseline gap-2">
+              <span
+                className={
+                  hasSale
+                    ? "text-xl font-bold tracking-tight text-green-600"
+                    : "text-xl font-semibold tracking-tight text-slate-900"
+                }
+              >
+                {formatPrice(product.price)}
+              </span>
+              {hasSale && (
+                <span className="text-base text-slate-400 line-through">
+                  {formatPrice(product.oldPrice!)}
+                </span>
+              )}
+            </div>
+          )}
+
+          {product.stockStatus === "instock" && (
+            <p className="text-sm font-medium text-green-600">Dostupno</p>
+          )}
+          {product.stockStatus === "outofstock" && (
+            <p className="text-sm font-medium text-slate-400">Nedostupno</p>
+          )}
+          {product.stockStatus === "onbackorder" && (
+            <p className="text-sm font-medium text-slate-400">Na upit</p>
           )}
 
           {isVariable ? (
@@ -99,6 +129,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
               onClick={handleAdd}
               className="w-full"
               variant={added ? "secondary" : "primary"}
+              aria-label={`Dodaj ${product.name} u košaricu`}
             >
               {added ? (
                 <>

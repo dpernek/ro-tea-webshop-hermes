@@ -36,9 +36,9 @@ export function CartSummary({ showCheckoutButton = true, shippingOverride }: Car
             {shipping === 0 ? "Besplatno" : formatPrice(shipping)}
           </span>
         </div>
-        {shipping > 0 && shippingOverride === null && (
-          <p className="text-xs text-slate-400">
-            Besplatna dostava za narudžbe iznad {formatPrice(FREE_SHIPPING_THRESHOLD)}
+        {shipping > 0 && shippingOverride === null && subtotal > 0 && (
+          <p className="text-xs text-slate-500">
+            Još {formatPrice(FREE_SHIPPING_THRESHOLD - subtotal)} za besplatnu dostavu
           </p>
         )}
         <div className="border-t border-slate-100 pt-3">
