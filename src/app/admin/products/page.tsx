@@ -79,7 +79,7 @@ export default function AdminProductsPage() {
                 <th className="px-4 py-3 font-medium text-slate-600">Naziv</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Cijena</th>
                 <th className="px-4 py-3 font-medium text-slate-600">Akcijska</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Status</th>
+                <th className="px-4 py-3 font-medium text-slate-600">Zaliha</th>
                 <th className="px-4 py-3 text-right font-medium text-slate-600">Akcije</th>
               </tr>
             </thead>
@@ -107,9 +107,15 @@ export default function AdminProductsPage() {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${p.status === "ACTIVE" ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-600"}`}>
-                        {p.status === "ACTIVE" ? "Aktivno" : p.status}
-                      </span>
+                      {(p as any).stockStatus === "INSTOCK" ? (
+                        <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">Dostupno</span>
+                      ) : (p as any).stockStatus === "OUTOFSTOCK" ? (
+                        <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">Nema</span>
+                      ) : (p as any).stockStatus === "ONBACKORDER" ? (
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">Narudžba</span>
+                      ) : (
+                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">—</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end gap-1">

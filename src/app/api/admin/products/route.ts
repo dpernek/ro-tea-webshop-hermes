@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { createdAt: "desc" },
-      select: { id: true, name: true, slug: true, price: true, salePrice: true, regularPrice: true, status: true, image: true },
+      select: { id: true, name: true, slug: true, price: true, salePrice: true, regularPrice: true, status: true, stockStatus: true, image: true },
     }),
     db.product.count({ where }),
   ]);
