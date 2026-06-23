@@ -7,7 +7,7 @@
 //   SUPABASE_SERVICE_ROLE_KEY — service role key
 //   UPLOAD_PROVIDER — "supabase-storage" (default), "cloudinary", "local"
 
-export async function uploadFile(file: File, destDir = "images"): Promise<{ url: string }> {
+export async function uploadFile(file: File, destDir = "products"): Promise<{ url: string }> {
   const provider = process.env.UPLOAD_PROVIDER || detectProvider();
 
   if (provider === "local") {

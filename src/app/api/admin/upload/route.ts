@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
   if (!ALLOWED_TYPES.includes(file.type)) return NextResponse.json({ error: "Invalid file type. Allowed: webp, jpg, png" }, { status: 400 });
 
   try {
-    const result = await uploadFile(file);
+    const result = await uploadFile(file, "products");
     return NextResponse.json({ url: result.url });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || "Upload failed" }, { status: 500 });
