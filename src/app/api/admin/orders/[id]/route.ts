@@ -25,8 +25,10 @@ const paymentStatusEnum = z.enum([
   "PENDING",
   "PAID",
   "FAILED",
+  "CANCELLED",
+  "EXPIRED",
   "REFUNDED",
-], { error: "Status plaćanja mora biti: UNPAID, PENDING, PAID, FAILED ili REFUNDED" });
+], { error: "Status plaćanja mora biti: UNPAID, PENDING, PAID, FAILED, CANCELLED, EXPIRED ili REFUNDED" });
 
 const orderUpdateSchema = z.object({
   status: orderStatusEnum.optional(),
@@ -59,6 +61,50 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ errors: fieldErrors }, { status: 400 });
   }
 
-  await db.order.update({ where: { id }, data: parsed.data });
+  // Validate Stripe order constraints
+  if (parsed.data.status || parsed.data.paymentStatus) {
+    const order = await db.order.findUnique({
+      where: { id },
+      select: { paymentMethod: true, status: true, paymentStatus: true },
+    });
+
+    if (order) {
+      const isStripe = order.paymentMethod === "card" || order.paymentMethod === "stripe";
+
+      // Don't allow manual PAID for Stripe orders
+      if (isStripe && parsed.data.paymentStatus === "PAID") {
+        return NextResponse.json(
+          { errors: { paymentStatus: "Nije moguće ručno postaviti status plaćanja na 'Plaćeno' za Stripe narudžbe. Status plaćanja se ažurira automatski putem Stripe webhook-a." } },
+          { status: 400 }
+        );
+      }
+
+      // Don't allow COMPLETED for unpaid Stripe orders
+      if (isStripe && parsed.data.status === "COMPLETED" && order.paymentStatus !== "PAID") {
+        return NextResponse.json(
+          { errors: { status: "Nije moguće ručno dovršiti Stripe narudžbu koja nije plaćena. Pričekajte potvrdu plaćanja putem Stripe-a." } },
+          { status: 400 }
+        );
+      }
+
+      // Validate CANCELLED - only PENDING/CONFIRMED/PROCESSING
+      if (parsed.data.status === "CANCELLED") {
+        const cancellableStatuses = ["PENDING", "CONFIRMED", "PROCESSING"];
+        if (!cancellableStatuses.includes(order.status)) {
+          return NextResponse.json(
+            { errors: { status: `Narudžba sa statusom "${order.status}" ne može biti otkazana.` } },
+            { status: 400 }
+          );
+        }
+      }
+    }
+  }
+
+  const updateData: Record<string, unknown> = {};
+  if (parsed.data.status !== undefined) updateData.status = parsed.data.status;
+  if (parsed.data.paymentStatus !== undefined) updateData.paymentStatus = parsed.data.paymentStatus;
+  if (parsed.data.adminNote !== undefined) updateData.adminNote = parsed.data.adminNote;
+
+  await db.order.update({ where: { id }, data: updateData });
   return NextResponse.json({ ok: true });
 }

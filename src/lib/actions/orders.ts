@@ -199,6 +199,14 @@ export async function createOrder(data: {
   return order;
 }
 
+// Get order by Stripe Checkout Session ID (for checkout success page)
+export async function getOrderByStripeSessionId(sessionId: string) {
+  return db.order.findFirst({
+    where: { stripeCheckoutSessionId: sessionId },
+    include: { items: true },
+  });
+}
+
 // Get recent orders from DB for public checkout confirmation
 export async function getOrderByNumber(orderNumber: string) {
   return db.order.findUnique({
@@ -264,8 +272,51 @@ export async function getOrder(id: string) {
 }
 
 // Admin: update order status
-const ALLOWED_STATUSES = ["PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "COMPLETED", "CANCELLED"];
+const ALLOWED_STATUSES = ["PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "COMPLETED", "CANCELLED", "REFUNDED"];
 const ALLOWED_PAYMENT_STATUSES = ["UNPAID", "PAID", "REFUNDED", "PARTIALLY_REFUNDED"];
+
+/**
+ * Validate whether an order can be cancelled.
+ * Only PENDING, CONFIRMED, and PROCESSING orders can be cancelled.
+ */
+export async function validateOrderForCancellation(id: string): Promise<{
+  canCancel: boolean;
+  reason?: string;
+}> {
+  const order = await db.order.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      status: true,
+      paymentMethod: true,
+      paymentStatus: true,
+      stripeCheckoutSessionId: true,
+    },
+  });
+
+  if (!order) {
+    return { canCancel: false, reason: "Narudžba nije pronađena." };
+  }
+
+  const cancellableStatuses = ["PENDING", "CONFIRMED", "PROCESSING"];
+
+  if (!cancellableStatuses.includes(order.status)) {
+    return {
+      canCancel: false,
+      reason: `Narudžba sa statusom "${order.status}" ne može biti otkazana. Moguće je otkazati samo narudžbe sa statusom: Na čekanju, Potvrđeno ili U obradi.`,
+    };
+  }
+
+  // If already paid via Stripe, warn but still allow
+  if (order.paymentMethod === "card" && order.paymentStatus === "PAID") {
+    return {
+      canCancel: true,
+      reason: "Upozorenje: Narudžba je plaćena putem Stripe-a. Potrebno je ručno izvršiti povrat sredstava.",
+    };
+  }
+
+  return { canCancel: true };
+}
 
 export async function updateOrderStatus(id: string, status: string) {
   const session = await auth();
@@ -275,9 +326,46 @@ export async function updateOrderStatus(id: string, status: string) {
     throw new Error(`Nedozvoljen status: ${status}`);
   }
 
+  // Fetch order for validation
+  const order = await db.order.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      status: true,
+      paymentMethod: true,
+      paymentStatus: true,
+      stripeCheckoutSessionId: true,
+    },
+  });
+
+  if (!order) throw new Error("Narudžba nije pronađena.");
+
+  // --- CANCELLED validation ---
+  if (status === "CANCELLED") {
+    const valid = await validateOrderForCancellation(id);
+    if (!valid.canCancel) {
+      throw new Error(valid.reason || "Narudžba ne može biti otkazana.");
+    }
+  }
+
+  // --- Don't allow manual PAID change for Stripe orders ---
+  // The payment status "PAID" should only come from Stripe webhooks, not manual admin action
+  const isStripe = order.paymentMethod === "card" || order.paymentMethod === "stripe";
+
   const updateData: Record<string, unknown> = { status };
+
   if (status === "COMPLETED") {
+    if (isStripe && order.paymentStatus !== "PAID") {
+      throw new Error(
+        "Nije moguće ručno dovršiti Stripe narudžbu koja nije plaćena. Pričekajte potvrdu plaćanja putem Stripe-a."
+      );
+    }
     updateData.paymentStatus = "PAID";
+  }
+
+  // If cancelling, also cancel the payment
+  if (status === "CANCELLED") {
+    updateData.paymentStatus = "CANCELLED";
   }
 
   await db.order.update({ where: { id }, data: updateData });
@@ -292,6 +380,22 @@ export async function updatePaymentStatus(id: string, paymentStatus: string) {
 
   if (!ALLOWED_PAYMENT_STATUSES.includes(paymentStatus)) {
     throw new Error(`Nedozvoljen status plaćanja: ${paymentStatus}`);
+  }
+
+  // Don't allow manual PAID for Stripe orders
+  if (paymentStatus === "PAID") {
+    const order = await db.order.findUnique({
+      where: { id },
+      select: { paymentMethod: true, stripeCheckoutSessionId: true },
+    });
+    if (order) {
+      const isStripe = order.paymentMethod === "card" || order.paymentMethod === "stripe";
+      if (isStripe) {
+        throw new Error(
+          "Nije moguće ručno postaviti status plaćanja na 'Plaćeno' za Stripe narudžbe. Status plaćanja se ažurira automatski putem Stripe webhook-a."
+        );
+      }
+    }
   }
 
   await db.order.update({ where: { id }, data: { paymentStatus } });

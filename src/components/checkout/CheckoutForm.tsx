@@ -37,6 +37,8 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCreatingSession, setIsCreatingSession] = useState(false);
+  const [stripeError, setStripeError] = useState("");
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -120,6 +122,54 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     e.preventDefault();
     if (!validate()) return;
 
+    // Card payment flow: create Stripe checkout session
+    if (formData.paymentMethod === "card") {
+      setIsCreatingSession(true);
+      setStripeError("");
+      try {
+        const res = await fetch("/api/stripe/create-checkout-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customerName: formData.fullName,
+            customerEmail: formData.email,
+            customerPhone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            postalCode: formData.postalCode,
+            note: formData.note,
+            items: items.map((item) => ({
+              productId: item.product.id,
+              productName: item.product.name,
+              sku: item.product.sku || undefined,
+              quantity: item.quantity,
+              unitPrice: item.product.price,
+              attributes: item.selectedAttributes,
+            })),
+            shippingMethodId: formData.shippingMethod,
+            paymentMethod: formData.paymentMethod,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          setStripeError(data.error || "Došlo je do greške prilikom kreiranja sesije plaćanja.");
+          return;
+        }
+
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
+      } catch (err) {
+        setStripeError("Došlo je do greške prilikom kreiranja sesije plaćanja. Pokušajte ponovno.");
+        console.error("Stripe checkout session creation failed:", err);
+      } finally {
+        setIsCreatingSession(false);
+      }
+      return;
+    }
+
+    // Non-card payment flow (bank transfer / COD)
     setIsSubmitting(true);
     try {
       const order = await createOrder({
@@ -380,14 +430,28 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
           Plaćanje pouzećem prilikom preuzimanja paketa.
         </p>
       )}
+      {formData.paymentMethod === "card" && (
+        <p className="text-sm text-slate-500">
+          Sigurno plaćanje karticom putem Stripea. Apple Pay i Google Pay prikazuju se ako su dostupni.
+        </p>
+      )}
+
+      {stripeError && (
+        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">
+          {stripeError}
+        </div>
+      )}
 
       <Button
         type="submit"
         size="lg"
         className="w-full"
-        isLoading={isSubmitting}
+        isLoading={formData.paymentMethod === "card" ? isCreatingSession : isSubmitting}
+        disabled={isCreatingSession || isSubmitting}
       >
-        Pošalji narudžbu
+        {formData.paymentMethod === "card"
+          ? "Nastavi na kartično plaćanje"
+          : "Pošalji narudžbu"}
       </Button>
     </form>
   );

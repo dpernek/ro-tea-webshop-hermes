@@ -10,8 +10,10 @@ export async function GET(req: NextRequest) {
   const page = parseInt(url.searchParams.get("page") || "1");
   const limit = 20;
   const status = url.searchParams.get("status") || "";
+  const paymentStatus = url.searchParams.get("paymentStatus") || "";
   const where: any = {};
   if (status) where.status = status;
+  if (paymentStatus) where.paymentStatus = paymentStatus;
   const [orders, total] = await Promise.all([
     db.order.findMany({ where, skip: (page - 1) * limit, take: limit, orderBy: { createdAt: "desc" } }),
     db.order.count({ where }),

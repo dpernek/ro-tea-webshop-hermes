@@ -97,31 +97,39 @@ model Customer {
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  orderNumber     String      @unique
-  customerId      String?
-  customer        Customer?   @relation(fields: [customerId], references: [id])
-  customerEmail   String
-  customerName    String
-  customerPhone   String
-  billingAddress  String?
-  shippingAddress String?
-  subtotal        Float
-  shippingTotal   Float       @default(0)
-  taxTotal        Float       @default(0)
-  discountTotal   Float       @default(0)
-  total           Float
-  currency        String      @default("EUR")
-  status          String      @default("PENDING")     // PENDING, CONFIRMED, PROCESSING, SHIPPED, COMPLETED, CANCELLED, REFUNDED
-  paymentStatus   String      @default("UNPAID")      // UNPAID, PENDING, PAID, FAILED, REFUNDED
-  paymentMethod   String      @default("bank_transfer")
-  shippingMethod  String?
-  note            String?
-  adminNote       String?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  items           OrderItem[]
-  payments        Payment[]
+  id                       String      @id @default(cuid())
+  orderNumber              String      @unique
+  customerId               String?
+  customer                 Customer?   @relation(fields: [customerId], references: [id])
+  customerEmail            String
+  customerName             String
+  customerPhone            String
+  billingAddress           String?
+  shippingAddress          String?
+  subtotal                 Float
+  shippingTotal            Float       @default(0)
+  taxTotal                 Float       @default(0)
+  discountTotal            Float       @default(0)
+  total                    Float
+  currency                 String      @default("EUR")
+  status                   String      @default("PENDING")     // PENDING, CONFIRMED, PROCESSING, SHIPPED, COMPLETED, CANCELLED, REFUNDED
+  paymentStatus            String      @default("UNPAID")      // UNPAID, PENDING, PAID, FAILED, CANCELLED, EXPIRED, REFUNDED
+  paymentMethod            String      @default("bank_transfer")
+  shippingMethod           String?
+  note                     String?
+  adminNote                String?
+  stripeCheckoutSessionId  String?
+  stripePaymentIntentId    String?
+  stripePaymentStatus      String?
+  paidAt                   DateTime?
+  paymentFailedAt          DateTime?
+  paymentCancelledAt       DateTime?
+  paymentErrorMessage      String?
+  checkoutExpiresAt        DateTime?
+  createdAt                DateTime    @default(now())
+  updatedAt                DateTime    @updatedAt
+  items                    OrderItem[]
+  payments                 Payment[]
 }
 
 model OrderItem {
@@ -139,18 +147,20 @@ model OrderItem {
 }
 
 model Payment {
-  id            String   @id @default(cuid())
-  orderId       String
-  order         Order    @relation(fields: [orderId], references: [id])
-  provider      String   @default("manual")   // manual, stripe, monri, corvus
-  method        String   @default("bank_transfer")
-  status        String   @default("PENDING")
-  transactionId String?
-  amount        Float
-  currency      String   @default("EUR")
-  rawResponse   String?                       // JSON
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                       String   @id @default(cuid())
+  orderId                  String
+  order                    Order    @relation(fields: [orderId], references: [id])
+  provider                 String   @default("manual")   // manual, stripe
+  method                   String   @default("bank_transfer")
+  status                   String   @default("PENDING")
+  transactionId            String?
+  stripeCheckoutSessionId  String?
+  stripePaymentIntentId    String?
+  amount                   Float
+  currency                 String   @default("EUR")
+  rawResponse              String?                       // JSON
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
 }
 
 model ShippingMethod {
