@@ -11,24 +11,23 @@ export async function POST() {
   try {
     const testEmails = ["t@t.hr", "davor@ro-tea.hr", "davor.pernek@ro-tea.hr", "test@ro-tea.hr"];
     
-    // Find test orders
     const orders = await db.order.findMany({
-      where: { customerEmail: { in: testEmails } },
-      select: { id: true }
+      where: { customerEmail: { in: testEmails } }
     });
+    if (orders.length === 0) return NextResponse.json({ ok: true, deleted: 0 });
+
     const ids = orders.map(o => o.id);
-    if (ids.length === 0) return NextResponse.json({ ok: true, deleted: 0 });
-    
-    // Delete in order: OrderItems → Payments → Orders → Customers
+
+    // 1. Delete items
     await db.orderItem.deleteMany({ where: { orderId: { in: ids } } });
+    // 2. Delete payments
     await db.payment.deleteMany({ where: { orderId: { in: ids } } });
-    await db.customer.deleteMany({ where: { orders: { some: { id: { in: ids } } } } });
-    const result = await db.order.deleteMany({ where: { id: { in: ids } } });
-    
-    // Reset any leftover orphan records
-    await db.orderItem.deleteMany({ where: { orderId: { notIn: ids } } });
-    
-    return NextResponse.json({ ok: true, deleted: result.count });
+    // 3. Delete orders
+    await db.order.deleteMany({ where: { id: { in: ids } } });
+    // 4. Delete orphan customers
+    await db.customer.deleteMany({ where: { email: { in: testEmails } } });
+
+    return NextResponse.json({ ok: true, deleted: orders.length });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
