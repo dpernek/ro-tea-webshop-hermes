@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
-      if (product.stock != null && product.stock < item.quantity) {
+      if (product.stock != null && product.stock > 0 && product.stock < item.quantity) {
         return NextResponse.json(
           { error: `Proizvod "${product.name}" nema dovoljno zaliha.` },
           { status: 400 }
