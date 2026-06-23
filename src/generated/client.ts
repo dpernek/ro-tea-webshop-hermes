@@ -106,3 +106,8 @@ export type Catalog = Prisma.CatalogModel
  * 
  */
 export type StripeEvent = Prisma.StripeEventModel
+/**
+ * Model OrderAudit
+ * 
+ */
+export type OrderAudit = Prisma.OrderAuditModel

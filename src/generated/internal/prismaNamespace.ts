@@ -396,7 +396,8 @@ export const ModelName = {
   Coupon: 'Coupon',
   StoreSettings: 'StoreSettings',
   Catalog: 'Catalog',
-  StripeEvent: 'StripeEvent'
+  StripeEvent: 'StripeEvent',
+  OrderAudit: 'OrderAudit'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -412,7 +413,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "product" | "category" | "brand" | "customer" | "order" | "orderItem" | "payment" | "shippingMethod" | "coupon" | "storeSettings" | "catalog" | "stripeEvent"
+    modelProps: "user" | "product" | "category" | "brand" | "customer" | "order" | "orderItem" | "payment" | "shippingMethod" | "coupon" | "storeSettings" | "catalog" | "stripeEvent" | "orderAudit"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1378,6 +1379,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    OrderAudit: {
+      payload: Prisma.$OrderAuditPayload<ExtArgs>
+      fields: Prisma.OrderAuditFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OrderAuditFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderAuditPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OrderAuditFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderAuditPayload>
+        }
+        findFirst: {
+          args: Prisma.OrderAuditFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderAuditPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OrderAuditFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderAuditPayload>
+        }
+        findMany: {
+          args: Prisma.OrderAuditFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderAuditPayload>[]
+        }
+        create: {
+          args: Prisma.OrderAuditCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderAuditPayload>
+        }
+        createMany: {
+          args: Prisma.OrderAuditCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OrderAuditCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderAuditPayload>[]
+        }
+        delete: {
+          args: Prisma.OrderAuditDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderAuditPayload>
+        }
+        update: {
+          args: Prisma.OrderAuditUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderAuditPayload>
+        }
+        deleteMany: {
+          args: Prisma.OrderAuditDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OrderAuditUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OrderAuditUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderAuditPayload>[]
+        }
+        upsert: {
+          args: Prisma.OrderAuditUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderAuditPayload>
+        }
+        aggregate: {
+          args: Prisma.OrderAuditAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOrderAudit>
+        }
+        groupBy: {
+          args: Prisma.OrderAuditGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrderAuditGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OrderAuditCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrderAuditCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1662,6 +1737,19 @@ export const StripeEventScalarFieldEnum = {
 export type StripeEventScalarFieldEnum = (typeof StripeEventScalarFieldEnum)[keyof typeof StripeEventScalarFieldEnum]
 
 
+export const OrderAuditScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  changedBy: 'changedBy',
+  field: 'field',
+  oldValue: 'oldValue',
+  newValue: 'newValue',
+  createdAt: 'createdAt'
+} as const
+
+export type OrderAuditScalarFieldEnum = (typeof OrderAuditScalarFieldEnum)[keyof typeof OrderAuditScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1877,6 +1965,7 @@ export type GlobalOmitConfig = {
   storeSettings?: Prisma.StoreSettingsOmit
   catalog?: Prisma.CatalogOmit
   stripeEvent?: Prisma.StripeEventOmit
+  orderAudit?: Prisma.OrderAuditOmit
 }
 
 /* Types for Logging */

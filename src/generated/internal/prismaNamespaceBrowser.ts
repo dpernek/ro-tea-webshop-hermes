@@ -63,7 +63,8 @@ export const ModelName = {
   Coupon: 'Coupon',
   StoreSettings: 'StoreSettings',
   Catalog: 'Catalog',
-  StripeEvent: 'StripeEvent'
+  StripeEvent: 'StripeEvent',
+  OrderAudit: 'OrderAudit'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -325,6 +326,19 @@ export const StripeEventScalarFieldEnum = {
 } as const
 
 export type StripeEventScalarFieldEnum = (typeof StripeEventScalarFieldEnum)[keyof typeof StripeEventScalarFieldEnum]
+
+
+export const OrderAuditScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  changedBy: 'changedBy',
+  field: 'field',
+  oldValue: 'oldValue',
+  newValue: 'newValue',
+  createdAt: 'createdAt'
+} as const
+
+export type OrderAuditScalarFieldEnum = (typeof OrderAuditScalarFieldEnum)[keyof typeof OrderAuditScalarFieldEnum]
 
 
 export const SortOrder = {

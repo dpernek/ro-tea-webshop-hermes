@@ -131,6 +131,7 @@ model Order {
   updatedAt                DateTime    @updatedAt
   items                    OrderItem[]
   payments                 Payment[]
+  auditLogs                OrderAudit[]
 }
 
 model OrderItem {
@@ -226,4 +227,15 @@ model StripeEvent {
   payload   String   // JSON
   processed Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+model OrderAudit {
+  id         String   @id @default(cuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id])
+  changedBy  String   // email of admin who made the change
+  field      String   // status, paymentStatus, adminNote
+  oldValue   String?
+  newValue   String
+  createdAt  DateTime @default(now())
 }
