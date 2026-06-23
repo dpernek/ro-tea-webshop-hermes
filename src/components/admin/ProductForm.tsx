@@ -75,7 +75,10 @@ export function ProductForm({ product, categories, brands }: {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setError(data.error || data.message || `Greška ${res.status}`);
+        const errMsg = data.errors
+          ? Object.entries(data.errors).map(([k, v]) => `${k}: ${v}`).join("; ")
+          : data.error || data.message || `Greška ${res.status}`;
+        setError(errMsg);
         return;
       }
 
