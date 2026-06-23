@@ -34,13 +34,14 @@ export async function sendViaGraph(payload: EmailPayload): Promise<boolean> {
     });
 
     if (!tokenRes.ok) {
-      console.error("[GRAPH] Token error:", tokenRes.status);
+      const err = await tokenRes.text().catch(function() { return ""; });
+      console.error("[GRAPH] Token error:", tokenRes.status, err.slice(0, 300));
       return false;
     }
 
     const tokenData = await tokenRes.json();
     if (!tokenData.access_token) {
-      console.error("[GRAPH] No access token");
+      console.error("[GRAPH] No access token in response:", JSON.stringify(tokenData).slice(0, 200));
       return false;
     }
 
@@ -58,7 +59,7 @@ export async function sendViaGraph(payload: EmailPayload): Promise<boolean> {
     const mailRes = await fetch(GRAPH_URL + "/users/" + senderUser + "/sendMail", {
       method: "POST",
       headers: {
-        Authorization: "Bearer " + tokenData.access_token,
+        Authorization: *** " + tokenData.access_token,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(mailBody),
@@ -66,7 +67,7 @@ export async function sendViaGraph(payload: EmailPayload): Promise<boolean> {
 
     if (!mailRes.ok) {
       const errText = await mailRes.text().catch(function() { return ""; });
-      console.error("[GRAPH] Send error:", mailRes.status, errText.slice(0, 200));
+      console.error("[GRAPH] Send error:", mailRes.status, errText.slice(0, 500));
       return false;
     }
 
