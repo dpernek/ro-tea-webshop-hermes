@@ -71,6 +71,7 @@ export type OrderMinAggregateOutputType = {
   paymentCancelledAt: Date | null
   paymentErrorMessage: string | null
   checkoutExpiresAt: Date | null
+  viewed: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -104,6 +105,7 @@ export type OrderMaxAggregateOutputType = {
   paymentCancelledAt: Date | null
   paymentErrorMessage: string | null
   checkoutExpiresAt: Date | null
+  viewed: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -137,6 +139,7 @@ export type OrderCountAggregateOutputType = {
   paymentCancelledAt: number
   paymentErrorMessage: number
   checkoutExpiresAt: number
+  viewed: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -188,6 +191,7 @@ export type OrderMinAggregateInputType = {
   paymentCancelledAt?: true
   paymentErrorMessage?: true
   checkoutExpiresAt?: true
+  viewed?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -221,6 +225,7 @@ export type OrderMaxAggregateInputType = {
   paymentCancelledAt?: true
   paymentErrorMessage?: true
   checkoutExpiresAt?: true
+  viewed?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -254,6 +259,7 @@ export type OrderCountAggregateInputType = {
   paymentCancelledAt?: true
   paymentErrorMessage?: true
   checkoutExpiresAt?: true
+  viewed?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -374,6 +380,7 @@ export type OrderGroupByOutputType = {
   paymentCancelledAt: Date | null
   paymentErrorMessage: string | null
   checkoutExpiresAt: Date | null
+  viewed: boolean
   createdAt: Date
   updatedAt: Date
   _count: OrderCountAggregateOutputType | null
@@ -430,6 +437,7 @@ export type OrderWhereInput = {
   paymentCancelledAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   paymentErrorMessage?: Prisma.StringNullableFilter<"Order"> | string | null
   checkoutExpiresAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  viewed?: Prisma.BoolFilter<"Order"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
@@ -466,6 +474,7 @@ export type OrderOrderByWithRelationInput = {
   paymentCancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentErrorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   checkoutExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  viewed?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   customer?: Prisma.CustomerOrderByWithRelationInput
@@ -505,6 +514,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   paymentCancelledAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   paymentErrorMessage?: Prisma.StringNullableFilter<"Order"> | string | null
   checkoutExpiresAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  viewed?: Prisma.BoolFilter<"Order"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
@@ -541,6 +551,7 @@ export type OrderOrderByWithAggregationInput = {
   paymentCancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentErrorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   checkoutExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  viewed?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.OrderCountOrderByAggregateInput
@@ -582,6 +593,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   paymentCancelledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
   paymentErrorMessage?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   checkoutExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+  viewed?: Prisma.BoolWithAggregatesFilter<"Order"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
 }
@@ -614,6 +626,7 @@ export type OrderCreateInput = {
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
+  viewed?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerCreateNestedOneWithoutOrdersInput
@@ -650,6 +663,7 @@ export type OrderUncheckedCreateInput = {
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
+  viewed?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -684,6 +698,7 @@ export type OrderUpdateInput = {
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneWithoutOrdersNestedInput
@@ -720,6 +735,7 @@ export type OrderUncheckedUpdateInput = {
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -755,6 +771,7 @@ export type OrderCreateManyInput = {
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
+  viewed?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -787,6 +804,7 @@ export type OrderUpdateManyMutationInput = {
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -820,6 +838,7 @@ export type OrderUncheckedUpdateManyInput = {
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -863,6 +882,7 @@ export type OrderCountOrderByAggregateInput = {
   paymentCancelledAt?: Prisma.SortOrder
   paymentErrorMessage?: Prisma.SortOrder
   checkoutExpiresAt?: Prisma.SortOrder
+  viewed?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -904,6 +924,7 @@ export type OrderMaxOrderByAggregateInput = {
   paymentCancelledAt?: Prisma.SortOrder
   paymentErrorMessage?: Prisma.SortOrder
   checkoutExpiresAt?: Prisma.SortOrder
+  viewed?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -937,6 +958,7 @@ export type OrderMinOrderByAggregateInput = {
   paymentCancelledAt?: Prisma.SortOrder
   paymentErrorMessage?: Prisma.SortOrder
   checkoutExpiresAt?: Prisma.SortOrder
+  viewed?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1056,6 +1078,7 @@ export type OrderCreateWithoutCustomerInput = {
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
+  viewed?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
@@ -1090,6 +1113,7 @@ export type OrderUncheckedCreateWithoutCustomerInput = {
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
+  viewed?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -1154,6 +1178,7 @@ export type OrderScalarWhereInput = {
   paymentCancelledAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   paymentErrorMessage?: Prisma.StringNullableFilter<"Order"> | string | null
   checkoutExpiresAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
+  viewed?: Prisma.BoolFilter<"Order"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
 }
@@ -1186,6 +1211,7 @@ export type OrderCreateWithoutItemsInput = {
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
+  viewed?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerCreateNestedOneWithoutOrdersInput
@@ -1221,6 +1247,7 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
+  viewed?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrderInput
@@ -1270,6 +1297,7 @@ export type OrderUpdateWithoutItemsInput = {
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneWithoutOrdersNestedInput
@@ -1305,6 +1333,7 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrderNestedInput
@@ -1338,6 +1367,7 @@ export type OrderCreateWithoutPaymentsInput = {
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
+  viewed?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerCreateNestedOneWithoutOrdersInput
@@ -1373,6 +1403,7 @@ export type OrderUncheckedCreateWithoutPaymentsInput = {
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
+  viewed?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -1422,6 +1453,7 @@ export type OrderUpdateWithoutPaymentsInput = {
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneWithoutOrdersNestedInput
@@ -1457,6 +1489,7 @@ export type OrderUncheckedUpdateWithoutPaymentsInput = {
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -1490,6 +1523,7 @@ export type OrderCreateManyCustomerInput = {
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
+  viewed?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1522,6 +1556,7 @@ export type OrderUpdateWithoutCustomerInput = {
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
@@ -1556,6 +1591,7 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -1590,6 +1626,7 @@ export type OrderUncheckedUpdateManyWithoutCustomerInput = {
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1663,6 +1700,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   paymentCancelledAt?: boolean
   paymentErrorMessage?: boolean
   checkoutExpiresAt?: boolean
+  viewed?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
@@ -1700,6 +1738,7 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   paymentCancelledAt?: boolean
   paymentErrorMessage?: boolean
   checkoutExpiresAt?: boolean
+  viewed?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
@@ -1734,6 +1773,7 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   paymentCancelledAt?: boolean
   paymentErrorMessage?: boolean
   checkoutExpiresAt?: boolean
+  viewed?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
@@ -1768,11 +1808,12 @@ export type OrderSelectScalar = {
   paymentCancelledAt?: boolean
   paymentErrorMessage?: boolean
   checkoutExpiresAt?: boolean
+  viewed?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "customerId" | "customerEmail" | "customerName" | "customerPhone" | "billingAddress" | "shippingAddress" | "subtotal" | "shippingTotal" | "taxTotal" | "discountTotal" | "total" | "currency" | "status" | "paymentStatus" | "paymentMethod" | "shippingMethod" | "note" | "adminNote" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "stripePaymentStatus" | "paidAt" | "paymentFailedAt" | "paymentCancelledAt" | "paymentErrorMessage" | "checkoutExpiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "customerId" | "customerEmail" | "customerName" | "customerPhone" | "billingAddress" | "shippingAddress" | "subtotal" | "shippingTotal" | "taxTotal" | "discountTotal" | "total" | "currency" | "status" | "paymentStatus" | "paymentMethod" | "shippingMethod" | "note" | "adminNote" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "stripePaymentStatus" | "paidAt" | "paymentFailedAt" | "paymentCancelledAt" | "paymentErrorMessage" | "checkoutExpiresAt" | "viewed" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
@@ -1822,6 +1863,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     paymentCancelledAt: Date | null
     paymentErrorMessage: string | null
     checkoutExpiresAt: Date | null
+    viewed: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["order"]>
@@ -2278,6 +2320,7 @@ export interface OrderFieldRefs {
   readonly paymentCancelledAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly paymentErrorMessage: Prisma.FieldRef<"Order", 'String'>
   readonly checkoutExpiresAt: Prisma.FieldRef<"Order", 'DateTime'>
+  readonly viewed: Prisma.FieldRef<"Order", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Order", 'DateTime'>
 }

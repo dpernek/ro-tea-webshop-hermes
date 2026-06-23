@@ -1466,6 +1466,7 @@ export const OrderScalarFieldEnum = {
   paymentCancelledAt: 'paymentCancelledAt',
   paymentErrorMessage: 'paymentErrorMessage',
   checkoutExpiresAt: 'checkoutExpiresAt',
+  viewed: 'viewed',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
