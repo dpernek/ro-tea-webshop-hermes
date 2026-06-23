@@ -1,7 +1,13 @@
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Pravila dostave | RO-TEA" };
+export const metadata: Metadata = {
+  title: "Pravila dostave | RO-TEA",
+  description: "Informacije o načinima dostave, rokovima isporuke i cijenama dostave za web trgovinu RO-TEA. Besplatna dostava iznad 66,36 €.",
+  alternates: {
+    canonical: "/pravila-dostave",
+  },
+};
 
 const sections = [
   { num: "1.", title: "Načini dostave", text: "Dostava se vrši putem kurirske službe na adresu koju ste naveli prilikom narudžbe ili osobnim preuzimanjem u poslovnici (po dogovoru)." },

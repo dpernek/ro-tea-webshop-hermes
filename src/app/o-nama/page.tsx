@@ -6,7 +6,10 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "O nama | RO-TEA",
-  description: "RO-TEA d.o.o. - Više od 30 godina pouzdanih rješenja u industriji alata i opreme.",
+  description: "RO-TEA d.o.o. — više od 30 godina iskustva u prodaji profesionalnih alata i opreme za industriju i obrt. PFERD, Metabo, Festa. Sjedište u Zagrebu.",
+  alternates: {
+    canonical: "/o-nama",
+  },
 };
 
 const stats = [

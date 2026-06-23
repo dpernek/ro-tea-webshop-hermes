@@ -1,7 +1,13 @@
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Povrati i reklamacije | RO-TEA" };
+export const metadata: Metadata = {
+  title: "Povrati i reklamacije | RO-TEA",
+  description: "Uvjeti povrata proizvoda i postupak reklamacije za web trgovinu RO-TEA. Povrat u roku 14 dana. Kontaktirajte nas za reklamacije.",
+  alternates: {
+    canonical: "/povrati-i-reklamacije",
+  },
+};
 
 const sections = [
   { num: "1.", title: "Povrat proizvoda", text: "Sukladno Zakonu o zaštiti potrošača, kupac ima pravo na jednostrani raskid ugovora u roku od 14 dana od dana primitka proizvoda bez navođenja razloga." },

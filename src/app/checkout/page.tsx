@@ -25,8 +25,11 @@ export default function CheckoutPage() {
             <h1 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">Blagajna</h1>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
-            <EmptyState title="Košarica je prazna" description="Za nastavak checkouta potrebno je dodati barem jedan proizvod."
-              action={<Button asChild size="lg"><Link href="/proizvodi">Pregledaj proizvode</Link></Button>} />
+            <EmptyState
+              title="Vaša košarica je prazna"
+              description="Za nastavak kupnje potrebno je dodati barem jedan proizvod u košaricu."
+              action={<Button asChild size="lg"><Link href="/proizvodi">Pregledajte proizvode</Link></Button>}
+            />
           </AnimatedSection>
         </div>
       </div>

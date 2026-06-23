@@ -1,7 +1,13 @@
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Politika privatnosti | RO-TEA" };
+export const metadata: Metadata = {
+  title: "Politika privatnosti | RO-TEA",
+  description: "Politika privatnosti web trgovine RO-TEA — kako prikupljamo, koristimo i štitimo vaše osobne podatke sukladno GDPR-u.",
+  alternates: {
+    canonical: "/politika-privatnosti",
+  },
+};
 
 const sections = [
   { num: "1.", title: "Voditelj obrade", text: "RO-TEA d.o.o., Zagreb, Hrvatska\nEmail: info@ro-tea.hr\nTelefon: +385 1 3820 113" },

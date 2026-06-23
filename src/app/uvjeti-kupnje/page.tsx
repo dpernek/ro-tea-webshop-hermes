@@ -3,6 +3,10 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Uvjeti kupnje | RO-TEA",
+  description: "Uvjeti kupnje za web trgovinu RO-TEA. Informacije o narudžbama, plaćanju, dostavi, povratu i zaštiti podataka.",
+  alternates: {
+    canonical: "/uvjeti-kupnje",
+  },
 };
 
 const sections = [
