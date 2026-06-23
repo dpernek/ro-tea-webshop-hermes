@@ -13,7 +13,7 @@ function mapProduct(p: any) {
     brand: p.brand?.name ?? null,
     category: p.category?.name ?? "",
     categorySlug: p.category?.slug ?? "",
-    price: p.price,
+    price: p.salePrice != null && p.salePrice > 0 && p.salePrice < p.price ? p.salePrice : p.price,
     regularPrice: p.regularPrice ?? null,
     salePrice: p.salePrice ?? null,
     oldPrice: p.salePrice != null && p.salePrice > 0 && p.salePrice < p.price ? p.price : null,
