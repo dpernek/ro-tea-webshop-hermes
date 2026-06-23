@@ -1,31 +1,29 @@
-// Email service using Resend (Vercel-friendly).
-// Falls back to console if RESEND_API_KEY is missing.
-
-const API_URL = "https://api.resend.com/emails";
+// Email provider abstraction. Controlled by EMAIL_PROVIDER env var.
+// Supported: "microsoft-graph", "disabled" (noop).
+// Falls back to console.log if provider is missing or unconfigured.
 
 export async function sendEmail(payload: { to: string; subject: string; html: string }): Promise<boolean> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.EMAIL_FROM || "RO-TEA <info@ro-tea.hr>";
-  if (!apiKey) { console.log("[EMAIL SKIPPED] No RESEND_API_KEY"); return false; }
+  const provider = process.env.EMAIL_PROVIDER || "disabled";
 
   try {
-    const headers = new Headers();
-    headers.set("Authorization", "Bearer " + apiKey);
-    headers.set("Content-Type", "application/json");
-
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({ from: fromEmail, to: payload.to, subject: payload.subject, html: payload.html }),
-    });
-    return res.ok;
+    if (provider === "microsoft-graph") {
+      const mg = await import("./email/microsoftGraph");
+      return await mg.sendViaGraph(payload);
+    }
+    if (provider === "disabled" || provider === "") {
+      console.log("[EMAIL DISABLED] To:", payload.to, "Subject:", payload.subject);
+      return false;
+    }
+    console.log("[EMAIL] Unknown provider:", provider);
+    return false;
   } catch (err) {
     console.error("[EMAIL FAILED]", err);
     return false;
   }
 }
 
-// Templates
+// --- Templates (same for all providers) ---
+
 export function customerEmail(data: {
   orderNumber: string; total: number; paymentMethod: string;
   items: { name: string; quantity: number; price: number }[];
