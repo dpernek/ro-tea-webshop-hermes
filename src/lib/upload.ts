@@ -12,7 +12,7 @@ export async function uploadFile(file: File, destDir = "images"): Promise<{ url:
 
   if (provider === "local") {
     if (process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production") {
-      throw new Error("Local storage blocked in production. Set UPLOAD_PROVIDER=supabase-storage.");
+      throw new Error("Produkcijski upload storage nije konfiguriran. Postavite UPLOAD_PROVIDER=supabase-storage u Vercel okruženju.");
     }
     return uploadLocal(file, destDir);
   }
