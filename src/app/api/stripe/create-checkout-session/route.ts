@@ -107,6 +107,13 @@ export async function POST(req: NextRequest) {
       currency: "eur",
       payment_method_types: ["card"],
       customer_email: body.customerEmail,
+      shipping_options: pricing.shipping > 0 ? [{
+        shipping_rate_data: {
+          display_name: "Dostava",
+          type: "fixed_amount",
+          fixed_amount: { amount: Math.round(pricing.shipping * 100), currency: "eur" },
+        },
+      }] : [],
       metadata: { orderId: order.id, orderNumber },
       success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/checkout?canceled=1`,

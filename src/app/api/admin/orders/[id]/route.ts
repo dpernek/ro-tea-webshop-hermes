@@ -105,11 +105,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (parsed.data.paymentStatus !== undefined) updateData.paymentStatus = parsed.data.paymentStatus;
   if (parsed.data.adminNote !== undefined) updateData.adminNote = parsed.data.adminNote;
 
+  // Read old values BEFORE update for audit log
+  const oldOrder = await db.order.findUnique({ where: { id }, select: { status: true, paymentStatus: true, adminNote: true } });
+
   await db.order.update({ where: { id }, data: updateData });
 
   // Audit log
   const adminEmail = s.user?.email || "unknown";
-  const oldOrder = await db.order.findUnique({ where: { id }, select: { status: true, paymentStatus: true, adminNote: true } });
   for (const [field, newVal] of Object.entries(updateData)) {
     const oldVal = field === "adminNote" ? oldOrder?.adminNote : (field === "status" ? oldOrder?.status : field === "paymentStatus" ? oldOrder?.paymentStatus : null);
     if (oldVal !== newVal) {

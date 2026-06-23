@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
     await db.stripeEvent.update({ where: { id: event.id }, data: { processed: true } });
   } catch (err: any) {
     console.error("Webhook processing error:", err);
+    return NextResponse.json({ error: "Processing failed" }, { status: 500 });
   }
 
   return NextResponse.json({ received: true });
