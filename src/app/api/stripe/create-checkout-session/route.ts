@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
           currency: "eur",
           product_data: {
             name: product.name,
-            ...(product.image ? { images: [product.image] } : {}),
+            ...(product.image ? { images: [product.image.startsWith("http") ? product.image : `${baseUrl}${product.image}`] } : {}),
           },
           unit_amount: unitAmountCents,
         },
@@ -247,7 +247,7 @@ export async function POST(req: NextRequest) {
         orderId: order.id,
         orderNumber: order.orderNumber,
       },
-      success_url: `${baseUrl}/checkout/uspjeh?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/checkout?canceled=1`,
     });
 
