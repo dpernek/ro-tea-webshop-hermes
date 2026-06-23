@@ -15,16 +15,14 @@ export default async function AdminDashboardPage() {
   let productCount = 0, orderCount = 0, customerCount = 0, revenue = 0, unreadOrders = 0;
 
   try {
-    [productCount, customerCount, unreadOrders] = await Promise.all([
+    [productCount, orderCount, customerCount, unreadOrders] = await Promise.all([
       db.product.count({ where: { status: "ACTIVE" } }),
+      db.order.count(),
       db.customer.count(),
       db.order.count({ where: { viewed: false } }),
     ]);
-    // Use raw SQL for accurate count (bypass Prisma proxy cache)
-    const oc = await db.$queryRawUnsafe('SELECT COUNT(*) as count FROM "Order"');
-    orderCount = Number((oc as any)[0]?.count ?? 0);
-    const rev = await db.$queryRawUnsafe("SELECT COALESCE(SUM(total),0) as total FROM \"Order\" WHERE status NOT IN ('CANCELLED','REFUNDED')");
-    revenue = (rev as any)[0]?.total || 0;
+    const rev = await db.order.aggregate({ _sum: { total: true }, where: { status: { notIn: ["CANCELLED", "REFUNDED"] } } });
+    revenue = rev._sum.total || 0;
   } catch {}
 
   const stats = [

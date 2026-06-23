@@ -105,6 +105,10 @@ export default function AdminOrderDetailPage() {
       setStatus(o.status);
       setPaymentStatus(o.paymentStatus);
       setAdminNote(o.adminNote || "");
+      // Mark as viewed when admin opens order detail
+      if (o && !o.viewed) {
+        fetch("/api/admin/orders/mark-viewed", { method: "POST", body: JSON.stringify({ ids: [id] }), headers: { "Content-Type": "application/json" } }).catch(() => {});
+      }
     });
   }, [id]);
 
