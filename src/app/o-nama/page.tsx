@@ -30,7 +30,7 @@ export default function AboutPage() {
             <p className="text-sm font-semibold tracking-[0.2em] text-[#0055a8] uppercase">Od 1990. godine</p>
             <h1 className="mt-3 text-4xl font-bold text-slate-900 sm:text-5xl">RO-TEA d.o.o.</h1>
             <p className="mt-4 max-w-2xl text-xl text-slate-600">
-              Više od tri desetljeća pouzdanih rješenja u industriji alata i opreme. Specijalizirani partner za profesionalce, obrtnike i proizvodne pogone.
+              Više od tri desetljeća pouzdanih rješenja u industriji alata i opreme. Specijalizirani partner za profesionalce, obrtnike i proizvodne pogone diljem Hrvatske.
             </p>
           </AnimatedSection>
 
@@ -55,7 +55,7 @@ export default function AboutPage() {
             <p className="mt-2 text-lg text-slate-500">Osnovana 1990. godine sa sjedištem u Zagrebu</p>
             <div className="mt-6 space-y-4 text-lg leading-relaxed text-slate-600">
               <p>
-                RO-TEA d.o.o. osnovana je 1990. godine sa sjedištem u Zagrebu, na adresi Ulica Huga Badalića 26b. Tvrtka se više od tri desetljeća uspješno bavi prodajom alata i opreme te pružanjem rješenja za unapređenje ručne i strojne obrade u metaloprerađivačkoj industriji.
+                RO-TEA d.o.o. osnovana je 1990. godine sa sjedištem u Zagrebu, na adresi Ulica Huga Badalića 26b. Već više od tri desetljeća uspješno se bavi prodajom profesionalnih alata i opreme te pružanjem rješenja za unapređenje ručne i strojne obrade u metaloprerađivačkoj industriji.
               </p>
               <p>
                 Naš rad temelji se na stručnosti, iskustvu i individualnom pristupu svakom kupcu, s ciljem postizanja dugoročne učinkovitosti i pouzdanosti u proizvodnim procesima.

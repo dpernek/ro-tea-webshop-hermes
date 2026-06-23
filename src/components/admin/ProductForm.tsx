@@ -13,6 +13,7 @@ interface ProductData {
   featured: boolean; badge: string; type: string;
   shortDescription: string; description: string;
   image: string; brandId: string; categoryId: string;
+  benefits?: string; usage?: string; warranty?: string; deliveryNote?: string;
 }
 
 function n(val: string): number | null {

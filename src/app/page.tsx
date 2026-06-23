@@ -3,28 +3,98 @@ import { FeaturedCategories } from "@/components/home/FeaturedCategories";
 import { PopularProducts } from "@/components/home/PopularProducts";
 import { Benefits } from "@/components/home/Benefits";
 import { CTASection } from "@/components/home/CTASection";
+import { Truck, ShieldCheck, Users, Wrench } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "RO-TEA | Profesionalni alati i oprema za industriju",
+  title: "RO-TEA | Profesionalni alati i oprema za industriju i obrt",
   description:
-    "RO-TEA je specijalizirana trgovina profesionalnim alatima, opremom za industriju, radionice i obrtnike. PFERD, Metabo, Festa - brza dostava i stručna podrška.",
+    "RO-TEA d.o.o. — specijalizirana trgovina profesionalnim alatima i opremom za industriju, radionice i obrtnike. Brusni alati, zaštitna oprema, ručni alat, električni alati. PFERD, Metabo, Festa — brza dostava i stručna podrška.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "RO-TEA | Profesionalni alati i oprema za industriju",
+    title: "RO-TEA | Profesionalni alati i oprema za industriju i obrt",
     description:
-      "RO-TEA je specijalizirana trgovina profesionalnim alatima, opremom za industriju, radionice i obrtnike. PFERD, Metabo, Festa - brza dostava i stručna podrška.",
+      "RO-TEA d.o.o. — specijalizirana trgovina profesionalnim alatima i opremom za industriju, radionice i obrtnike. Brusni alati, zaštitna oprema, ručni alat, električni alati. PFERD, Metabo, Festa — brza dostava i stručna podrška.",
     type: "website",
   },
 };
+
+const trustItems = [
+  { icon: Wrench, label: "Tehnička oprema za industriju i obrt" },
+  { icon: ShieldCheck, label: "Sigurna online narudžba – kartica, virman, pouzeće" },
+  { icon: Users, label: "Podrška za poslovne kupce i veće količine" },
+  { icon: Truck, label: "Dostava diljem Hrvatske" },
+];
+
+const targetAudience = [
+  {
+    title: "Kućni majstori",
+    description: "Alati i oprema za popravke, renovacije i kućne radionice.",
+  },
+  {
+    title: "Obrti",
+    description: "Rješenja za svakodnevne profesionalne zadatke u obrtu.",
+  },
+  {
+    title: "Tvrtke",
+    description: "Industrijska oprema i alati za proizvodne pogone i skladišta.",
+  },
+  {
+    title: "Održavanje i servisi",
+    description: "Specijalizirani alati za servisere i timove za održavanje.",
+  },
+];
 
 export default function HomePage() {
   return (
     <>
       <Hero />
+
+      {/* Trust bar */}
+      <section className="border-b border-slate-100 bg-white py-10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {trustItems.map((item) => (
+              <div key={item.label} className="flex items-start gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#0055a8]/10">
+                  <item.icon className="h-5 w-5 text-[#0055a8]" aria-hidden="true" />
+                </div>
+                <p className="text-sm font-medium text-slate-700">{item.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <FeaturedCategories />
+
+      {/* Target audience: Za koga je RO-TEA */}
+      <section className="bg-slate-50 py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h2 className="text-center text-2xl font-bold text-slate-900 sm:text-3xl">
+            Za koga je RO-TEA
+          </h2>
+          <p className="mt-3 text-center text-slate-600">
+            Bez obzira na veličinu projekta – imamo rješenje za vas.
+          </p>
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {targetAudience.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+              >
+                <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <PopularProducts />
 
       {/* Brand credibility strip */}
@@ -47,13 +117,14 @@ export default function HomePage() {
           <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-10">
             <h2 className="text-2xl font-bold text-slate-900">Poslovni kupci</h2>
             <p className="mx-auto mt-3 max-w-xl text-slate-600">
-              Za veleprodajne upite i posebne uvjete kontaktirajte nas
+              Trebate veću količinu ili posebne uvjete? Pošaljite upit i naš tim će vam
+              pripremiti ponudu.
             </p>
             <a
               href="/kontakt"
               className="mt-6 inline-flex h-14 items-center justify-center gap-2 rounded-lg bg-brand px-8 text-lg font-medium text-white shadow-sm transition-all duration-200 hover:bg-brand-dark hover:shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
             >
-              Kontaktirajte nas
+              Zatražite ponudu
             </a>
           </div>
         </div>

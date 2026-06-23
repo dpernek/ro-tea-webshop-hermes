@@ -3,16 +3,16 @@ import { loadInitialCatalog } from "./actions";
 import { CatalogContent } from "@/components/products/CatalogContent";
 
 export const metadata: Metadata = {
-  title: "Katalog proizvoda | RO-TEA",
+  title: "Katalog proizvoda | Profesionalni alati i oprema | RO-TEA",
   description:
-    "Pregledajte kompletnu ponudu alata i opreme za obradu metala – brusni alati, zaštitna oprema, ručni alat i više.",
+    "Kompletan katalog profesionalnih alata i opreme za industriju i obrt — brusne ploče, zaštitna oprema, ručni alati, električni alati. PFERD, Metabo, Festa. Pregledajte cijene, filtrirajte po kategoriji i brendu.",
   alternates: {
     canonical: "/proizvodi",
   },
   openGraph: {
-    title: "Katalog proizvoda | RO-TEA",
+    title: "Katalog proizvoda | Profesionalni alati i oprema | RO-TEA",
     description:
-      "Pregledajte kompletnu ponudu alata i opreme za obradu metala – brusni alati, zaštitna oprema, ručni alat i više.",
+      "Kompletan katalog profesionalnih alata i opreme za industriju i obrt — brusne ploče, zaštitna oprema, ručni alati, električni alati. PFERD, Metabo, Festa. Pregledajte cijene, filtrirajte po kategoriji i brendu.",
     type: "website",
   },
 };

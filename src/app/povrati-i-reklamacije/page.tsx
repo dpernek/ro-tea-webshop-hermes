@@ -33,6 +33,9 @@ export default function ReturnsPage() {
             ))}
           </div>
           <p className="mt-10 text-sm text-slate-400">Zadnja izmjena: 22. lipnja 2026.</p>
+          <p className="mt-2 text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
+            ⚠️ Napomena: Ovo je predložak teksta (template). Prije objave web trgovine potrebno ga je pregledati i prilagoditi od strane pravne osobe.
+          </p>
         </AnimatedSection>
       </div>
     </div>
