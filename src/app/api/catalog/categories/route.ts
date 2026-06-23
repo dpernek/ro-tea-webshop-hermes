@@ -1,3 +1,23 @@
-import { NextResponse } from "next/server"; import { db } from "@/lib/db";
+import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+
 export const dynamic = "force-dynamic";
-export async function GET() { const cats = await db.category.findMany({orderBy:{sortOrder:"asc"}}); const products = await db.product.findMany({where:{status:"ACTIVE"},select:{categoryId:true}}); const map:Record<string,number>={}; products.forEach(p=>{if(p.categoryId) map[p.categoryId]=(map[p.categoryId]||0)+1}); const data = cats.map(c=>({...c,count:map[c.id]||0})); return NextResponse.json(data); }
+
+export async function GET() {
+  const cats = await db.category.findMany({ orderBy: { sortOrder: "asc" } });
+  const products = await db.product.findMany({
+    where: { status: "ACTIVE" },
+    select: { categoryId: true },
+  });
+
+  const countMap: Record<string, number> = {};
+  for (const p of products) {
+    if (p.categoryId) countMap[p.categoryId] = (countMap[p.categoryId] || 0) + 1;
+  }
+
+  const data = cats
+    .map((c) => ({ ...c, count: countMap[c.id] || 0 }))
+    .filter((c) => c.count > 0);
+
+  return NextResponse.json(data);
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
@@ -32,7 +32,7 @@ const PAYMENT_METHODS = [
   { value: "cod", label: "Pouzeće", icon: Banknote },
 ];
 
-export function CheckoutForm() {
+export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: number) => void }) {
   const router = useRouter();
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
@@ -66,6 +66,11 @@ export function CheckoutForm() {
         ? 0
         : SHIPPING_PRICE;
   const total = subtotal + shippingPrice;
+
+  // Notify parent when shipping price changes
+  useEffect(() => {
+    onShippingChange?.(shippingPrice);
+  }, [shippingPrice, onShippingChange]);
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};

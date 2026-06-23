@@ -7,20 +7,19 @@ import Link from "next/link";
 
 interface CartSummaryProps {
   showCheckoutButton?: boolean;
+  shippingOverride?: number | null;
 }
 
 const SHIPPING_PRICE = 6.64;
 const FREE_SHIPPING_THRESHOLD = 66.36;
 
-export function CartSummary({ showCheckoutButton = true }: CartSummaryProps) {
+export function CartSummary({ showCheckoutButton = true, shippingOverride }: CartSummaryProps) {
   const items = useCartStore((state) => state.items);
 
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
+  const subtotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_PRICE;
+  const defaultShipping = subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : SHIPPING_PRICE;
+  const shipping = shippingOverride !== null && shippingOverride !== undefined ? shippingOverride : defaultShipping;
   const total = subtotal + shipping;
 
   return (
@@ -28,26 +27,18 @@ export function CartSummary({ showCheckoutButton = true }: CartSummaryProps) {
       <h3 className="text-lg font-semibold text-slate-900">Sažetak košarice</h3>
       <div className="mt-4 space-y-3">
         <div className="flex justify-between text-slate-600">
-          <span>
-            Međuzbroj ({items.reduce((s, i) => s + i.quantity, 0)}{" "}
-            artikala)
-          </span>
-          <span className="font-medium text-slate-900">
-            {formatPrice(subtotal)}
-          </span>
+          <span>Međuzbroj ({items.reduce((s, i) => s + i.quantity, 0)} artikala)</span>
+          <span className="font-medium text-slate-900">{formatPrice(subtotal)}</span>
         </div>
         <div className="flex justify-between text-slate-600">
           <span>Dostava</span>
           <span className="font-medium text-slate-900">
-            {shipping === 0
-              ? "Besplatno"
-              : formatPrice(shipping)}
+            {shipping === 0 ? "Besplatno" : formatPrice(shipping)}
           </span>
         </div>
-        {shipping > 0 && (
+        {shipping > 0 && shippingOverride === null && (
           <p className="text-xs text-slate-400">
-            Besplatna dostava za narudžbe iznad{" "}
-            {formatPrice(FREE_SHIPPING_THRESHOLD)}
+            Besplatna dostava za narudžbe iznad {formatPrice(FREE_SHIPPING_THRESHOLD)}
           </p>
         )}
         <div className="border-t border-slate-100 pt-3">
