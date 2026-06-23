@@ -17,10 +17,12 @@ export async function POST() {
       select: { id: true }
     });
     const ids = orders.map(o => o.id);
+    if (ids.length === 0) return NextResponse.json({ ok: true, deleted: 0 });
     
-    // Delete in order: OrderItems → Payments → Orders
+    // Delete in order: OrderItems → Payments → Orders → Customers
     await db.orderItem.deleteMany({ where: { orderId: { in: ids } } });
     await db.payment.deleteMany({ where: { orderId: { in: ids } } });
+    await db.customer.deleteMany({ where: { orders: { some: { id: { in: ids } } } } });
     const result = await db.order.deleteMany({ where: { id: { in: ids } } });
     
     // Reset any leftover orphan records
