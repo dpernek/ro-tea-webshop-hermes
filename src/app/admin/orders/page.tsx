@@ -81,6 +81,9 @@ export default function AdminOrdersPage() {
   };
 
   useEffect(() => { load(); }, [page, statusFilter, paymentStatusFilter]);
+  
+  // Auto-mark orders as viewed when admin opens the list
+  useEffect(() => { fetch("/api/admin/orders/mark-viewed", { method: "POST" }).catch(() => {}); }, []);
 
   return (
     <div>
