@@ -1,40 +1,21 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
-import { db } from "@/lib/db";
 
-export default async function PopularProducts() {
-  const rows = await db.product.findMany({
-    where: { status: "ACTIVE" },
-    orderBy: { createdAt: "desc" },
-    take: 8,
-    include: { brand: true, category: true },
-  });
+export default function PopularProducts() {
+  const [products, setProducts] = useState<any[]>([]);
 
-  const products = rows.map((p) => ({
-    id: p.id,
-    slug: p.slug,
-    name: p.name,
-    sku: p.sku ?? null,
-    brand: p.brand?.name ?? null,
-    category: p.category?.name ?? "",
-    categorySlug: p.category?.slug ?? "",
-    price: p.salePrice != null && p.salePrice > 0 && p.salePrice < p.price ? p.salePrice : p.price,
-    regularPrice: p.regularPrice ?? null,
-    salePrice: p.salePrice ?? null,
-    oldPrice: p.salePrice != null && p.salePrice > 0 && p.salePrice < p.price ? p.price : null,
-    image: p.image,
-    gallery: [] as string[],
-    shortDescription: p.shortDescription ?? "",
-    description: "",
-    featured: p.featured ?? false,
-    badge: p.badge ?? null,
-    type: (p.type?.toLowerCase() ?? "simple") as any,
-    stock: p.stock ?? null,
-    stockStatus: "unknown" as any,
-  }));
+  useEffect(() => {
+    fetch("/api/catalog/products?limit=8")
+      .then((r) => r.json())
+      .then((data) => setProducts(data.products || []))
+      .catch(() => {});
+  }, []);
 
   if (products.length === 0) return null;
 
