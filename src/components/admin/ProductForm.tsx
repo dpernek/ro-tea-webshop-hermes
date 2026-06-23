@@ -202,6 +202,7 @@ export function ProductForm({ product, categories, brands }: {
         <div className="rounded-xl border border-slate-200 bg-white p-6">
           <h2 className="mb-4 text-lg font-semibold">Slika *</h2>
           <input name="image" defaultValue={product?.image || "/images/placeholder.svg"} required className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+          <p className="text-xs text-slate-400 mt-1">Preporučena veličina: 1200×1200 px, WebP ili JPG, do 5 MB.</p>
         </div>
 
         <div className="flex justify-end gap-3">
