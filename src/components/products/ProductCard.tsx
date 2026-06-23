@@ -49,6 +49,7 @@ export function ProductCard({ product, index }: ProductCardProps) {
             <Badge variant="outline">{product.brand}</Badge>
           )}
           {product.featured && <Badge variant="accent">Istaknuto</Badge>}
+          {product.oldPrice && <Badge className="bg-red-500 text-white hover:bg-red-600">AKCIJA</Badge>}
           {product.badge && <Badge variant="accent">{product.badge}</Badge>}
           {isVariable && <Badge variant="info">Više opcija</Badge>}
         </div>

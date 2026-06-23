@@ -28,5 +28,12 @@ export async function GET(request: NextRequest) {
     db.product.count({ where }),
   ]);
 
-  return NextResponse.json({ products: data, total, page, pages: Math.ceil(total / limit) });
+  const products = data.map((p) => ({
+    ...p,
+    oldPrice: p.salePrice != null && p.salePrice < p.price ? p.price : (p.regularPrice && p.regularPrice > p.price ? p.regularPrice : null),
+    price: p.salePrice != null && p.salePrice < p.price ? p.salePrice : p.price,
+    category: "", brand: "", // placeholder, populated by client
+  }));
+
+  return NextResponse.json({ products, total, page, pages: Math.ceil(total / limit) });
 }
