@@ -5,7 +5,7 @@ export const productSchema = z.object({
   name: z.string().min(1, "Naziv je obavezan"),
   slug: z.string().min(1, "Slug je obavezan"),
   sku: z.string().optional().default(""),
-  price: z.number({ message: "Cijena mora biti broj" }).min(0, "Cijena ne može biti negativna"),
+  price: z.number({ error: "Cijena mora biti broj" }).min(0, "Cijena ne može biti negativna"),
   regularPrice: z.number().min(0).optional().nullable(),
   salePrice: z.number().min(0).optional().nullable(),
   stock: z.number().int().min(0).optional().default(0),
@@ -44,7 +44,7 @@ export type BrandFormData = z.infer<typeof brandSchema>;
 export const shippingSchema = z.object({
   name: z.string().min(1, "Naziv metode je obavezan"),
   description: z.string().optional().default(""),
-  price: z.number({ message: "Cijena mora biti broj" }).min(0, "Cijena ne može biti negativna"),
+  price: z.number({ error: "Cijena mora biti broj" }).min(0, "Cijena ne može biti negativna"),
   freeAboveAmount: z
     .union([z.number().min(0), z.literal(""), z.null()])
     .optional()
@@ -59,9 +59,9 @@ export type ShippingFormData = z.infer<typeof shippingSchema>;
 // ── Coupon create / edit ──
 export const couponSchema = z.object({
   code: z.string().min(1, "Kod kupona je obavezan").max(50, "Kod je predugačak (max 50)"),
-  type: z.enum(["PERCENTAGE", "FIXED"], { message: "Vrsta kupona je obavezna" }),
+  type: z.enum(["PERCENTAGE", "FIXED"], { error: "Vrsta kupona je obavezna" }),
   value: z
-    .number({ message: "Vrijednost mora biti broj" })
+    .number({ error: "Vrijednost mora biti broj" })
     .min(0, "Vrijednost ne može biti negativna"),
   active: z.boolean().default(true),
   startsAt: z.string().optional().default(""),
@@ -79,7 +79,7 @@ export const paymentSchema = z.object({
   method: z.string().min(1, "Metoda plaćanja je obavezna"),
   status: z.enum(["PENDING", "COMPLETED", "FAILED", "REFUNDED"]).default("PENDING"),
   transactionId: z.string().optional().default(""),
-  amount: z.number({ message: "Iznos mora biti broj" }).min(0.01, "Iznos mora biti veći od 0"),
+  amount: z.number({ error: "Iznos mora biti broj" }).min(0.01, "Iznos mora biti veći od 0"),
   currency: z.string().default("EUR"),
 });
 
