@@ -58,8 +58,9 @@ export async function PATCH(
   // Sanitize: convert empty strings to null/undefined where appropriate
   const sanitized = sanitizeInput(body as Record<string, unknown>);
 
-  // Validate with Zod
-  const result = productSchema.safeParse(sanitized);
+  // Validate with Zod — partial for PATCH (all fields optional)
+  const patchSchema = productSchema.partial();
+  const result = patchSchema.safeParse(sanitized);
   if (!result.success) {
     return NextResponse.json(
       { errors: formatZodErrors(result.error) },
