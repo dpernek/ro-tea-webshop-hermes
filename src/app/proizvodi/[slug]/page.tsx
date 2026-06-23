@@ -328,7 +328,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   <path d="M9 20h6" />
                   <path d="M12 4v16" />
                 </svg>
-                Šifra: {product.sku}
+                EAN: {product.sku}
               </p>
             )}
 

@@ -40,6 +40,11 @@ export function ProductCard({ product, index }: ProductCardProps) {
           className="object-contain p-4 [mix-blend-mode:multiply] transition-transform duration-500 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
+        {product.oldPrice && (
+          <span className="absolute top-3 right-3 rounded-full bg-red-500 px-2.5 py-1 text-xs font-bold text-white shadow-sm">
+            AKCIJA
+          </span>
+        )}
       </Link>
 
       <div className="flex flex-1 flex-col p-5">
@@ -49,7 +54,6 @@ export function ProductCard({ product, index }: ProductCardProps) {
             <Badge variant="outline">{product.brand}</Badge>
           )}
           {product.featured && <Badge variant="accent">Istaknuto</Badge>}
-          {product.oldPrice && <Badge className="bg-red-500 text-white hover:bg-red-600">AKCIJA</Badge>}
           {product.badge && <Badge variant="accent">{product.badge}</Badge>}
           {isVariable && <Badge variant="info">Više opcija</Badge>}
         </div>

@@ -30,8 +30,8 @@ export async function GET(request: NextRequest) {
 
   const products = data.map((p) => ({
     ...p,
-    oldPrice: p.salePrice != null && p.salePrice < p.price ? p.price : (p.regularPrice && p.regularPrice > p.price ? p.regularPrice : null),
-    price: p.salePrice != null && p.salePrice < p.price ? p.salePrice : p.price,
+    oldPrice: p.salePrice != null && p.salePrice > 0 && p.salePrice < p.price ? p.price : null,
+    price: p.salePrice != null && p.salePrice > 0 && p.salePrice < p.price ? p.salePrice : p.price,
     category: "", brand: "", // placeholder, populated by client
   }));
 

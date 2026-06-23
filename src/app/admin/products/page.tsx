@@ -10,7 +10,7 @@ import { Plus, Search, Pencil, Trash2 } from "lucide-react";
 interface Product {
   id: string; name: string; slug: string;
   price: number; salePrice: number | null; regularPrice: number | null;
-  status: string; image: string;
+  stockStatus: string; status: string; image: string; sku: string;
 }
 
 export default function AdminProductsPage() {
@@ -107,11 +107,11 @@ export default function AdminProductsPage() {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      {(p as any).stockStatus === "INSTOCK" ? (
+                      {p.stockStatus === "INSTOCK" ? (
                         <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">Dostupno</span>
-                      ) : (p as any).stockStatus === "OUTOFSTOCK" ? (
+                      ) : p.stockStatus === "OUTOFSTOCK" ? (
                         <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">Nema</span>
-                      ) : (p as any).stockStatus === "ONBACKORDER" ? (
+                      ) : p.stockStatus === "ONBACKORDER" ? (
                         <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">Narudžba</span>
                       ) : (
                         <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">—</span>
