@@ -3,6 +3,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
 import { Badge } from "@/components/ui/Badge";
 import { AddToCartButton } from "@/components/product/AddToCartButton";
 import { VariableProductOptions } from "@/components/product/VariableProductOptions";
