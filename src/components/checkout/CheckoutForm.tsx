@@ -342,6 +342,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
             className="mt-1 text-[#0055a8]"
             required
             aria-required="true"
+            aria-invalid={!!errors.terms}
             aria-describedby="terms-error"
           />
           <span className="text-sm text-slate-600">

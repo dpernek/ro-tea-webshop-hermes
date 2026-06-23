@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
 import { CartSummary } from "@/components/cart/CartSummary";
@@ -12,6 +12,10 @@ import Link from "next/link";
 export default function CheckoutPage() {
   const items = useCartStore((state) => state.items);
   const [shippingOverride, setShippingOverride] = useState<number | null>(null);
+
+  useEffect(() => {
+    document.title = "Blagajna | RO-TEA";
+  }, []);
 
   if (items.length === 0) {
     return (
