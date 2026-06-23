@@ -24,8 +24,11 @@ export default function CartPage() {
             <h1 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">Košarica</h1>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
-            <EmptyState title="Košarica je prazna" description="Dodajte proizvode u košaricu za nastavak."
-              action={<Button asChild size="lg"><Link href="/proizvodi">Pregledaj proizvode</Link></Button>} />
+            <EmptyState
+              title="Vaša košarica je prazna"
+              description="Pregledajte našu ponudu profesionalnih alata i opreme."
+              action={<Button asChild size="lg"><Link href="/proizvodi">Pregledajte proizvode</Link></Button>}
+            />
           </AnimatedSection>
         </div>
       </div>

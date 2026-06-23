@@ -432,7 +432,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       )}
       {formData.paymentMethod === "card" && (
         <p className="text-sm text-slate-500">
-          Sigurno plaćanje karticom putem Stripea. Apple Pay i Google Pay prikazuju se ako su dostupni.
+          Sigurno plaćanje karticom putem Stripea. Apple Pay i Google Pay se prikazuju ako su dostupni na vašem uređaju.
         </p>
       )}
 
@@ -449,9 +449,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         isLoading={formData.paymentMethod === "card" ? isCreatingSession : isSubmitting}
         disabled={isCreatingSession || isSubmitting}
       >
-        {formData.paymentMethod === "card"
-          ? "Nastavi na kartično plaćanje"
-          : "Pošalji narudžbu"}
+        Potvrdi narudžbu
       </Button>
     </form>
   );

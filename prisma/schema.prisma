@@ -48,6 +48,10 @@ model Product {
   depth            Float?
   metaTitle        String?
   metaDescription  String?
+  benefits         String?           // JSON array of benefit strings
+  usage            String?           // Recommended usage
+  warranty         String?           // Warranty info
+  deliveryNote     String?           // Delivery notes for this product
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   orderItems       OrderItem[]

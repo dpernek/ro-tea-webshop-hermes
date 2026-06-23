@@ -54,12 +54,15 @@ export function CartItem({ item }: CartItemProps) {
           </p>
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-          <QuantitySelector
-            quantity={item.quantity}
-            onChange={(q) => updateQuantity(item.id, q)}
-            max={item.product.stock}
-            size="sm"
-          />
+          <div>
+            <p className="mb-1.5 text-xs font-medium text-slate-500">Količina</p>
+            <QuantitySelector
+              quantity={item.quantity}
+              onChange={(q) => updateQuantity(item.id, q)}
+              max={item.product.stock}
+              size="sm"
+            />
+          </div>
           <div className="flex items-center gap-4">
             <span className="text-lg font-semibold text-slate-900">
               {formatPrice(item.product.price * item.quantity)}

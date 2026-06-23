@@ -82,6 +82,19 @@ function parseJsonArray(raw: string): unknown[] {
   }
 }
 
+function parseBenefitsArray(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      return parsed.filter((v): v is string => typeof v === "string");
+    }
+    return [];
+  } catch {
+    return [];
+  }
+}
+
 function parseSpecs(raw: string): Record<string, string> {
   try {
     const parsed = JSON.parse(raw);
@@ -165,6 +178,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const stockInfo = getStockInfo(product.stockStatus);
 
   const displaySpecs = SPECS_MAP[slug] || {};
+
+  const productBenefits = parseBenefitsArray(product.benefits);
 
   // Price logic: prefer salePrice, then regular price vs. price
   const effectivePrice =
@@ -386,6 +401,36 @@ export default async function ProductPage({ params }: ProductPageProps) {
               )}
             </div>
 
+            {/* ===== Key Benefits ===== */}
+            {productBenefits.length > 0 && (
+              <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50/50 p-5">
+                <h3 className="mb-3 text-base font-bold text-emerald-800">
+                  Ključne značajke:
+                </h3>
+                <ul className="space-y-1.5">
+                  {productBenefits.map((benefit, index) => (
+                    <li
+                      key={index}
+                      className="flex items-start gap-2 text-sm text-slate-700"
+                    >
+                      <svg
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Add to cart / Variable options */}
             <div className="mt-8">
               {product.type === "VARIABLE" ? (
@@ -500,6 +545,58 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         )}
 
+        {/* ===== Why buy from us ===== */}
+        <div className="mt-16 border-t border-slate-200 pt-12">
+          <h2 className="mb-6 text-2xl font-bold text-slate-900">
+            Zašto kupiti kod nas
+          </h2>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+            <div className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-5">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#0055a8]/10 text-[#0055a8]">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="1" y="3" width="15" height="13" />
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                  <circle cx="5.5" cy="18.5" r="2.5" />
+                  <circle cx="18.5" cy="18.5" r="2.5" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900">Brza dostava</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Isporuka unutar 1-3 radna dana na području cijele Hrvatske.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-5">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#0055a8]/10 text-[#0055a8]">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900">Sigurna kupnja</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  SSL enkripcija i sigurno plaćanje karticama, virmanom ili pouzećem.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-5">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#0055a8]/10 text-[#0055a8]">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900">Podrška prije i poslije kupnje</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Stručni savjeti i podrška — stojimo vam na raspolaganju.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* ===== Specifications table ===== */}
         {Object.keys(displaySpecs).length > 0 && (
         <div className="mt-16 border-t border-slate-200 pt-12">
@@ -525,12 +622,67 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
         )}
 
+        {/* ===== Delivery and payment info ===== */}
+        <div className="mt-16 border-t border-slate-200 pt-12">
+          <h2 className="mb-6 text-2xl font-bold text-slate-900">
+            Dostava i plaćanje
+          </h2>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="flex items-start gap-3">
+                <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#0055a8]/10 text-[#0055a8]">
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="1" y="3" width="15" height="13" />
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                    <circle cx="5.5" cy="18.5" r="2.5" />
+                    <circle cx="18.5" cy="18.5" r="2.5" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900">Dostava</p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Dostava: 6,64 € | Besplatno iznad 66,36 € | Osobno preuzimanje: 0,00 €
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[#0055a8]/10 text-[#0055a8]">
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="5" width="20" height="14" rx="2" />
+                    <line x1="2" y1="10" x2="22" y2="10" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900">Plaćanje</p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Kartica, virman, pouzeće
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-5 border-t border-slate-200 pt-4">
+              <Link
+                href="/kontakt"
+                className="inline-flex items-center gap-2 text-sm font-medium text-[#0055a8] transition-colors hover:text-[#003d7a]"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Pomoć pri odabiru?
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* ===== Related products ===== */}
         {relatedProducts.length > 0 && (
           <div className="mt-16 border-t border-slate-200 pt-12">
-            <h2 className="mb-6 text-2xl font-bold text-slate-900">
+            <h2 className="text-2xl font-bold text-slate-900">
               Srodni proizvodi
             </h2>
+            <p className="mt-2 mb-6 text-sm text-slate-500">
+              Kupci su često kupovali i ove proizvode
+            </p>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {relatedProducts.map((rp) => (
                 <Link
@@ -540,7 +692,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 >
                   <div className="aspect-square overflow-hidden rounded-lg bg-slate-100 relative">
                     <Image
-                      src={rp.image}
+                      src={rp.image || "/images/category-placeholder.svg"}
                       alt={rp.name}
                       fill
                       className="object-cover transition-transform group-hover:scale-105"

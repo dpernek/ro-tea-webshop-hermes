@@ -67,7 +67,7 @@ export default function ContactPage() {
           <div className="lg:col-span-3">
             <AnimatedSection>
               <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                <h2 className="mb-6 text-xl font-semibold text-slate-900">Pošaljite nam poruku</h2>
+                <h2 className="mb-6 text-xl font-semibold text-slate-900">Pošaljite upit</h2>
                 {submitted ? (
                   <div className="flex flex-col items-center justify-center py-10 text-center">
                     <CheckCircle className="mb-3 h-12 w-12 text-green-500" />

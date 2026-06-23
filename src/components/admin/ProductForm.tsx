@@ -212,7 +212,29 @@ export function ProductForm({ product, categories, brands }: {
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {saving ? "Spremanje..." : isEdit ? "Spremi" : "Kreiraj"}
           </button>
+        
+        <div className="rounded-xl border border-slate-200 bg-white p-6">
+          <h2 className="mb-4 text-lg font-semibold">Dodatne informacije</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm font-medium">Ključne značajke</label>
+              <textarea name="benefits" defaultValue={product?.benefits || ""} rows={2} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder='npr. ["Izdržljiv","Precizan"]' />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium">Preporučena upotreba</label>
+              <input name="usage" defaultValue={product?.usage || ""} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="npr. Za obradu metala" />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium">Jamstvo</label>
+              <input name="warranty" defaultValue={product?.warranty || ""} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="npr. 2 godine" />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium">Napomena o dostavi</label>
+              <input name="deliveryNote" defaultValue={product?.deliveryNote || ""} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="npr. Dostava 3-5 radnih dana" />
+            </div>
+          </div>
         </div>
+</div>
       </form>
     </div>
   );

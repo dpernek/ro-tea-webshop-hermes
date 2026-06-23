@@ -82,6 +82,10 @@ export type ProductMinAggregateOutputType = {
   depth: number | null
   metaTitle: string | null
   metaDescription: string | null
+  benefits: string | null
+  usage: string | null
+  warranty: string | null
+  deliveryNote: string | null
   createdAt: Date | null
   updatedAt: Date | null
   attributes: string | null
@@ -118,6 +122,10 @@ export type ProductMaxAggregateOutputType = {
   depth: number | null
   metaTitle: string | null
   metaDescription: string | null
+  benefits: string | null
+  usage: string | null
+  warranty: string | null
+  deliveryNote: string | null
   createdAt: Date | null
   updatedAt: Date | null
   attributes: string | null
@@ -154,6 +162,10 @@ export type ProductCountAggregateOutputType = {
   depth: number
   metaTitle: number
   metaDescription: number
+  benefits: number
+  usage: number
+  warranty: number
+  deliveryNote: number
   createdAt: number
   updatedAt: number
   attributes: number
@@ -220,6 +232,10 @@ export type ProductMinAggregateInputType = {
   depth?: true
   metaTitle?: true
   metaDescription?: true
+  benefits?: true
+  usage?: true
+  warranty?: true
+  deliveryNote?: true
   createdAt?: true
   updatedAt?: true
   attributes?: true
@@ -256,6 +272,10 @@ export type ProductMaxAggregateInputType = {
   depth?: true
   metaTitle?: true
   metaDescription?: true
+  benefits?: true
+  usage?: true
+  warranty?: true
+  deliveryNote?: true
   createdAt?: true
   updatedAt?: true
   attributes?: true
@@ -292,6 +312,10 @@ export type ProductCountAggregateInputType = {
   depth?: true
   metaTitle?: true
   metaDescription?: true
+  benefits?: true
+  usage?: true
+  warranty?: true
+  deliveryNote?: true
   createdAt?: true
   updatedAt?: true
   attributes?: true
@@ -415,6 +439,10 @@ export type ProductGroupByOutputType = {
   depth: number | null
   metaTitle: string | null
   metaDescription: string | null
+  benefits: string | null
+  usage: string | null
+  warranty: string | null
+  deliveryNote: string | null
   createdAt: Date
   updatedAt: Date
   attributes: string
@@ -474,6 +502,10 @@ export type ProductWhereInput = {
   depth?: Prisma.FloatNullableFilter<"Product"> | number | null
   metaTitle?: Prisma.StringNullableFilter<"Product"> | string | null
   metaDescription?: Prisma.StringNullableFilter<"Product"> | string | null
+  benefits?: Prisma.StringNullableFilter<"Product"> | string | null
+  usage?: Prisma.StringNullableFilter<"Product"> | string | null
+  warranty?: Prisma.StringNullableFilter<"Product"> | string | null
+  deliveryNote?: Prisma.StringNullableFilter<"Product"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   attributes?: Prisma.StringFilter<"Product"> | string
@@ -513,6 +545,10 @@ export type ProductOrderByWithRelationInput = {
   depth?: Prisma.SortOrderInput | Prisma.SortOrder
   metaTitle?: Prisma.SortOrderInput | Prisma.SortOrder
   metaDescription?: Prisma.SortOrderInput | Prisma.SortOrder
+  benefits?: Prisma.SortOrderInput | Prisma.SortOrder
+  usage?: Prisma.SortOrderInput | Prisma.SortOrder
+  warranty?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryNote?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
@@ -555,6 +591,10 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   depth?: Prisma.FloatNullableFilter<"Product"> | number | null
   metaTitle?: Prisma.StringNullableFilter<"Product"> | string | null
   metaDescription?: Prisma.StringNullableFilter<"Product"> | string | null
+  benefits?: Prisma.StringNullableFilter<"Product"> | string | null
+  usage?: Prisma.StringNullableFilter<"Product"> | string | null
+  warranty?: Prisma.StringNullableFilter<"Product"> | string | null
+  deliveryNote?: Prisma.StringNullableFilter<"Product"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   attributes?: Prisma.StringFilter<"Product"> | string
@@ -594,6 +634,10 @@ export type ProductOrderByWithAggregationInput = {
   depth?: Prisma.SortOrderInput | Prisma.SortOrder
   metaTitle?: Prisma.SortOrderInput | Prisma.SortOrder
   metaDescription?: Prisma.SortOrderInput | Prisma.SortOrder
+  benefits?: Prisma.SortOrderInput | Prisma.SortOrder
+  usage?: Prisma.SortOrderInput | Prisma.SortOrder
+  warranty?: Prisma.SortOrderInput | Prisma.SortOrder
+  deliveryNote?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
@@ -638,6 +682,10 @@ export type ProductScalarWhereWithAggregatesInput = {
   depth?: Prisma.FloatNullableWithAggregatesFilter<"Product"> | number | null
   metaTitle?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   metaDescription?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
+  benefits?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
+  usage?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
+  warranty?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
+  deliveryNote?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
   attributes?: Prisma.StringWithAggregatesFilter<"Product"> | string
@@ -672,6 +720,10 @@ export type ProductCreateInput = {
   depth?: number | null
   metaTitle?: string | null
   metaDescription?: string | null
+  benefits?: string | null
+  usage?: string | null
+  warranty?: string | null
+  deliveryNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attributes?: string
@@ -711,6 +763,10 @@ export type ProductUncheckedCreateInput = {
   depth?: number | null
   metaTitle?: string | null
   metaDescription?: string | null
+  benefits?: string | null
+  usage?: string | null
+  warranty?: string | null
+  deliveryNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attributes?: string
@@ -746,6 +802,10 @@ export type ProductUpdateInput = {
   depth?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   metaTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metaDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  benefits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -785,6 +845,10 @@ export type ProductUncheckedUpdateInput = {
   depth?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   metaTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metaDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  benefits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -822,6 +886,10 @@ export type ProductCreateManyInput = {
   depth?: number | null
   metaTitle?: string | null
   metaDescription?: string | null
+  benefits?: string | null
+  usage?: string | null
+  warranty?: string | null
+  deliveryNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attributes?: string
@@ -856,6 +924,10 @@ export type ProductUpdateManyMutationInput = {
   depth?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   metaTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metaDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  benefits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -892,6 +964,10 @@ export type ProductUncheckedUpdateManyInput = {
   depth?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   metaTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metaDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  benefits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -928,6 +1004,10 @@ export type ProductCountOrderByAggregateInput = {
   depth?: Prisma.SortOrder
   metaTitle?: Prisma.SortOrder
   metaDescription?: Prisma.SortOrder
+  benefits?: Prisma.SortOrder
+  usage?: Prisma.SortOrder
+  warranty?: Prisma.SortOrder
+  deliveryNote?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
@@ -978,6 +1058,10 @@ export type ProductMaxOrderByAggregateInput = {
   depth?: Prisma.SortOrder
   metaTitle?: Prisma.SortOrder
   metaDescription?: Prisma.SortOrder
+  benefits?: Prisma.SortOrder
+  usage?: Prisma.SortOrder
+  warranty?: Prisma.SortOrder
+  deliveryNote?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
@@ -1014,6 +1098,10 @@ export type ProductMinOrderByAggregateInput = {
   depth?: Prisma.SortOrder
   metaTitle?: Prisma.SortOrder
   metaDescription?: Prisma.SortOrder
+  benefits?: Prisma.SortOrder
+  usage?: Prisma.SortOrder
+  warranty?: Prisma.SortOrder
+  deliveryNote?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
@@ -1207,6 +1295,10 @@ export type ProductCreateWithoutCategoryInput = {
   depth?: number | null
   metaTitle?: string | null
   metaDescription?: string | null
+  benefits?: string | null
+  usage?: string | null
+  warranty?: string | null
+  deliveryNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attributes?: string
@@ -1244,6 +1336,10 @@ export type ProductUncheckedCreateWithoutCategoryInput = {
   depth?: number | null
   metaTitle?: string | null
   metaDescription?: string | null
+  benefits?: string | null
+  usage?: string | null
+  warranty?: string | null
+  deliveryNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attributes?: string
@@ -1310,6 +1406,10 @@ export type ProductScalarWhereInput = {
   depth?: Prisma.FloatNullableFilter<"Product"> | number | null
   metaTitle?: Prisma.StringNullableFilter<"Product"> | string | null
   metaDescription?: Prisma.StringNullableFilter<"Product"> | string | null
+  benefits?: Prisma.StringNullableFilter<"Product"> | string | null
+  usage?: Prisma.StringNullableFilter<"Product"> | string | null
+  warranty?: Prisma.StringNullableFilter<"Product"> | string | null
+  deliveryNote?: Prisma.StringNullableFilter<"Product"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   attributes?: Prisma.StringFilter<"Product"> | string
@@ -1344,6 +1444,10 @@ export type ProductCreateWithoutBrandInput = {
   depth?: number | null
   metaTitle?: string | null
   metaDescription?: string | null
+  benefits?: string | null
+  usage?: string | null
+  warranty?: string | null
+  deliveryNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attributes?: string
@@ -1381,6 +1485,10 @@ export type ProductUncheckedCreateWithoutBrandInput = {
   depth?: number | null
   metaTitle?: string | null
   metaDescription?: string | null
+  benefits?: string | null
+  usage?: string | null
+  warranty?: string | null
+  deliveryNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attributes?: string
@@ -1442,6 +1550,10 @@ export type ProductCreateWithoutOrderItemsInput = {
   depth?: number | null
   metaTitle?: string | null
   metaDescription?: string | null
+  benefits?: string | null
+  usage?: string | null
+  warranty?: string | null
+  deliveryNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attributes?: string
@@ -1480,6 +1592,10 @@ export type ProductUncheckedCreateWithoutOrderItemsInput = {
   depth?: number | null
   metaTitle?: string | null
   metaDescription?: string | null
+  benefits?: string | null
+  usage?: string | null
+  warranty?: string | null
+  deliveryNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attributes?: string
@@ -1530,6 +1646,10 @@ export type ProductUpdateWithoutOrderItemsInput = {
   depth?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   metaTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metaDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  benefits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1568,6 +1688,10 @@ export type ProductUncheckedUpdateWithoutOrderItemsInput = {
   depth?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   metaTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metaDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  benefits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1603,6 +1727,10 @@ export type ProductCreateManyCategoryInput = {
   depth?: number | null
   metaTitle?: string | null
   metaDescription?: string | null
+  benefits?: string | null
+  usage?: string | null
+  warranty?: string | null
+  deliveryNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attributes?: string
@@ -1637,6 +1765,10 @@ export type ProductUpdateWithoutCategoryInput = {
   depth?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   metaTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metaDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  benefits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1674,6 +1806,10 @@ export type ProductUncheckedUpdateWithoutCategoryInput = {
   depth?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   metaTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metaDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  benefits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1710,6 +1846,10 @@ export type ProductUncheckedUpdateManyWithoutCategoryInput = {
   depth?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   metaTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metaDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  benefits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1745,6 +1885,10 @@ export type ProductCreateManyBrandInput = {
   depth?: number | null
   metaTitle?: string | null
   metaDescription?: string | null
+  benefits?: string | null
+  usage?: string | null
+  warranty?: string | null
+  deliveryNote?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attributes?: string
@@ -1779,6 +1923,10 @@ export type ProductUpdateWithoutBrandInput = {
   depth?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   metaTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metaDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  benefits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1816,6 +1964,10 @@ export type ProductUncheckedUpdateWithoutBrandInput = {
   depth?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   metaTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metaDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  benefits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1852,6 +2004,10 @@ export type ProductUncheckedUpdateManyWithoutBrandInput = {
   depth?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   metaTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metaDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  benefits?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  usage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warranty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deliveryNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1919,6 +2075,10 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   depth?: boolean
   metaTitle?: boolean
   metaDescription?: boolean
+  benefits?: boolean
+  usage?: boolean
+  warranty?: boolean
+  deliveryNote?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   attributes?: boolean
@@ -1959,6 +2119,10 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   depth?: boolean
   metaTitle?: boolean
   metaDescription?: boolean
+  benefits?: boolean
+  usage?: boolean
+  warranty?: boolean
+  deliveryNote?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   attributes?: boolean
@@ -1997,6 +2161,10 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   depth?: boolean
   metaTitle?: boolean
   metaDescription?: boolean
+  benefits?: boolean
+  usage?: boolean
+  warranty?: boolean
+  deliveryNote?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   attributes?: boolean
@@ -2035,6 +2203,10 @@ export type ProductSelectScalar = {
   depth?: boolean
   metaTitle?: boolean
   metaDescription?: boolean
+  benefits?: boolean
+  usage?: boolean
+  warranty?: boolean
+  deliveryNote?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   attributes?: boolean
@@ -2043,7 +2215,7 @@ export type ProductSelectScalar = {
   categories?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "sku" | "brandId" | "categoryId" | "price" | "regularPrice" | "salePrice" | "taxRate" | "image" | "gallery" | "shortDescription" | "description" | "specifications" | "stock" | "stockStatus" | "status" | "featured" | "badge" | "type" | "weight" | "width" | "height" | "depth" | "metaTitle" | "metaDescription" | "createdAt" | "updatedAt" | "attributes" | "priceRangeMin" | "priceRangeMax" | "categories", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "sku" | "brandId" | "categoryId" | "price" | "regularPrice" | "salePrice" | "taxRate" | "image" | "gallery" | "shortDescription" | "description" | "specifications" | "stock" | "stockStatus" | "status" | "featured" | "badge" | "type" | "weight" | "width" | "height" | "depth" | "metaTitle" | "metaDescription" | "benefits" | "usage" | "warranty" | "deliveryNote" | "createdAt" | "updatedAt" | "attributes" | "priceRangeMin" | "priceRangeMax" | "categories", ExtArgs["result"]["product"]>
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   brand?: boolean | Prisma.Product$brandArgs<ExtArgs>
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
@@ -2094,6 +2266,10 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     depth: number | null
     metaTitle: string | null
     metaDescription: string | null
+    benefits: string | null
+    usage: string | null
+    warranty: string | null
+    deliveryNote: string | null
     createdAt: Date
     updatedAt: Date
     attributes: string
@@ -2553,6 +2729,10 @@ export interface ProductFieldRefs {
   readonly depth: Prisma.FieldRef<"Product", 'Float'>
   readonly metaTitle: Prisma.FieldRef<"Product", 'String'>
   readonly metaDescription: Prisma.FieldRef<"Product", 'String'>
+  readonly benefits: Prisma.FieldRef<"Product", 'String'>
+  readonly usage: Prisma.FieldRef<"Product", 'String'>
+  readonly warranty: Prisma.FieldRef<"Product", 'String'>
+  readonly deliveryNote: Prisma.FieldRef<"Product", 'String'>
   readonly createdAt: Prisma.FieldRef<"Product", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Product", 'DateTime'>
   readonly attributes: Prisma.FieldRef<"Product", 'String'>

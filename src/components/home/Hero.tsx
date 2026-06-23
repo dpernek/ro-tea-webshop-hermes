@@ -85,18 +85,17 @@ export function Hero() {
             {site.name} d.o.o.
           </p>
           <h1 className="hero-animate mt-6 text-4xl leading-tight font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Profesionalni alati za industriju i obrt
+            Profesionalni alati i oprema za industriju, obrt i dom
           </h1>
           <p className="hero-animate mt-6 max-w-xl text-lg leading-relaxed text-slate-200">
-            Široka ponuda provjerenih proizvoda za profesionalce, obrtnike i
-            industriju. Brza dostava, detaljni opisi i jednostavna kupnja —
-            sve na jednom mjestu.
+            Specijalizirana trgovina za obradu metala, održavanje i
+            proizvodnju – za majstore, obrtnike i tvrtke.
           </p>
 
           <div className="hero-animate mt-10 flex flex-wrap gap-4">
             <Button asChild size="lg">
               <Link href="/proizvodi">
-                Pregledaj ponudu
+                Pogledajte ponudu
                 <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
@@ -106,7 +105,7 @@ export function Hero() {
               size="lg"
               className="border-slate-400 text-white hover:border-white hover:bg-white/10"
             >
-              <Link href="/kontakt">Kontaktiraj nas</Link>
+              <Link href="/kontakt">Poslovni upit</Link>
             </Button>
           </div>
 
