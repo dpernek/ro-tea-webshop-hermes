@@ -115,33 +115,23 @@ export async function PATCH(
 function sanitizeInput(
   body: Record<string, unknown>
 ): Record<string, unknown> {
+  const numericKeys = ["regularPrice", "salePrice", "stock", "sortOrder"];
   const sanitized: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(body)) {
-    // Trim strings
     if (typeof value === "string") {
-      sanitized[key] = value.trim();
-      continue;
-    }
-
-    // Convert empty strings that masquerade as other types
-    if (value === "" || value === null || value === undefined) {
-      // For numeric optional fields, keep as null
-      if (
-        [
-          "regularPrice",
-          "salePrice",
-          "stock",
-          "brandId",
-          "categoryId",
-        ].includes(key)
-      ) {
+      const trimmed = value.trim();
+      // Empty string for numeric fields → null
+      if (trimmed === "" && numericKeys.includes(key)) {
         sanitized[key] = null;
-        continue;
+      } else {
+        sanitized[key] = trimmed;
       }
+    } else if (value === null || value === undefined) {
+      sanitized[key] = null;
+    } else {
+      sanitized[key] = value;
     }
-
-    sanitized[key] = value;
   }
 
   return sanitized;
