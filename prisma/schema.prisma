@@ -134,17 +134,18 @@ model Order {
 }
 
 model OrderItem {
-  id          String  @id @default(cuid())
-  orderId     String
-  order       Order   @relation(fields: [orderId], references: [id])
-  productId   String
-  product     Product @relation(fields: [productId], references: [id])
-  productName String
-  sku         String?
-  quantity    Int
-  unitPrice   Float
-  total       Float
-  attributes  String? // JSON: selectedAttributes
+  id              String  @id @default(cuid())
+  orderId         String
+  order           Order   @relation(fields: [orderId], references: [id])
+  productId       String
+  product         Product @relation(fields: [productId], references: [id])
+  productName     String
+  sku             String?
+  quantity        Int
+  unitPrice       Float
+  total           Float
+  attributes      String? // JSON: selectedAttributes
+  stockAdjustedAt DateTime?
 }
 
 model Payment {
@@ -216,4 +217,13 @@ model Catalog {
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model StripeEvent {
+  id        String   @id
+  type      String
+  objectId  String?
+  payload   String   // JSON
+  processed Boolean  @default(false)
+  createdAt DateTime @default(now())
 }

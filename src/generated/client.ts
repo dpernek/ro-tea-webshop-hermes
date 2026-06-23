@@ -101,3 +101,8 @@ export type StoreSettings = Prisma.StoreSettingsModel
  * 
  */
 export type Catalog = Prisma.CatalogModel
+/**
+ * Model StripeEvent
+ * 
+ */
+export type StripeEvent = Prisma.StripeEventModel

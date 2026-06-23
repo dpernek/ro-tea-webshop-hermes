@@ -62,7 +62,8 @@ export const ModelName = {
   ShippingMethod: 'ShippingMethod',
   Coupon: 'Coupon',
   StoreSettings: 'StoreSettings',
-  Catalog: 'Catalog'
+  Catalog: 'Catalog',
+  StripeEvent: 'StripeEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -222,7 +223,8 @@ export const OrderItemScalarFieldEnum = {
   quantity: 'quantity',
   unitPrice: 'unitPrice',
   total: 'total',
-  attributes: 'attributes'
+  attributes: 'attributes',
+  stockAdjustedAt: 'stockAdjustedAt'
 } as const
 
 export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
@@ -311,6 +313,18 @@ export const CatalogScalarFieldEnum = {
 } as const
 
 export type CatalogScalarFieldEnum = (typeof CatalogScalarFieldEnum)[keyof typeof CatalogScalarFieldEnum]
+
+
+export const StripeEventScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  objectId: 'objectId',
+  payload: 'payload',
+  processed: 'processed',
+  createdAt: 'createdAt'
+} as const
+
+export type StripeEventScalarFieldEnum = (typeof StripeEventScalarFieldEnum)[keyof typeof StripeEventScalarFieldEnum]
 
 
 export const SortOrder = {

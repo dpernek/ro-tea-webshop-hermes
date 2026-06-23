@@ -2,22 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
+import { computePrices } from "@/lib/pricing";
 import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
-const SHIPPING_PRICE = 6.64;
-const FREE_SHIPPING_THRESHOLD = 66.36;
-
 const checkoutSessionSchema = z.object({
-  items: z
-    .array(
-      z.object({
-        productId: z.string().min(1),
-        quantity: z.number().int().min(1),
-      })
-    )
-    .min(1, "Košarica je prazna"),
+  items: z.array(z.object({ productId: z.string().min(1), quantity: z.number().int().min(1) })).min(1, "Košarica je prazna"),
   customerName: z.string().min(1, "Ime i prezime je obavezno"),
   customerEmail: z.string().email("Nevažeća email adresa"),
   customerPhone: z.string().min(1, "Telefon je obavezan"),
@@ -32,209 +23,83 @@ export async function POST(req: NextRequest) {
   try {
     const raw = await req.json();
     const parsed = checkoutSessionSchema.safeParse(raw);
-
     if (!parsed.success) {
       const fieldErrors: Record<string, string> = {};
-      for (const issue of parsed.error.issues) {
-        const field = issue.path.join(".");
-        fieldErrors[field] = issue.message;
-      }
+      for (const issue of parsed.error.issues) fieldErrors[issue.path.join(".")] = issue.message;
       return NextResponse.json({ errors: fieldErrors }, { status: 400 });
     }
-
     const body = parsed.data;
 
-    // ----- FETCH & VALIDATE PRODUCTS (server-side) -----
-    const productIds = body.items.map((item) => item.productId);
+    // Fetch & validate products from DB
     const dbProducts = await db.product.findMany({
-      where: { id: { in: productIds } },
-      select: {
-        id: true,
-        name: true,
-        sku: true,
-        price: true,
-        salePrice: true,
-        status: true,
-        stock: true,
-        image: true,
-      },
+      where: { id: { in: body.items.map(i => i.productId) } },
+      select: { id: true, name: true, sku: true, price: true, salePrice: true, status: true, stock: true, image: true },
     });
-
-    const productMap = new Map(dbProducts.map((p) => [p.id, p]));
-
-    let calculatedSubtotal = 0;
-    const lineItems: Array<{
-      price_data: {
-        currency: string;
-        product_data: { name: string; images?: string[] };
-        unit_amount: number;
-      };
-      quantity: number;
-    }> = [];
+    const productMap = new Map(dbProducts.map(p => [p.id, p]));
 
     for (const item of body.items) {
-      const product = productMap.get(item.productId);
-
-      if (!product) {
-        return NextResponse.json(
-          { error: `Proizvod (${item.productId}) više nije dostupan.` },
-          { status: 400 }
-        );
-      }
-      if (product.status !== "ACTIVE") {
-        return NextResponse.json(
-          {
-            error: `Proizvod "${product.name}" trenutno nije dostupan za kupnju.`,
-          },
-          { status: 400 }
-        );
-      }
-      if (product.stock != null && product.stock > 0 && product.stock < item.quantity) {
-        return NextResponse.json(
-          { error: `Proizvod "${product.name}" nema dovoljno zaliha.` },
-          { status: 400 }
-        );
-      }
-
-      const realPrice =
-        product.salePrice != null && product.salePrice < product.price
-          ? product.salePrice
-          : product.price;
-
-      // Stripe expects amounts in cents
-      const unitAmountCents = Math.round(realPrice * 100);
-
-      lineItems.push({
-        price_data: {
-          currency: "eur",
-          product_data: {
-            name: product.name,
-          },
-          unit_amount: unitAmountCents,
-        },
-        quantity: item.quantity,
-      });
-
-      calculatedSubtotal += realPrice * item.quantity;
+      const p = productMap.get(item.productId);
+      if (!p) return NextResponse.json({ error: `Proizvod (${item.productId}) više nije dostupan.` }, { status: 400 });
+      if (p.status !== "ACTIVE") return NextResponse.json({ error: `Proizvod "${p.name}" trenutno nije dostupan.` }, { status: 400 });
+      if (p.stock != null && p.stock > 0 && p.stock < item.quantity) return NextResponse.json({ error: `Proizvod "${p.name}" nema dovoljno zaliha.` }, { status: 400 });
     }
 
-    // ----- CALCULATE SHIPPING (server-side) -----
+    // Unified server-side pricing
     const isPickup = body.shippingMethodId === "osobno-preuzimanje";
-    let calculatedShipping = 0;
-    if (!isPickup) {
-      calculatedShipping =
-        calculatedSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_PRICE;
-    }
+    const pricing = computePrices(
+      body.items.map(i => ({ productId: i.productId, quantity: i.quantity, price: productMap.get(i.productId)!.price, salePrice: productMap.get(i.productId)!.salePrice, stock: productMap.get(i.productId)!.stock })),
+      isPickup
+    );
 
-    // Calculate tax (Croatia PDV 25%)
-    const calculatedTax = Math.round(calculatedSubtotal * 0.25 * 100) / 100;
-    const calculatedTotal = calculatedSubtotal + calculatedShipping;
+    // Stripe line items in cents
+    const lineItems = pricing.lineItems.map(li => ({
+      price_data: { currency: "eur", product_data: { name: productMap.get(li.productId)!.name }, unit_amount: Math.round(li.unitPrice * 100) },
+      quantity: li.quantity,
+    }));
 
-    // ----- GENERATE ORDER NUMBER -----
-    const today = new Date();
-    const dateStr = today.toISOString().slice(0, 10).replace(/-/g, "");
-    const count = await db.order.count({
-      where: { orderNumber: { startsWith: `ROTEA-${dateStr}` } },
-    });
+    // Generate order number
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    const count = await db.order.count({ where: { orderNumber: { startsWith: `ROTEA-${dateStr}` } } });
     const orderNumber = `ROTEA-${dateStr}-${String(count + 1).padStart(4, "0")}`;
 
-    // ----- UPSERT CUSTOMER -----
-    let customer = await db.customer.findFirst({
-      where: {
-        OR: [
-          ...(body.customerEmail ? [{ email: body.customerEmail }] : []),
-          { phone: body.customerPhone },
-        ],
-      },
-    });
-
+    // Upsert customer
     const shippingAddress = `${body.address}, ${body.postalCode} ${body.city}`;
-
+    let customer = await db.customer.findFirst({ where: { OR: [{ email: body.customerEmail }, { phone: body.customerPhone }] } });
     if (customer) {
-      customer = await db.customer.update({
-        where: { id: customer.id },
-        data: {
-          name: body.customerName,
-          phone: body.customerPhone || null,
-          shippingAddress,
-        },
-      });
+      customer = await db.customer.update({ where: { id: customer.id }, data: { name: body.customerName, phone: body.customerPhone, shippingAddress } });
     } else {
-      customer = await db.customer.create({
-        data: {
-          name: body.customerName,
-          email: body.customerEmail || null,
-          phone: body.customerPhone || null,
-          shippingAddress,
-        },
-      });
+      customer = await db.customer.create({ data: { name: body.customerName, email: body.customerEmail, phone: body.customerPhone, shippingAddress } });
     }
 
-    // ----- FETCH SHIPPING METHOD -----
-    const shippingMethod = await db.shippingMethod.findUnique({
-      where: { id: body.shippingMethodId },
-    });
+    // Fetch shipping method
+    const shippingMethod = await db.shippingMethod.findUnique({ where: { id: body.shippingMethodId } });
 
-    // ----- CREATE ORDER (before Stripe redirect) -----
+    // Create order BEFORE Stripe redirect
     const order = await db.order.create({
       data: {
-        orderNumber,
-        customerId: customer.id,
-        customerEmail: body.customerEmail,
-        customerName: body.customerName,
-        customerPhone: body.customerPhone,
-        shippingAddress,
-        billingAddress: shippingAddress,
-        subtotal: calculatedSubtotal,
-        shippingTotal: calculatedShipping,
-        taxTotal: calculatedTax,
-        total: calculatedTotal,
-        currency: "EUR",
-        status: "PENDING",
-        paymentStatus: "UNPAID",
-        paymentMethod: "card",
-        shippingMethod: shippingMethod?.name || body.shippingMethodId,
-        note: body.note || null,
+        orderNumber, customerId: customer.id, customerEmail: body.customerEmail, customerName: body.customerName,
+        customerPhone: body.customerPhone, shippingAddress, billingAddress: shippingAddress,
+        subtotal: pricing.subtotal, shippingTotal: pricing.shipping, taxTotal: pricing.tax, total: pricing.total,
+        currency: "EUR", status: "PENDING", paymentStatus: "UNPAID", paymentMethod: "card",
+        shippingMethod: shippingMethod?.name || body.shippingMethodId, note: body.note || null,
         items: {
-          create: body.items.map((item) => {
-            const product = productMap.get(item.productId)!;
-            const realPrice =
-              product.salePrice != null && product.salePrice < product.price
-                ? product.salePrice
-                : product.price;
-            return {
-              productId: product.id,
-              productName: product.name,
-              sku: product.sku || null,
-              quantity: item.quantity,
-              unitPrice: realPrice,
-              total: realPrice * item.quantity,
-            };
-          }),
+          create: pricing.lineItems.map(li => ({
+            productId: li.productId, productName: productMap.get(li.productId)!.name,
+            sku: productMap.get(li.productId)!.sku || null, quantity: li.quantity,
+            unitPrice: li.unitPrice, total: li.total,
+          })),
         },
       },
     });
 
-    // ----- CREATE PAYMENT RECORD -----
-    const payment = await db.payment.create({
-      data: {
-        orderId: order.id,
-        provider: "stripe",
-        method: "card",
-        status: "PENDING",
-        amount: calculatedTotal,
-        currency: "EUR",
-      },
+    // Create payment record
+    await db.payment.create({
+      data: { orderId: order.id, provider: "stripe", method: "card", status: "PENDING", amount: pricing.total, currency: "EUR" },
     });
 
-    // ----- CREATE STRIPE CHECKOUT SESSION -----
-    const siteUrl =
-      process.env.NEXT_PUBLIC_SITE_URL ||
-      process.env.VERCEL_URL ||
-      "https://ro-tea-webshop-hermes.vercel.app";
-    const baseUrl = siteUrl.startsWith("http")
-      ? siteUrl
-      : `https://${siteUrl}`;
+    // Create Stripe Checkout Session
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || "https://ro-tea-webshop-hermes.vercel.app";
+    const baseUrl = siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`;
 
     const session = await stripe.checkout.sessions.create({
       line_items: lineItems as any,
@@ -242,44 +107,19 @@ export async function POST(req: NextRequest) {
       currency: "eur",
       payment_method_types: ["card"],
       customer_email: body.customerEmail,
-      metadata: {
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-      },
+      metadata: { orderId: order.id, orderNumber },
       success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/checkout?canceled=1`,
     });
 
-    // ----- SAVE STRIPE SESSION ID -----
-    await db.order.update({
-      where: { id: order.id },
-      data: {
-        stripeCheckoutSessionId: session.id,
-        checkoutExpiresAt: new Date(Date.now() + 30 * 60 * 1000),
-      },
-    });
-
-    await db.payment.update({
-      where: { id: payment.id },
-      data: {
-        stripeCheckoutSessionId: session.id,
-        rawResponse: JSON.stringify({
-          sessionId: session.id,
-          url: session.url,
-          expiresAt: session.expires_at,
-        }),
-      },
-    });
+    // Save Stripe session ID
+    await db.order.update({ where: { id: order.id }, data: { stripeCheckoutSessionId: session.id, checkoutExpiresAt: new Date(Date.now() + 30 * 60 * 1000) } });
+    await db.payment.updateMany({ where: { orderId: order.id }, data: { stripeCheckoutSessionId: session.id } });
 
     revalidatePath("/admin/orders");
-
     return NextResponse.json({ url: session.url });
   } catch (err: any) {
-    console.error("Stripe checkout session error:", err);
-    const msg = err?.message || err?.raw?.message || "";
-    return NextResponse.json(
-      { error: `Greška: ${msg || "Došlo je do greške prilikom kreiranja plaćanja."}` },
-      { status: 500 }
-    );
+    console.error("Stripe checkout error:", err);
+    return NextResponse.json({ error: `Greška: ${err?.message || "Došlo je do greške."}` }, { status: 500 });
   }
 }
