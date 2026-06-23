@@ -8,7 +8,9 @@ export async function sendEmail(payload: { to: string; subject: string; html: st
   try {
     if (provider === "microsoft-graph") {
       const mg = await import("./email/microsoftGraph");
-      return await mg.sendViaGraph(payload);
+      const result = await mg.sendViaGraph(payload);
+      if (!result) (sendEmail as any).lastError = mg.lastError;
+      return result;
     }
     if (provider === "disabled" || provider === "") {
       console.log("[EMAIL DISABLED] To:", payload.to, "Subject:", payload.subject);

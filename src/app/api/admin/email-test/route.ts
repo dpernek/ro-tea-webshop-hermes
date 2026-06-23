@@ -8,7 +8,7 @@ export async function POST() {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const to = process.env.ORDER_NOTIFICATION_EMAIL || process.env.ADMIN_ORDER_EMAIL || "info@ro-tea.hr";
+  const to = process.env.ORDER_NOTIFICATION_EMAIL || "info@ro-tea.hr";
   const html = adminNewOrderEmail({
     orderNumber: "TEST-" + Date.now(),
     total: 0,
@@ -20,6 +20,7 @@ export async function POST() {
   const ok = await sendEmail({ to, subject: "RO-TEA Admin testni email", html });
 
   if (!ok) {
+    const lastErr = (sendEmail as any).lastError || "";
     const provider = process.env.EMAIL_PROVIDER;
     if (!provider || provider === "disabled") {
       return NextResponse.json({ ok: false, error: "Email provider nije konfiguriran." });
@@ -33,7 +34,7 @@ export async function POST() {
       if (missing.length > 0) {
         return NextResponse.json({ ok: false, error: "Nedostaju: " + missing.join(", ") });
       }
-      return NextResponse.json({ ok: false, error: "Slanje emaila nije uspjelo." });
+      return NextResponse.json({ ok: false, error: "Graph error: " + (lastErr || "Slanje emaila nije uspjelo.") });
     }
     return NextResponse.json({ ok: false, error: "Slanje emaila nije uspjelo." });
   }
