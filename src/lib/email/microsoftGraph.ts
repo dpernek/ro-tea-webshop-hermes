@@ -1,79 +1,47 @@
-// Microsoft Graph email provider using OAuth2 client credentials flow.
+const TOKEN_URL="http...onst GRAPH_URL = "https://graph.microsoft.com/v1.0";
 
-const TOKEN_URL = "https://login.microsoftonline.com/";
-const GRAPH_URL = "https://graph.microsoft.com/v1.0";
+function log(msg: string) { console.error("[GRAPH] " + msg); }
 
-interface EmailPayload {
-  to: string;
-  subject: string;
-  html: string;
-}
-
-export async function sendViaGraph(payload: EmailPayload): Promise<boolean> {
-  const tenantId = process.env.MICROSOFT_TENANT_ID;
-  const clientId = process.env.MICROSOFT_CLIENT_ID;
-  const clientSecret = process.env.MICROSOFT_CLIENT_SECRET;
-  const senderUser = process.env.MICROSOFT_SENDER_USER || "info@ro-tea.hr";
-
-  if (!tenantId || !clientId || !clientSecret) {
-    console.error("[GRAPH] Missing Microsoft 365 env vars");
-    return false;
-  }
+export async function sendViaGraph(payload: { to: string; subject: string; html: string }): Promise<boolean> {
+  const tid = process.env.MICROSOFT_TENANT_ID;
+  const cid = process.env.MICROSOFT_CLIENT_ID;
+  const cs = process.env.MICROSOFT_CLIENT_SECRET;
+  const sender = process.env.MICROSOFT_SENDER_USER || "info@ro-tea.hr";
+  if (!tid || !cid || !cs) { log("Missing env vars"); return false; }
 
   try {
-    // OAuth2 client credentials token
-    const tokenRes = await fetch(TOKEN_URL + tenantId + "/oauth2/v2.0/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        client_id: clientId,
-        client_secret: clientSecret,
-        scope: "https://graph.microsoft.com/.default",
-        grant_type: "client_credentials",
-      }).toString(),
-    });
+    // Get token
+    const tokenBody = new URLSearchParams({ client_id: cid, client_secret: cs, scope: "https://graph.microsoft.com/.default", grant_type: "client_credentials" });
+    const tr = await fetch(TOKEN_URL + tid + "/oauth2/v2.0/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: tokenBody.toString() });
+    const td = await tr.json();
+    if (!tr.ok) { log("Token HTTP " + tr.status + ": " + JSON.stringify(td).slice(0, 400)); return false; }
+    if (!td.access_token) { log("No access_token: " + JSON.stringify(td).slice(0, 200)); return false; }
+    log("Token OK, expires in " + td.expires_in);
 
-    if (!tokenRes.ok) {
-      const err = await tokenRes.text().catch(function() { return ""; });
-      console.error("[GRAPH] Token error:", tokenRes.status, err.slice(0, 300));
-      return false;
-    }
-
-    const tokenData = await tokenRes.json();
-    if (!tokenData.access_token) {
-      console.error("[GRAPH] No access token in response:", JSON.stringify(tokenData).slice(0, 200));
-      return false;
-    }
-
-    // Send email via Graph API
-    const mailBody = {
+    // Send mail
+    const mail = {
       message: {
         subject: payload.subject,
         body: { contentType: "HTML", content: payload.html },
         toRecipients: [{ emailAddress: { address: payload.to } }],
-        from: { emailAddress: { address: senderUser } },
       },
       saveToSentItems: false,
     };
 
-    const mailRes = await fetch(GRAPH_URL + "/users/" + senderUser + "/sendMail", {
+    const mr = await fetch(GRAPH_URL + "/users/" + sender + "/sendMail", {
       method: "POST",
-      headers: {
-        Authorization: *** " + tokenData.access_token,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(mailBody),
+      headers: { Authorization: *** " + td.access_token, "Content-Type": "application/json" },
+      body: JSON.stringify(mail),
     });
 
-    if (!mailRes.ok) {
-      const errText = await mailRes.text().catch(function() { return ""; });
-      console.error("[GRAPH] Send error:", mailRes.status, errText.slice(0, 500));
+    if (!mr.ok) {
+      const errText = await mr.text().catch(function() { return ""; });
+      log("Send HTTP " + mr.status + ": " + errText.slice(0, 500));
       return false;
     }
 
-    return true;
-  } catch (err) {
-    console.error("[GRAPH] Exception:", err);
-    return false;
-  }
+    if (mr.status === 202) { log("Mail sent (202 Accepted)"); return true; }
+    log("Unexpected status: " + mr.status);
+    return mr.status < 400;
+  } catch (err: any) { log("Exception: " + (err.message || err)); return false; }
 }
