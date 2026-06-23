@@ -314,24 +314,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {product.name}
             </h1>
 
-            {/* SKU */}
+            {/* EAN */}
             {product.sku && (
-              <p className="mt-2 flex items-center gap-1.5 text-sm text-slate-500">
-                <svg
-                  className="h-4 w-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M4 7V4h16v3" />
-                  <path d="M9 20h6" />
-                  <path d="M12 4v16" />
-                </svg>
-                EAN: {product.sku}
-              </p>
+              <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5">
+                <span className="text-xs font-medium uppercase tracking-wider text-slate-400">EAN</span>
+                <span className="font-mono text-sm font-semibold tabular-nums text-slate-700">{product.sku}</span>
+              </div>
             )}
 
             {/* Stock status */}
