@@ -11,9 +11,23 @@ export async function GET(req: NextRequest) {
   const limit = 20;
   const status = url.searchParams.get("status") || "";
   const paymentStatus = url.searchParams.get("paymentStatus") || "";
+  const dateFrom = url.searchParams.get("dateFrom") || "";
+  const dateTo = url.searchParams.get("dateTo") || "";
+
   const where: any = {};
   if (status) where.status = status;
   if (paymentStatus) where.paymentStatus = paymentStatus;
+  if (dateFrom || dateTo) {
+    where.createdAt = {};
+    if (dateFrom) where.createdAt.gte = new Date(dateFrom);
+    if (dateTo) {
+      // Include the entire "to" day by setting to end of day
+      const toDate = new Date(dateTo);
+      toDate.setHours(23, 59, 59, 999);
+      where.createdAt.lte = toDate;
+    }
+  }
+
   const [orders, total] = await Promise.all([
     db.order.findMany({ where, skip: (page - 1) * limit, take: limit, orderBy: { createdAt: "desc" } }),
     db.order.count({ where }),

@@ -10,10 +10,33 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    setError("");
+    setSending(true);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Došlo je do greške.");
+      }
+
+      setSubmitted(true);
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (err: any) {
+      setError(err.message || "Došlo je do greške.");
+    } finally {
+      setSending(false);
+    }
   };
 
   const contactItems = [
@@ -53,6 +76,11 @@ export default function ContactPage() {
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-5">
+                    {error && (
+                      <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-200">
+                        {error}
+                      </div>
+                    )}
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>
                         <label className="mb-1 block text-sm font-medium text-slate-700">Ime i prezime</label>
@@ -97,7 +125,7 @@ export default function ContactPage() {
                         required
                       />
                     </div>
-                    <Button type="submit" size="lg">Pošalji upit</Button>
+                    <Button type="submit" size="lg" isLoading={sending}>Pošalji upit</Button>
                   </form>
                 )}
               </div>

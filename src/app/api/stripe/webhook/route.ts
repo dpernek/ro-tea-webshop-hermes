@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 import { revalidatePath } from "next/cache";
 import Stripe from "stripe";
+import { sendEmail, adminPaymentAlert } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -69,7 +70,7 @@ async function handleSessionCompleted(session: Stripe.Checkout.Session) {
   const orderId = session.metadata?.orderId;
   if (!orderId) return;
 
-  const order = await db.order.findUnique({ where: { id: orderId }, select: { paymentStatus: true } });
+  const order = await db.order.findUnique({ where: { id: orderId }, select: { paymentStatus: true, orderNumber: true, customerEmail: true } });
   if (order?.paymentStatus === "PAID") return;
 
   const piId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id;
@@ -98,6 +99,26 @@ async function handleSessionCompleted(session: Stripe.Checkout.Session) {
   await decreaseStock(orderId);
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${orderId}`);
+
+  // Send admin payment alert
+  if (order) {
+    try {
+      const adminEmail = process.env.ADMIN_ORDER_EMAIL;
+      if (adminEmail) {
+        await sendEmail({
+          to: adminEmail,
+          subject: `Plaćanje potvrđeno: ${order.orderNumber}`,
+          html: adminPaymentAlert({
+            orderNumber: order.orderNumber,
+            status: "PAID",
+            customerEmail: order.customerEmail,
+          }),
+        });
+      }
+    } catch (e) {
+      console.error("[EMAIL] Failed to send admin payment alert for order", order.orderNumber, e);
+    }
+  }
 }
 
 async function handleSessionExpired(session: Stripe.Checkout.Session) {
@@ -120,7 +141,7 @@ async function handleSessionExpired(session: Stripe.Checkout.Session) {
 async function handlePaymentSucceeded(pi: Stripe.PaymentIntent) {
   const payment = await db.payment.findFirst({
     where: { stripePaymentIntentId: pi.id },
-    select: { orderId: true, order: { select: { paymentStatus: true } } },
+    select: { orderId: true, order: { select: { paymentStatus: true, orderNumber: true, customerEmail: true } } },
   });
   if (!payment || payment.order?.paymentStatus === "PAID") return;
 
@@ -136,10 +157,30 @@ async function handlePaymentSucceeded(pi: Stripe.PaymentIntent) {
 
   await decreaseStock(payment.orderId);
   revalidatePath("/admin/orders");
+
+  // Send admin payment alert
+  if (payment.order) {
+    try {
+      const adminEmail = process.env.ADMIN_ORDER_EMAIL;
+      if (adminEmail) {
+        await sendEmail({
+          to: adminEmail,
+          subject: `Plaćanje potvrđeno: ${payment.order.orderNumber}`,
+          html: adminPaymentAlert({
+            orderNumber: payment.order.orderNumber,
+            status: "PAID",
+            customerEmail: payment.order.customerEmail,
+          }),
+        });
+      }
+    } catch (e) {
+      console.error("[EMAIL] Failed to send admin payment alert for order", payment.order.orderNumber, e);
+    }
+  }
 }
 
 async function handlePaymentFailed(pi: Stripe.PaymentIntent) {
-  const payment = await db.payment.findFirst({ where: { stripePaymentIntentId: pi.id }, select: { orderId: true } });
+  const payment = await db.payment.findFirst({ where: { stripePaymentIntentId: pi.id }, select: { orderId: true, order: { select: { orderNumber: true, customerEmail: true } } } });
   if (!payment) return;
 
   const errMsg = pi.last_payment_error?.message || "Payment failed";
@@ -152,6 +193,27 @@ async function handlePaymentFailed(pi: Stripe.PaymentIntent) {
     data: { status: "FAILED", rawResponse: JSON.stringify({ piId: pi.id, status: pi.status, error: errMsg }) },
   });
   revalidatePath("/admin/orders");
+
+  // Send admin payment alert
+  if (payment.order) {
+    try {
+      const adminEmail = process.env.ADMIN_ORDER_EMAIL;
+      if (adminEmail) {
+        await sendEmail({
+          to: adminEmail,
+          subject: `Problem s plaćanjem: ${payment.order.orderNumber}`,
+          html: adminPaymentAlert({
+            orderNumber: payment.order.orderNumber,
+            status: "FAILED",
+            customerEmail: payment.order.customerEmail,
+            message: errMsg,
+          }),
+        });
+      }
+    } catch (e) {
+      console.error("[EMAIL] Failed to send admin payment alert for order", payment.order.orderNumber, e);
+    }
+  }
 }
 
 // --- Stock management ---

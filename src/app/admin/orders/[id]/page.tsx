@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { ArrowLeft, Save, RefreshCw, ExternalLink } from "lucide-react";
+import { ArrowLeft, Save, RefreshCw, ExternalLink, CheckCircle2, Package, Truck, Clock, XCircle, RotateCcw, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 
 const statusLabels: Record<string,string> = { PENDING:"Na čekanju", CONFIRMED:"Potvrđeno", PROCESSING:"U obradi", SHIPPED:"Poslano", COMPLETED:"Završeno", CANCELLED:"Otkazano", REFUNDED:"Refundirano" };
@@ -23,11 +23,11 @@ const STRIPE_DASHBOARD_URL = "https://dashboard.stripe.com";
 
 function StatusTimeline({ order }: { order: any }) {
   const steps = [
-    { key: "PENDING", label: "Narudžba zaprimljena", date: order.createdAt },
-    { key: "CONFIRMED", label: "Potvrđeno", date: null },
-    { key: "PROCESSING", label: "U obradi", date: null },
-    { key: "SHIPPED", label: "Poslano", date: null },
-    { key: "COMPLETED", label: "Završeno", date: null },
+    { key: "PENDING", label: "Narudžba zaprimljena", icon: Clock, date: order.createdAt },
+    { key: "CONFIRMED", label: "Potvrđeno", icon: CheckCircle2, date: null },
+    { key: "PROCESSING", label: "U obradi", icon: Package, date: null },
+    { key: "SHIPPED", label: "Poslano", icon: Truck, date: null },
+    { key: "COMPLETED", label: "Završeno", icon: CheckCircle2, date: null },
   ];
 
   const statusOrder = ["PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "COMPLETED"];
@@ -36,55 +36,119 @@ function StatusTimeline({ order }: { order: any }) {
   const isRefunded = order.status === "REFUNDED";
 
   return (
-    <div className="space-y-0">
-      {steps.map((step, idx) => {
-        let dotColor = "bg-slate-200";
-        let lineColor = "bg-slate-200";
-        let textColor = "text-slate-400";
+    <div className="relative">
+      {/* Vertical connecting line */}
+      <div className="absolute left-[15px] top-3 bottom-3 w-0.5 bg-slate-200" />
 
-        if (isCancelled) {
-          if (idx === 0) { dotColor = "bg-slate-400"; textColor = "text-slate-600"; }
-        } else if (isRefunded) {
-          if (idx <= currentIdx && currentIdx >= 0) { dotColor = "bg-blue-500"; textColor = "text-blue-700"; lineColor = "bg-blue-200"; }
-        } else {
-          if (idx < currentIdx) { dotColor = "bg-green-500"; textColor = "text-green-700"; lineColor = "bg-green-200"; }
-          else if (idx === currentIdx) { dotColor = "bg-[#0055a8] ring-4 ring-[#0055a8]/20"; textColor = "text-[#0055a8] font-semibold"; }
-        }
+      <div className="space-y-0 relative">
+        {steps.map((step, idx) => {
+          let dotClasses = "h-7 w-7 rounded-full flex items-center justify-center border-2 bg-white";
+          let lineColor = "bg-slate-200";
+          let textColor = "text-slate-400";
+          let iconColor = "text-slate-400";
+          let bgClass = "";
 
-        return (
-          <div key={step.key} className="flex gap-3">
-            <div className="flex flex-col items-center">
-              <div className={`h-3 w-3 rounded-full ${dotColor}`} />
-              {idx < steps.length - 1 && <div className={`w-0.5 flex-1 ${lineColor}`} />}
-            </div>
-            <div className={`pb-4 text-sm ${textColor}`}>
-              <div>{step.label}</div>
-              {step.date && (
-                <div className="text-xs opacity-70">
-                  {new Date(step.date).toLocaleString("hr-HR")}
+          if (isCancelled) {
+            if (idx === 0) {
+              dotClasses += " border-slate-400";
+              textColor = "text-slate-600";
+              iconColor = "text-slate-500";
+            }
+          } else if (isRefunded) {
+            if (idx <= currentIdx && currentIdx >= 0) {
+              dotClasses += " border-blue-400 bg-blue-50";
+              textColor = "text-blue-700";
+              iconColor = "text-blue-500";
+              lineColor = "bg-blue-200";
+            }
+          } else {
+            if (idx < currentIdx) {
+              dotClasses += " border-emerald-400 bg-emerald-50";
+              textColor = "text-emerald-700";
+              iconColor = "text-emerald-500";
+              lineColor = "bg-emerald-200";
+            } else if (idx === currentIdx) {
+              dotClasses += " border-[#0055a8] bg-[#0055a8]/10 ring-4 ring-[#0055a8]/20";
+              textColor = "text-[#0055a8] font-semibold";
+              iconColor = "text-[#0055a8]";
+            } else {
+              dotClasses += " border-slate-200";
+            }
+          }
+
+          const Icon = step.icon;
+          const dotSize = idx === currentIdx && !isCancelled && !isRefunded ? "h-3.5 w-3.5" : "h-3 w-3";
+
+          return (
+            <div key={step.key} className="flex gap-4 relative">
+              <div className="relative z-10">
+                <div className={dotClasses}>
+                  <Icon className={`${dotSize} ${iconColor}`} />
                 </div>
-              )}
+              </div>
+              <div className={`pb-5 pt-1 text-sm ${textColor}`}>
+                <div className="font-medium">{step.label}</div>
+                {step.date && (
+                  <div className="text-xs opacity-70 mt-0.5">
+                    {new Date(step.date).toLocaleString("hr-HR")}
+                  </div>
+                )}
+                {idx < currentIdx && !isCancelled && !isRefunded && (
+                  <div className="text-xs text-emerald-600 mt-0.5 flex items-center gap-1">
+                    <CheckCircle2 className="h-3 w-3" /> Završeno
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+
+        {isCancelled && (
+          <div className="flex gap-4 relative">
+            <div className="relative z-10">
+              <div className="h-7 w-7 rounded-full flex items-center justify-center border-2 border-red-400 bg-red-50">
+                <XCircle className="h-3.5 w-3.5 text-red-500" />
+              </div>
+            </div>
+            <div className="pb-4 pt-1 text-sm text-red-600 font-semibold">
+              <div>Otkazano</div>
+              <div className="text-xs text-red-400 font-normal">
+                Narudžba je otkazana
+              </div>
             </div>
           </div>
-        );
-      })}
+        )}
 
-      {isCancelled && (
-        <div className="flex gap-3">
-          <div className="flex flex-col items-center">
-            <div className="h-3 w-3 rounded-full bg-red-500" />
+        {isRefunded && (
+          <div className="flex gap-4 relative">
+            <div className="relative z-10">
+              <div className="h-7 w-7 rounded-full flex items-center justify-center border-2 border-blue-400 bg-blue-50">
+                <RotateCcw className="h-3.5 w-3.5 text-blue-500" />
+              </div>
+            </div>
+            <div className="pb-4 pt-1 text-sm text-blue-600 font-semibold">
+              <div>Refundirano</div>
+              <div className="text-xs text-blue-400 font-normal">
+                Sredstva su vraćena kupcu
+              </div>
+            </div>
           </div>
-          <div className="pb-4 text-sm text-red-600 font-semibold">Otkazano</div>
-        </div>
-      )}
-      {isRefunded && (
-        <div className="flex gap-3">
-          <div className="flex flex-col items-center">
-            <div className="h-3 w-3 rounded-full bg-blue-500" />
-          </div>
-          <div className="pb-4 text-sm text-blue-600 font-semibold">Refundirano</div>
-        </div>
-      )}
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TestModeBanner() {
+  return (
+    <div className="mb-4 flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3">
+      <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0" />
+      <div>
+        <p className="text-sm font-semibold text-amber-800">Testni način rada</p>
+        <p className="text-xs text-amber-700">
+          Stripe je u testnom načinu rada (koriste se testni ključevi). Ova narudžba nije stvarna transakcija.
+        </p>
+      </div>
     </div>
   );
 }
@@ -152,6 +216,7 @@ export default function AdminOrderDetailPage() {
 
   const isStripe = order.paymentMethod === "card" || order.paymentMethod === "stripe";
   const hasStripeSession = !!order.stripeCheckoutSessionId;
+  const isTestMode = order.stripeCheckoutSessionId?.startsWith("cs_test_");
 
   const paymentStatusColor: Record<string,string> = {
     UNPAID: "bg-slate-100 text-slate-700",
@@ -165,7 +230,7 @@ export default function AdminOrderDetailPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center gap-4">
+      <div className="mb-6 flex flex-wrap items-center gap-4">
         <Button asChild variant="ghost" size="sm"><Link href="/admin/orders"><ArrowLeft className="mr-1 h-4 w-4" /> Natrag</Link></Button>
         <h1 className="text-2xl font-bold text-slate-900">Narudžba {order.orderNumber}</h1>
         {isStripe && (
@@ -176,17 +241,27 @@ export default function AdminOrderDetailPage() {
             Stripe
           </span>
         )}
+        {isTestMode && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 border border-amber-300 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
+            <AlertTriangle className="h-3 w-3" />
+            Testni način
+          </span>
+        )}
       </div>
+
+      {isTestMode && <TestModeBanner />}
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left column: Customer + Status + Stripe */}
         <div className="space-y-6 lg:col-span-2">
           <Card className="p-6">
             <h2 className="mb-4 text-lg font-semibold">Podaci o kupcu</h2>
-            <p className="text-sm text-slate-600"><strong>Ime:</strong> {order.customerName}</p>
-            <p className="text-sm text-slate-600"><strong>Email:</strong> {order.customerEmail}</p>
-            <p className="text-sm text-slate-600"><strong>Telefon:</strong> {order.customerPhone}</p>
-            <p className="text-sm text-slate-600"><strong>Adresa:</strong> {order.shippingAddress || order.billingAddress || "-"}</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <p className="text-sm text-slate-600"><strong>Ime:</strong> {order.customerName}</p>
+              <p className="text-sm text-slate-600"><strong>Email:</strong> {order.customerEmail}</p>
+              <p className="text-sm text-slate-600"><strong>Telefon:</strong> {order.customerPhone}</p>
+              <p className="text-sm text-slate-600"><strong>Adresa:</strong> {order.shippingAddress || order.billingAddress || "-"}</p>
+            </div>
           </Card>
 
           {/* Stripe Info Section */}
@@ -207,7 +282,7 @@ export default function AdminOrderDetailPage() {
                   <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
                     <span className="text-slate-600">Checkout sesija</span>
                     <a
-                      href={`${STRIPE_DASHBOARD_URL}/checkout/sessions/${order.stripeCheckoutSessionId}`}
+                      href={`${STRIPE_DASHBOARD_URL}${isTestMode ? "/test" : ""}/checkout/sessions/${order.stripeCheckoutSessionId}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 font-mono text-xs text-[#0055a8] hover:underline"
@@ -222,7 +297,7 @@ export default function AdminOrderDetailPage() {
                   <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
                     <span className="text-slate-600">Payment Intent</span>
                     <a
-                      href={`${STRIPE_DASHBOARD_URL}/payments/${order.stripePaymentIntentId}`}
+                      href={`${STRIPE_DASHBOARD_URL}${isTestMode ? "/test" : ""}/payments/${order.stripePaymentIntentId}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 font-mono text-xs text-[#0055a8] hover:underline"

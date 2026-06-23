@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { computePrices } from "@/lib/pricing";
+import { sendEmail, customerEmail, adminNewOrderEmail } from "@/lib/email";
 
 export async function createOrder(data: {
   customerName: string; customerEmail: string; customerPhone: string;
@@ -93,6 +94,46 @@ export async function createOrder(data: {
           data: { stockAdjustedAt: new Date() },
         });
       }
+    }
+
+    // Send customer confirmation email
+    try {
+      await sendEmail({
+        to: data.customerEmail,
+        subject: `Narudžba ${orderNumber} – potvrda`,
+        html: customerEmail({
+          orderNumber,
+          total: pricing.total,
+          paymentMethod: data.paymentMethod,
+          items: pricing.lineItems.map(li => ({
+            name: productMap.get(li.productId)!.name,
+            quantity: li.quantity,
+            price: li.unitPrice,
+          })),
+        }),
+      });
+    } catch (e) {
+      console.error("[EMAIL] Failed to send customer email for order", orderNumber, e);
+    }
+
+    // Send admin notification
+    try {
+      const adminEmail = process.env.ADMIN_ORDER_EMAIL;
+      if (adminEmail) {
+        await sendEmail({
+          to: adminEmail,
+          subject: `Nova narudžba: ${orderNumber}`,
+          html: adminNewOrderEmail({
+            orderNumber,
+            total: pricing.total,
+            paymentMethod: data.paymentMethod,
+            customerName: data.customerName,
+            customerEmail: data.customerEmail,
+          }),
+        });
+      }
+    } catch (e) {
+      console.error("[EMAIL] Failed to send admin notification for order", orderNumber, e);
     }
   }
 
