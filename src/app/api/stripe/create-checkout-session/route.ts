@@ -109,7 +109,6 @@ export async function POST(req: NextRequest) {
           currency: "eur",
           product_data: {
             name: product.name,
-            ...(product.image ? { images: [product.image.startsWith("http") ? product.image : `${baseUrl}${product.image}`] } : {}),
           },
           unit_amount: unitAmountCents,
         },
