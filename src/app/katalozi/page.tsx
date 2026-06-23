@@ -10,6 +10,14 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Katalozi | RO-TEA",
   description: "Preuzmite kataloge proizvoda - PFERD, FESTA, Metabo, Knipex i više.",
+  alternates: {
+    canonical: "/katalozi",
+  },
+  openGraph: {
+    title: "Katalozi | RO-TEA",
+    description: "Preuzmite kataloge proizvoda - PFERD, FESTA, Metabo, Knipex i više.",
+    type: "website",
+  },
 };
 
 export default async function KataloziPage() {

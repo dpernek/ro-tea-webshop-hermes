@@ -25,6 +25,14 @@ export const metadata: Metadata = {
     title: `${site.name} | ${site.tagline}`,
     description: site.description,
     type: "website",
+    images: [
+      {
+        url: "/images/rotea-logo.webp",
+        width: 1170,
+        height: 180,
+        alt: site.name,
+      },
+    ],
   },
 };
 

@@ -5,6 +5,17 @@ import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
+export async function GET() {
+  const session = await auth();
+  if (!session?.user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const catalogs = await db.catalog.findMany({
+    orderBy: { sortOrder: "asc" },
+  });
+  return NextResponse.json(catalogs);
+}
+
 export async function POST(request: NextRequest) {
   const session = await auth();
   if (!session?.user)
