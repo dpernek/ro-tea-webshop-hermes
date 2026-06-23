@@ -19,7 +19,7 @@ export function VariableProductOptions({
   const [added, setAdded] = useState(false);
 
   const rawAttr = product.attributes;
-  const attributes =
+  const attributes: { name: string; options: string[] }[] =
     typeof rawAttr === "string"
       ? (() => {
           try { return JSON.parse(rawAttr || "[]"); } catch { return []; }
