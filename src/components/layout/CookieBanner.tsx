@@ -55,7 +55,7 @@ export function CookieBanner() {
                   Koristimo kolačiće (cookies) za poboljšanje korisničkog
                   iskustva, analitiku posjećenosti i funkcionalnost košarice.{" "}
                   <Link
-                    href="/politika-privatnosti"
+                    href="/pravila-o-privatnosti"
                     className="font-medium text-[#0055a8] underline underline-offset-2 transition-colors hover:text-[#0070cc]"
                   >
                     Više informacija

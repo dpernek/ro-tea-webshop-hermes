@@ -90,7 +90,7 @@ export default function SigurnostPlacanjaPage() {
             <p className="text-sm text-slate-600">
               <strong>Dodatne informacije:</strong>{" "}
               <Link
-                href="/politika-privatnosti"
+                href="/pravila-o-privatnosti"
                 className="text-[#0055a8] underline hover:text-[#003d7a]"
               >
                 Politika privatnosti
