@@ -71,8 +71,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (order) {
       const isStripe = order.paymentMethod === "card" || order.paymentMethod === "stripe";
 
-      // Don't allow manual PAID for Stripe orders
-      if (isStripe && parsed.data.paymentStatus === "PAID") {
+      // Don't allow manual PAID for Stripe orders (only block if changing TO PAID)
+      if (isStripe && parsed.data.paymentStatus === "PAID" && order.paymentStatus !== "PAID") {
         return NextResponse.json(
           { errors: { paymentStatus: "Nije moguće ručno postaviti status plaćanja na 'Plaćeno' za Stripe narudžbe. Status plaćanja se ažurira automatski putem Stripe webhook-a." } },
           { status: 400 }
