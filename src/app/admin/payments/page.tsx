@@ -114,7 +114,6 @@ export default function AdminPaymentsPage() {
               <option value="card">Kartica</option>
               <option value="stripe">Stripe</option>
               <option value="monri">Monri</option>
-              <option value="corvus">Corvus</option>
             </select>
           </div>
           <div>

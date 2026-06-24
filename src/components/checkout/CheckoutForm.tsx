@@ -405,7 +405,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
             </a>{" "}
             i{" "}
             <a
-              href="/politika-privatnosti"
+              href="/pravila-o-privatnosti"
               className="text-[#0055a8] underline hover:text-blue-800"
             >
               politiku privatnosti

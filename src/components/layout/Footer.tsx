@@ -15,7 +15,6 @@ const footerLinks = {
     { href: "/kontakt", label: "Kontakt" },
     { href: "/jednostrani-raskid-ugovora", label: "Raskid ugovora" },
     { href: "/pravila-povrata-i-zamjene", label: "Povrat i zamjena" },
-    { href: "/povrati-i-reklamacije", label: "Povrat i zamjena" },
     { href: "/pravila-dostave", label: "Dostava" },
   ],
 };

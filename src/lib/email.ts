@@ -73,6 +73,22 @@ function bankPaymentSection(orderNumber: string, total: number): string {
   );
 }
 
+
+function legalFooter(): string {
+  const url = "https://ro-tea-webshop-hermes.vercel.app";
+  return (
+    "<hr style='border:none;border-top:1px solid #e2e8f0;margin:24px 0 8px'/>" +
+    "<p style='font-size:11px;color:#94a3b8;margin:0 0 4px'>" +
+    "<a href='" + url + "/uvjeti-kupnje' style='color:#64748b'>Uvjeti kupovine</a> · " +
+    "<a href='" + url + "/pravila-o-privatnosti' style='color:#64748b'>Pravila privatnosti</a> · " +
+    "<a href='" + url + "/izjava-o-sigurnosti-online-placanja' style='color:#64748b'>Sigurnost plaćanja</a> · " +
+    "<a href='" + url + "/pravila-povrata-i-zamjene' style='color:#64748b'>Povrat i zamjena</a> · " +
+    "<a href='" + url + "/jednostrani-raskid-ugovora' style='color:#64748b'>Raskid ugovora</a> · " +
+    "<a href='" + url + "/kontakt' style='color:#64748b'>Kontakt</a>" +
+    "</p>"
+  );
+}
+
 export function customerEmail(data: {
   orderNumber: string; total: number; paymentMethod: string;
   items: { name: string; quantity: number; price: number }[];
@@ -95,7 +111,7 @@ export function customerEmail(data: {
     rows +
     "</table>" +
     "<p style='color:#64748b;font-size:13px;margin-top:24px'>Napomena: Račun nije automatski izdan. Ukoliko trebate R1 račun, javite nam se na info@ro-tea.hr.</p>" +
-    "<p style='color:#64748b;font-size:13px'>RO-TEA d.o.o.</p></div>"
+    "<p style='color:#64748b;font-size:13px'>RO-TEA d.o.o.</p>" + legalFooter() + "</div>"
   );
 }
 
@@ -122,6 +138,6 @@ export function adminPaymentAlert(data: {
     "<p>Kupac: " + data.customerEmail + "</p>" +
     "<p>Status: " + data.status + "</p>" +
     (data.message ? "<p>" + data.message + "</p>" : "") +
-    "<p><a href='https://ro-tea-webshop-hermes.vercel.app/admin/orders'>Admin panel</a></p>"
+    "<p><a href='https://ro-tea-webshop-hermes.vercel.app/admin/orders'>Admin panel</a></p>" + legalFooter()
   );
 }
