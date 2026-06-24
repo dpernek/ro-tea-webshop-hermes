@@ -79,7 +79,7 @@ function computeChange(p: ProductFull, action: string, value: number, saleHandli
           ns = R(np * oldDiscountRate);
           if (ns >= np) ns = null;
         } else { // keep
-          if (ns >= np) { updated = false; skip = "Akcijska cijena (" + oldSale.toFixed(2) + ") veća od nove redovne (" + np.toFixed(2) + ")"; }
+          if (oldSale >= np) { updated = false; skip = "Akcijska cijena (" + (oldSale ?? 0).toFixed(2) + ") veća od nove redovne (" + np.toFixed(2) + ")"; } else { ns = oldSale; }
         }
       }
     }
