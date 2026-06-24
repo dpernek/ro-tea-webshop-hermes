@@ -5,6 +5,8 @@ import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import Link from "next/link";
 import { db } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 interface CategoryPageProps { params: Promise<{ slug: string }>; }
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
@@ -23,7 +25,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
   const cat = await db.category.findUnique({ where: { slug } });
-  if (!cat) notFound();
+  if (!cat || cat.status !== "ACTIVE") notFound();
 
   // Fetch all categories, ordered by sortOrder
   const allCatsRaw = await db.category.findMany({ orderBy: { sortOrder: "asc" } });

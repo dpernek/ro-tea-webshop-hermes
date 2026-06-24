@@ -5,16 +5,12 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Override default ignores of eslint-config-next.
   globalIgnores([
-    // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
   ]),
-
-  // Relax production rules
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
@@ -23,9 +19,17 @@ const eslintConfig = defineConfig([
       "@next/next/no-html-link-for-pages": "off",
       "react-hooks/exhaustive-deps": "warn",
       "prefer-const": "warn",
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/purity": "off",
     },
   },
-
+  {
+    files: ["scripts/**/*.js"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/ban-ts-comment": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;
