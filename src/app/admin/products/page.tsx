@@ -20,8 +20,9 @@ import {
   Eye,
   Undo2,
   Percent,
-  Euro,
   Tag,
+  RefreshCw,
+  Package,
 } from "lucide-react";
 
 interface Product {
