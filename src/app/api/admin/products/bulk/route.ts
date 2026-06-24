@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
       // Create operation record
       const op = await tx.productBulkOperation.create({
         data: {
-          type: action, createdBy: session.user.email || "unknown",
+          type: action, createdBy: session.user?.email || "unknown",
           filterSnapshot: filters ? JSON.stringify(filters) : null,
           selectedCount: products.length, affectedCount: 0,
         },
