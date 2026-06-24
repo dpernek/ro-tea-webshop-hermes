@@ -233,12 +233,14 @@ export default function AdminOrderDetailPage() {
         body: JSON.stringify({ status, paymentStatus, adminNote }),
         headers: { "Content-Type": "application/json" },
       });
-      const data = await res.json();
-      if (data.errors) {
-        setSaveMessage(Object.values(data.errors).join(", "));
-      } else {
-        setSaveMessage("Promjene spremljene.");
+      const text = await res.text();
+      let data: any = {};
+      try { data = JSON.parse(text); } catch {}
+      if (!res.ok) {
+        setSaveMessage(data.errors ? Object.values(data.errors).join(", ") : `Greška ${res.status}: ${text.slice(0, 200)}`);
+        return;
       }
+      setSaveMessage("Promjene spremljene.");
       router.refresh();
     } catch (e: any) {
       setSaveMessage(e.message || "Greška pri spremanju.");
