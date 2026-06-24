@@ -241,14 +241,16 @@ export default function AdminOrderDetailPage() {
         return;
       }
       setSaveMessage("Promjene spremljene.");
-      router.refresh();
-      // Re-fetch order to update timeline widget
+      // Re-fetch order to update widget and state
       const r2 = await fetch(`/api/admin/orders/${id}`);
       if (r2.ok) {
         const o = await r2.json();
+        setOrder(o);
         setStatus(o.status);
         setPaymentStatus(o.paymentStatus);
+        setAdminNote(o.adminNote || "");
       }
+      router.refresh();
     } catch (e: any) {
       setSaveMessage(e.message || "Greška pri spremanju.");
     } finally {

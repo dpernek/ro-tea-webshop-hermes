@@ -113,7 +113,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   // Send status change email to customer for key transitions
   if (parsed.data.status && parsed.data.status !== oldOrder?.status) {
-    const notifyStatuses = ["SHIPPED", "COMPLETED", "CANCELLED"];
+    const notifyStatuses = ["PROCESSING", "SHIPPED", "COMPLETED", "CANCELLED"];
     if (notifyStatuses.includes(parsed.data.status as string)) {
       try {
         const orderFull = await db.order.findUnique({
