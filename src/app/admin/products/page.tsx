@@ -12,15 +12,16 @@ import {
   Search,
   Pencil,
   Trash2,
-  Loader2,
   X,
   Check,
   Square,
   CheckSquare,
   ChevronDown,
+  Eye,
+  Undo2,
+  Percent,
+  Euro,
   Tag,
-  ToggleLeft,
-  Package,
 } from "lucide-react";
 
 interface Product {
@@ -48,19 +49,32 @@ interface Brand {
   name: string;
 }
 
-type BulkAction = "salePrice" | "status" | "stockStatus" | null;
+interface PreviewItem {
+  productId: string;
+  productName: string;
+  oldPrice: number;
+  oldSalePrice: number | null;
+  newPrice: number;
+  newSalePrice: number | null;
+  status: "updated" | "skipped";
+  skipReason?: string;
+}
 
-const STATUS_OPTIONS = [
-  { value: "ACTIVE", label: "Aktivno" },
-  { value: "DRAFT", label: "Skica" },
-  { value: "ARCHIVED", label: "Arhivirano" },
-] as const;
+type BulkActionType =
+  | "discountPercent"
+  | "increasePercent"
+  | "decreasePercent"
+  | "setSalePrice"
+  | "removeSale";
 
-const STOCK_OPTIONS = [
-  { value: "INSTOCK", label: "Dostupno" },
-  { value: "OUTOFSTOCK", label: "Nema na zalihi" },
-  { value: "ONBACKORDER", label: "Na narudžbi" },
-] as const;
+const BULK_ACTIONS: { value: BulkActionType | ""; label: string; icon: React.ReactNode }[] = [
+  { value: "", label: "Odaberi akciju...", icon: null },
+  { value: "discountPercent", label: "Popust %", icon: <Percent className="h-4 w-4" /> },
+  { value: "increasePercent", label: "Povećaj cijenu %", icon: <Percent className="h-4 w-4" /> },
+  { value: "decreasePercent", label: "Smanji cijenu %", icon: <Percent className="h-4 w-4" /> },
+  { value: "setSalePrice", label: "Fiksna akcijska cijena", icon: <Euro className="h-4 w-4" /> },
+  { value: "removeSale", label: "Makni akciju", icon: <Tag className="h-4 w-4" /> },
+];
 
 const LIMIT = 20;
 
@@ -85,10 +99,21 @@ export default function AdminProductsPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectAllFiltered, setSelectAllFiltered] = useState(false);
 
-  // --- Bulk action state ---
-  const [bulkAction, setBulkAction] = useState<BulkAction>(null);
+  // --- Bulk panel state ---
+  const [bulkAction, setBulkAction] = useState<BulkActionType | "">("");
   const [bulkValue, setBulkValue] = useState("");
+
+  // --- Preview modal state ---
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewData, setPreviewData] = useState<PreviewItem[]>([]);
+  const [previewUpdatedCount, setPreviewUpdatedCount] = useState(0);
+  const [previewSkippedCount, setPreviewSkippedCount] = useState(0);
+  const [showPreview, setShowPreview] = useState(false);
+
+  // --- Apply state ---
   const [bulking, setBulking] = useState(false);
+  const [lastOperationId, setLastOperationId] = useState<string | null>(null);
+  const [rollbackLoading, setRollbackLoading] = useState(false);
 
   // --- Initial load of filter options ---
   useEffect(() => {
@@ -121,7 +146,9 @@ export default function AdminProductsPage() {
       setProducts(data.products);
       setTotal(data.total);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Greška pri učitavanju proizvoda");
+      setError(
+        e instanceof Error ? e.message : "Greška pri učitavanju proizvoda"
+      );
     }
     setLoading(false);
   }, [page, search, categoryId, brandId]);
@@ -154,7 +181,6 @@ export default function AdminProductsPage() {
     try {
       const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Neuspješno brisanje proizvoda");
-      // Remove from selection if present
       setSelectedIds((prev) => {
         const next = new Set(prev);
         next.delete(id);
@@ -162,7 +188,9 @@ export default function AdminProductsPage() {
       });
       load();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Greška pri brisanju proizvoda");
+      setError(
+        e instanceof Error ? e.message : "Greška pri brisanju proizvoda"
+      );
     } finally {
       setIsDeleting((prev) => {
         const next = new Set(prev);
@@ -201,48 +229,126 @@ export default function AdminProductsPage() {
   const clearSelection = () => {
     setSelectedIds(new Set());
     setSelectAllFiltered(false);
-    setBulkAction(null);
+    setBulkAction("");
     setBulkValue("");
   };
 
-  // --- Bulk action submit ---
-  const handleBulkSubmit = async () => {
+  // --- Preview ---
+  const handlePreview = async () => {
+    if (!bulkAction) return;
+    setPreviewLoading(true);
+    setError("");
+
+    try {
+      const body: Record<string, unknown> = {
+        ids: Array.from(selectedIds),
+        selectAll: selectAllFiltered,
+        filters: {
+          search,
+          categoryId: categoryId || undefined,
+          brandId: brandId || undefined,
+        },
+        action: bulkAction,
+        value: bulkAction === "removeSale" ? null : Number(bulkValue),
+        preview: true,
+      };
+
+      const res = await fetch("/api/admin/products/bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Greška pri pregledu");
+
+      setPreviewData(data.items || []);
+      setPreviewUpdatedCount(data.updatedCount || 0);
+      setPreviewSkippedCount(data.skippedCount || 0);
+      setShowPreview(true);
+    } catch (e: unknown) {
+      setError(
+        e instanceof Error ? e.message : "Greška pri pregledu promjena"
+      );
+    }
+    setPreviewLoading(false);
+  };
+
+  // --- Apply ---
+  const handleApply = async () => {
     if (!bulkAction) return;
     setBulking(true);
     setError("");
     setSuccess("");
+    setShowPreview(false);
 
     try {
+      const body: Record<string, unknown> = {
+        ids: Array.from(selectedIds),
+        selectAll: selectAllFiltered,
+        filters: {
+          search,
+          categoryId: categoryId || undefined,
+          brandId: brandId || undefined,
+        },
+        action: bulkAction,
+        value: bulkAction === "removeSale" ? null : Number(bulkValue),
+        preview: false,
+      };
+
       const res = await fetch("/api/admin/products/bulk", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ids: Array.from(selectedIds),
-          selectAll: selectAllFiltered,
-          filters: {
-            search,
-            categoryId: categoryId || undefined,
-            brandId: brandId || undefined,
-          },
-          action: bulkAction,
-          value: bulkAction === "salePrice" ? Number(bulkValue) : bulkValue,
-        }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Greška pri ažuriranju");
 
-      setSuccess(`Ažurirano ${data.updated} proizvoda.`);
+      setLastOperationId(data.operationId || null);
+      setSuccess(`Ažurirano ${data.updated}, preskočeno ${data.skipped}`);
       clearSelection();
       load();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Greška pri ažuriranju");
+      setError(
+        e instanceof Error ? e.message : "Greška pri ažuriranju proizvoda"
+      );
     }
     setBulking(false);
   };
 
+  // --- Rollback ---
+  const handleRollback = async () => {
+    if (!lastOperationId) return;
+    setRollbackLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const res = await fetch("/api/admin/products/bulk/rollback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ operationId: lastOperationId }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Greška pri vraćanju");
+
+      setSuccess(`Vraćeno ${data.restored} proizvoda na prethodne vrijednosti.`);
+      setLastOperationId(null);
+      load();
+    } catch (e: unknown) {
+      setError(
+        e instanceof Error ? e.message : "Greška pri vraćanju promjene"
+      );
+    }
+    setRollbackLoading(false);
+  };
+
   // --- Computed ---
   const totalPages = Math.ceil(total / LIMIT);
+  const needsValueInput = bulkAction && bulkAction !== "removeSale";
+  const canPreview = bulkAction && (bulkAction === "removeSale" || bulkValue);
 
   // ==========================================================================
   //  RENDER
@@ -333,175 +439,124 @@ export default function AdminProductsPage() {
       </div>
 
       {/* ── Alerts ── */}
-      {error && <AdminAlert variant="error">{error}</AdminAlert>}
-      {success && <AdminAlert variant="success">{success}</AdminAlert>}
+      {error && (
+        <AdminAlert variant="error">
+          <span>{error}</span>
+          {lastOperationId && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setError("")}
+              className="ml-auto shrink-0"
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          )}
+        </AdminAlert>
+      )}
+      {success && (
+        <AdminAlert variant="success">
+          <div className="flex flex-wrap items-center gap-3 w-full">
+            <span className="flex-1">{success}</span>
+            {lastOperationId && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleRollback}
+                isLoading={rollbackLoading}
+                className="shrink-0 border-green-400 text-green-700 hover:bg-green-100"
+              >
+                <Undo2 className="h-3.5 w-3.5" />
+                Vrati ovu promjenu
+              </Button>
+            )}
+          </div>
+        </AdminAlert>
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════════
-          BULK ACTION BAR
+          BULK PANEL
           ═══════════════════════════════════════════════════════════════════ */}
       {anySelected && (
-        <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-[#0055a8] bg-[#0055a8]/5 px-4 py-3">
-          {/* Selected count */}
-          <span className="text-sm font-semibold text-[#0055a8]">
-            {selectedCount} proizvoda odabrano
-          </span>
-
-          <div className="w-px h-6 bg-[#0055a8]/20" />
-
-          {/* Sale price button + inline form */}
-          {bulkAction === "salePrice" ? (
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="Akcijska cijena (€)"
-                value={bulkValue}
-                onChange={(e) => setBulkValue(e.target.value)}
-                className="h-8 w-40 rounded border border-slate-200 px-2 text-sm focus:border-brand focus:ring-1 focus:ring-brand"
-                onKeyDown={(e) => e.key === "Enter" && handleBulkSubmit()}
-                autoFocus
-              />
-              <Button
-                size="sm"
-                onClick={handleBulkSubmit}
-                disabled={!bulkValue || bulking}
-                isLoading={bulking}
-              >
-                <Check className="h-3.5 w-3.5" />
-                Primijeni
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  setBulkAction(null);
-                  setBulkValue("");
-                }}
-                disabled={bulking}
-              >
-                <X className="h-3.5 w-3.5" />
-              </Button>
+        <Card className="mb-4 border-[#0055a8] bg-[#0055a8]/[0.04] shadow-none">
+          <div className="px-4 py-3 flex flex-wrap items-center gap-3">
+            {/* Selection count */}
+            <div className="flex items-center gap-2 text-sm font-semibold text-[#0055a8]">
+              <CheckSquare className="h-4 w-4" />
+              <span>
+                {selectedCount} proizvoda odabrano
+                <span className="ml-1 font-normal text-[#0055a8]/70">
+                  ({selectAllFiltered ? "svi filtrirani" : "na ovoj stranici"})
+                </span>
+              </span>
             </div>
-          ) : (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setBulkAction("salePrice")}
-            >
-              <Tag className="h-3.5 w-3.5" />
-              Postavi akcijsku cijenu
-            </Button>
-          )}
 
-          {/* Status dropdown */}
-          {bulkAction === "status" ? (
-            <div className="flex items-center gap-2">
+            <div className="w-px h-6 bg-[#0055a8]/15" />
+
+            {/* Action dropdown */}
+            <div className="relative">
               <select
-                value={bulkValue}
-                onChange={(e) => setBulkValue(e.target.value)}
-                className="h-8 rounded border border-slate-200 px-2 text-sm focus:border-brand focus:ring-1 focus:ring-brand"
-                autoFocus
+                className="h-9 appearance-none rounded-lg border border-[#0055a8]/30 bg-white px-3 pr-8 text-sm text-slate-900 focus:border-brand focus:ring-1 focus:ring-brand"
+                value={bulkAction}
+                onChange={(e) => {
+                  setBulkAction(e.target.value as BulkActionType | "");
+                  if (e.target.value === "removeSale") setBulkValue("");
+                }}
               >
-                <option value="">Odaberi status...</option>
-                {STATUS_OPTIONS.map((s) => (
-                  <option key={s.value} value={s.value}>
-                    {s.label}
+                {BULK_ACTIONS.map((a) => (
+                  <option key={a.value} value={a.value}>
+                    {a.label}
                   </option>
                 ))}
               </select>
-              <Button
-                size="sm"
-                onClick={handleBulkSubmit}
-                disabled={!bulkValue || bulking}
-                isLoading={bulking}
-              >
-                <Check className="h-3.5 w-3.5" />
-                Primijeni
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  setBulkAction(null);
-                  setBulkValue("");
-                }}
-                disabled={bulking}
-              >
-                <X className="h-3.5 w-3.5" />
-              </Button>
+              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
             </div>
-          ) : (
+
+            {/* Value input (shown for actions that need a value) */}
+            {needsValueInput && (
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max={bulkAction === "setSalePrice" ? undefined : 100}
+                  placeholder={
+                    bulkAction === "setSalePrice" ? "Cijena (€)" : "Postotak"
+                  }
+                  value={bulkValue}
+                  onChange={(e) => setBulkValue(e.target.value)}
+                  className="h-9 w-28 rounded-lg border border-[#0055a8]/30 px-3 text-sm focus:border-brand focus:ring-1 focus:ring-brand"
+                />
+                {bulkAction !== "setSalePrice" && (
+                  <span className="text-sm text-slate-500">%</span>
+                )}
+              </div>
+            )}
+
+            {/* Preview button */}
             <Button
               size="sm"
-              variant="outline"
-              onClick={() => setBulkAction("status")}
+              onClick={handlePreview}
+              disabled={!canPreview || previewLoading}
+              isLoading={previewLoading}
             >
-              <ToggleLeft className="h-3.5 w-3.5" />
-              Promijeni status
+              <Eye className="h-3.5 w-3.5" />
+              Prikaži pregled
             </Button>
-          )}
 
-          {/* Stock status dropdown */}
-          {bulkAction === "stockStatus" ? (
-            <div className="flex items-center gap-2">
-              <select
-                value={bulkValue}
-                onChange={(e) => setBulkValue(e.target.value)}
-                className="h-8 rounded border border-slate-200 px-2 text-sm focus:border-brand focus:ring-1 focus:ring-brand"
-                autoFocus
-              >
-                <option value="">Odaberi stanje...</option>
-                {STOCK_OPTIONS.map((s) => (
-                  <option key={s.value} value={s.value}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
-              <Button
-                size="sm"
-                onClick={handleBulkSubmit}
-                disabled={!bulkValue || bulking}
-                isLoading={bulking}
-              >
-                <Check className="h-3.5 w-3.5" />
-                Primijeni
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  setBulkAction(null);
-                  setBulkValue("");
-                }}
-                disabled={bulking}
-              >
-                <X className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-          ) : (
+            {/* Spacer + clear */}
+            <div className="flex-1" />
             <Button
               size="sm"
-              variant="outline"
-              onClick={() => setBulkAction("stockStatus")}
+              variant="ghost"
+              onClick={clearSelection}
+              className="text-slate-400 hover:text-slate-600"
             >
-              <Package className="h-3.5 w-3.5" />
-              Promijeni stanje zalihe
+              <X className="h-4 w-4" />
+              Poništi odabir
             </Button>
-          )}
-
-          {/* Clear selection */}
-          <div className="flex-1" />
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={clearSelection}
-            className="text-slate-400 hover:text-slate-600"
-          >
-            <X className="h-4 w-4" />
-            Poništi odabir
-          </Button>
-        </div>
+          </div>
+        </Card>
       )}
 
       {/* ── Table ── */}
@@ -703,6 +758,171 @@ export default function AdminProductsPage() {
           </>
         )}
       </Card>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          PREVIEW MODAL
+          ═══════════════════════════════════════════════════════════════════ */}
+      {showPreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowPreview(false)}
+          />
+
+          {/* Modal */}
+          <div className="relative z-10 w-full max-w-3xl max-h-[85vh] mx-4 bg-white rounded-2xl shadow-2xl flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+              <h2 className="text-lg font-semibold text-slate-900">
+                Pregled promjena
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowPreview(false)}
+                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Table body */}
+            <div className="overflow-y-auto flex-1 px-6 py-4">
+              {previewData.length === 0 ? (
+                <p className="text-sm text-slate-500 text-center py-8">
+                  Nema podataka za pregled.
+                </p>
+              ) : (
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-200">
+                      <th className="py-2 pr-3 font-medium text-slate-600">
+                        Proizvod
+                      </th>
+                      <th className="py-2 px-3 font-medium text-slate-600 text-right">
+                        Trenutna cijena
+                      </th>
+                      <th className="py-2 px-3 font-medium text-slate-600 text-right">
+                        Stara akcijska
+                      </th>
+                      <th className="py-2 px-3 font-medium text-slate-600 text-right">
+                        Nova cijena
+                      </th>
+                      <th className="py-2 px-3 font-medium text-slate-600 text-right">
+                        Nova akcijska
+                      </th>
+                      <th className="py-2 pl-3 font-medium text-slate-600">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {previewData.map((item) => (
+                      <tr key={item.productId} className="hover:bg-slate-50">
+                        <td className="py-2 pr-3 font-medium text-slate-900 max-w-[200px] truncate">
+                          {item.productName}
+                        </td>
+                        <td className="py-2 px-3 text-right">
+                          {item.oldPrice.toFixed(2)} €
+                        </td>
+                        <td className="py-2 px-3 text-right">
+                          {item.oldSalePrice != null
+                            ? `${item.oldSalePrice.toFixed(2)} €`
+                            : "—"}
+                        </td>
+                        <td className="py-2 px-3 text-right">
+                          {item.newPrice !== item.oldPrice ? (
+                            <span className="font-semibold text-[#0055a8]">
+                              {item.newPrice.toFixed(2)} €
+                            </span>
+                          ) : (
+                            <span className="text-slate-900">
+                              {item.newPrice.toFixed(2)} €
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-2 px-3 text-right">
+                          {item.newSalePrice != null ? (
+                            <span className="font-semibold text-red-600">
+                              {item.newSalePrice.toFixed(2)} €
+                            </span>
+                          ) : (
+                            <span className="text-slate-400">—</span>
+                          )}
+                        </td>
+                        <td className="py-2 pl-3">
+                          {item.status === "updated" ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                              <Check className="h-3 w-3" />
+                              Ažurira se
+                            </span>
+                          ) : (
+                            <span
+                              className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700"
+                              title={item.skipReason}
+                            >
+                              <X className="h-3 w-3" />
+                              Preskače
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="border-t border-slate-200 px-6 py-4">
+              {/* Summary */}
+              <p className="text-sm text-slate-700 mb-2">
+                <span className="font-semibold text-green-700">
+                  {previewUpdatedCount} proizvoda
+                </span>{" "}
+                će biti ažurirano
+                {previewSkippedCount > 0 && (
+                  <>
+                    {", "}
+                    <span className="font-semibold text-amber-700">
+                      {previewSkippedCount} preskočeno
+                    </span>
+                  </>
+                )}
+              </p>
+
+              {/* Warning */}
+              <div className="flex items-start gap-2 text-xs text-slate-500 mb-4">
+                <Undo2 className="h-3.5 w-3.5 mt-0.5 shrink-0 text-[#0055a8]" />
+                <span>
+                  Ova akcija se može vratiti. Promjene će biti spremljene u
+                  povijest.
+                </span>
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowPreview(false)}
+                >
+                  Odustani
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleApply}
+                  disabled={previewUpdatedCount === 0 || bulking}
+                  isLoading={bulking}
+                >
+                  <Check className="h-3.5 w-3.5" />
+                  Primijeni
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

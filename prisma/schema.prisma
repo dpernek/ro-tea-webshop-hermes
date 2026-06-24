@@ -243,3 +243,31 @@ model OrderAudit {
   newValue   String
   createdAt  DateTime @default(now())
 }
+
+model ProductBulkOperation {
+  id             String                     @id @default(cuid())
+  type           String                     // setSalePercent, increasePricePercent, decreasePricePercent, setFixedSalePrice, clearSalePrice, changeStatus, changeStockStatus
+  createdAt      DateTime                   @default(now())
+  createdBy      String
+  filterSnapshot String?                    // JSON
+  selectedCount  Int
+  affectedCount  Int
+  status         String                     @default("APPLIED") // APPLIED, ROLLED_BACK
+  note           String?
+  items          ProductBulkOperationItem[]
+}
+
+model ProductBulkOperationItem {
+  id              String               @id @default(cuid())
+  operationId     String
+  operation       ProductBulkOperation @relation(fields: [operationId], references: [id])
+  productId       String
+  oldPrice        Float?
+  oldRegularPrice Float?
+  oldSalePrice    Float?
+  newPrice        Float?
+  newRegularPrice Float?
+  newSalePrice    Float?
+  skipped         Boolean              @default(false)
+  skipReason      String?
+}

@@ -397,7 +397,9 @@ export const ModelName = {
   StoreSettings: 'StoreSettings',
   Catalog: 'Catalog',
   StripeEvent: 'StripeEvent',
-  OrderAudit: 'OrderAudit'
+  OrderAudit: 'OrderAudit',
+  ProductBulkOperation: 'ProductBulkOperation',
+  ProductBulkOperationItem: 'ProductBulkOperationItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -413,7 +415,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "product" | "category" | "brand" | "customer" | "order" | "orderItem" | "payment" | "shippingMethod" | "coupon" | "storeSettings" | "catalog" | "stripeEvent" | "orderAudit"
+    modelProps: "user" | "product" | "category" | "brand" | "customer" | "order" | "orderItem" | "payment" | "shippingMethod" | "coupon" | "storeSettings" | "catalog" | "stripeEvent" | "orderAudit" | "productBulkOperation" | "productBulkOperationItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1453,6 +1455,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ProductBulkOperation: {
+      payload: Prisma.$ProductBulkOperationPayload<ExtArgs>
+      fields: Prisma.ProductBulkOperationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductBulkOperationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductBulkOperationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationPayload>
+        }
+        findFirst: {
+          args: Prisma.ProductBulkOperationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductBulkOperationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationPayload>
+        }
+        findMany: {
+          args: Prisma.ProductBulkOperationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationPayload>[]
+        }
+        create: {
+          args: Prisma.ProductBulkOperationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationPayload>
+        }
+        createMany: {
+          args: Prisma.ProductBulkOperationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductBulkOperationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationPayload>[]
+        }
+        delete: {
+          args: Prisma.ProductBulkOperationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationPayload>
+        }
+        update: {
+          args: Prisma.ProductBulkOperationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductBulkOperationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductBulkOperationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductBulkOperationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductBulkOperationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationPayload>
+        }
+        aggregate: {
+          args: Prisma.ProductBulkOperationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductBulkOperation>
+        }
+        groupBy: {
+          args: Prisma.ProductBulkOperationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductBulkOperationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductBulkOperationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductBulkOperationCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProductBulkOperationItem: {
+      payload: Prisma.$ProductBulkOperationItemPayload<ExtArgs>
+      fields: Prisma.ProductBulkOperationItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductBulkOperationItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductBulkOperationItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationItemPayload>
+        }
+        findFirst: {
+          args: Prisma.ProductBulkOperationItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductBulkOperationItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationItemPayload>
+        }
+        findMany: {
+          args: Prisma.ProductBulkOperationItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationItemPayload>[]
+        }
+        create: {
+          args: Prisma.ProductBulkOperationItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationItemPayload>
+        }
+        createMany: {
+          args: Prisma.ProductBulkOperationItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductBulkOperationItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationItemPayload>[]
+        }
+        delete: {
+          args: Prisma.ProductBulkOperationItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationItemPayload>
+        }
+        update: {
+          args: Prisma.ProductBulkOperationItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductBulkOperationItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductBulkOperationItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductBulkOperationItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductBulkOperationItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductBulkOperationItemPayload>
+        }
+        aggregate: {
+          args: Prisma.ProductBulkOperationItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductBulkOperationItem>
+        }
+        groupBy: {
+          args: Prisma.ProductBulkOperationItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductBulkOperationItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductBulkOperationItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductBulkOperationItemCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1754,6 +1904,38 @@ export const OrderAuditScalarFieldEnum = {
 export type OrderAuditScalarFieldEnum = (typeof OrderAuditScalarFieldEnum)[keyof typeof OrderAuditScalarFieldEnum]
 
 
+export const ProductBulkOperationScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy',
+  filterSnapshot: 'filterSnapshot',
+  selectedCount: 'selectedCount',
+  affectedCount: 'affectedCount',
+  status: 'status',
+  note: 'note'
+} as const
+
+export type ProductBulkOperationScalarFieldEnum = (typeof ProductBulkOperationScalarFieldEnum)[keyof typeof ProductBulkOperationScalarFieldEnum]
+
+
+export const ProductBulkOperationItemScalarFieldEnum = {
+  id: 'id',
+  operationId: 'operationId',
+  productId: 'productId',
+  oldPrice: 'oldPrice',
+  oldRegularPrice: 'oldRegularPrice',
+  oldSalePrice: 'oldSalePrice',
+  newPrice: 'newPrice',
+  newRegularPrice: 'newRegularPrice',
+  newSalePrice: 'newSalePrice',
+  skipped: 'skipped',
+  skipReason: 'skipReason'
+} as const
+
+export type ProductBulkOperationItemScalarFieldEnum = (typeof ProductBulkOperationItemScalarFieldEnum)[keyof typeof ProductBulkOperationItemScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1970,6 +2152,8 @@ export type GlobalOmitConfig = {
   catalog?: Prisma.CatalogOmit
   stripeEvent?: Prisma.StripeEventOmit
   orderAudit?: Prisma.OrderAuditOmit
+  productBulkOperation?: Prisma.ProductBulkOperationOmit
+  productBulkOperationItem?: Prisma.ProductBulkOperationItemOmit
 }
 
 /* Types for Logging */

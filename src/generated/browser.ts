@@ -87,3 +87,13 @@ export type StripeEvent = Prisma.StripeEventModel
  * 
  */
 export type OrderAudit = Prisma.OrderAuditModel
+/**
+ * Model ProductBulkOperation
+ * 
+ */
+export type ProductBulkOperation = Prisma.ProductBulkOperationModel
+/**
+ * Model ProductBulkOperationItem
+ * 
+ */
+export type ProductBulkOperationItem = Prisma.ProductBulkOperationItemModel

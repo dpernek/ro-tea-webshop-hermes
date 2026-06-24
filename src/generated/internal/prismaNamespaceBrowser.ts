@@ -64,7 +64,9 @@ export const ModelName = {
   StoreSettings: 'StoreSettings',
   Catalog: 'Catalog',
   StripeEvent: 'StripeEvent',
-  OrderAudit: 'OrderAudit'
+  OrderAudit: 'OrderAudit',
+  ProductBulkOperation: 'ProductBulkOperation',
+  ProductBulkOperationItem: 'ProductBulkOperationItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -343,6 +345,38 @@ export const OrderAuditScalarFieldEnum = {
 } as const
 
 export type OrderAuditScalarFieldEnum = (typeof OrderAuditScalarFieldEnum)[keyof typeof OrderAuditScalarFieldEnum]
+
+
+export const ProductBulkOperationScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy',
+  filterSnapshot: 'filterSnapshot',
+  selectedCount: 'selectedCount',
+  affectedCount: 'affectedCount',
+  status: 'status',
+  note: 'note'
+} as const
+
+export type ProductBulkOperationScalarFieldEnum = (typeof ProductBulkOperationScalarFieldEnum)[keyof typeof ProductBulkOperationScalarFieldEnum]
+
+
+export const ProductBulkOperationItemScalarFieldEnum = {
+  id: 'id',
+  operationId: 'operationId',
+  productId: 'productId',
+  oldPrice: 'oldPrice',
+  oldRegularPrice: 'oldRegularPrice',
+  oldSalePrice: 'oldSalePrice',
+  newPrice: 'newPrice',
+  newRegularPrice: 'newRegularPrice',
+  newSalePrice: 'newSalePrice',
+  skipped: 'skipped',
+  skipReason: 'skipReason'
+} as const
+
+export type ProductBulkOperationItemScalarFieldEnum = (typeof ProductBulkOperationItemScalarFieldEnum)[keyof typeof ProductBulkOperationItemScalarFieldEnum]
 
 
 export const SortOrder = {
