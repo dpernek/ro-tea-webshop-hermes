@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { sendEmail, statusChangeEmail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -118,6 +119,33 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       await db.orderAudit.create({
         data: { orderId: id, changedBy: adminEmail, field, oldValue: String(oldVal ?? ""), newValue: String(newVal ?? "") },
       });
+    }
+  }
+
+  // Send status change email to customer for key transitions
+  if (parsed.data.status && parsed.data.status !== oldOrder?.status) {
+    const notifyStatuses = ["SHIPPED", "COMPLETED", "CANCELLED"];
+    if (notifyStatuses.includes(parsed.data.status as string)) {
+      try {
+        const orderFull = await db.order.findUnique({
+          where: { id },
+          select: { customerEmail: true, customerName: true, orderNumber: true, items: { select: { productName: true, quantity: true, unitPrice: true } } },
+        });
+        if (orderFull?.customerEmail) {
+          await sendEmail({
+            to: orderFull.customerEmail,
+            subject: "RO-TEA - Ažuriranje narudžbe " + orderFull.orderNumber,
+            html: statusChangeEmail({
+              orderNumber: orderFull.orderNumber,
+              oldStatus: oldOrder?.status || "",
+              newStatus: parsed.data.status as string,
+              items: orderFull.items.map(i => ({ name: i.productName, quantity: i.quantity, price: i.unitPrice })),
+            }),
+          });
+        }
+      } catch (e) {
+        console.error("[EMAIL] Status change email failed", e);
+      }
     }
   }
 

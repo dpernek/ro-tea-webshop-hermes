@@ -117,14 +117,54 @@ export function customerEmail(data: {
 
 export function adminNewOrderEmail(data: {
   orderNumber: string; total: number; paymentMethod: string;
-  customerName: string; customerEmail: string;
+  customerName: string; customerEmail: string; customerPhone?: string;
+  shippingMethod?: string; items?: { name: string; quantity: number; price: number }[];
 }): string {
+  let rows = "";
+  if (data.items) {
+    for (const it of data.items) {
+      rows += "<tr><td style='padding:4px 8px'>" + it.name + "</td><td style='padding:4px 8px;text-align:center'>" + it.quantity + "</td><td style='padding:4px 8px;text-align:right'>" + it.price.toFixed(2) + " EUR</td></tr>";
+    }
+  }
+  const pm = data.paymentMethod === "card" ? "Kartica (Stripe)" : data.paymentMethod === "cod" ? "Pouzeće" : "Bankovna uplata";
   return (
-    "<h2>Nova narudžba: " + data.orderNumber + "</h2>" +
-    "<p>Kupac: " + data.customerName + " (" + data.customerEmail + ")</p>" +
-    "<p>Iznos: <strong>" + data.total.toFixed(2) + " EUR</strong></p>" +
-    "<p>Plaćanje: " + data.paymentMethod + "</p>" +
-    "<p><a href='https://ro-tea-webshop-hermes.vercel.app/admin/orders'>Otvori admin panel</a></p>" + legalFooter()
+    "<div style='font-family:Arial,sans-serif;max-width:600px;margin:auto'>" +
+    "<h2 style='color:#0055a8'>Nova narudžba: " + data.orderNumber + "</h2>" +
+    "<p><strong>Kupac:</strong> " + data.customerName + " (" + data.customerEmail + ")" + (data.customerPhone ? " / " + data.customerPhone : "") + "</p>" +
+    "<p><strong>Iznos:</strong> " + data.total.toFixed(2) + " EUR</p>" +
+    "<p><strong>Plaćanje:</strong> " + pm + "</p>" +
+    (data.shippingMethod ? "<p><strong>Dostava:</strong> " + data.shippingMethod + "</p>" : "") +
+    (rows ? "<table style='width:100%;border-collapse:collapse;margin:16px 0'>" +
+    "<tr style='background:#f8fafc'><th style='text-align:left;padding:8px'>Proizvod</th><th style='padding:8px'>Kol.</th><th style='text-align:right;padding:8px'>Cijena</th></tr>" +
+    rows + "</table>" : "") +
+    "<p><a href='https://ro-tea-webshop-hermes.vercel.app/admin/orders' style='display:inline-block;background:#0055a8;color:white;padding:10px 20px;border-radius:8px;text-decoration:none'>Otvori admin panel</a></p>" +
+    legalFooter() + "</div>"
+  );
+}
+
+export function statusChangeEmail(data: {
+  orderNumber: string; oldStatus: string; newStatus: string;
+  items: { name: string; quantity: number; price: number }[];
+}): string {
+  const statusLabels: Record<string, string> = {
+    CONFIRMED: "Potvrđena", PROCESSING: "U obradi", SHIPPED: "Poslana",
+    COMPLETED: "Završena", CANCELLED: "Otkazana", REFUNDED: "Refundirana"
+  };
+  const label = statusLabels[data.newStatus] || data.newStatus;
+  let rows = "";
+  for (const it of data.items) {
+    rows += "<tr><td style='padding:4px 8px'>" + it.name + "</td><td style='padding:4px 8px;text-align:center'>" + it.quantity + "</td><td style='padding:4px 8px;text-align:right'>" + it.price.toFixed(2) + " EUR</td></tr>";
+  }
+  return (
+    "<div style='font-family:Arial,sans-serif;max-width:600px;margin:auto'>" +
+    "<h2 style='color:#0055a8'>Status narudžbe ažuriran</h2>" +
+    "<p>Narudžba <strong>" + data.orderNumber + "</strong> je sada: <strong style='color:#0055a8'>" + label + "</strong></p>" +
+    "<table style='width:100%;border-collapse:collapse;margin:16px 0'>" +
+    "<tr style='background:#f8fafc'><th style='text-align:left;padding:8px'>Proizvod</th><th style='padding:8px'>Kol.</th><th style='text-align:right;padding:8px'>Cijena</th></tr>" +
+    rows +
+    "</table>" +
+    "<p style='color:#64748b;font-size:13px;margin-top:24px'>Za sva pitanja slobodno nas kontaktirajte na info@ro-tea.hr.</p>" +
+    "<p style='color:#64748b;font-size:13px'>RO-TEA d.o.o.</p>" + legalFooter() + "</div>"
   );
 }
 

@@ -129,6 +129,9 @@ export async function createOrder(data: {
             paymentMethod: data.paymentMethod,
             customerName: data.customerName,
             customerEmail: data.customerEmail,
+            customerPhone: data.customerPhone,
+            shippingMethod: data.shippingMethodId,
+            items: data.items.map(i => ({ name: i.productName, quantity: i.quantity, price: productMap.get(i.productId)!.salePrice || productMap.get(i.productId)!.price })),
           }),
         });
       }
