@@ -3,6 +3,7 @@ import { FeaturedCategories } from "@/components/home/FeaturedCategories";
 import { PopularProducts } from "@/components/home/PopularProducts";
 import { Benefits } from "@/components/home/Benefits";
 import { CTASection } from "@/components/home/CTASection";
+import Image from "next/image";
 import { Truck, ShieldCheck, Users, Wrench } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -100,13 +101,13 @@ export default function HomePage() {
       {/* Brand credibility strip */}
       <section className="border-y border-slate-100 bg-white py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="mb-4 text-center text-xs font-medium uppercase tracking-wider text-slate-400">
+          <p className="mb-6 text-center text-xs font-medium uppercase tracking-wider text-slate-400">
             Provjereni brendovi
           </p>
-          <div className="flex items-center justify-center gap-12 sm:gap-20">
-            <span className="text-2xl font-bold text-slate-300">PFERD</span>
-            <span className="text-2xl font-bold text-slate-300">Metabo</span>
-            <span className="text-2xl font-bold text-slate-300">Festa</span>
+          <div className="flex items-center justify-center gap-10 sm:gap-16">
+            <Image src="/images/brands/pferd.png" alt="PFERD" width={140} height={40} className="h-10 w-auto opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
+            <Image src="/images/brands/metabo.png" alt="Metabo" width={140} height={40} className="h-10 w-auto opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
+            <Image src="/images/brands/festa.webp" alt="Festa" width={140} height={40} className="h-10 w-auto opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
           </div>
         </div>
       </section>
