@@ -55,6 +55,8 @@ export async function GET(request: NextRequest) {
   const page = parseInt(url.searchParams.get("page") || "1");
   const limit = parseInt(url.searchParams.get("limit") || "20");
   const search = url.searchParams.get("search") || "";
+  const categoryId = url.searchParams.get("categoryId") || "";
+  const brandId = url.searchParams.get("brandId") || "";
 
   const where: any = {};
   if (search) {
@@ -62,6 +64,12 @@ export async function GET(request: NextRequest) {
       { name: { contains: search, mode: "insensitive" } },
       { sku: { contains: search, mode: "insensitive" } },
     ];
+  }
+  if (categoryId) {
+    where.categoryId = categoryId;
+  }
+  if (brandId) {
+    where.brandId = brandId;
   }
 
   const [products, total] = await Promise.all([
