@@ -10,7 +10,6 @@ function createClient(): PrismaClient {
   if (url.startsWith("postgres") && url.includes("supabase.co")) {
     const sep = url.includes("?") ? /* & */ String.fromCharCode(38) : "?";
     url = url + sep + "sslmode=no-verify";
-    // @ts-ignore
     const { PrismaPg } = require("@prisma/adapter-pg");
     return new (PrismaClient as any)({
       adapter: new (PrismaPg as any)({ connectionString: url }),
@@ -18,7 +17,6 @@ function createClient(): PrismaClient {
   }
 
   if (url.startsWith("postgres")) {
-    // @ts-ignore
     const { PrismaPg } = require("@prisma/adapter-pg");
     return new (PrismaClient as any)({
       adapter: new (PrismaPg as any)({ connectionString: url }),
@@ -26,7 +24,6 @@ function createClient(): PrismaClient {
   }
 
   // SQLite fallback
-  // @ts-ignore
   const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3");
   return new (PrismaClient as any)({
     adapter: new (PrismaBetterSqlite3 as any)({ url: url.replace("file:", "") || "./prisma/dev.db" }),

@@ -51,6 +51,8 @@ export default function AdminProductsPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900">Proizvodi ({total})</h1>
+      {error && <p className="mt-2 text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
+      {loading && <p className="mt-2 text-sm text-slate-500">Učitavanje...</p>}
         <Button asChild><Link href="/admin/products/new"><Plus className="mr-2 h-4 w-4" /> Novi proizvod</Link></Button>
       </div>
 

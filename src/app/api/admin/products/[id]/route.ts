@@ -90,6 +90,24 @@ export async function PATCH(
 
   if (data.name !== undefined) updateData.name = data.name;
   if (data.slug !== undefined) updateData.slug = data.slug;
+  
+  // Slug validation for PATCH (same as create)
+  if (updateData.slug) {
+    const newSlug = String(updateData.slug).trim();
+    if (!newSlug) {
+      delete updateData.slug;
+    } else {
+      if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(newSlug)) {
+        return NextResponse.json({ errors: { slug: "Slug mora sadržavati samo mala slova, brojke i crtice (npr. moj-proizvod)." } }, { status: 400 });
+      }
+      // Check collision (ignore current product)
+      const existing = await db.product.findFirst({ where: { slug: newSlug, id: { not: id } } });
+      if (existing) {
+        return NextResponse.json({ errors: { slug: `Slug "${newSlug}" već postoji. Odaberite drugi slug.` } }, { status: 400 });
+      }
+      updateData.slug = newSlug;
+    }
+  }
   if (data.sku !== undefined) updateData.sku = data.sku || undefined;
   if (data.price !== undefined) updateData.price = data.price;
   if (data.regularPrice !== undefined) updateData.regularPrice = data.regularPrice === null ? null : data.regularPrice;
