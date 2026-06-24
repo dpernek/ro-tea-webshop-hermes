@@ -111,17 +111,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   await db.order.update({ where: { id }, data: updateData });
 
-  // Audit log
-  const adminEmail = s.user?.email || "unknown";
-  for (const [field, newVal] of Object.entries(updateData)) {
-    const oldVal = field === "adminNote" ? oldOrder?.adminNote : (field === "status" ? oldOrder?.status : field === "paymentStatus" ? oldOrder?.paymentStatus : null);
-    if (oldVal !== newVal) {
-      await db.orderAudit.create({
-        data: { orderId: id, changedBy: adminEmail, field, oldValue: String(oldVal ?? ""), newValue: String(newVal ?? "") },
-      });
-    }
-  }
-
   // Send status change email to customer for key transitions
   if (parsed.data.status && parsed.data.status !== oldOrder?.status) {
     const notifyStatuses = ["SHIPPED", "COMPLETED", "CANCELLED"];
