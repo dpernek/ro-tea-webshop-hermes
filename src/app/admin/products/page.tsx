@@ -67,7 +67,9 @@ type BulkActionType =
   | "increasePercent"
   | "decreasePercent"
   | "setSalePrice"
-  | "removeSale";
+  | "removeSale"
+  | "status"
+  | "stockStatus";
 
 const BULK_ACTIONS: { value: BulkActionType | ""; label: string; icon: React.ReactNode }[] = [
   { value: "", label: "Odaberi akciju...", icon: null },
@@ -357,7 +359,9 @@ export default function AdminProductsPage() {
   // --- Computed ---
   const totalPages = Math.ceil(total / LIMIT);
   const needsValueInput = bulkAction && bulkAction !== "removeSale";
-  const canPreview = bulkAction && (bulkAction === "removeSale" || bulkValue);
+  const needsStatusSelect = bulkAction === "status";
+  const needsStockSelect = bulkAction === "stockStatus";
+  const canPreview = bulkAction && (bulkAction === "removeSale" || bulkAction === "status" || bulkAction === "stockStatus" || bulkValue);
 
   // ==========================================================================
   //  RENDER
