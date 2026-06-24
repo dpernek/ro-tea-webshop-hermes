@@ -161,7 +161,10 @@ export function Footer() {
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <p className="text-sm text-slate-500">
               © {new Date().getFullYear()} {site.contact.company}. Sva prava
-              pridržana.
+              pridržana. <span className="text-slate-400">|</span> Izrada:{" "}
+              <a href="https://jenidigital.hr" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors">
+                JENI DIGITAL
+              </a>
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-500">
               <span>OIB: {site.contact.oib}</span>
