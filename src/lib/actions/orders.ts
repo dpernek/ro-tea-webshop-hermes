@@ -105,6 +105,7 @@ export async function createOrder(data: {
           orderNumber,
           total: pricing.total,
           paymentMethod: data.paymentMethod,
+          shippingMethod: data.shippingMethodId,
           items: pricing.lineItems.map(li => ({
             name: productMap.get(li.productId)!.name,
             quantity: li.quantity,

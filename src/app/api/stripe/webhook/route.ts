@@ -182,7 +182,7 @@ async function handlePaymentSucceeded(pi: Stripe.PaymentIntent) {
       if (payment.order.customerEmail) {
         const orderFull = await db.order.findUnique({
           where: { id: payment.orderId },
-          select: { total: true, paymentMethod: true, items: { select: { productName: true, quantity: true, unitPrice: true } } },
+          select: { total: true, paymentMethod: true, shippingMethod: true, items: { select: { productName: true, quantity: true, unitPrice: true } } },
         });
         if (orderFull) {
           await sendEmail({
@@ -192,6 +192,7 @@ async function handlePaymentSucceeded(pi: Stripe.PaymentIntent) {
               orderNumber: payment.order.orderNumber,
               total: orderFull.total,
               paymentMethod: orderFull.paymentMethod,
+              shippingMethod: orderFull.shippingMethod || undefined,
               items: orderFull.items.map(i => ({ name: i.productName, quantity: i.quantity, price: i.unitPrice })),
             }),
           });

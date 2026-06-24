@@ -94,17 +94,18 @@ function bankPaymentBox(orderNumber: string, total: number): string {
       <tr><td style="color:#64748b;padding:3px 0">Opis:</td><td>Narudžba ${orderNumber}</td></tr>
     </table>
     <div class="qrbox"><img src="${qr}" alt="QR kod" style="width:180px;height:180px"/><p style="font-size:11px;color:#94a3b8;margin:6px 0 0">Skenirajte kamerom za mobilno plaćanje</p></div>
-    <p style="font-size:12px;color:#64748b;margin:10px 0 0">Po primitku uplate narudžba se šalje u roku 1-2 radna dana.</p>
+    <p style="font-size:12px;color:#64748b;margin:10px 0 0">Po primitku uplate narudžba se obrađuje u roku 1-2 radna dana.</p>
   </div>`;
 }
 
 // ── Templates ───────────────────────────────────────────────────
 
 export function customerEmail(data: {
-  orderNumber: string; total: number; paymentMethod: string;
+  orderNumber: string; total: number; paymentMethod: string; shippingMethod?: string;
   items: { name: string; quantity: number; price: number }[];
 }): string {
   const isBank = data.paymentMethod === "bank_transfer";
+  const isPickup = data.shippingMethod === "osobno-preuzimanje" || data.shippingMethod?.includes("osobno");
   return `<!DOCTYPE html><html><head>${css}</head><body><div class="wrap">
     ${header()}
     <div class="body">
@@ -118,6 +119,13 @@ export function customerEmail(data: {
         </table>
       </div>
       ${isBank ? bankPaymentBox(data.orderNumber, data.total) : ""}
+      ${isPickup ? `<div class="card" style="border-color:#0055a8;background:#f0f7ff">
+        <h3 style="color:#0055a8">📍 Osobno preuzimanje</h3>
+        <p style="margin:0;font-size:14px">Narudžbu možete preuzeti na adresi:</p>
+        <p style="margin:4px 0;font-weight:600;font-size:14px">Badalićeva 26b, 10000 Zagreb</p>
+        <p style="margin:8px 0 0;font-size:13px;color:#64748b">Radno vrijeme: Pon-Pet 08:00–16:00, Sub 08:00–12:00</p>
+        <p style="margin:4px 0 0;font-size:13px;color:#64748b">Kontakt: +385 1 3820 113</p>
+      </div>` : ""}
       <h3 style="color:#0f172a;font-size:15px;margin:24px 0 12px">Naručeni proizvodi</h3>
       ${itemsTable(data.items)}
       <p class="meta" style="margin-top:24px">Račun nije automatski izdan. Ako trebate R1 račun, javite se na <a href="mailto:info@ro-tea.hr" style="color:${BRAND}">info@ro-tea.hr</a>.</p>
