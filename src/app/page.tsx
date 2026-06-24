@@ -105,13 +105,13 @@ export default function HomePage() {
             Provjereni brendovi
           </p>
           <div className="flex items-center justify-center gap-8 sm:gap-12">
-            <div className="relative h-10 w-[120px]">
+            <div className="relative h-16 w-[160px] sm:h-20 sm:w-[200px]">
               <Image src="/images/brands/pferd.png" alt="PFERD" fill className="object-contain opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
             </div>
-            <div className="relative h-10 w-[120px]">
+            <div className="relative h-16 w-[160px] sm:h-20 sm:w-[200px]">
               <Image src="/images/brands/metabo.png" alt="Metabo" fill className="object-contain opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
             </div>
-            <div className="relative h-10 w-[120px]">
+            <div className="relative h-16 w-[160px] sm:h-20 sm:w-[200px]">
               <Image src="/images/brands/festa.webp" alt="Festa" fill className="object-contain opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
             </div>
           </div>
