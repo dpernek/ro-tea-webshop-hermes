@@ -124,7 +124,7 @@ export function adminNewOrderEmail(data: {
     "<p>Kupac: " + data.customerName + " (" + data.customerEmail + ")</p>" +
     "<p>Iznos: <strong>" + data.total.toFixed(2) + " EUR</strong></p>" +
     "<p>Plaćanje: " + data.paymentMethod + "</p>" +
-    "<p><a href='https://ro-tea-webshop-hermes.vercel.app/admin/orders'>Otvori admin panel</a></p>"
+    "<p><a href='https://ro-tea-webshop-hermes.vercel.app/admin/orders'>Otvori admin panel</a></p>" + legalFooter()
   );
 }
 

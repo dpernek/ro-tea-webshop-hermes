@@ -410,6 +410,27 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
             >
               politiku privatnosti
             </a>
+            ,{" "}
+            <a
+              href="/izjava-o-sigurnosti-online-placanja"
+              className="text-[#0055a8] underline hover:text-blue-800"
+            >
+              sigurnost plaćanja
+            </a>
+            ,{" "}
+            <a
+              href="/pravila-povrata-i-zamjene"
+              className="text-[#0055a8] underline hover:text-blue-800"
+            >
+              povrat i zamjenu
+            </a>{" "}
+            i{" "}
+            <a
+              href="/jednostrani-raskid-ugovora"
+              className="text-[#0055a8] underline hover:text-blue-800"
+            >
+              jednostrani raskid ugovora
+            </a>
             .
           </span>
         </label>
