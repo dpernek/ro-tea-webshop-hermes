@@ -12,6 +12,14 @@ export const metadata: Metadata = {
     description:
       "Završite svoju kupnju — unos podataka za dostavu i dovršetak narudžbe profesionalnog alata. Sigurno i jednostavno.",
     type: "website",
+    images: [
+      {
+        url: "/images/rotea-logo.webp",
+        width: 1170,
+        height: 180,
+        alt: "RO-TEA",
+      },
+    ],
   },
 };
 

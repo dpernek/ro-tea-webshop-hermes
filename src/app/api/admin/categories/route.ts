@@ -16,7 +16,7 @@ const categoryCreateSchema = z.object({
   parentId: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
   image: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
   sortOrder: z.preprocess((v) => (v === "" ? undefined : Number(v)), z.number().int().default(0)),
-  status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
+  status: z.enum(["ACTIVE", "INACTIVE", "ARCHIVED"]).default("ACTIVE"),
 });
 
 export async function GET() {

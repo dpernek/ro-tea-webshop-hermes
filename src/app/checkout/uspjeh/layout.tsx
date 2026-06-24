@@ -12,6 +12,14 @@ export const metadata: Metadata = {
     description:
       "Vaša narudžba je uspješno zaprimljena. Hvala na kupnji! Obavijestit ćemo vas e-mailom o statusu narudžbe.",
     type: "website",
+    images: [
+      {
+        url: "/images/rotea-logo.webp",
+        width: 1170,
+        height: 180,
+        alt: "RO-TEA",
+      },
+    ],
   },
 };
 

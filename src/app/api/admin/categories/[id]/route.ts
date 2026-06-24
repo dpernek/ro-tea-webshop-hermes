@@ -16,7 +16,7 @@ const categoryUpdateSchema = z.object({
   parentId: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
   image: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
   sortOrder: z.preprocess((v) => (v === "" ? undefined : Number(v)), z.number().int()).optional(),
-  status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+  status: z.enum(["ACTIVE", "INACTIVE", "ARCHIVED"]).optional(),
 });
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

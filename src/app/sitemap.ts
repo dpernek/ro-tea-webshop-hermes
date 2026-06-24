@@ -17,13 +17,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[sitemap] Failed to fetch products:", error);
   }
 
-  // Fetch all ACTIVE categories (skip archived)
+  // Fetch only ACTIVE categories that have at least one ACTIVE product
   let categories: { slug: string; updatedAt: Date }[] = [];
   try {
-    categories = await db.category.findMany({
-      where: { status: "ACTIVE" },
+    const catsWithProducts = await db.category.findMany({
+      where: {
+        status: "ACTIVE",
+        products: { some: { status: "ACTIVE" } },
+      },
       select: { slug: true, updatedAt: true },
     });
+    categories = catsWithProducts;
   } catch (error) {
     console.error("[sitemap] Failed to fetch categories:", error);
   }

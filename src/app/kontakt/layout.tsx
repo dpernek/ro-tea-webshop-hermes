@@ -12,6 +12,14 @@ export const metadata: Metadata = {
     description:
       "Kontaktirajte RO-TEA — Badalićeva 26b, Zagreb. Telefon: +385 1 3820 113. E-mail: info@ro-tea.hr. Radno vrijeme: Pon-Pet 08:00–16:00, Sub 08:00–12:00.",
     type: "website",
+    images: [
+      {
+        url: "/images/rotea-logo.webp",
+        width: 1170,
+        height: 180,
+        alt: "RO-TEA",
+      },
+    ],
   },
 };
 

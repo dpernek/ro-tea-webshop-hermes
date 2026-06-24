@@ -210,14 +210,6 @@ export function ProductForm({ product, categories, brands }: {
           <p className="text-xs text-slate-400 mt-1">Preporučena veličina: 1200×1200 px, WebP ili JPG, do 5 MB.</p>
         </div>
 
-        <div className="flex justify-end gap-3">
-          <Link href="/admin/products" className="inline-flex h-11 items-center rounded-lg border-2 border-slate-200 px-6 text-slate-700 hover:border-slate-300">Odustani</Link>
-          <button type="submit" disabled={saving}
-            className="inline-flex h-11 items-center gap-2 rounded-lg bg-[#0055a8] px-6 text-white hover:bg-[#004080] disabled:opacity-60">
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            {saving ? "Spremanje..." : isEdit ? "Spremi" : "Kreiraj"}
-          </button>
-        
         <div className="rounded-xl border border-slate-200 bg-white p-6">
           <h2 className="mb-4 text-lg font-semibold">Dodatne informacije</h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -239,7 +231,15 @@ export function ProductForm({ product, categories, brands }: {
             </div>
           </div>
         </div>
-</div>
+
+        <div className="flex justify-end gap-3">
+          <Link href="/admin/products" className="inline-flex h-11 items-center rounded-lg border-2 border-slate-200 px-6 text-slate-700 hover:border-slate-300">Odustani</Link>
+          <button type="submit" disabled={saving}
+            className="inline-flex h-11 items-center gap-2 rounded-lg bg-[#0055a8] px-6 text-white hover:bg-[#004080] disabled:opacity-60">
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {saving ? "Spremanje..." : isEdit ? "Spremi" : "Kreiraj"}
+          </button>
+        </div>
       </form>
     </div>
   );
