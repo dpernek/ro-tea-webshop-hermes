@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Save, Loader2, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react";
+import { Save, Loader2, ArrowLeft } from "lucide-react";
+import { AdminAlert } from "@/components/admin/AdminAlert";
 
 interface ProductData {
   id?: string;
@@ -110,16 +111,8 @@ export function ProductForm({ product, categories, brands }: {
         <h1 className="text-2xl font-bold text-slate-900">{isEdit ? "Uredi proizvod" : "Novi proizvod"}</h1>
       </div>
 
-      {success && (
-        <div className="mb-4 flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          <CheckCircle className="h-4 w-4" /> Proizvod spremljen!
-        </div>
-      )}
-      {error && (
-        <div className="mb-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          <AlertCircle className="h-4 w-4" /> {error}
-        </div>
-      )}
+      {success && <AdminAlert variant="success">Proizvod spremljen!</AdminAlert>}
+      {error && <AdminAlert variant="error">{error}</AdminAlert>}
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
         <div className="rounded-xl border border-slate-200 bg-white p-6">

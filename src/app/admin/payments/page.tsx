@@ -3,30 +3,58 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Search, X } from "lucide-react";
+import { Search, X, AlertCircle } from "lucide-react";
+
+function Skeleton() {
+  return (
+    <div className="animate-pulse">
+      {[1, 2, 3, 4, 5, 6].map((i) => (
+        <div key={i} className="flex items-center gap-4 border-b border-slate-100 px-4 py-3">
+          <div className="h-4 w-20 rounded bg-slate-200" />
+          <div className="h-4 w-28 rounded bg-slate-200" />
+          <div className="h-4 w-16 rounded bg-slate-200" />
+          <div className="h-4 w-24 rounded bg-slate-200" />
+          <div className="h-5 w-20 rounded-full bg-slate-200" />
+          <div className="h-4 w-20 rounded bg-slate-200" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function AdminPaymentsPage() {
   const [payments, setPayments] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [filters, setFilters] = useState({ orderId: "", method: "", status: "", amountMin: "", amountMax: "" });
   const [applied, setApplied] = useState({ orderId: "", method: "", status: "", amountMin: "", amountMax: "" });
 
   const load = async (p = 1, f = applied) => {
-    const params = new URLSearchParams({ page: String(p) });
-    if (f.orderId) params.set("orderId", f.orderId);
-    if (f.method) params.set("method", f.method);
-    if (f.status) params.set("status", f.status);
-    if (f.amountMin) params.set("amountMin", f.amountMin);
-    if (f.amountMax) params.set("amountMax", f.amountMax);
+    setLoading(true);
+    setError("");
+    try {
+      const params = new URLSearchParams({ page: String(p) });
+      if (f.orderId) params.set("orderId", f.orderId);
+      if (f.method) params.set("method", f.method);
+      if (f.status) params.set("status", f.status);
+      if (f.amountMin) params.set("amountMin", f.amountMin);
+      if (f.amountMax) params.set("amountMax", f.amountMax);
 
-    const res = await fetch(`/api/admin/payments?${params}`);
-    const data = await res.json();
-    setPayments(data.payments);
-    setTotal(data.total);
-    setPages(data.pages);
-    setPage(p);
+      const res = await fetch(`/api/admin/payments?${params}`);
+      if (!res.ok) throw new Error("Greška pri učitavanju plaćanja.");
+      const data = await res.json();
+      setPayments(data.payments);
+      setTotal(data.total);
+      setPages(data.pages);
+      setPage(p);
+    } catch (e: any) {
+      setError(e.message || "Greška pri učitavanju plaćanja.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, []);
@@ -139,49 +167,58 @@ export default function AdminPaymentsPage() {
       {/* Table */}
       <Card>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50">
-              <tr>
-                <th className="px-4 py-3 font-medium text-slate-600">Narudžba</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Kupac</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Iznos</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Metoda</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Status</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Datum</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {payments.length === 0 && (
+          {error ? (
+            <div className="flex items-center justify-center gap-2 px-4 py-8 text-red-600">
+              <AlertCircle className="h-5 w-5 flex-shrink-0" />
+              <p>{error}</p>
+            </div>
+          ) : loading ? (
+            <Skeleton />
+          ) : (
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-slate-200 bg-slate-50">
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
-                    Nema plaćanja
-                  </td>
+                  <th className="px-4 py-3 font-medium text-slate-600">Narudžba</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Kupac</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Iznos</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Metoda</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Status</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Datum</th>
                 </tr>
-              )}
-              {payments.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3 font-medium text-slate-900">
-                    {p.order?.orderNumber || p.orderId?.slice(0, 8)}
-                  </td>
-                  <td className="px-4 py-3 text-slate-600">{p.order?.customerName || "-"}</td>
-                  <td className="px-4 py-3 font-medium text-slate-900">
-                    {p.amount?.toFixed(2)} {p.currency || "€"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="text-slate-600">{p.provider}/{p.method}</span>
-                  </td>
-                  <td className="px-4 py-3">{statusBadge(p.status)}</td>
-                  <td className="px-4 py-3 text-slate-500">
-                    {new Date(p.createdAt).toLocaleDateString("hr-HR")}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {payments.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+                      Nema plaćanja
+                    </td>
+                  </tr>
+                )}
+                {payments.map((p) => (
+                  <tr key={p.id} className="hover:bg-slate-50">
+                    <td className="px-4 py-3 font-medium text-slate-900">
+                      {p.order?.orderNumber || p.orderId?.slice(0, 8)}
+                    </td>
+                    <td className="px-4 py-3 text-slate-600">{p.order?.customerName || "-"}</td>
+                    <td className="px-4 py-3 font-medium text-slate-900">
+                      {p.amount?.toFixed(2)} {p.currency || "€"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-slate-600">{p.provider}/{p.method}</span>
+                    </td>
+                    <td className="px-4 py-3">{statusBadge(p.status)}</td>
+                    <td className="px-4 py-3 text-slate-500">
+                      {new Date(p.createdAt).toLocaleDateString("hr-HR")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* Pagination */}
-        {pages > 1 && (
+        {!loading && !error && pages > 1 && (
           <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3">
             <p className="text-sm text-slate-500">
               Stranica {page} od {pages} ({total} ukupno)

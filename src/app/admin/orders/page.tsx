@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Download, Calendar, X } from "lucide-react";
+import { Download, Calendar, X, Loader2, AlertCircle } from "lucide-react";
 
 const statusLabels: Record<string,string> = { PENDING:"Na čekanju", CONFIRMED:"Potvrđeno", PROCESSING:"U obradi", SHIPPED:"Poslano", COMPLETED:"Završeno", CANCELLED:"Otkazano", REFUNDED:"Refundirano" };
 
@@ -102,8 +102,28 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+function Skeleton() {
+  return (
+    <div className="animate-pulse">
+      {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+        <div key={i} className="flex items-center gap-4 border-b border-slate-100 px-4 py-3">
+          <div className="h-4 w-20 rounded bg-slate-200" />
+          <div className="h-4 w-28 rounded bg-slate-200" />
+          <div className="h-4 w-16 rounded bg-slate-200" />
+          <div className="h-5 w-20 rounded-full bg-slate-200" />
+          <div className="h-5 w-24 rounded-full bg-slate-200" />
+          <div className="h-5 w-20 rounded-full bg-slate-200" />
+          <div className="h-4 w-20 rounded bg-slate-200" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [statusFilter, setStatusFilter] = useState("");
@@ -123,10 +143,19 @@ export default function AdminOrdersPage() {
   };
 
   const load = async () => {
-    const res = await fetch(`/api/admin/orders?${buildParams()}`);
-    const data = await res.json();
-    setOrders(data.orders);
-    setTotal(data.total);
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/admin/orders?${buildParams()}`);
+      if (!res.ok) throw new Error("Greška pri učitavanju narudžbi.");
+      const data = await res.json();
+      setOrders(data.orders);
+      setTotal(data.total);
+    } catch (e: any) {
+      setError(e.message || "Greška pri učitavanju narudžbi.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, [page, statusFilter, paymentStatusFilter, dateFrom, dateTo]);
@@ -172,7 +201,7 @@ export default function AdminOrdersPage() {
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900">Narudžbe ({total})</h1>
         <Button variant="outline" size="sm" onClick={handleExportCsv} disabled={exporting}>
-          <Download className="h-4 w-4" />
+          {exporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
           {exporting ? "Izvoz..." : "CSV Izvoz"}
         </Button>
       </div>
@@ -213,39 +242,48 @@ export default function AdminOrdersPage() {
 
       <Card>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50">
-              <tr>
-                <th className="px-4 py-3 font-medium text-slate-600">Broj</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Kupac</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Ukupno</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Status</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Način plaćanja</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Plaćanje</th>
-                <th className="px-4 py-3 font-medium text-slate-600">Datum</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {orders.map(o => (
-                <tr key={o.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => router.push(`/admin/orders/${o.id}`)}>
-                  <td className="px-4 py-3 font-medium text-[#0055a8]">
-                    <div className="flex items-center gap-1.5">
-                      {o.orderNumber}
-                      <StripeTestMethodBadge sessionId={o.stripeCheckoutSessionId} />
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-slate-700">{o.customerName}</td>
-                  <td className="px-4 py-3 font-medium">{o.total?.toFixed(2)} €</td>
-                  <td className="px-4 py-3"><StatusBadge status={o.status} /></td>
-                  <td className="px-4 py-3"><PaymentMethodBadge method={o.paymentMethod} /></td>
-                  <td className="px-4 py-3"><PaymentStatusBadge status={o.paymentStatus} /></td>
-                  <td className="px-4 py-3 text-slate-500">{new Date(o.createdAt).toLocaleDateString("hr-HR")}</td>
+          {error ? (
+            <div className="flex items-center justify-center gap-2 px-4 py-8 text-red-600">
+              <AlertCircle className="h-5 w-5 flex-shrink-0" />
+              <p>{error}</p>
+            </div>
+          ) : loading ? (
+            <Skeleton />
+          ) : (
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-slate-200 bg-slate-50">
+                <tr>
+                  <th className="px-4 py-3 font-medium text-slate-600">Broj</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Kupac</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Ukupno</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Status</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Način plaćanja</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Plaćanje</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Datum</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {orders.map(o => (
+                  <tr key={o.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => router.push(`/admin/orders/${o.id}`)}>
+                    <td className="px-4 py-3 font-medium text-[#0055a8]">
+                      <div className="flex items-center gap-1.5">
+                        {o.orderNumber}
+                        <StripeTestMethodBadge sessionId={o.stripeCheckoutSessionId} />
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-slate-700">{o.customerName}</td>
+                    <td className="px-4 py-3 font-medium">{o.total?.toFixed(2)} €</td>
+                    <td className="px-4 py-3"><StatusBadge status={o.status} /></td>
+                    <td className="px-4 py-3"><PaymentMethodBadge method={o.paymentMethod} /></td>
+                    <td className="px-4 py-3"><PaymentStatusBadge status={o.paymentStatus} /></td>
+                    <td className="px-4 py-3 text-slate-500">{new Date(o.createdAt).toLocaleDateString("hr-HR")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
-        {Math.ceil(total / 20) > 1 && (
+        {!loading && !error && Math.ceil(total / 20) > 1 && (
           <div className="flex items-center justify-between border-t px-4 py-3">
             <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Prethodna</Button>
             <span className="text-sm text-slate-500">{page} / {Math.ceil(total / 20)}</span>

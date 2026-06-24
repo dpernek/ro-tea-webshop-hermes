@@ -3,22 +3,36 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Save } from "lucide-react";
+import { Save, Loader2, CheckCircle, XCircle } from "lucide-react";
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<any>({});
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(null);
 
   useEffect(() => {
-    fetch("/api/admin/settings").then(r => r.json()).then(d => { setSettings(d || {}); setLoading(false); });
+    fetch("/api/admin/settings")
+      .then(r => r.json())
+      .then(d => { setSettings(d || {}); setLoading(false); })
+      .catch(() => { setFeedback({ type: "error", msg: "Greška pri učitavanju postavki." }); setLoading(false); });
   }, []);
 
   const save = async () => {
-    await fetch("/api/admin/settings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(settings),
-    });
+    setSaving(true);
+    setFeedback(null);
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(settings),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      setFeedback({ type: "success", msg: "Postavke spremljene." });
+    } catch {
+      setFeedback({ type: "error", msg: "Greška pri spremanju postavki." });
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) return <p className="p-8 text-slate-500">Učitavanje...</p>;
@@ -27,6 +41,12 @@ export default function AdminSettingsPage() {
     <div>
       <h1 className="mb-6 text-2xl font-bold text-slate-900">Postavke</h1>
       <div className="max-w-xl space-y-6">
+        {feedback && (
+          <div className={`flex items-center gap-2 rounded-lg px-4 py-3 text-sm ${feedback.type === "success" ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
+            {feedback.type === "success" ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+            {feedback.msg}
+          </div>
+        )}
         <Card className="p-6">
           <h2 className="mb-4 text-lg font-semibold">Podaci trgovine</h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -53,7 +73,10 @@ export default function AdminSettingsPage() {
           </div>
         </Card>
         <div className="flex justify-end">
-          <Button onClick={save}><Save className="mr-2 h-4 w-4" /> Spremi postavke</Button>
+          <Button onClick={save} disabled={saving}>
+            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+            {saving ? "Spremanje..." : "Spremi postavke"}
+          </Button>
         </div>
       </div>
     </div>

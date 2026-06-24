@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { ArrowLeft, Save, RefreshCw, ExternalLink, CheckCircle2, Package, Truck, Clock, XCircle, RotateCcw, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Save, RefreshCw, ExternalLink, CheckCircle2, Package, Truck, Clock, XCircle, RotateCcw, AlertTriangle, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 const statusLabels: Record<string,string> = { PENDING:"Na čekanju", CONFIRMED:"Potvrđeno", PROCESSING:"U obradi", SHIPPED:"Poslano", COMPLETED:"Završeno", CANCELLED:"Otkazano", REFUNDED:"Refundirano" };
@@ -153,43 +153,98 @@ function TestModeBanner() {
   );
 }
 
+function DetailSkeleton() {
+  return (
+    <div className="animate-pulse space-y-6">
+      <div className="flex items-center gap-4">
+        <div className="h-8 w-24 rounded bg-slate-200" />
+        <div className="h-7 w-48 rounded bg-slate-200" />
+      </div>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <div className="rounded-xl border border-slate-200 p-6">
+            <div className="h-5 w-40 rounded bg-slate-200 mb-4" />
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[1,2,3,4].map(i => <div key={i} className="h-4 w-full rounded bg-slate-200" />)}
+            </div>
+          </div>
+          <div className="rounded-xl border border-slate-200 p-6">
+            <div className="h-5 w-36 rounded bg-slate-200 mb-4" />
+            <div className="space-y-2">
+              {[1,2,3].map(i => <div key={i} className="h-10 w-full rounded bg-slate-200" />)}
+            </div>
+          </div>
+        </div>
+        <div className="space-y-6">
+          <div className="rounded-xl border border-slate-200 p-6">
+            <div className="h-5 w-20 rounded bg-slate-200 mb-4" />
+            <div className="space-y-3">
+              {[1,2,3].map(i => <div key={i} className="h-10 w-full rounded bg-slate-200" />)}
+              <div className="h-9 w-40 rounded bg-slate-200" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [order, setOrder] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("");
   const [adminNote, setAdminNote] = useState("");
   const [refreshingStripe, setRefreshingStripe] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
   const router = useRouter();
 
   useEffect(() => {
-    fetch(`/api/admin/orders/${id}`).then(r => r.json()).then(o => {
-      setOrder(o);
-      setStatus(o.status);
-      setPaymentStatus(o.paymentStatus);
-      setAdminNote(o.adminNote || "");
-      // Mark as viewed when admin opens order detail
-      if (o && !o.viewed) {
-        fetch("/api/admin/orders/mark-viewed", { method: "POST", body: JSON.stringify({ ids: [id] }), headers: { "Content-Type": "application/json" } }).catch(() => {});
-      }
-    });
+    setLoading(true);
+    setError("");
+    fetch(`/api/admin/orders/${id}`)
+      .then(r => {
+        if (!r.ok) throw new Error("Greška pri učitavanju narudžbe.");
+        return r.json();
+      })
+      .then(o => {
+        setOrder(o);
+        setStatus(o.status);
+        setPaymentStatus(o.paymentStatus);
+        setAdminNote(o.adminNote || "");
+        // Mark as viewed when admin opens order detail
+        if (o && !o.viewed) {
+          fetch("/api/admin/orders/mark-viewed", { method: "POST", body: JSON.stringify({ ids: [id] }), headers: { "Content-Type": "application/json" } }).catch(() => {});
+        }
+      })
+      .catch(e => setError(e.message || "Greška pri učitavanju narudžbe."))
+      .finally(() => setLoading(false));
   }, [id]);
 
   const save = async () => {
     setSaveMessage("");
-    const res = await fetch(`/api/admin/orders/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({ status, paymentStatus, adminNote }),
-      headers: { "Content-Type": "application/json" },
-    });
-    const data = await res.json();
-    if (data.errors) {
-      setSaveMessage(Object.values(data.errors).join(", "));
-    } else {
-      setSaveMessage("Promjene spremljene.");
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/admin/orders/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status, paymentStatus, adminNote }),
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      if (data.errors) {
+        setSaveMessage(Object.values(data.errors).join(", "));
+      } else {
+        setSaveMessage("Promjene spremljene.");
+      }
+      router.refresh();
+    } catch (e: any) {
+      setSaveMessage(e.message || "Greška pri spremanju.");
+    } finally {
+      setSaving(false);
     }
-    router.refresh();
   };
 
   const refreshStripeStatus = async () => {
@@ -212,7 +267,20 @@ export default function AdminOrderDetailPage() {
     }
   };
 
-  if (!order) return <p className="p-8 text-slate-500">Učitavanje...</p>;
+  if (loading) return (
+    <div className="p-8">
+      <DetailSkeleton />
+    </div>
+  );
+
+  if (error) return (
+    <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-8 text-red-700">
+      <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+      <p>{error}</p>
+    </div>
+  );
+
+  if (!order) return <p className="p-8 text-slate-500">Narudžba nije pronađena.</p>;
 
   const isStripe = order.paymentMethod === "card" || order.paymentMethod === "stripe";
   const hasStripeSession = !!order.stripeCheckoutSessionId;
@@ -411,7 +479,10 @@ export default function AdminOrderDetailPage() {
                 <label className="mb-1 block text-sm font-medium">Interna napomena</label>
                 <textarea className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" rows={3} value={adminNote} onChange={e => setAdminNote(e.target.value)} />
               </div>
-              <Button onClick={save}><Save className="mr-2 h-4 w-4" /> Spremi promjene</Button>
+              <Button onClick={save} disabled={saving}>
+                {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                {saving ? "Spremanje..." : "Spremi promjene"}
+              </Button>
               {saveMessage && (
                 <p className={`text-sm ${saveMessage.includes("Greška") ? "text-red-600" : "text-green-600"}`}>
                   {saveMessage}

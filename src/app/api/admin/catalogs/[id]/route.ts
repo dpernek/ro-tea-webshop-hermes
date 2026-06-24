@@ -25,3 +25,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   revalidatePath("/admin/katalozi");
   return NextResponse.json({ success: true });
 }
+
+export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await auth();
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { id } = await params;
+  await db.catalog.delete({ where: { id } });
+  revalidatePath("/admin/katalozi");
+  return NextResponse.json({ success: true });
+}
