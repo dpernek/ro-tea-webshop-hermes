@@ -48,7 +48,7 @@ const css = `<style>
 </style>`;
 
 function header(): string {
-  return `<div class="head"><span style="color:#fff;font-size:22px;font-weight:800;letter-spacing:-0.5px">RO-TEA</span><span style="color:rgba(255,255,255,0.4);font-size:12px;display:block;margin-top:2px">profesionalni alati i oprema</span></div>`;
+  return `<div class="head" style="text-align:center"><img src="${URL_BASE}/images/rotea-logo-white.png" alt="RO-TEA" width="200" height="31" style="height:31px;width:auto;border:0;display:block"/></div>`;
 }
 
 function footer(isAdmin: boolean = false): string {
