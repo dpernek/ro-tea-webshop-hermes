@@ -7,7 +7,8 @@ const footerLinks = {
   informacije: [
     { href: "/o-nama", label: "O nama" },
     { href: "/uvjeti-kupnje", label: "Uvjeti kupovine" },
-    { href: "/politika-privatnosti", label: "Pravila o privatnosti" },
+    { href: "/izjava-o-sigurnosti-online-placanja", label: "Sigurnost plaćanja" },
+    { href: "/pravila-o-privatnosti", label: "Pravila o privatnosti" },
     { href: "/proizvodi", label: "Trgovina" },
   ],
   podrska: [
@@ -153,7 +154,7 @@ export function Footer() {
             <div className="flex flex-wrap justify-center gap-4 text-sm text-slate-500">
               <span>OIB: {site.contact.oib}</span>
               {site.contact.iban && <span>IBAN: {site.contact.iban}</span>}
-              <Link href="/politika-privatnosti" className="hover:text-brand">
+              <Link href="/pravila-o-privatnosti" className="hover:text-brand">
                 Pravila privatnosti
               </Link>
               <Link href="/uvjeti-kupnje" className="hover:text-brand">
