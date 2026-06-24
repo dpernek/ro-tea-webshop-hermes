@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 import { revalidatePath } from "next/cache";
 import Stripe from "stripe";
-import { sendEmail, adminPaymentAlert } from "@/lib/email";
+import { sendEmail, adminPaymentAlert, customerEmail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -175,6 +175,30 @@ async function handlePaymentSucceeded(pi: Stripe.PaymentIntent) {
       }
     } catch (e) {
       console.error("[EMAIL] Failed to send admin payment alert for order", payment.order.orderNumber, e);
+    }
+    
+    // Send customer payment confirmation
+    try {
+      if (payment.order.customerEmail) {
+        const orderFull = await db.order.findUnique({
+          where: { id: payment.orderId },
+          select: { total: true, paymentMethod: true, items: { select: { productName: true, quantity: true, unitPrice: true } } },
+        });
+        if (orderFull) {
+          await sendEmail({
+            to: payment.order.customerEmail,
+            subject: "RO-TEA - Plaćanje potvrđeno: " + payment.order.orderNumber,
+            html: customerEmail({
+              orderNumber: payment.order.orderNumber,
+              total: orderFull.total,
+              paymentMethod: orderFull.paymentMethod,
+              items: orderFull.items.map(i => ({ name: i.productName, quantity: i.quantity, price: i.unitPrice })),
+            }),
+          });
+        }
+      }
+    } catch (e) {
+      console.error("[EMAIL] Failed to send customer payment confirmation", payment.order.orderNumber, e);
     }
   }
 }
