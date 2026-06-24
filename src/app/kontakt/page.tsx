@@ -43,7 +43,7 @@ export default function ContactPage() {
     { icon: Phone, label: "Telefon", value: site.contact.phoneDisplay, href: `tel:${site.contact.phoneDisplay.replace(/\s/g, "")}` },
     { icon: Mail, label: "E-mail", value: site.contact.email, href: `mailto:${site.contact.email}` },
     { icon: MapPin, label: "Adresa", value: "Badalićeva 26b, 10000 Zagreb" },
-    { icon: Clock, label: "Radno vrijeme", value: "Pon-Pet: 08:00 – 16:00\nSub: 08:00 – 12:00" },
+    { icon: Clock, label: "Radno vrijeme", value: "Pon-Pet: 07:30 – 15:30\nSub i Ned: neradno" },
   ];
 
   return (

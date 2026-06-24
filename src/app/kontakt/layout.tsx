@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Kontakt | RO-TEA",
   description:
-    "Kontaktirajte RO-TEA — Badalićeva 26b, Zagreb. Telefon: +385 1 3820 113. E-mail: info@ro-tea.hr. Radno vrijeme: Pon-Pet 08:00–16:00, Sub 08:00–12:00.",
+    "Kontaktirajte RO-TEA — Badalićeva 26b, Zagreb. Telefon: +385 1 3820 113. E-mail: info@ro-tea.hr. Radno vrijeme: Pon-Pet 07:30–15:30.",
   alternates: {
     canonical: "/kontakt",
   },
   openGraph: {
     title: "Kontakt | RO-TEA",
     description:
-      "Kontaktirajte RO-TEA — Badalićeva 26b, Zagreb. Telefon: +385 1 3820 113. E-mail: info@ro-tea.hr. Radno vrijeme: Pon-Pet 08:00–16:00, Sub 08:00–12:00.",
+      "Kontaktirajte RO-TEA — Badalićeva 26b, Zagreb. Telefon: +385 1 3820 113. E-mail: info@ro-tea.hr. Radno vrijeme: Pon-Pet 07:30–15:30.",
     type: "website",
     images: [
       {

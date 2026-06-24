@@ -123,7 +123,7 @@ export function customerEmail(data: {
         <h3 style="color:#0055a8">📍 Osobno preuzimanje</h3>
         <p style="margin:0;font-size:14px">Narudžbu možete preuzeti na adresi:</p>
         <p style="margin:4px 0;font-weight:600;font-size:14px">Badalićeva 26b, 10000 Zagreb</p>
-        <p style="margin:8px 0 0;font-size:13px;color:#64748b">Radno vrijeme: Pon-Pet 08:00–16:00, Sub 08:00–12:00</p>
+        <p style="margin:8px 0 0;font-size:13px;color:#64748b">Radno vrijeme: Pon-Pet 07:30–15:30</p>
         <p style="margin:4px 0 0;font-size:13px;color:#64748b">Kontakt: +385 1 3820 113</p>
       </div>` : ""}
       <h3 style="color:#0f172a;font-size:15px;margin:24px 0 12px">Naručeni proizvodi</h3>
