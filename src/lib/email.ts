@@ -28,7 +28,7 @@ const css = `<style>
   body{margin:0;padding:0;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif}
   .wrap{max-width:560px;margin:0 auto;background:#fff}
   .head{background:${BRAND};padding:28px 32px}
-  .head img{height:24px}
+  
   .body{padding:32px}
   .card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin:20px 0}
   .card h3{color:#0f172a;margin:0 0 12px;font-size:15px}
@@ -48,7 +48,7 @@ const css = `<style>
 </style>`;
 
 function header(): string {
-  return `<div class="head"><img src="${URL_BASE}/images/rotea-logo.webp" alt="RO-TEA" style="height:28px;filter:brightness(0) invert(1)"/></div>`;
+  return `<div class="head"><span style="color:#fff;font-size:22px;font-weight:800;letter-spacing:-0.5px">RO-TEA</span><span style="color:rgba(255,255,255,0.4);font-size:12px;display:block;margin-top:2px">profesionalni alati i oprema</span></div>`;
 }
 
 function footer(isAdmin: boolean = false): string {
