@@ -1,10 +1,7 @@
 // Email provider abstraction. Controlled by EMAIL_PROVIDER env var.
-// Supported: "microsoft-graph", "disabled" (noop).
-// Falls back to console.log if provider is missing or unconfigured.
 
 export async function sendEmail(payload: { to: string; subject: string; html: string }): Promise<boolean> {
   const provider = process.env.EMAIL_PROVIDER || "disabled";
-
   try {
     if (provider === "microsoft-graph") {
       const mg = await import("./email/microsoftGraph");
@@ -24,28 +21,61 @@ export async function sendEmail(payload: { to: string; subject: string; html: st
   }
 }
 
-// --- Templates (same for all providers) ---
+// RO-TEA bank details
+const IBAN = "HR8923600001101238701";
+const RECIPIENT = "RO-TEA d.o.o.";
+const BANK = "Zagrebačka banka";
+
+function bankPaymentSection(orderNumber: string, total: number): string {
+  const amount = total.toFixed(2).replace(".", ",");
+  const ref = orderNumber.replace("ROTEA-", "");
+  const paymentData = encodeURIComponent(
+    "UPNQR\n\n\n\n\n" + RECIPIENT + "\n" + IBAN + "\nHR01\n" + amount + "\n" + ref + "\nNarudžba " + orderNumber + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+  );
+  const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + paymentData;
+  
+  return (
+    "<div style='background:#f0f7ff;border:1px solid #0055a8;border-radius:8px;padding:16px;margin:16px 0'>" +
+    "<h3 style='color:#0055a8;margin-top:0'>Podaci za uplatu</h3>" +
+    "<table style='width:100%'>" +
+    "<tr><td style='padding:4px 0;color:#475569'>Primatelj:</td><td><strong>" + RECIPIENT + "</strong></td></tr>" +
+    "<tr><td style='padding:4px 0;color:#475569'>IBAN:</td><td><strong>" + IBAN + "</strong></td></tr>" +
+    "<tr><td style='padding:4px 0;color:#475569'>Banka:</td><td>" + BANK + "</td></tr>" +
+    "<tr><td style='padding:4px 0;color:#475569'>Iznos:</td><td><strong>" + amount + " EUR</strong></td></tr>" +
+    "<tr><td style='padding:4px 0;color:#475569'>Poziv na broj:</td><td><strong>" + ref + "</strong></td></tr>" +
+    "<tr><td style='padding:4px 0;color:#475569'>Opis:</td><td>Narudžba " + orderNumber + "</td></tr>" +
+    "</table>" +
+    "<div style='text-align:center;margin-top:12px'>" +
+    "<img src='" + qrUrl + "' alt='QR kod za plaćanje' style='width:180px;height:180px'/>" +
+    "<p style='font-size:11px;color:#94a3b8;margin-top:4px'>Skenirajte QR kod za mobilno plaćanje</p>" +
+    "</div>" +
+    "<p style='font-size:12px;color:#64748b;margin-top:8px'>Po primitku uplate narudžba se šalje u roku 1-2 radna dana.</p>" +
+    "</div>"
+  );
+}
 
 export function customerEmail(data: {
   orderNumber: string; total: number; paymentMethod: string;
   items: { name: string; quantity: number; price: number }[];
 }): string {
-  const pm = data.paymentMethod === "card" ? "Kartica (Stripe)" : data.paymentMethod === "cod" ? "Pouzece" : "Bankovna uplata";
+  const pm = data.paymentMethod === "card" ? "Kartica (Stripe)" : data.paymentMethod === "cod" ? "Pouzeće" : "Bankovna uplata";
+  const isBank = data.paymentMethod === "bank_transfer";
   let rows = "";
   for (const it of data.items) {
     rows += "<tr><td style='padding:4px 8px'>" + it.name + "</td><td style='padding:4px 8px;text-align:center'>" + it.quantity + "</td><td style='padding:4px 8px;text-align:right'>" + it.price.toFixed(2) + " EUR</td></tr>";
   }
   return (
     "<div style='font-family:Arial,sans-serif;max-width:600px;margin:auto'>" +
-    "<h2 style='color:#0055a8'>Hvala vam na narudzbi!</h2>" +
-    "<p>Broj narudzbe: <strong>" + data.orderNumber + "</strong></p>" +
+    "<h2 style='color:#0055a8'>Hvala vam na narudžbi!</h2>" +
+    "<p>Broj narudžbe: <strong>" + data.orderNumber + "</strong></p>" +
     "<p>Ukupno: <strong>" + data.total.toFixed(2) + " EUR</strong></p>" +
-    "<p>Nacin placanja: " + pm + "</p>" +
+    "<p>Način plaćanja: " + pm + "</p>" +
+    (isBank ? bankPaymentSection(data.orderNumber, data.total) : "") +
     "<table style='width:100%;border-collapse:collapse;margin:16px 0'>" +
-    "<tr style='background:#f8fafc'><th style='text-align:left;padding:8px'>Proizvod</th><th style='padding:8px'>Kol</th><th style='text-align:right;padding:8px'>Cijena</th></tr>" +
+    "<tr style='background:#f8fafc'><th style='text-align:left;padding:8px'>Proizvod</th><th style='padding:8px'>Kol.</th><th style='text-align:right;padding:8px'>Cijena</th></tr>" +
     rows +
     "</table>" +
-    "<p style='color:#64748b;font-size:13px;margin-top:24px'>Napomena: Racun nije automatski izdan. Ukoliko trebate R1 racun, javite nam se na info@ro-tea.hr.</p>" +
+    "<p style='color:#64748b;font-size:13px;margin-top:24px'>Napomena: Račun nije automatski izdan. Ukoliko trebate R1 račun, javite nam se na info@ro-tea.hr.</p>" +
     "<p style='color:#64748b;font-size:13px'>RO-TEA d.o.o.</p></div>"
   );
 }
@@ -55,10 +85,10 @@ export function adminNewOrderEmail(data: {
   customerName: string; customerEmail: string;
 }): string {
   return (
-    "<h2>Nova narudzba: " + data.orderNumber + "</h2>" +
+    "<h2>Nova narudžba: " + data.orderNumber + "</h2>" +
     "<p>Kupac: " + data.customerName + " (" + data.customerEmail + ")</p>" +
     "<p>Iznos: <strong>" + data.total.toFixed(2) + " EUR</strong></p>" +
-    "<p>Placanje: " + data.paymentMethod + "</p>" +
+    "<p>Plaćanje: " + data.paymentMethod + "</p>" +
     "<p><a href='https://ro-tea-webshop-hermes.vercel.app/admin/orders'>Otvori admin panel</a></p>"
   );
 }
@@ -66,10 +96,10 @@ export function adminNewOrderEmail(data: {
 export function adminPaymentAlert(data: {
   orderNumber: string; status: string; customerEmail: string; message?: string;
 }): string {
-  const title = data.status === "PAID" ? "Placanje potvrdeno" : "Problem s placanjem";
+  const title = data.status === "PAID" ? "Plaćanje potvrđeno" : "Problem s plaćanjem";
   return (
     "<h2>" + title + "</h2>" +
-    "<p>Narudzba: " + data.orderNumber + "</p>" +
+    "<p>Narudžba: " + data.orderNumber + "</p>" +
     "<p>Kupac: " + data.customerEmail + "</p>" +
     "<p>Status: " + data.status + "</p>" +
     (data.message ? "<p>" + data.message + "</p>" : "") +
