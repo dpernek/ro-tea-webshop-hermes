@@ -12,6 +12,7 @@ function emptyStringToNull(val: unknown): unknown {
 
 const productCreateSchema = z.object({
   name: z.string().min(1, "Naziv proizvoda je obavezan"),
+  slug: z.string().optional().default(""),
   sku: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
   brandId: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
   categoryId: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
@@ -23,6 +24,10 @@ const productCreateSchema = z.object({
   gallery: z.string().default("[]"),
   shortDescription: z.string().default(""),
   description: z.string().default(""),
+  benefits: z.string().default(""),
+  usage: z.string().default(""),
+  warranty: z.string().default(""),
+  deliveryNote: z.string().default(""),
   specifications: z.string().default("{}"),
   stock: z.preprocess(emptyStringToNull, z.preprocess((v) => (v === "" ? undefined : Number(v)), z.number().int().min(0, "Zaliha ne može biti negativna").nullable().optional())),
   stockStatus: z.enum(["INSTOCK", "OUTOFSTOCK", "ONBACKORDER", "UNKNOWN"]).default("UNKNOWN"),
@@ -90,7 +95,33 @@ export async function POST(request: NextRequest) {
   }
 
   const body = parsed.data;
-  const slug = body.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+  // Slug behavior: use provided slug if present, else generate from name
+  let slug: string;
+  if (body.slug && body.slug.trim()) {
+    // Validate slug format: lowercase, hyphens, no spaces
+    if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(body.slug.trim())) {
+      return NextResponse.json(
+        { errors: { slug: "Slug mora sadržavati samo mala slova, brojke i crtice (npr. moj-proizvod)." } },
+        { status: 400 }
+      );
+    }
+    slug = body.slug.trim();
+  } else {
+    slug = body.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
+
+  // Check for slug collision
+  const existingSlug = await db.product.findUnique({ where: { slug } });
+  if (existingSlug) {
+    return NextResponse.json(
+      { errors: { slug: `Slug "${slug}" već postoji. Odaberite drugi slug.` } },
+      { status: 400 }
+    );
+  }
 
   const product = await db.product.create({ data: { ...body, slug } });
   return NextResponse.json(product);

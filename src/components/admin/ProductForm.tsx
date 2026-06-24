@@ -57,6 +57,10 @@ export function ProductForm({ product, categories, brands }: {
         categoryId: form.get("categoryId") || "",
         sku: form.get("sku") || "",
         badge: form.get("badge") || "",
+        benefits: form.get("benefits") || "",
+        usage: form.get("usage") || "",
+        warranty: form.get("warranty") || "",
+        deliveryNote: form.get("deliveryNote") || "",
       };
 
       // Clean: remove empty optional strings

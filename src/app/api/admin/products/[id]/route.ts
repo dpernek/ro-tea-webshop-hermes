@@ -105,10 +105,10 @@ export async function PATCH(
   if (data.image !== undefined) updateData.image = data.image;
   if (data.brandId !== undefined) updateData.brandId = data.brandId || undefined;
   if (data.categoryId !== undefined) updateData.categoryId = data.categoryId || undefined;
-  if ((data as any).benefits !== undefined) updateData.benefits = (data as any).benefits || undefined;
-  if ((data as any).usage !== undefined) updateData.usage = (data as any).usage || undefined;
-  if ((data as any).warranty !== undefined) updateData.warranty = (data as any).warranty || undefined;
-  if ((data as any).deliveryNote !== undefined) updateData.deliveryNote = (data as any).deliveryNote || undefined;
+  if (data.benefits !== undefined) updateData.benefits = data.benefits || undefined;
+  if (data.usage !== undefined) updateData.usage = data.usage || undefined;
+  if (data.warranty !== undefined) updateData.warranty = data.warranty || undefined;
+  if (data.deliveryNote !== undefined) updateData.deliveryNote = data.deliveryNote || undefined;
 
   // Sale price validation
   const effectiveRegPrice = (updateData.regularPrice as number | null | undefined) ?? (existing.regularPrice ?? existing.price);

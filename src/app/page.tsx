@@ -104,10 +104,16 @@ export default function HomePage() {
           <p className="mb-6 text-center text-xs font-medium uppercase tracking-wider text-slate-400">
             Provjereni brendovi
           </p>
-          <div className="flex items-center justify-center gap-10 sm:gap-16">
-            <Image src="/images/brands/pferd.png" alt="PFERD" width={140} height={40} className="h-10 w-auto opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
-            <Image src="/images/brands/metabo.png" alt="Metabo" width={140} height={40} className="h-10 w-auto opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
-            <Image src="/images/brands/festa.webp" alt="Festa" width={140} height={40} className="h-10 w-auto opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
+          <div className="flex items-center justify-center gap-8 sm:gap-12">
+            <div className="relative h-10 w-[120px]">
+              <Image src="/images/brands/pferd.png" alt="PFERD" fill className="object-contain opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
+            </div>
+            <div className="relative h-10 w-[120px]">
+              <Image src="/images/brands/metabo.png" alt="Metabo" fill className="object-contain opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
+            </div>
+            <div className="relative h-10 w-[120px]">
+              <Image src="/images/brands/festa.webp" alt="Festa" fill className="object-contain opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
+            </div>
           </div>
         </div>
       </section>
