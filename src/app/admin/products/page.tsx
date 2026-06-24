@@ -80,9 +80,6 @@ const BULK_ACTIONS: { value: BulkActionType | ""; label: string; icon: React.Rea
   { value: "removeSale", label: "Makni akciju", icon: <X className="h-4 w-4" /> },
   { value: "status", label: "Promijeni status", icon: <RefreshCw className="h-4 w-4" /> },
   { value: "stockStatus", label: "Promijeni stanje zalihe", icon: <Package className="h-4 w-4" /> },
-  { value: "decreasePercent", label: "Smanji cijenu %", icon: <Percent className="h-4 w-4" /> },
-  { value: "setSalePrice", label: "Fiksna akcijska cijena", icon: <Euro className="h-4 w-4" /> },
-  { value: "removeSale", label: "Makni akciju", icon: <Tag className="h-4 w-4" /> },
 ];
 
 const LIMIT = 20;
