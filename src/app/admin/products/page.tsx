@@ -53,8 +53,10 @@ interface PreviewItem {
   productId: string;
   productName: string;
   oldPrice: number;
+  oldRegularPrice: number | null;
   oldSalePrice: number | null;
   newPrice: number;
+  newRegularPrice: number | null;
   newSalePrice: number | null;
   status: "updated" | "skipped";
   skipReason?: string;
@@ -69,8 +71,13 @@ type BulkActionType =
 
 const BULK_ACTIONS: { value: BulkActionType | ""; label: string; icon: React.ReactNode }[] = [
   { value: "", label: "Odaberi akciju...", icon: null },
-  { value: "discountPercent", label: "Popust %", icon: <Percent className="h-4 w-4" /> },
+  { value: "discountPercent", label: "Popust % (akcijska)", icon: <Percent className="h-4 w-4" /> },
   { value: "increasePercent", label: "Povećaj cijenu %", icon: <Percent className="h-4 w-4" /> },
+  { value: "decreasePercent", label: "Smanji cijenu %", icon: <Percent className="h-4 w-4" /> },
+  { value: "setSalePrice", label: "Fiksna akcijska cijena", icon: <Tag className="h-4 w-4" /> },
+  { value: "removeSale", label: "Makni akciju", icon: <X className="h-4 w-4" /> },
+  { value: "status", label: "Promijeni status", icon: <RefreshCw className="h-4 w-4" /> },
+  { value: "stockStatus", label: "Promijeni stanje zalihe", icon: <Package className="h-4 w-4" /> },
   { value: "decreasePercent", label: "Smanji cijenu %", icon: <Percent className="h-4 w-4" /> },
   { value: "setSalePrice", label: "Fiksna akcijska cijena", icon: <Euro className="h-4 w-4" /> },
   { value: "removeSale", label: "Makni akciju", icon: <Tag className="h-4 w-4" /> },
@@ -101,6 +108,7 @@ export default function AdminProductsPage() {
 
   // --- Bulk panel state ---
   const [bulkAction, setBulkAction] = useState<BulkActionType | "">("");
+  const [saleHandling, setSaleHandling] = useState<"keep" | "clear" | "recalculateSameDiscount">("keep");
   const [bulkValue, setBulkValue] = useState("");
 
   // --- Preview modal state ---
@@ -250,6 +258,7 @@ export default function AdminProductsPage() {
         },
         action: bulkAction,
         value: bulkAction === "removeSale" ? null : Number(bulkValue),
+        saleHandling: saleHandling as "keep" | "clear" | "recalculateSameDiscount",
         preview: true,
       };
 
@@ -519,7 +528,7 @@ export default function AdminProductsPage() {
                   type="number"
                   step="0.01"
                   min="0"
-                  max={bulkAction === "setSalePrice" ? undefined : 100}
+                  max={bulkAction === "discountPercent" ? 95 : bulkAction === "setSalePrice" ? undefined : 100}
                   placeholder={
                     bulkAction === "setSalePrice" ? "Cijena (€)" : "Postotak"
                   }
