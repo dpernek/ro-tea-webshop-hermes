@@ -118,7 +118,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       try {
         const orderFull = await db.order.findUnique({
           where: { id },
-          select: { customerEmail: true, orderNumber: true },
+          select: { customerEmail: true, orderNumber: true, items: { select: { productName: true, quantity: true, unitPrice: true } } },
         });
         if (orderFull?.customerEmail) {
           await sendEmail({
@@ -128,7 +128,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
               orderNumber: orderFull.orderNumber,
               oldStatus: oldOrder?.status || "",
               newStatus: parsed.data.status as string,
-              items: [],
+              items: (orderFull?.items || []).map(i => ({ name: i.productName, quantity: i.quantity, price: i.unitPrice })),
             }),
           });
         }
