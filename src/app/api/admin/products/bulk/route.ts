@@ -6,404 +6,216 @@ import { db } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 const bulkActionEnum = z.enum([
-  "discountPercent",
-  "increasePercent",
-  "decreasePercent",
-  "setSalePrice",
-  "removeSale",
-  "status",
-  "stockStatus",
+  "discountPercent", "increasePercent", "decreasePercent",
+  "setSalePrice", "removeSale", "status", "stockStatus",
 ]);
+
+const saleHandlingEnum = z.enum(["keep", "clear", "recalculateSameDiscount"]).optional().default("keep");
 
 const bulkSchema = z.object({
   ids: z.array(z.string()).optional().default([]),
   selectAll: z.boolean().optional().default(false),
-  filters: z
-    .object({
-      search: z.string().optional(),
-      categoryId: z.string().optional(),
-      brandId: z.string().optional(),
-    })
-    .optional(),
+  filters: z.object({ search: z.string().optional(), categoryId: z.string().optional(), brandId: z.string().optional() }).optional(),
   action: bulkActionEnum,
   value: z.any(),
+  saleHandling: saleHandlingEnum,
   preview: z.boolean().optional().default(false),
 });
 
-/** Build the WHERE clause from the same filter params the GET endpoint uses. */
-function buildFilterWhere(filters?: {
-  search?: string;
-  categoryId?: string;
-  brandId?: string;
-}): Record<string, unknown> {
-  const where: Record<string, unknown> = {};
+const R = (v: number) => Math.round(v * 100) / 100;
 
-  if (filters?.search) {
-    where.OR = [
-      { name: { contains: filters.search, mode: "insensitive" } },
-      { sku: { contains: filters.search, mode: "insensitive" } },
-    ];
-  }
-  if (filters?.categoryId) {
-    where.categoryId = filters.categoryId;
-  }
-  if (filters?.brandId) {
-    where.brandId = filters.brandId;
-  }
-
-  return where;
+function buildFilterWhere(filters?: { search?: string; categoryId?: string; brandId?: string }): Record<string, unknown> {
+  const w: Record<string, unknown> = {};
+  if (filters?.search) w.OR = [{ name: { contains: filters.search, mode: "insensitive" } }, { sku: { contains: filters.search, mode: "insensitive" } }];
+  if (filters?.categoryId) w.categoryId = filters.categoryId;
+  if (filters?.brandId) w.brandId = filters.brandId;
+  return w;
 }
 
-/** Validate value based on action type. Returns error message or null. */
-function validateValue(
-  action: z.infer<typeof bulkActionEnum>,
-  value: unknown
-): string | null {
-  if (action === "discountPercent" || action === "increasePercent" || action === "decreasePercent") {
-    const num = Number(value);
-    if (isNaN(num) || num <= 0 || num > 100) {
-      return "Postotak mora biti broj između 0 i 100";
-    }
+function validateValue(action: string, value: unknown): string | null {
+  if (["discountPercent", "increasePercent", "decreasePercent"].includes(action)) {
+    const n = Number(value);
+    if (isNaN(n) || n < 0.01 || n > 100) return "Postotak mora biti između 0.01 i 100";
   } else if (action === "setSalePrice") {
-    const num = Number(value);
-    if (isNaN(num) || num < 0) {
-      return "Akcijska cijena mora biti pozitivan broj";
-    }
-  } else if (action === "status") {
-    if (!["ACTIVE", "DRAFT", "ARCHIVED"].includes(value as string)) {
-      return "Neispravan status. Dozvoljene vrijednosti: ACTIVE, DRAFT, ARCHIVED";
-    }
-  } else if (action === "stockStatus") {
-    if (!["INSTOCK", "OUTOFSTOCK", "ONBACKORDER"].includes(value as string)) {
-      return "Neispravno stanje zalihe. Dozvoljene vrijednosti: INSTOCK, OUTOFSTOCK, ONBACKORDER";
-    }
+    if (Number(value) < 0) return "Akcijska cijena mora biti pozitivna";
+  } else if (action === "status" && !["ACTIVE","DRAFT","ARCHIVED"].includes(value as string)) {
+    return "Neispravan status";
+  } else if (action === "stockStatus" && !["INSTOCK","OUTOFSTOCK","ONBACKORDER"].includes(value as string)) {
+    return "Neispravno stanje zalihe";
   }
   return null;
 }
 
-interface ProductForBulk {
-  id: string;
-  name: string;
-  price: number;
-  salePrice: number | null;
+interface ProductFull {
+  id: string; name: string; price: number; regularPrice: number | null; salePrice: number | null;
 }
 
-interface PreviewItem {
-  productId: string;
-  productName: string;
-  oldPrice: number;
-  oldSalePrice: number | null;
-  newPrice: number;
-  newSalePrice: number | null;
-  status: "updated" | "skipped";
-  skipReason?: string;
+interface Change {
+  productId: string; productName: string;
+  oldPrice: number; oldRegularPrice: number | null; oldSalePrice: number | null;
+  newPrice: number; newRegularPrice: number | null; newSalePrice: number | null;
+  updated: boolean; skipReason?: string;
 }
 
-interface UpdateResult {
-  productId: string;
-  oldPrice: number;
-  oldSalePrice: number | null;
-  newPrice: number;
-  newSalePrice: number | null;
-  updated: boolean;
-  skipReason?: string;
-}
+function computeChange(p: ProductFull, action: string, value: number, saleHandling: string): Change {
+  const oldPrice = p.price, oldReg = p.regularPrice, oldSale = p.salePrice;
+  let np = oldPrice, nr = oldReg, ns = oldSale;
+  let updated = true, skip = "";
 
-/** Compute what the new price/salePrice would be for a product given an action. */
-function computeChange(
-  product: ProductForBulk,
-  action: z.infer<typeof bulkActionEnum>,
-  value: number
-): UpdateResult {
-  const oldPrice = product.price;
-  const oldSalePrice = product.salePrice;
-
-  let newPrice = oldPrice;
-  let newSalePrice = oldSalePrice;
-  let updated = true;
-  let skipReason: string | undefined;
-
-  switch (action) {
-    case "discountPercent": {
-      const discount = value / 100;
-      const computed = Math.round(oldPrice * (1 - discount) * 100) / 100;
-      if (computed >= oldPrice) {
-        updated = false;
-        skipReason = "Popust ne bi promijenio cijenu";
-      } else if (oldSalePrice != null && oldSalePrice <= computed) {
-        updated = false;
-        skipReason = "Već postoji bolja akcijska cijena";
-      } else {
-        newSalePrice = computed;
-      }
-      break;
-    }
-    case "increasePercent": {
-      const factor = 1 + value / 100;
-      newPrice = Math.round(oldPrice * factor * 100) / 100;
-      if (oldSalePrice != null) {
-        newSalePrice = Math.round(oldSalePrice * factor * 100) / 100;
-      }
-      break;
-    }
-    case "decreasePercent": {
-      const factor = 1 - value / 100;
-      const computed = Math.round(oldPrice * factor * 100) / 100;
-      if (computed <= 0) {
-        updated = false;
-        skipReason = "Nova cijena bi bila 0 ili negativna";
-      } else {
-        newPrice = computed;
-        if (oldSalePrice != null) {
-          const newSale = Math.round(oldSalePrice * factor * 100) / 100;
-          newSalePrice = newSale > 0 ? newSale : null;
+  if (action === "discountPercent") {
+    // ONLY set salePrice, DON'T touch price or regularPrice
+    const sale = R(oldPrice * (1 - value / 100));
+    if (sale >= oldPrice) { updated = false; skip = "Popust ne bi promijenio cijenu"; }
+    else { ns = sale; }
+  } else if (action === "increasePercent" || action === "decreasePercent") {
+    const factor = action === "increasePercent" ? 1 + value / 100 : 1 - value / 100;
+    np = R(oldPrice * factor);
+    if (np < 0.01) { updated = false; skip = "Nova cijena bi bila ispod 0.01 EUR"; }
+    else {
+      if (oldSale != null) {
+        if (saleHandling === "clear") ns = null;
+        else if (saleHandling === "recalculateSameDiscount") {
+          const oldDiscountRate = oldSale / oldPrice; // e.g. 0.8 for 20% off
+          ns = R(np * oldDiscountRate);
+          if (ns >= np) ns = null;
+        } else { // keep
+          if (ns >= np) { updated = false; skip = "Akcijska cijena (" + oldSale.toFixed(2) + ") veća od nove redovne (" + np.toFixed(2) + ")"; }
         }
       }
-      break;
     }
-    case "setSalePrice": {
-      if (value >= oldPrice) {
-        updated = false;
-        skipReason = "Akcijska cijena mora biti manja od redovne";
-      } else {
-        newSalePrice = value;
-      }
-      break;
-    }
-    case "removeSale": {
-      if (oldSalePrice == null) {
-        updated = false;
-        skipReason = "Proizvod nema akcijsku cijenu";
-      } else {
-        newSalePrice = null;
-      }
-      break;
-    }
-    case "status":
-    case "stockStatus":
-      break;
+  } else if (action === "setSalePrice") {
+    if (value >= oldPrice) { updated = false; skip = "Akcijska cijena (" + value.toFixed(2) + ") mora biti manja od redovne (" + oldPrice.toFixed(2) + ")"; }
+    else { ns = value; }
+  } else if (action === "removeSale") {
+    if (oldSale == null) { updated = false; skip = "Proizvod nema akcijsku cijenu"; }
+    else { ns = null; }
   }
 
-  return { productId: product.id, oldPrice, oldSalePrice, newPrice, newSalePrice, updated, skipReason };
+  return { productId: p.id, productName: p.name, oldPrice, oldRegularPrice: oldReg, oldSalePrice: oldSale, newPrice: np, newRegularPrice: nr, newSalePrice: ns, updated, skipReason: skip || undefined };
 }
 
 export async function POST(request: NextRequest) {
   const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let raw: unknown;
-  try {
-    raw = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Neispravan JSON" }, { status: 400 });
-  }
+  try { raw = await request.json(); } catch { return NextResponse.json({ error: "Neispravan JSON" }, { status: 400 }); }
 
   const parsed = bulkSchema.safeParse(raw);
-  if (!parsed.success) {
-    const messages = parsed.error.issues.map((i) => i.message).join(", ");
-    return NextResponse.json(
-      { error: `Neispravni podaci: ${messages}` },
-      { status: 400 }
-    );
-  }
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues.map(i => i.message).join(", ") }, { status: 400 });
 
-  const { ids, selectAll, filters, action, value, preview } = parsed.data;
+  const { ids, selectAll, filters, action, value, preview, saleHandling } = parsed.data;
+  const valErr = validateValue(action, value);
+  if (valErr) return NextResponse.json({ error: valErr }, { status: 400 });
 
-  const valError = validateValue(action, value);
-  if (valError) {
-    return NextResponse.json({ error: valError }, { status: 400 });
-  }
+  let targetIds = selectAll && filters
+    ? (await db.product.findMany({ where: buildFilterWhere(filters), select: { id: true } })).map(p => p.id)
+    : ids;
+  if (!targetIds.length) return NextResponse.json({ error: "Nema odabranih proizvoda" }, { status: 400 });
 
-  let targetIds: string[];
-
-  if (selectAll && filters) {
-    const where = buildFilterWhere(filters);
-    const all = await db.product.findMany({
-      where,
-      select: { id: true },
-    });
-    targetIds = all.map((p) => p.id);
-  } else {
-    targetIds = ids;
-  }
-
-  if (targetIds.length === 0) {
-    return NextResponse.json(
-      { error: "Nema odabranih proizvoda" },
-      { status: 400 }
-    );
-  }
-
-  const products: ProductForBulk[] = await db.product.findMany({
+  const products: ProductFull[] = await db.product.findMany({
     where: { id: { in: targetIds } },
-    select: { id: true, name: true, price: true, salePrice: true },
+    select: { id: true, name: true, price: true, regularPrice: true, salePrice: true },
   });
 
-  const isPriceAction = [
-    "discountPercent",
-    "increasePercent",
-    "decreasePercent",
-    "setSalePrice",
-    "removeSale",
-  ].includes(action);
+  const isPriceAction = ["discountPercent","increasePercent","decreasePercent","setSalePrice","removeSale"].includes(action);
+  const numValue = isPriceAction ? Number(value) : 0;
 
-  // ── PREVIEW MODE ────────────────────────────────────────────────
+  // ── PREVIEW ──
   if (preview) {
     if (isPriceAction) {
-      const numValue = Number(value);
-      const items: PreviewItem[] = products.map((p) => {
-        const change = computeChange(p, action as z.infer<typeof bulkActionEnum>, numValue);
-        return {
-          productId: change.productId,
-          productName: p.name,
-          oldPrice: change.oldPrice,
-          oldSalePrice: change.oldSalePrice,
-          newPrice: change.newPrice,
-          newSalePrice: change.newSalePrice,
-          status: change.updated ? "updated" : "skipped",
-          skipReason: change.skipReason,
-        };
+      const items = products.map(p => computeChange(p, action, numValue, saleHandling));
+      return NextResponse.json({
+        preview: true,
+        items,
+        updatedCount: items.filter(i => i.updated).length,
+        skippedCount: items.filter(i => !i.updated).length,
       });
-
-      const updatedCount = items.filter((i) => i.status === "updated").length;
-      const skippedCount = items.filter((i) => i.status === "skipped").length;
-
-      return NextResponse.json({ preview: true, items, updatedCount, skippedCount });
     }
-
     return NextResponse.json({
       preview: true,
-      items: products.map((p) => ({
-        productId: p.id,
-        productName: p.name,
-        oldPrice: p.price,
-        oldSalePrice: p.salePrice,
-        newPrice: p.price,
-        newSalePrice: p.salePrice,
-        status: "updated" as const,
-      })),
-      updatedCount: products.length,
-      skippedCount: 0,
+      items: products.map(p => ({ productId: p.id, productName: p.name, oldPrice: p.price, oldRegularPrice: p.regularPrice, oldSalePrice: p.salePrice, newPrice: p.price, newRegularPrice: p.regularPrice, newSalePrice: p.salePrice, updated: true })),
+      updatedCount: products.length, skippedCount: 0,
     });
   }
 
-  // ── APPLY MODE ──────────────────────────────────────────────────
-  const numValue = isPriceAction ? Number(value) : 0;
-  let updatedCount = 0;
-  let skippedCount = 0;
-  const operationItems: Array<{
-    productId: string;
-    oldPrice: number | null;
-    oldRegularPrice: number | null;
-    oldSalePrice: number | null;
-    newPrice: number | null;
-    newRegularPrice: number | null;
-    newSalePrice: number | null;
-    skipped: boolean;
-    skipReason?: string;
-  }> = [];
+  // ── APPLY IN TRANSACTION ──
+  let updatedCount = 0, skippedCount = 0;
+  let operationId = "";
 
   if (isPriceAction) {
-    const changes = products.map((p) =>
-      computeChange(p, action as z.infer<typeof bulkActionEnum>, numValue)
-    );
+    const changes = products.map(p => computeChange(p, action, numValue, saleHandling));
 
-    for (const change of changes) {
-      const data: Record<string, unknown> = {};
-      if (action !== "removeSale" && change.updated) {
-        data.price = change.newPrice;
-      }
-      if (action === "removeSale" && change.updated) {
-        data.salePrice = null;
-      } else if (action === "setSalePrice" && change.updated) {
-        data.salePrice = change.newSalePrice;
-      } else if (
-        (action === "discountPercent" || action === "increasePercent" || action === "decreasePercent") &&
-        change.updated
-      ) {
-        data.price = change.newPrice;
-        data.salePrice = change.newSalePrice;
-      }
+    await db.$transaction(async (tx) => {
+      // Create operation record
+      const op = await tx.productBulkOperation.create({
+        data: {
+          type: action, createdBy: session.user.email || "unknown",
+          filterSnapshot: filters ? JSON.stringify(filters) : null,
+          selectedCount: products.length, affectedCount: 0,
+        },
+        select: { id: true },
+      });
+      operationId = op.id;
 
-      if (change.updated) {
-        await db.product.update({
-          where: { id: change.productId },
-          data,
+      for (const c of changes) {
+        let itemOldPrice = c.oldPrice, itemOldReg = c.oldRegularPrice, itemOldSale = c.oldSalePrice;
+        let itemNewPrice = c.newPrice, itemNewReg = c.newRegularPrice, itemNewSale = c.newSalePrice;
+
+        if (c.updated) {
+          const data: Record<string, unknown> = {};
+          if (action === "discountPercent" || action === "setSalePrice") {
+            data.salePrice = c.newSalePrice;
+          } else if (action === "removeSale") {
+            data.salePrice = null;
+          } else if (action === "increasePercent" || action === "decreasePercent") {
+            data.price = c.newPrice;
+            data.salePrice = c.newSalePrice;
+          }
+
+          await tx.product.update({ where: { id: c.productId }, data });
+          updatedCount++;
+        } else {
+          skippedCount++;
+        }
+
+        await tx.productBulkOperationItem.create({
+          data: {
+            operationId: op.id, productId: c.productId,
+            oldPrice: itemOldPrice, oldRegularPrice: itemOldReg, oldSalePrice: itemOldSale,
+            newPrice: itemNewPrice, newRegularPrice: itemNewReg, newSalePrice: itemNewSale,
+            skipped: !c.updated, skipReason: c.skipReason,
+          },
         });
-        updatedCount++;
-      } else {
-        skippedCount++;
       }
 
-      operationItems.push({
-        productId: change.productId,
-        oldPrice: change.oldPrice,
-        oldRegularPrice: change.oldPrice,
-        oldSalePrice: change.oldSalePrice,
-        newPrice: change.updated ? change.newPrice : change.oldPrice,
-        newRegularPrice: change.updated ? change.newPrice : change.oldPrice,
-        newSalePrice: change.updated ? change.newSalePrice : change.oldSalePrice,
-        skipped: !change.updated,
-        skipReason: change.skipReason,
-      });
-    }
-  } else {
-    const data: Record<string, unknown> = {};
-    if (action === "status") {
-      data.status = value as string;
-    } else if (action === "stockStatus") {
-      data.stockStatus = value as string;
-    }
-
-    const result = await db.product.updateMany({
-      where: { id: { in: targetIds } },
-      data,
+      await tx.productBulkOperation.update({ where: { id: op.id }, data: { affectedCount: updatedCount } });
     });
-    updatedCount = result.count;
+  } else {
+    // Status / stockStatus
+    const data: Record<string, unknown> = {};
+    if (action === "status") data.status = value as string;
+    else if (action === "stockStatus") data.stockStatus = value as string;
 
-    for (const p of products) {
-      operationItems.push({
-        productId: p.id,
-        oldPrice: p.price,
-        oldRegularPrice: p.price,
-        oldSalePrice: p.salePrice,
-        newPrice: p.price,
-        newRegularPrice: p.price,
-        newSalePrice: p.salePrice,
-        skipped: false,
+    await db.$transaction(async (tx) => {
+      const op = await tx.productBulkOperation.create({
+        data: { type: action, createdBy: session.user.email || "", selectedCount: products.length, affectedCount: 0 },
+        select: { id: true },
       });
-    }
+      operationId = op.id;
+
+      const result = await tx.product.updateMany({ where: { id: { in: targetIds } }, data });
+      updatedCount = result.count;
+
+      for (const p of products) {
+        await tx.productBulkOperationItem.create({
+          data: { operationId: op.id, productId: p.id, oldPrice: p.price, oldRegularPrice: p.regularPrice, oldSalePrice: p.salePrice, newPrice: p.price, newRegularPrice: p.regularPrice, newSalePrice: p.salePrice, skipped: false },
+        });
+      }
+
+      await tx.productBulkOperation.update({ where: { id: op.id }, data: { affectedCount: updatedCount } });
+    });
   }
 
-  const operation = await db.productBulkOperation.create({
-    data: {
-      type: action,
-      createdBy: session.user.email || "unknown",
-      filterSnapshot: filters ? JSON.stringify(filters) : null,
-      selectedCount: products.length,
-      affectedCount: updatedCount,
-      items: {
-        create: operationItems.map((item) => ({
-          productId: item.productId,
-          oldPrice: item.oldPrice,
-          oldRegularPrice: item.oldRegularPrice,
-          oldSalePrice: item.oldSalePrice,
-          newPrice: item.newPrice,
-          newRegularPrice: item.newRegularPrice,
-          newSalePrice: item.newSalePrice,
-          skipped: item.skipped,
-          skipReason: item.skipReason,
-        })),
-      },
-    },
-    select: { id: true },
-  });
-
-  return NextResponse.json({
-    operationId: operation.id,
-    updated: updatedCount,
-    skipped: skippedCount,
-  });
+  return NextResponse.json({ operationId, updated: updatedCount, skipped: skippedCount });
 }
