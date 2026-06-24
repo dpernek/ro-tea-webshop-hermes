@@ -208,7 +208,7 @@ export function CatalogContent({
         skip: loadedProducts.length,
         take: PAGE_SIZE,
       });
-      setLoadedProducts(result.products);
+      setLoadedProducts(prev => [...prev, ...result.products]);
       setTotal(result.total);
     } catch (err) {
       console.error("Load more failed:", err);
