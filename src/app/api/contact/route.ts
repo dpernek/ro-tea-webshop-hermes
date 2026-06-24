@@ -56,17 +56,8 @@ export async function POST(request: NextRequest) {
     const adminEmail = process.env.ADMIN_EMAIL || "info@ro-tea.hr";
     const sent = await sendEmail({
       to: adminEmail,
-      subject: `[RO-TEA Kontakt] ${subject}`,
-      html: [
-        "<div style='font-family:Arial,sans-serif;max-width:600px'>",
-        "<h2 style='color:#0055a8'>Novi upit s web stranice</h2>",
-        `<p><strong>Ime:</strong> ${escapeHtml(name)}</p>`,
-        `<p><strong>Email:</strong> ${escapeHtml(email)}</p>`,
-        `<p><strong>Predmet:</strong> ${escapeHtml(subject)}</p>`,
-        `<p><strong>Poruka:</strong></p>`,
-        `<p style='white-space:pre-wrap;background:#f8fafc;padding:12px;border-radius:8px'>${escapeHtml(message)}</p>`,
-        "</div>",
-      ].join(""),
+      subject: `RO-TEA — Novi upit: ${subject}`,
+      html: `<!DOCTYPE html><html><head><style>body{margin:0;padding:0;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif}.wrap{max-width:560px;margin:0 auto;background:#fff}.head{background:#0055a8;padding:24px 32px;text-align:center}.head span{color:#fff;font-size:22px;font-weight:800}.body{padding:32px}.card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin:20px 0}@media(max-width:480px){.body{padding:20px}.head{padding:20px}}</style></head><body><div class="wrap"><div class="head"><span>RO-TEA</span></div><div class="body"><h2 style="color:#0f172a;margin:0 0 4px;font-size:22px">📩 Novi upit s web stranice</h2><div class="card"><table style="width:100%;font-size:14px"><tr><td style="color:#64748b;padding:4px 0">Ime:</td><td style="font-weight:600">${escapeHtml(name)}</td></tr><tr><td style="color:#64748b;padding:4px 0">Email:</td><td>${escapeHtml(email)}</td></tr><tr><td style="color:#64748b;padding:4px 0">Predmet:</td><td>${escapeHtml(subject)}</td></tr></table></div><div class="card"><p style="white-space:pre-wrap;margin:0;font-size:14px;color:#1e293b;line-height:1.6">${escapeHtml(message)}</p></div><p style="color:#64748b;font-size:12px;margin-top:24px">Ovo je automatska poruka s RO-TEA webshopa.</p></div></div></body></html>`,
     });
 
     if (!sent) {
