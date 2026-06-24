@@ -397,41 +397,9 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
           />
           <span className="text-sm text-slate-600">
             Prihvaćam{" "}
-            <a
-              href="/uvjeti-kupnje"
-              className="text-[#0055a8] underline hover:text-blue-800"
-            >
-              uvjete kupnje
-            </a>{" "}
-            i{" "}
-            <a
-              href="/pravila-o-privatnosti"
-              className="text-[#0055a8] underline hover:text-blue-800"
-            >
-              politiku privatnosti
-            </a>
-            ,{" "}
-            <a
-              href="/izjava-o-sigurnosti-online-placanja"
-              className="text-[#0055a8] underline hover:text-blue-800"
-            >
-              sigurnost plaćanja
-            </a>
-            ,{" "}
-            <a
-              href="/pravila-povrata-i-zamjene"
-              className="text-[#0055a8] underline hover:text-blue-800"
-            >
-              povrat i zamjenu
-            </a>{" "}
-            i{" "}
-            <a
-              href="/jednostrani-raskid-ugovora"
-              className="text-[#0055a8] underline hover:text-blue-800"
-            >
-              jednostrani raskid ugovora
-            </a>
-            .
+            <a href="/uvjeti-kupnje" className="text-[#0055a8] underline hover:text-blue-800">uvjete kupnje</a>
+            {" "}i{" "}
+            <a href="/pravila-o-privatnosti" className="text-[#0055a8] underline hover:text-blue-800">pravila privatnosti</a>.
           </span>
         </label>
         {errors.terms && (
