@@ -21,33 +21,52 @@ export async function sendEmail(payload: { to: string; subject: string; html: st
   }
 }
 
-// RO-TEA bank details
 const IBAN = "HR8923600001101238701";
 const RECIPIENT = "RO-TEA d.o.o.";
-const BANK = "Zagrebačka banka";
+
+function generateQRData(amount: string, ref: string, description: string): string {
+  // HUB3 format for Croatian mobile banking QR codes
+  const lines = [
+    "HRVHUB30",
+    "EUR",
+    amount,
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    IBAN,
+    "HR00",
+    ref,
+    description,
+    RECIPIENT,
+    "Badalićeva 26b",
+    "10000 Zagreb",
+  ];
+  return lines.join("\n");
+}
 
 function bankPaymentSection(orderNumber: string, total: number): string {
   const amount = total.toFixed(2).replace(".", ",");
   const ref = orderNumber.replace("ROTEA-", "");
-  const paymentData = encodeURIComponent(
-    "UPNQR\n\n\n\n\n" + RECIPIENT + "\n" + IBAN + "\nHR01\n" + amount + "\n" + ref + "\nNarudžba " + orderNumber + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
-  );
-  const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + paymentData;
+  const description = "Narudžba " + orderNumber;
+  const qrData = encodeURIComponent(generateQRData(amount, ref, description));
+  const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" + qrData;
   
   return (
     "<div style='background:#f0f7ff;border:1px solid #0055a8;border-radius:8px;padding:16px;margin:16px 0'>" +
-    "<h3 style='color:#0055a8;margin-top:0'>Podaci za uplatu</h3>" +
+    "<h3 style='color:#0055a8;margin-top:0;margin-bottom:12px'>Podaci za uplatu</h3>" +
     "<table style='width:100%'>" +
-    "<tr><td style='padding:4px 0;color:#475569'>Primatelj:</td><td><strong>" + RECIPIENT + "</strong></td></tr>" +
-    "<tr><td style='padding:4px 0;color:#475569'>IBAN:</td><td><strong>" + IBAN + "</strong></td></tr>" +
-    "<tr><td style='padding:4px 0;color:#475569'>Banka:</td><td>" + BANK + "</td></tr>" +
-    "<tr><td style='padding:4px 0;color:#475569'>Iznos:</td><td><strong>" + amount + " EUR</strong></td></tr>" +
-    "<tr><td style='padding:4px 0;color:#475569'>Poziv na broj:</td><td><strong>" + ref + "</strong></td></tr>" +
-    "<tr><td style='padding:4px 0;color:#475569'>Opis:</td><td>Narudžba " + orderNumber + "</td></tr>" +
+    "<tr><td style='padding:3px 0;color:#475569'>Primatelj:</td><td><strong>" + RECIPIENT + "</strong></td></tr>" +
+    "<tr><td style='padding:3px 0;color:#475569'>IBAN:</td><td><strong>" + IBAN + "</strong></td></tr>" +
+    "<tr><td style='padding:3px 0;color:#475569'>Iznos:</td><td><strong>" + amount + " EUR</strong></td></tr>" +
+    "<tr><td style='padding:3px 0;color:#475569'>Poziv na broj:</td><td><strong>" + ref + "</strong></td></tr>" +
+    "<tr><td style='padding:3px 0;color:#475569'>Opis:</td><td>" + description + "</td></tr>" +
     "</table>" +
-    "<div style='text-align:center;margin-top:12px'>" +
-    "<img src='" + qrUrl + "' alt='QR kod za plaćanje' style='width:180px;height:180px'/>" +
-    "<p style='font-size:11px;color:#94a3b8;margin-top:4px'>Skenirajte QR kod za mobilno plaćanje</p>" +
+    "<div style='text-align:center;margin-top:14px'>" +
+    "<img src='" + qrUrl + "' alt='QR za plaćanje' style='width:200px;height:200px;border:1px solid #e2e8f0;border-radius:8px'/>" +
+    "<p style='font-size:11px;color:#94a3b8;margin-top:4px'>Skenirajte kamerom za mobilno plaćanje</p>" +
     "</div>" +
     "<p style='font-size:12px;color:#64748b;margin-top:8px'>Po primitku uplate narudžba se šalje u roku 1-2 radna dana.</p>" +
     "</div>"
