@@ -1,118 +1,131 @@
-// Email provider abstraction. Controlled by EMAIL_PROVIDER env var.
+// Email provider abstraction + professional templates.
+import { sendViaGraph, lastError } from "./email/microsoftGraph";
 
 export async function sendEmail(payload: { to: string; subject: string; html: string }): Promise<boolean> {
   const provider = process.env.EMAIL_PROVIDER || "disabled";
   try {
     if (provider === "microsoft-graph") {
-      const mg = await import("./email/microsoftGraph");
-      const result = await mg.sendViaGraph(payload);
-      if (!result) (sendEmail as any).lastError = mg.lastError;
+      const result = await sendViaGraph(payload);
+      if (!result) (sendEmail as any).lastError = lastError;
       return result;
     }
     if (provider === "disabled" || provider === "") {
       console.log("[EMAIL DISABLED] To:", payload.to, "Subject:", payload.subject);
       return false;
     }
-    console.log("[EMAIL] Unknown provider:", provider);
     return false;
-  } catch (err) {
-    console.error("[EMAIL FAILED]", err);
-    return false;
-  }
+  } catch (err) { console.error("[EMAIL FAILED]", err); return false; }
 }
 
+const BRAND = "#0055a8";
+const URL_BASE = "https://ro-tea-webshop-hermes.vercel.app";
 const IBAN = "HR8923600001101238701";
-const RECIPIENT = "RO-TEA d.o.o.";
+const COMPANY = "RO-TEA d.o.o.";
 
-function generateQRData(amount: string, ref: string, description: string): string {
-  // HUB3 format for Croatian mobile banking QR codes
-  const lines = [
-    "HRVHUB30",
-    "EUR",
-    amount,
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    IBAN,
-    "HR00",
-    ref,
-    description,
-    RECIPIENT,
-    "Badalićeva 26b",
-    "10000 Zagreb",
-  ];
-  return lines.join("\n");
+// ── Shared components ───────────────────────────────────────────
+
+const css = `<style>
+  body{margin:0;padding:0;background:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif}
+  .wrap{max-width:560px;margin:0 auto;background:#fff}
+  .head{background:${BRAND};padding:28px 32px}
+  .head img{height:24px}
+  .body{padding:32px}
+  .card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin:20px 0}
+  .card h3{color:#0f172a;margin:0 0 12px;font-size:15px}
+  table.w{width:100%;border-collapse:collapse}
+  table.w th{text-align:left;padding:8px 10px;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #e2e8f0}
+  table.w td{padding:10px;font-size:14px;color:#1e293b;border-bottom:1px solid #f1f5f9}
+  table.w tr:last-child td{border:0}
+  .num{text-align:right;white-space:nowrap}
+  .total{font-size:18px;font-weight:700;color:${BRAND}}
+  .btn{display:inline-block;background:${BRAND};color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;margin-top:8px}
+  .meta{color:#64748b;font-size:13px;line-height:1.6}
+  .foot{background:#f8fafc;padding:20px 32px;border-top:1px solid #e2e8f0}
+  .foot a{color:#64748b;font-size:11px;text-decoration:none}
+  .foot a:hover{color:${BRAND}}
+  .qrbox{text-align:center;padding:16px;background:#fff;border:2px dashed #e2e8f0;border-radius:10px;margin-top:12px}
+  @media(max-width:480px){.wrap{width:100%!important}.body{padding:20px}.head{padding:20px}}
+</style>`;
+
+function header(): string {
+  return `<div class="head"><img src="${URL_BASE}/images/rotea-logo.webp" alt="RO-TEA" style="height:28px;filter:brightness(0) invert(1)"/></div>`;
 }
 
-function bankPaymentSection(orderNumber: string, total: number): string {
-  const amount = total.toFixed(2).replace(".", ",");
+function footer(isAdmin: boolean = false): string {
+  return `<div class="foot">
+    <p style="margin:0 0 8px;color:#94a3b8;font-size:12px"><strong>${COMPANY}</strong> · Badalićeva 26b, 10000 Zagreb · ${IBAN}</p>
+    <p style="margin:0 0 12px;color:#94a3b8;font-size:12px">+385 1 3820 113 · info@ro-tea.hr · OIB: 82282361229</p>
+    <p style="margin:0;font-size:11px;color:#cbd5e1">
+      <a href="${URL_BASE}/uvjeti-kupnje">Uvjeti kupovine</a> &nbsp;·&nbsp;
+      <a href="${URL_BASE}/pravila-o-privatnosti">Pravila privatnosti</a> &nbsp;·&nbsp;
+      <a href="${URL_BASE}/izjava-o-sigurnosti-online-placanja">Sigurnost plaćanja</a> &nbsp;·&nbsp;
+      <a href="${URL_BASE}/pravila-povrata-i-zamjene">Povrat i zamjena</a> &nbsp;·&nbsp;
+      <a href="${URL_BASE}/jednostrani-raskid-ugovora">Raskid ugovora</a>
+    </p>
+    ${isAdmin ? '' : '<p style="margin:12px 0 0;color:#94a3b8;font-size:11px">Primili ste ovaj email jer ste naručili proizvode na RO-TEA webshopu.</p>'}
+  </div>`;
+}
+
+function itemsTable(items: { name: string; quantity: number; price: number }[]): string {
+  let r = "";
+  for (const i of items) r += `<tr><td>${i.name}</td><td class="num">${i.quantity}</td><td class="num">${i.price.toFixed(2)} EUR</td></tr>`;
+  const sum = items.reduce((s,i) => s + i.price * i.quantity, 0);
+  return `<table class="w"><tr><th>Proizvod</th><th style="text-align:right">Kol.</th><th style="text-align:right">Cijena</th></tr>${r}<tr><td colspan="2" style="font-weight:600;border:0">Ukupno</td><td class="num total" style="border:0">${sum.toFixed(2)} EUR</td></tr></table>`;
+}
+
+function paymentLabel(method: string): string {
+  if (method === "card") return "Kartica (Stripe)";
+  if (method === "cod") return "Pouzeće";
+  return "Bankovna uplata";
+}
+
+function bankPaymentBox(orderNumber: string, total: number): string {
+  const amt = total.toFixed(2).replace(".", ",");
   const ref = orderNumber.replace("ROTEA-", "");
-  const description = "Narudžba " + orderNumber;
-  const qrData = encodeURIComponent(generateQRData(amount, ref, description));
-  const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" + qrData;
-  
-  return (
-    "<div style='background:#f0f7ff;border:1px solid #0055a8;border-radius:8px;padding:16px;margin:16px 0'>" +
-    "<h3 style='color:#0055a8;margin-top:0;margin-bottom:12px'>Podaci za uplatu</h3>" +
-    "<table style='width:100%'>" +
-    "<tr><td style='padding:3px 0;color:#475569'>Primatelj:</td><td><strong>" + RECIPIENT + "</strong></td></tr>" +
-    "<tr><td style='padding:3px 0;color:#475569'>IBAN:</td><td><strong>" + IBAN + "</strong></td></tr>" +
-    "<tr><td style='padding:3px 0;color:#475569'>Iznos:</td><td><strong>" + amount + " EUR</strong></td></tr>" +
-    "<tr><td style='padding:3px 0;color:#475569'>Poziv na broj:</td><td><strong>" + ref + "</strong></td></tr>" +
-    "<tr><td style='padding:3px 0;color:#475569'>Opis:</td><td>" + description + "</td></tr>" +
-    "</table>" +
-    "<div style='text-align:center;margin-top:14px'>" +
-    "<img src='" + qrUrl + "' alt='QR za plaćanje' style='width:200px;height:200px;border:1px solid #e2e8f0;border-radius:8px'/>" +
-    "<p style='font-size:11px;color:#94a3b8;margin-top:4px'>Skenirajte kamerom za mobilno plaćanje</p>" +
-    "</div>" +
-    "<p style='font-size:12px;color:#64748b;margin-top:8px'>Po primitku uplate narudžba se šalje u roku 1-2 radna dana.</p>" +
-    "</div>"
-  );
+  const qr = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" +
+    encodeURIComponent(["HRVHUB30","EUR",amt,"","","","","","",IBAN,"HR00",ref,"Narudžba "+orderNumber,COMPANY,"Badalićeva 26b","10000 Zagreb"].join("\n"));
+  return `<div class="card" style="border-color:${BRAND};background:#f0f7ff">
+    <h3 style="color:${BRAND}">📋 Podaci za uplatu</h3>
+    <table style="width:100%;font-size:14px">
+      <tr><td style="color:#64748b;padding:3px 0">Primatelj:</td><td style="font-weight:600">${COMPANY}</td></tr>
+      <tr><td style="color:#64748b;padding:3px 0">IBAN:</td><td style="font-weight:600">${IBAN}</td></tr>
+      <tr><td style="color:#64748b;padding:3px 0">Iznos:</td><td style="font-weight:600;font-size:16px">${amt} EUR</td></tr>
+      <tr><td style="color:#64748b;padding:3px 0">Poziv na broj:</td><td style="font-weight:600">${ref}</td></tr>
+      <tr><td style="color:#64748b;padding:3px 0">Opis:</td><td>Narudžba ${orderNumber}</td></tr>
+    </table>
+    <div class="qrbox"><img src="${qr}" alt="QR kod" style="width:180px;height:180px"/><p style="font-size:11px;color:#94a3b8;margin:6px 0 0">Skenirajte kamerom za mobilno plaćanje</p></div>
+    <p style="font-size:12px;color:#64748b;margin:10px 0 0">Po primitku uplate narudžba se šalje u roku 1-2 radna dana.</p>
+  </div>`;
 }
 
-
-function legalFooter(): string {
-  const url = "https://ro-tea-webshop-hermes.vercel.app";
-  return (
-    "<hr style='border:none;border-top:1px solid #e2e8f0;margin:24px 0 8px'/>" +
-    "<p style='font-size:11px;color:#94a3b8;margin:0 0 4px'>" +
-    "<a href='" + url + "/uvjeti-kupnje' style='color:#64748b'>Uvjeti kupovine</a> · " +
-    "<a href='" + url + "/pravila-o-privatnosti' style='color:#64748b'>Pravila privatnosti</a> · " +
-    "<a href='" + url + "/izjava-o-sigurnosti-online-placanja' style='color:#64748b'>Sigurnost plaćanja</a> · " +
-    "<a href='" + url + "/pravila-povrata-i-zamjene' style='color:#64748b'>Povrat i zamjena</a> · " +
-    "<a href='" + url + "/jednostrani-raskid-ugovora' style='color:#64748b'>Raskid ugovora</a> · " +
-    "<a href='" + url + "/kontakt' style='color:#64748b'>Kontakt</a>" +
-    "</p>"
-  );
-}
+// ── Templates ───────────────────────────────────────────────────
 
 export function customerEmail(data: {
   orderNumber: string; total: number; paymentMethod: string;
   items: { name: string; quantity: number; price: number }[];
 }): string {
-  const pm = data.paymentMethod === "card" ? "Kartica (Stripe)" : data.paymentMethod === "cod" ? "Pouzeće" : "Bankovna uplata";
   const isBank = data.paymentMethod === "bank_transfer";
-  let rows = "";
-  for (const it of data.items) {
-    rows += "<tr><td style='padding:4px 8px'>" + it.name + "</td><td style='padding:4px 8px;text-align:center'>" + it.quantity + "</td><td style='padding:4px 8px;text-align:right'>" + it.price.toFixed(2) + " EUR</td></tr>";
-  }
-  return (
-    "<div style='font-family:Arial,sans-serif;max-width:600px;margin:auto'>" +
-    "<h2 style='color:#0055a8'>Hvala vam na narudžbi!</h2>" +
-    "<p>Broj narudžbe: <strong>" + data.orderNumber + "</strong></p>" +
-    "<p>Ukupno: <strong>" + data.total.toFixed(2) + " EUR</strong></p>" +
-    "<p>Način plaćanja: " + pm + "</p>" +
-    (isBank ? bankPaymentSection(data.orderNumber, data.total) : "") +
-    "<table style='width:100%;border-collapse:collapse;margin:16px 0'>" +
-    "<tr style='background:#f8fafc'><th style='text-align:left;padding:8px'>Proizvod</th><th style='padding:8px'>Kol.</th><th style='text-align:right;padding:8px'>Cijena</th></tr>" +
-    rows +
-    "</table>" +
-    "<p style='color:#64748b;font-size:13px;margin-top:24px'>Napomena: Račun nije automatski izdan. Ukoliko trebate R1 račun, javite nam se na info@ro-tea.hr.</p>" +
-    "<p style='color:#64748b;font-size:13px'>RO-TEA d.o.o.</p>" + legalFooter() + "</div>"
-  );
+  return `<!DOCTYPE html><html><head>${css}</head><body><div class="wrap">
+    ${header()}
+    <div class="body">
+      <h2 style="color:#0f172a;margin:0 0 4px;font-size:22px">Hvala na narudžbi!</h2>
+      <p class="meta">Vaša narudžba je zaprimljena i bit će obrađena u najkraćem roku.</p>
+      <div class="card">
+        <table style="width:100%;font-size:14px">
+          <tr><td style="color:#64748b;padding:2px 0">Broj narudžbe:</td><td style="font-weight:600">${data.orderNumber}</td></tr>
+          <tr><td style="color:#64748b;padding:2px 0">Način plaćanja:</td><td>${paymentLabel(data.paymentMethod)}</td></tr>
+          <tr><td style="color:#64748b;padding:2px 0">Ukupno:</td><td class="total">${data.total.toFixed(2)} EUR</td></tr>
+        </table>
+      </div>
+      ${isBank ? bankPaymentBox(data.orderNumber, data.total) : ""}
+      <h3 style="color:#0f172a;font-size:15px;margin:24px 0 12px">Naručeni proizvodi</h3>
+      ${itemsTable(data.items)}
+      <p class="meta" style="margin-top:24px">Račun nije automatski izdan. Ako trebate R1 račun, javite se na <a href="mailto:info@ro-tea.hr" style="color:${BRAND}">info@ro-tea.hr</a>.</p>
+      <p class="meta" style="margin-top:16px">Za sva pitanja stojimo vam na raspolaganju.</p>
+      <p style="color:#0f172a;font-weight:600">${COMPANY}</p>
+    </div>
+    ${footer()}
+  </div></body></html>`;
 }
 
 export function adminNewOrderEmail(data: {
@@ -120,64 +133,75 @@ export function adminNewOrderEmail(data: {
   customerName: string; customerEmail: string; customerPhone?: string;
   shippingMethod?: string; items?: { name: string; quantity: number; price: number }[];
 }): string {
-  let rows = "";
-  if (data.items) {
-    for (const it of data.items) {
-      rows += "<tr><td style='padding:4px 8px'>" + it.name + "</td><td style='padding:4px 8px;text-align:center'>" + it.quantity + "</td><td style='padding:4px 8px;text-align:right'>" + it.price.toFixed(2) + " EUR</td></tr>";
-    }
-  }
-  const pm = data.paymentMethod === "card" ? "Kartica (Stripe)" : data.paymentMethod === "cod" ? "Pouzeće" : "Bankovna uplata";
-  return (
-    "<div style='font-family:Arial,sans-serif;max-width:600px;margin:auto'>" +
-    "<h2 style='color:#0055a8'>Nova narudžba: " + data.orderNumber + "</h2>" +
-    "<p><strong>Kupac:</strong> " + data.customerName + " (" + data.customerEmail + ")" + (data.customerPhone ? " / " + data.customerPhone : "") + "</p>" +
-    "<p><strong>Iznos:</strong> " + data.total.toFixed(2) + " EUR</p>" +
-    "<p><strong>Plaćanje:</strong> " + pm + "</p>" +
-    (data.shippingMethod ? "<p><strong>Dostava:</strong> " + data.shippingMethod + "</p>" : "") +
-    (rows ? "<table style='width:100%;border-collapse:collapse;margin:16px 0'>" +
-    "<tr style='background:#f8fafc'><th style='text-align:left;padding:8px'>Proizvod</th><th style='padding:8px'>Kol.</th><th style='text-align:right;padding:8px'>Cijena</th></tr>" +
-    rows + "</table>" : "") +
-    "<p><a href='https://ro-tea-webshop-hermes.vercel.app/admin/orders' style='display:inline-block;background:#0055a8;color:white;padding:10px 20px;border-radius:8px;text-decoration:none'>Otvori admin panel</a></p>" +
-    legalFooter() + "</div>"
-  );
+  return `<!DOCTYPE html><html><head>${css}</head><body><div class="wrap">
+    ${header()}
+    <div class="body">
+      <h2 style="color:#0f172a;margin:0 0 4px;font-size:22px">🛒 Nova narudžba</h2>
+      <p class="meta">${data.orderNumber} · ${paymentLabel(data.paymentMethod)}</p>
+      <div class="card">
+        <h3>Kupac</h3>
+        <table style="width:100%;font-size:14px">
+          <tr><td style="color:#64748b;padding:2px 0">Ime:</td><td style="font-weight:600">${data.customerName}</td></tr>
+          <tr><td style="color:#64748b;padding:2px 0">Email:</td><td>${data.customerEmail}</td></tr>
+          ${data.customerPhone ? `<tr><td style="color:#64748b;padding:2px 0">Telefon:</td><td>${data.customerPhone}</td></tr>` : ""}
+          <tr><td style="color:#64748b;padding:2px 0">Plaćanje:</td><td>${paymentLabel(data.paymentMethod)}</td></tr>
+          ${data.shippingMethod ? `<tr><td style="color:#64748b;padding:2px 0">Dostava:</td><td>${data.shippingMethod}</td></tr>` : ""}
+          <tr><td style="color:#64748b;padding:2px 0">Ukupno:</td><td class="total">${data.total.toFixed(2)} EUR</td></tr>
+        </table>
+      </div>
+      ${data.items && data.items.length ? `<h3 style="color:#0f172a;font-size:15px;margin:24px 0 12px">Proizvodi</h3>${itemsTable(data.items)}` : ""}
+      <a href="${URL_BASE}/admin/orders" class="btn">Otvori admin panel →</a>
+    </div>
+    ${footer(true)}
+  </div></body></html>`;
 }
 
 export function statusChangeEmail(data: {
   orderNumber: string; oldStatus: string; newStatus: string;
   items: { name: string; quantity: number; price: number }[];
 }): string {
-  const statusLabels: Record<string, string> = {
+  const labels: Record<string, string> = {
     CONFIRMED: "Potvrđena", PROCESSING: "U obradi", SHIPPED: "Poslana",
     COMPLETED: "Završena", CANCELLED: "Otkazana", REFUNDED: "Refundirana"
   };
-  const label = statusLabels[data.newStatus] || data.newStatus;
-  let rows = "";
-  for (const it of data.items) {
-    rows += "<tr><td style='padding:4px 8px'>" + it.name + "</td><td style='padding:4px 8px;text-align:center'>" + it.quantity + "</td><td style='padding:4px 8px;text-align:right'>" + it.price.toFixed(2) + " EUR</td></tr>";
-  }
-  return (
-    "<div style='font-family:Arial,sans-serif;max-width:600px;margin:auto'>" +
-    "<h2 style='color:#0055a8'>Status narudžbe ažuriran</h2>" +
-    "<p>Narudžba <strong>" + data.orderNumber + "</strong> je sada: <strong style='color:#0055a8'>" + label + "</strong></p>" +
-    "<table style='width:100%;border-collapse:collapse;margin:16px 0'>" +
-    "<tr style='background:#f8fafc'><th style='text-align:left;padding:8px'>Proizvod</th><th style='padding:8px'>Kol.</th><th style='text-align:right;padding:8px'>Cijena</th></tr>" +
-    rows +
-    "</table>" +
-    "<p style='color:#64748b;font-size:13px;margin-top:24px'>Za sva pitanja slobodno nas kontaktirajte na info@ro-tea.hr.</p>" +
-    "<p style='color:#64748b;font-size:13px'>RO-TEA d.o.o.</p>" + legalFooter() + "</div>"
-  );
+  const label = labels[data.newStatus] || data.newStatus;
+  const isPositive = ["SHIPPED","COMPLETED"].includes(data.newStatus);
+  return `<!DOCTYPE html><html><head>${css}</head><body><div class="wrap">
+    ${header()}
+    <div class="body">
+      <h2 style="color:#0f172a;margin:0 0 4px;font-size:22px">${isPositive ? "✅" : "📋"} Status narudžbe</h2>
+      <div class="card" style="text-align:center;padding:28px">
+        <p style="color:#64748b;font-size:14px;margin:0">Narudžba <strong>${data.orderNumber}</strong></p>
+        <p style="font-size:20px;font-weight:700;color:${BRAND};margin:8px 0 0">${label}</p>
+        ${data.newStatus === "SHIPPED" ? '<p style="color:#64748b;font-size:13px;margin:6px 0 0">Vaša narudžba je poslana i na putu je prema vama.</p>' : ""}
+        ${data.newStatus === "COMPLETED" ? '<p style="color:#64748b;font-size:13px;margin:6px 0 0">Narudžba je uspješno završena. Hvala na povjerenju!</p>' : ""}
+      </div>
+      ${data.items.length ? `<h3 style="color:#0f172a;font-size:15px;margin:24px 0 12px">Proizvodi u narudžbi</h3>${itemsTable(data.items)}` : ""}
+      <p class="meta" style="margin-top:24px">Za sva pitanja kontaktirajte nas na <a href="mailto:info@ro-tea.hr" style="color:${BRAND}">info@ro-tea.hr</a> ili +385 1 3820 113.</p>
+      <p style="color:#0f172a;font-weight:600">${COMPANY}</p>
+    </div>
+    ${footer()}
+  </div></body></html>`;
 }
 
 export function adminPaymentAlert(data: {
   orderNumber: string; status: string; customerEmail: string; message?: string;
 }): string {
-  const title = data.status === "PAID" ? "Plaćanje potvrđeno" : "Problem s plaćanjem";
-  return (
-    "<h2>" + title + "</h2>" +
-    "<p>Narudžba: " + data.orderNumber + "</p>" +
-    "<p>Kupac: " + data.customerEmail + "</p>" +
-    "<p>Status: " + data.status + "</p>" +
-    (data.message ? "<p>" + data.message + "</p>" : "") +
-    "<p><a href='https://ro-tea-webshop-hermes.vercel.app/admin/orders'>Admin panel</a></p>" + legalFooter()
-  );
+  const isGood = data.status === "PAID";
+  return `<!DOCTYPE html><html><head>${css}</head><body><div class="wrap">
+    ${header()}
+    <div class="body">
+      <h2 style="color:#0f172a;margin:0 0 4px;font-size:22px">${isGood ? "✅" : "⚠️"} ${isGood ? "Plaćanje potvrđeno" : "Problem s plaćanjem"}</h2>
+      <div class="card">
+        <table style="width:100%;font-size:14px">
+          <tr><td style="color:#64748b;padding:2px 0">Narudžba:</td><td style="font-weight:600">${data.orderNumber}</td></tr>
+          <tr><td style="color:#64748b;padding:2px 0">Kupac:</td><td>${data.customerEmail}</td></tr>
+          <tr><td style="color:#64748b;padding:2px 0">Status:</td><td style="color:${isGood ? "#16a34a" : "#dc2626"};font-weight:600">${data.status}</td></tr>
+          ${data.message ? `<tr><td style="color:#64748b;padding:2px 0">Detalji:</td><td>${data.message}</td></tr>` : ""}
+        </table>
+      </div>
+      <a href="${URL_BASE}/admin/orders" class="btn">Otvori admin panel →</a>
+    </div>
+    ${footer(true)}
+  </div></body></html>`;
 }
