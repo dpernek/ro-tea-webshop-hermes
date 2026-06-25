@@ -9,26 +9,21 @@ export async function POST() {
   if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    // Add provider column if missing
-    await db.$executeRawUnsafe(`ALTER TABLE "ShippingMethod" ADD COLUMN IF NOT EXISTS "provider" TEXT`);
-    await db.$executeRawUnsafe(`ALTER TABLE "ShippingMethod" ADD COLUMN IF NOT EXISTS "slug" TEXT`);
-    
-    // Upsert GLS methods
+    // Create GLS methods using Prisma upsert
     const methods = [
-      { slug: "gls-dostava", name: "GLS dostava", price: 6.64, provider: "gls", freeAboveAmount: 66.36, active: true, sortOrder: 1 },
-      { slug: "gls-paketomat", name: "GLS Paketomat", price: 6.64, provider: "gls", freeAboveAmount: 66.36, active: true, sortOrder: 2 },
+      { id: "gls-dostava-prod", name: "GLS dostava", price: 6.64, freeAboveAmount: 66.36, active: true, sortOrder: 1 },
+      { id: "gls-paketomat-prod", name: "GLS Paketomat", price: 6.64, freeAboveAmount: 66.36, active: true, sortOrder: 2 },
     ];
-    
+
     for (const m of methods) {
-      await db.$executeRawUnsafe(
-        `INSERT INTO "ShippingMethod" (id, name, price, provider, "freeAboveAmount", active, "sortOrder", "updatedAt") 
-         VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, NOW())
-         ON CONFLICT DO NOTHING`,
-        m.name, m.price, m.provider, m.freeAboveAmount, m.active, m.sortOrder
-      );
+      await db.shippingMethod.upsert({
+        where: { id: m.id },
+        update: { name: m.name, price: m.price, freeAboveAmount: m.freeAboveAmount, active: m.active, sortOrder: m.sortOrder },
+        create: m,
+      });
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, count: methods.length });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
