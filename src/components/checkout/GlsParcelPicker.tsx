@@ -193,7 +193,7 @@ export default function GlsParcelPicker({ onSelect, selectedName, city, postalCo
             <MapPin className="h-4 w-4 text-[#0055a8] flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-slate-900">Odabrani paketomat:</p>
-              <p className="text-sm text-slate-700 truncate">{selectedName}</p>
+              <p className="text-sm text-slate-700">{selectedName || "—"}</p>
             </div>
             <Button type="button" size="sm" variant="outline" onClick={() => setOpen(true)}>Promijeni</Button>
           </div>
