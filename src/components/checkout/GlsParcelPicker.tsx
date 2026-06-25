@@ -26,7 +26,6 @@ interface Props {
   selectedName?: string;
   city?: string;
   postalCode?: string;
-  customerAddress?: string;
 }
 
 function FitBounds({ points }: { points: Point[] }) {
@@ -80,7 +79,7 @@ function rankPoints(points: Point[], search: string): Point[] {
     .map(s => s.point);
 }
 
-export default function GlsParcelPicker({ onSelect, selectedName, city, postalCode, customerAddress }: Props) {
+export default function GlsParcelPicker({ onSelect, selectedName, city, postalCode }: Props) {
   const [points, setPoints] = useState<Point[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
