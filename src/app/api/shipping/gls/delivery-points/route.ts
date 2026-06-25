@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     const allPoints = await getGlsPoints();
 
     // Filter by type: only parcel lockers
-    let points = allPoints.filter((p: any) => p.type === "parcel-locker");
+    let points = (allPoints || []).filter((p: any) => p.type === "parcel-locker");
 
     // Filter by city if provided
     if (city) {
