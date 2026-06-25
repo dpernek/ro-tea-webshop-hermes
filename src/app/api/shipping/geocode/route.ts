@@ -4,8 +4,13 @@ export const dynamic = "force-dynamic";
 
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
 
-// Simple in-memory cache (clears on cold start)
-const cache = new Map<string, { lat: number; lng: number; displayName: string }>();
+interface CacheEntry {
+  lat: number; lng: number; displayName: string;
+  ts: number;
+}
+
+const cache = new Map<string, CacheEntry>();
+const TTL = 3600000; // 1 hour
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,9 +19,15 @@ export async function POST(req: NextRequest) {
       .filter(Boolean)
       .join(", ");
 
-    // Cache key
-    if (cache.has(query)) {
-      return NextResponse.json({ success: true, ...cache.get(query) });
+    // Check cache with TTL
+    const cached = cache.get(query);
+    if (cached && Date.now() - cached.ts < TTL) {
+      return NextResponse.json({
+        success: true,
+        lat: cached.lat,
+        lng: cached.lng,
+        displayName: cached.displayName,
+      });
     }
 
     const params = new URLSearchParams({
@@ -28,9 +39,7 @@ export async function POST(req: NextRequest) {
     });
 
     const res = await fetch(`${NOMINATIM}?${params}`, {
-      headers: {
-        "User-Agent": "RO-TEA-Hermes/1.0 (info@ro-tea.hr)",
-      },
+      headers: { "User-Agent": "RO-TEA-Hermes/1.0 (info@ro-tea.hr)" },
     });
 
     if (!res.ok) {
@@ -43,15 +52,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Address not found" });
     }
 
-    const result = {
+    const entry: CacheEntry = {
       lat: parseFloat(data[0].lat),
       lng: parseFloat(data[0].lon),
       displayName: data[0].display_name,
+      ts: Date.now(),
     };
 
-    // Cache for 1 hour (keeps map simple)
-    cache.set(query, result);
-    return NextResponse.json({ success: true, ...result });
+    cache.set(query, entry);
+    return NextResponse.json({
+      success: true,
+      lat: entry.lat,
+      lng: entry.lng,
+      displayName: entry.displayName,
+    });
 
   } catch {
     return NextResponse.json({ success: false, error: "Geocoding failed" });

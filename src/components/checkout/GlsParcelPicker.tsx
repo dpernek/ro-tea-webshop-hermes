@@ -112,6 +112,9 @@ export default function GlsParcelPicker({ onSelect, selectedName, city, postalCo
   // Geocode customer address
   useEffect(() => {
     if (!open || !customerAddress) return;
+    setGeoLat(null);
+    setGeoLng(null);
+    setGeoDisplay("");
     setGeoError(false);
 
     fetch("/api/shipping/geocode", {
