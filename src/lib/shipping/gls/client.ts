@@ -117,10 +117,11 @@ function parseGlsResponse<T>(xml: string, action: string): T {
 
 export function glsAuthXml(): string {
   const config = getGlsConfig();
+  const ns = "http://schemas.datacontract.org/2004/07/GLS.MyGLS.ServiceData.APIDTOs.Common";
   return `
-    <tem:Username>${escapeXml(config.username)}</tem:Username>
-    <tem:Password>${escapeXml(config.passwordHash)}</tem:Password>
-    <tem:ClientNumber>${config.clientNumber}</tem:ClientNumber>`;
+    <Username xmlns="${ns}">${escapeXml(config.username)}</Username>
+    <Password xmlns="${ns}">${escapeXml(config.passwordHash)}</Password>
+    <ClientNumber>${config.clientNumber}</ClientNumber>`;
 }
 
 // ── XML helpers (exported for API method files) ──────────────────
