@@ -106,18 +106,18 @@ export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAbov
               <span className="font-medium">{shipping === 0 ? "Besplatno" : formatPrice(shipping)}</span>
             </div>
             {shipping > 0 && subtotalWithVat > 0 && effectiveFreeAbove !== null && (
-              <p className="text-xs text-amber-600">Dodajte još {formatPrice(shippingGap)} za besplatnu dostavu</p>
+              <p className="text-xs text-amber-600">Još {formatPrice(shippingGap)} do besplatne dostave</p>
             )}
             {shipping === 0 && subtotalWithVat > 0 && isFree && (
-              <p className="text-xs text-emerald-600">Ostvarili ste besplatnu dostavu</p>
+              <p className="text-xs text-emerald-600">Besplatna dostava</p>
             )}
           </>
         )}
 
         {fType === "pickup" && (
           <div className="flex justify-between text-sm text-slate-700">
-            <span className="flex items-center gap-1.5"><Store className="h-3.5 w-3.5 text-slate-400" />Osobno preuzimanje</span>
-            <span className="font-medium">Besplatno</span>
+            <span className="flex items-center gap-1.5"><Store className="h-3.5 w-3.5 text-slate-400" />Preuzimanje</span>
+            <span className="font-medium text-slate-500">Osobno</span>
           </div>
         )}
       </div>
