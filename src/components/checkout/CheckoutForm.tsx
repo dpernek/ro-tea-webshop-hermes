@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/Button";
 import { useCartStore } from "@/store/cartStore";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/lib/actions/orders";
-import dynamic from "next/dynamic";
 import { CreditCard, Building, Banknote } from "lucide-react";
 
 interface FormErrors {
@@ -31,8 +30,6 @@ const PAYMENT_METHODS = [
   { value: "bank_transfer", label: "Bankovna uplata / predračun", icon: Building },
   { value: "cod", label: "Pouzeće", icon: Banknote },
 ];
-
-const GlsDeliveryMap = dynamic(() => import("./GlsDeliveryMap"), { ssr: false });
 
 export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: number) => void }) {
   const router = useRouter();
@@ -107,7 +104,6 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     onShippingChange?.(shippingPrice);
   }, [shippingPrice, onShippingChange]);
 
-
   // Fetch GLS delivery points when "GLS Paketomat" is selected
   // Fetch shipping methods from admin/baze
   useEffect(() => {
@@ -129,7 +125,6 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       })
       .catch(() => {});
   }, []);
-
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
@@ -190,8 +185,6 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -415,7 +408,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
                   <span className="text-sm font-medium text-slate-900">
                     {sm.name}
                     {sm.name.includes("GLS") && (
-                      <img src="/images/shipping/gls-logo-blue-sm.png" alt="GLS" className="ml-1.5 inline-block h-4 w-auto align-middle" />
+                      
                     )}
                   </span>
                 </div>
@@ -434,34 +427,14 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       {formData.shippingMethod === glsPaketomatId && (
         <div className="mt-4">
           <div className="mb-3 flex items-center gap-3">
-            <img src="/images/shipping/gls-paketomat-sm.png" alt="GLS Paketomat" className="h-8 w-auto" />
-            <div>
-              <p className="text-sm font-semibold text-slate-900">Odaberite GLS Paketomat</p>
-              <p className="text-xs text-slate-500">Pronađite najbliži paketomat na karti ispod</p>
-            </div>
+            <p className="text-sm font-semibold text-slate-900">📍 Odaberite GLS Paketomat</p>
           </div>
-          <div className="rounded-lg border border-[#0055a8]/20 overflow-hidden">
-            <GlsDeliveryMap
-              country="hr"
-              language="hr"
-              filterType="parcel-locker"
-              height="500px"
-              onSelect={(point: any) => {
-                if (point) {
-                  const addr = `${point.contact?.address || ""}, ${point.contact?.postalCode || ""} ${point.contact?.city || ""}`;
-                  setFormData((prev) => ({
-                    ...prev,
-                    glsPickupPointId: point.id,
-                    glsPickupPointName: point.name,
-                    glsPickupPointAddress: addr,
-                  }));
-                  if (errors.glsPickupPoint) {
-                    setErrors((prev) => ({ ...prev, glsPickupPoint: "" }));
-                  }
-                }
-              }}
+          <iframe
+              src="https://map.gls-hungary.com/widget/example/widget.html?country=hr&language=hr&filter-type=parcel-locker"
+              className="w-full rounded-lg border border-[#0055a8]/20"
+              style={{ height: "500px", border: "none" }}
+              title="GLS Paketomat karta"
             />
-          </div>
         </div>
       )}
 
