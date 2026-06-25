@@ -9,6 +9,9 @@ import { useCartStore } from "@/store/cartStore";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/lib/actions/orders";
 import { CreditCard, Building, Banknote, Package, MapPin } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const GlsParcelPicker = dynamic(() => import("./GlsParcelPicker"), { ssr: false });
 
 interface FormErrors {
   [key: string]: string;
@@ -470,152 +473,35 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         </div>
       </fieldset>
 
-      {/* GLS Paketomat — delivery points selector */}
+      {/* GLS Paketomat picker */}
       {formData.shippingMethod === glsPaketomatId && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <MapPin className="h-4 w-4 text-amber-600" />
-            <p className="text-sm font-medium text-amber-800">
-              GLS Paketomat — odaberite lokaciju za preuzimanje
-            </p>
-
-          </div>
-
-
-
-          {glsLoading && (
-            <div className="flex items-center gap-2 py-3 text-sm text-slate-500">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
-              Dohvaćanje GLS paketomata...
-            </div>
-          )}
-
-          {glsError && (
-            <div className="rounded bg-red-100 p-3 text-sm text-red-700" role="alert">
-              {glsError}
-              <button
-                type="button"
-                onClick={() => { setGlsFetched(false); fetchDeliveryPoints(); }}
-                className="ml-2 underline hover:text-red-800"
-              >
-                Pokušaj ponovno
-              </button>
-            </div>
-          )}
-
-          {!glsLoading && !glsError && (
-            <>
-              {glsPoints.length === 0 ? (
-                <p className="text-sm text-slate-500 py-2">
-                  Nema dostupnih paketomata za odabranu lokaciju. Unesite grad i poštanski broj pa pokušajte ponovno.
-                </p>
-              ) : (
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {glsPoints.map((point) => {
-                    const isPointSelected = formData.glsPickupPointId === point.id;
-                    return (
-                      <label
-                        key={point.id}
-                        className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
-                          isPointSelected
-                            ? "border-[#0055a8] bg-[#0055a8]/5"
-                            : "border-slate-200 hover:border-slate-300"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="glsPickupPoint"
-                          checked={isPointSelected}
-                          onChange={() => handleGlsPointSelect(point)}
-                          className="mt-0.5 text-[#0055a8]"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-900">
-                            {point.name}
-                          </p>
-                          <p className="text-xs text-slate-500 mt-0.5">
-                            {point.address}, {point.postalCode} {point.city}
-                          </p>
-                        </div>
-                        <Package className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
-                      </label>
-                    );
-                  })}
-                </div>
-              )}
-              <button
-                type="button"
-                onClick={() => { setGlsFetched(false); fetchDeliveryPoints(); }}
-                className="mt-3 text-xs text-amber-700 underline hover:text-amber-800"
-              >
-                Osvježi popis paketomata
-              </button>
-            </>
-          )}
-
-          {errors.glsPickupPoint && (
-            <p className="mt-2 text-sm text-red-600" role="alert">
-              {errors.glsPickupPoint}
-            </p>
-          )}
+        <div className="mt-3">
+          <GlsParcelPicker
+            onSelect={(point) => {
+              if (point) {
+                setFormData((prev) => ({
+                  ...prev,
+                  glsPickupPointId: point.id,
+                  glsPickupPointName: point.name,
+                  glsPickupPointAddress: `${point.name}, ${point.address}`,
+                }));
+                if (errors.glsPickupPoint) {
+                  setErrors((prev) => ({ ...prev, glsPickupPoint: "" }));
+                }
+              }
+            }}
+            initialCity={formData.city}
+          />
         </div>
       )}
 
-      {/* GLS dostava (home delivery) — test mode indicator */}
-      {formData.shippingMethod === glsHomeId && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
-          <div className="flex items-center gap-2">
-            <Package className="h-4 w-4 text-amber-600" />
-            <p className="text-sm font-medium text-amber-800">
-              GLS dostava na vašu adresu
-            </p>
-
-          </div>
-
+      {/* Selected pickup point indicator */}
+      {formData.shippingMethod === glsPaketomatId && formData.glsPickupPointId && (
+        <div className="mt-2 rounded-lg bg-[#0055a8]/5 border border-[#0055a8]/20 px-3 py-2 text-sm">
+          <span className="text-[#0055a8] font-medium">Odabrani paketomat: </span>
+          {formData.glsPickupPointName}
         </div>
       )}
-
-      {/* Payment method */}
-      <fieldset>
-        <legend className="mb-2 text-sm font-medium text-slate-700">
-          Način plaćanja
-        </legend>
-        <div className="space-y-2">
-          {PAYMENT_METHODS.map((pm) => (
-            <label
-              key={pm.value}
-              className={`flex cursor-pointer items-center rounded-lg border p-3 ${
-                formData.paymentMethod === pm.value
-                  ? "border-[#0055a8] bg-[#0055a8]/5"
-                  : "border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              <input
-                type="radio"
-                name="paymentMethod"
-                value={pm.value}
-                checked={formData.paymentMethod === pm.value}
-                onChange={handleChange}
-                className="text-[#0055a8]"
-                required
-              />
-              <pm.icon className="ml-2 h-4 w-4 shrink-0 text-slate-400" />
-              <span className="ml-2 text-sm font-medium text-slate-900">
-                {pm.label}
-              </span>
-            </label>
-          ))}
-        </div>
-      </fieldset>
-
-      <Textarea
-        label="Napomena"
-        name="note"
-        value={formData.note}
-        onChange={handleChange}
-        placeholder="Dodatne informacije o narudžbi ili dostavi..."
-        rows={3}
-      />
 
       {/* Terms checkbox */}
       <div>
