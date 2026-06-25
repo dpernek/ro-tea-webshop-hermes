@@ -78,7 +78,8 @@ export default function AdminBrandsPage() {
       const res = await fetch(`/api/admin/brands/${id}`, { method: "DELETE" });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        setSaveMsg({ type: "error", text: d.error || "Greška pri brisanju." });
+        const msg = d.error || d.errors?.brand || Object.values(d.errors || {})[0] || "Greška pri brisanju.";
+        setSaveMsg({ type: "error", text: String(msg) });
         return;
       }
       await load();
