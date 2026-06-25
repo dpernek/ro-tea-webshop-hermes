@@ -4,7 +4,7 @@ import { useState } from "react";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
-import { Tag, X, Loader2, Truck, ShieldCheck } from "lucide-react";
+import { Tag, X, Loader2, Truck, ShieldCheck, Store } from "lucide-react";
 
 const VAT_RATE = 0.25;
 
@@ -18,9 +18,18 @@ interface CartSummaryProps {
   showCheckoutButton?: boolean;
   shippingPrice?: number;
   freeAboveAmount?: number | null;
+  shippingMethodName?: string;
 }
 
-export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAboveAmount }: CartSummaryProps) {
+/** Detect fulfillment type from method name */
+function fulfillmentType(name?: string): "shipping" | "pickup" | "none" {
+  if (!name || !name.trim()) return "none";
+  const n = name.toLowerCase();
+  if (n.includes("osobno") || n.includes("preuzimanje") || n.includes("pickup")) return "pickup";
+  return "shipping";
+}
+
+export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAboveAmount, shippingMethodName }: CartSummaryProps) {
   const items = useCartStore(s => s.items);
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
@@ -35,14 +44,14 @@ export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAbov
   const subtotalNoVat = subtotalWithVat / (1 + VAT_RATE);
   const vatAmount = subtotalWithVat - subtotalNoVat;
 
-  // Use DB-provided pricing if available, else fallback
-  // Use DB-provided pricing if available (from checkout), else show neutral message
-  const hasPricing = shippingPrice !== undefined || freeAboveAmount !== undefined;
+  const fType = fulfillmentType(shippingMethodName);
   const effectiveShipping = shippingPrice ?? 0;
   const effectiveFreeAbove = freeAboveAmount ?? null;
-  const isFree = (effectiveFreeAbove !== null && subtotalWithVat >= effectiveFreeAbove) || effectiveShipping === 0;
+  // Free shipping only applies to "shipping" methods (not pickup)
+  const isShippingMethod = fType === "shipping";
+  const isFree = isShippingMethod && effectiveFreeAbove !== null && subtotalWithVat >= effectiveFreeAbove;
   const shipping = isFree ? 0 : effectiveShipping;
-  const shippingGap = effectiveFreeAbove !== null ? effectiveFreeAbove - subtotalWithVat : 0;
+  const shippingGap = isShippingMethod && effectiveFreeAbove !== null ? effectiveFreeAbove - subtotalWithVat : 0;
 
   const total = subtotalWithVat + shipping - couponDiscount;
 
@@ -89,13 +98,28 @@ export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAbov
           </div>
         )}
 
-        <div className="flex justify-between text-sm text-slate-700">
-          <span className="flex items-center gap-1.5"><Truck className="h-3.5 w-3.5 text-slate-400" />Dostava</span>
-          <span className="font-medium">{shipping === 0 ? "Besplatno" : formatPrice(shipping)}</span>
-        </div>
+        {/* Fulfillment line — semantic, not price-based */}
+        {fType === "shipping" && (
+          <>
+            <div className="flex justify-between text-sm text-slate-700">
+              <span className="flex items-center gap-1.5"><Truck className="h-3.5 w-3.5 text-slate-400" />Dostava</span>
+              <span className="font-medium">{shipping === 0 ? "Besplatno" : formatPrice(shipping)}</span>
+            </div>
+            {shipping > 0 && subtotalWithVat > 0 && effectiveFreeAbove !== null && (
+              <p className="text-xs text-amber-600">Dodajte još {formatPrice(shippingGap)} za besplatnu dostavu</p>
+            )}
+            {shipping === 0 && subtotalWithVat > 0 && isFree && (
+              <p className="text-xs text-emerald-600">Ostvarili ste besplatnu dostavu</p>
+            )}
+          </>
+        )}
 
-        {shipping > 0 && subtotalWithVat > 0 && <p className="text-xs text-amber-600">{hasPricing ? `Dodajte još ${formatPrice(shippingGap)} za besplatnu dostavu` : "Točan trošak dostave bit će prikazan na blagajni."}</p>}
-        {shipping === 0 && subtotalWithVat > 0 && <p className="text-xs text-emerald-600">Ostvarili ste besplatnu dostavu</p>}
+        {fType === "pickup" && (
+          <div className="flex justify-between text-sm text-slate-700">
+            <span className="flex items-center gap-1.5"><Store className="h-3.5 w-3.5 text-slate-400" />Osobno preuzimanje</span>
+            <span className="font-medium">Besplatno</span>
+          </div>
+        )}
       </div>
 
       <div className="mt-4 border-t border-slate-100 pt-4">

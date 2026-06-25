@@ -13,6 +13,7 @@ export default function CheckoutPage() {
   const items = useCartStore((state) => state.items);
   const [shippingOverride, setShippingOverride] = useState<number | null>(null);
   const [freeAboveOverride, setFreeAboveOverride] = useState<number | null>(null);
+  const [shippingMethodName, setShippingMethodName] = useState<string>("");
 
   useEffect(() => {
     document.title = "Blagajna | RO-TEA";
@@ -47,10 +48,10 @@ export default function CheckoutPage() {
 
         <div className="mt-10 grid gap-8 lg:grid-cols-3 md:mt-14">
           <AnimatedSection delay={0.1} className="lg:col-span-2">
-            <CheckoutForm onShippingChange={(price: number, freeAbove?: number | null) => { setShippingOverride(price); setFreeAboveOverride(freeAbove ?? null); }} />
+            <CheckoutForm onShippingChange={(price: number, freeAbove?: number | null, methodName?: string) => { setShippingOverride(price); setFreeAboveOverride(freeAbove ?? null); setShippingMethodName(methodName ?? ""); }} />
           </AnimatedSection>
           <AnimatedSection delay={0.2}>
-            <CartSummary showCheckoutButton={false} shippingPrice={shippingOverride ?? undefined} freeAboveAmount={freeAboveOverride ?? undefined} />
+            <CartSummary showCheckoutButton={false} shippingPrice={shippingOverride ?? undefined} freeAboveAmount={freeAboveOverride ?? undefined} shippingMethodName={shippingMethodName || undefined} />
           </AnimatedSection>
         </div>
       </div>

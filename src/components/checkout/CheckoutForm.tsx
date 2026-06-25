@@ -15,7 +15,7 @@ const GlsParcelPicker = dynamic(() => import("./GlsParcelPicker"), { ssr: false 
 
 interface FormErrors { [key: string]: string; }
 
-export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: number, freeAbove?: number | null) => void }) {
+export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: number, freeAbove?: number | null, methodName?: string) => void }) {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
   const clearCart = useCartStore((s) => s.clearCart);
@@ -64,7 +64,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   const shippingPrice = isFreeShipping ? 0 : methodPrice;
   const total = subtotal + shippingPrice;
 
-  useEffect(() => { onShippingChange?.(shippingPrice, freeAbove); }, [shippingPrice, freeAbove, onShippingChange]);
+  useEffect(() => { onShippingChange?.(shippingPrice, freeAbove, currentMethod?.name); }, [shippingPrice, freeAbove, currentMethod?.name, onShippingChange]);
 
   const validate = (): boolean => {
     const e: FormErrors = {};
