@@ -1,6 +1,23 @@
 "use client";
 import Script from "next/script";
 
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "gls-dpm": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          country?: string;
+          language?: string;
+          "filter-type"?: string;
+        },
+        HTMLElement
+      >;
+    }
+  }
+}
+"use client";
+import Script from "next/script";
+
 interface Props {
   onSelect?: (point: any) => void;
   height?: string;

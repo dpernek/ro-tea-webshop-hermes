@@ -432,8 +432,6 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
           </div>
           <div className="rounded-lg border border-[#0055a8]/20 overflow-hidden">
             <GlsDeliveryMap
-              country="hr"
-              language="hr"
               height="500px"
               onSelect={(point: any) => {
                 if (point) {
