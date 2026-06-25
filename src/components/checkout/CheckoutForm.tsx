@@ -49,7 +49,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     postalCode: "",
     note: "",
     paymentMethod: "bank_transfer",
-    shippingMethod: "gls-dostava",
+    shippingMethod: "gls-dostava-prod",
     // GLS Paketomat fields
     glsPickupPointId: "",
     glsPickupPointName: "",
@@ -147,7 +147,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   }, []);
 
   useEffect(() => {
-    if (formData.shippingMethod === "gls-paketomat" && !glsFetched) {
+    if (formData.shippingMethod === "gls-paketomat-prod" && !glsFetched) {
       fetchDeliveryPoints();
     }
   }, [formData.shippingMethod, formData.city, formData.postalCode, fetchDeliveryPoints, glsFetched]);
@@ -166,7 +166,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       newErrors.phone = "Unesite valjani broj telefona.";
     }
     // Address is only required for home delivery, not for paketomat
-    if (formData.shippingMethod !== "gls-paketomat") {
+    if (formData.shippingMethod !== "gls-paketomat-prod") {
       if (!formData.address.trim() || formData.address.length < 5) {
         newErrors.address = "Unesite punu adresu dostave.";
       }
@@ -179,7 +179,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       newErrors.postalCode = "Unesite valjani poštanski broj (5 znamenaka).";
     }
     // Require pickup point selection for paketomat
-    if (formData.shippingMethod === "gls-paketomat" && !formData.glsPickupPointId) {
+    if (formData.shippingMethod === "gls-paketomat-prod" && !formData.glsPickupPointId) {
       newErrors.glsPickupPoint = "Odaberite GLS paketomat s karte ili popisa.";
     }
     if (!acceptedTerms) {
@@ -200,7 +200,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     setFormData((prev) => {
       const updated = { ...prev, [name]: value };
       // Reset GLS paketomat selection when switching away from it
-      if (name === "shippingMethod" && value !== "gls-paketomat") {
+      if (name === "shippingMethod" && value !== "gls-paketomat-prod") {
         updated.glsPickupPointId = "";
         updated.glsPickupPointName = "";
         updated.glsPickupPointAddress = "";
@@ -376,7 +376,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
           aria-required="true"
           autoComplete="tel"
         />
-        {formData.shippingMethod !== "gls-paketomat" && (
+        {formData.shippingMethod !== "gls-paketomat-prod" && (
           <div className="sm:col-span-2">
             <Input
               label="Adresa"
@@ -460,7 +460,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       </fieldset>
 
       {/* GLS Paketomat — delivery points selector */}
-      {formData.shippingMethod === "gls-paketomat" && (
+      {formData.shippingMethod === "gls-paketomat-prod" && (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
           <div className="flex items-center gap-2 mb-3">
             <MapPin className="h-4 w-4 text-amber-600" />
@@ -551,7 +551,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       )}
 
       {/* GLS dostava (home delivery) — test mode indicator */}
-      {formData.shippingMethod === "gls-dostava" && (
+      {formData.shippingMethod === "gls-dostava-prod" && (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
           <div className="flex items-center gap-2">
             <Package className="h-4 w-4 text-amber-600" />
