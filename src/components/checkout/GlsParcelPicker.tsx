@@ -48,6 +48,13 @@ export default function GlsParcelPicker({ onSelect, selectedName }: Props) {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Point | null>(null);
 
+  // Auto-open on first render when no location selected yet
+  useEffect(() => {
+    if (!loading && !selectedName) {
+      setOpen(true);
+    }
+  }, [loading, selectedName]);
+
   useEffect(() => {
     fetch("/api/shipping/gls/delivery-points")
       .then(r => r.json())
