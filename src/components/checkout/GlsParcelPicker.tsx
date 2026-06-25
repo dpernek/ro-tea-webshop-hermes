@@ -6,13 +6,11 @@ import "leaflet/dist/leaflet.css";
 import { Button } from "@/components/ui/Button";
 import { MapPin, Search, X, Loader2 } from "lucide-react";
 
-// Fix Leaflet default icon
 const icon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
+  iconSize: [25, 41], iconAnchor: [12, 41],
 });
 
 interface Point {
@@ -25,6 +23,8 @@ interface Props {
     contact: { address: string; city: string; postalCode: string; countryCode: string };
   }) => void;
   selectedName?: string;
+  city?: string;
+  postalCode?: string;
 }
 
 function FitBounds({ points }: { points: Point[] }) {
@@ -32,8 +32,10 @@ function FitBounds({ points }: { points: Point[] }) {
   useEffect(() => {
     const valid = points.filter(p => p.lat && p.lng);
     if (valid.length) {
-      const bounds = L.latLngBounds(valid.map(p => [p.lat!, p.lng!] as [number, number]));
-      map.fitBounds(bounds, { padding: [30, 30], maxZoom: 12 });
+      map.fitBounds(
+        L.latLngBounds(valid.map(p => [p.lat!, p.lng!] as [number, number])),
+        { padding: [30, 30], maxZoom: 13 }
+      );
     } else {
       map.setView([45.815, 15.982], 7);
     }
@@ -41,20 +43,25 @@ function FitBounds({ points }: { points: Point[] }) {
   return null;
 }
 
-export default function GlsParcelPicker({ onSelect, selectedName }: Props) {
+function normalize(s: string) {
+  return s.toLowerCase()
+    .replace(/č/g, "c").replace(/ć/g, "c").replace(/š/g, "s")
+    .replace(/đ/g, "d").replace(/ž/g, "z");
+}
+
+export default function GlsParcelPicker({ onSelect, selectedName, city, postalCode }: Props) {
   const [points, setPoints] = useState<Point[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Point | null>(null);
 
-  // Auto-open on first render when no location selected yet
+  // Auto-open on first render when no location selected
   useEffect(() => {
-    if (!loading && !selectedName) {
-      setOpen(true);
-    }
+    if (!loading && !selectedName) setOpen(true);
   }, [loading, selectedName]);
 
+  // Fetch all GLS points
   useEffect(() => {
     fetch("/api/shipping/gls/delivery-points")
       .then(r => r.json())
@@ -62,14 +69,30 @@ export default function GlsParcelPicker({ onSelect, selectedName }: Props) {
       .catch(() => setLoading(false));
   }, []);
 
+  // Pre-filter: if user has city/postal, prioritize those results
+  const localPoints = useMemo(() => {
+    if (!city && !postalCode) return points;
+    const c = normalize(city || "");
+    const z = (postalCode || "").trim();
+    const local = points.filter(p => {
+      const addr = normalize(p.address);
+      const name = normalize(p.name);
+      if (z && addr.includes(z)) return true;
+      if (c && (addr.includes(c) || name.includes(c))) return true;
+      return false;
+    });
+    return local.length > 0 ? local : points;
+  }, [points, city, postalCode]);
+
+  // Search within (already localized) points
   const filtered = useMemo(() => {
-    if (!search) return points;
-    const q = search.toLowerCase();
-    return points.filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.address.toLowerCase().includes(q)
+    if (!search) return localPoints;
+    const q = normalize(search);
+    return localPoints.filter(p =>
+      normalize(p.name).includes(q) ||
+      normalize(p.address).includes(q)
     );
-  }, [points, search]);
+  }, [localPoints, search]);
 
   const handleSelect = (p: Point) => {
     const parts = p.address.split(",").map(s => s.trim());
@@ -111,11 +134,9 @@ export default function GlsParcelPicker({ onSelect, selectedName }: Props) {
         </div>
       )}
 
-      {/* Modal */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setOpen(false)}>
           <div className="flex max-h-[85vh] w-full max-w-5xl flex-col rounded-xl bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
-            {/* Header */}
             <div className="flex items-center justify-between border-b px-5 py-4">
               <h3 className="text-lg font-semibold">Odaberite GLS Paketomat</h3>
               <button onClick={() => setOpen(false)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
@@ -123,17 +144,27 @@ export default function GlsParcelPicker({ onSelect, selectedName }: Props) {
               </button>
             </div>
 
-            {/* Search */}
             <div className="px-5 py-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <input className="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-4 text-sm focus:border-[#0055a8] focus:outline-none" placeholder="Pretraži paketomate..." value={search} onChange={e => setSearch(e.target.value)} autoFocus />
+                <input
+                  className="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-4 text-sm focus:border-[#0055a8] focus:outline-none"
+                  placeholder="Pretraži po nazivu, adresi ili gradu..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  autoFocus
+                />
               </div>
+              {city && (
+                <p className="mt-2 text-xs text-slate-400">
+                  {localPoints.length < points.length
+                    ? `Prikazano ${localPoints.length} paketomata za ${city}${postalCode ? ` (${postalCode})` : ""}`
+                    : `Prikazano svih ${points.length} paketomata`}
+                </p>
+              )}
             </div>
 
-            {/* Map + List */}
             <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-2">
-              {/* Map */}
               <div className="h-[350px] md:h-full">
                 {loading ? (
                   <div className="flex h-full items-center justify-center bg-slate-50 text-sm text-slate-400">
@@ -152,7 +183,6 @@ export default function GlsParcelPicker({ onSelect, selectedName }: Props) {
                 )}
               </div>
 
-              {/* List */}
               <div className="overflow-y-auto border-t md:border-t-0 md:border-l border-slate-100">
                 {loading ? (
                   <div className="flex items-center justify-center py-16 text-sm text-slate-400">
@@ -160,7 +190,7 @@ export default function GlsParcelPicker({ onSelect, selectedName }: Props) {
                   </div>
                 ) : filtered.length === 0 ? (
                   <p className="py-16 text-center text-sm text-slate-400">
-                    {search ? "Nema rezultata." : "Nema dostupnih paketomata."}
+                    {search ? "Nema rezultata za ovu pretragu." : `Nema paketomata${city ? ` u ${city}` : ""}.`}
                   </p>
                 ) : (
                   filtered.map(p => (
