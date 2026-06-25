@@ -489,12 +489,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
 
           </div>
 
-          {glsTestMode && (
-            <p className="mb-3 text-xs text-amber-600">
-              ⚠️ GLS API nije konfiguriran — prikazuju se testni paketomati.
-              Postavite GLS_API_KEY i GLS_API_URL u .env za produkciju.
-            </p>
-          )}
+
 
           {glsLoading && (
             <div className="flex items-center gap-2 py-3 text-sm text-slate-500">
