@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
@@ -9,24 +9,11 @@ import { useCartStore } from "@/store/cartStore";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/lib/actions/orders";
 import dynamic from "next/dynamic";
-
-const GlsDeliveryMap = dynamic(() => import("./GlsDeliveryMap"), { ssr: false });
 import { CreditCard, Building, Banknote } from "lucide-react";
 
-interface FormErrors {
-  [key: string]: string;
-}
+const GlsWidgetPicker = dynamic(() => import("./GlsWidgetPicker"), { ssr: false });
 
-interface GlsDeliveryPoint {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  postalCode: string;
-}
-
-const SHIPPING_PRICE = 6.64;
-const FREE_SHIPPING_THRESHOLD = 66.36;
+interface FormErrors { [key: string]: string; }
 
 const PAYMENT_METHODS = [
   { value: "card", label: "Kartica", icon: CreditCard },
@@ -36,166 +23,76 @@ const PAYMENT_METHODS = [
 
 export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: number) => void }) {
   const router = useRouter();
-  const items = useCartStore((state) => state.items);
-  const clearCart = useCartStore((state) => state.clearCart);
+  const items = useCartStore((s) => s.items);
+  const clearCart = useCartStore((s) => s.clearCart);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [stripeError, setStripeError] = useState("");
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    postalCode: "",
-    note: "",
-    paymentMethod: "bank_transfer",
-    shippingMethod: "",
-    // GLS Paketomat fields
-    glsPickupPointId: "",
-    glsPickupPointName: "",
-    glsPickupPointAddress: "",
+    fullName: "", email: "", phone: "", address: "", city: "", postalCode: "",
+    note: "", paymentMethod: "bank_transfer", shippingMethod: "",
+    glsPickupPointId: "", glsPickupPointName: "", glsPickupPointAddress: "",
   });
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [shippingMethods, setShippingMethods] = useState<Array<{ id: string; name: string; price: number }>>([]);
 
-  // GLS delivery points state
-  const [shippingMethods, setShippingMethods] = useState<Array<{id:string;name:string;price:number;freeAboveAmount?:number}>>([]);
-  // GLS method detection by name (works regardless of UUID)
-  const currentShippingName = shippingMethods.find(m => m.id === formData.shippingMethod)?.name || "";
-  const isGlsDostava = currentShippingName.includes("GLS") && !currentShippingName.includes("Paketomat");
-  const isGlsPaketomat = currentShippingName.includes("GLS") && currentShippingName.includes("Paketomat");
+  // ── Single shipping fetch (no auto-select) ──
+  useEffect(() => {
+    fetch("/api/shipping")
+      .then(r => r.json())
+      .then(data => {
+        const methods = (data || []).map((m: any) => ({
+          id: m.id, name: m.name, price: m.price || 0,
+        }));
+        setShippingMethods(methods);
+      })
+      .catch(() => {});
+  }, []);
+
+  // ── Derived state ──
+  const currentMethod = shippingMethods.find(m => m.id === formData.shippingMethod);
+  const currentName = currentMethod?.name || "";
+  const isGlsHome = currentName.includes("GLS") && !currentName.includes("Paketomat");
+  const isGlsPaketomat = currentName.includes("GLS") && currentName.includes("Paketomat");
   const glsPaketomatId = shippingMethods.find(m => m.name.includes("GLS Paketomat"))?.id || "";
 
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
-
-  const shippingMethod = shippingMethods.find(
-    (sm) => sm.id === formData.shippingMethod
-  );
-  const shippingPrice =
-    shippingMethod?.id === "osobno-preuzimanje"
-      ? 0
-      : subtotal >= FREE_SHIPPING_THRESHOLD
-        ? 0
-        : SHIPPING_PRICE;
+  const subtotal = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+  const shippingPrice = currentMethod ? currentMethod.price : 0;
   const total = subtotal + shippingPrice;
 
-  // Notify parent when shipping price changes
-  // Fetch shipping methods from admin/baze
-  useEffect(() => {
-    fetch("/api/shipping")
-      .then(r => r.json())
-      .then(data => {
-        const methods = (data || []).filter((m: any) => m.active !== false).map((m: any) => ({
-          id: m.id,
-          name: m.name,
-          price: m.price || 0,
-          freeAboveAmount: m.freeAboveAmount || undefined,
-        }));
-        setShippingMethods(methods);
-        // Auto-detect GLS method IDs
-        const glsDostava = methods.find((m: any) => m.name.includes("GLS dostava"));
-        const glsPaketomat = methods.find((m: any) => m.name.includes("GLS Paketomat"));
-        if (glsDostava) setFormData(prev => ({ ...prev, shippingMethod: glsDostava.id }));
-        else if (glsPaketomat) setFormData(prev => ({ ...prev, shippingMethod: glsPaketomat.id }));
-      })
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    onShippingChange?.(shippingPrice);
-  }, [shippingPrice, onShippingChange]);
-
-  // Fetch GLS delivery points when "GLS Paketomat" is selected
-  // Fetch shipping methods from admin/baze
-  useEffect(() => {
-    fetch("/api/shipping")
-      .then(r => r.json())
-      .then(data => {
-        const methods = (data || []).filter((m: any) => m.active !== false).map((m: any) => ({
-          id: m.id,
-          name: m.name,
-          price: m.price || 0,
-          freeAboveAmount: m.freeAboveAmount || undefined,
-        }));
-        setShippingMethods(methods);
-        // Auto-detect GLS method IDs
-        const glsDostava = methods.find((m: any) => m.name.includes("GLS dostava"));
-        const glsPaketomat = methods.find((m: any) => m.name.includes("GLS Paketomat"));
-        if (glsDostava) setFormData(prev => ({ ...prev, shippingMethod: glsDostava.id }));
-        else if (glsPaketomat) setFormData(prev => ({ ...prev, shippingMethod: glsPaketomat.id }));
-      })
-      .catch(() => {});
-  }, []);
+  useEffect(() => { onShippingChange?.(shippingPrice); }, [shippingPrice, onShippingChange]);
 
   const validate = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!formData.fullName.trim() || formData.fullName.length < 3) {
-      newErrors.fullName = "Unesite ime i prezime (minimalno 3 znaka).";
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim() || !emailRegex.test(formData.email)) {
-      newErrors.email = "Unesite valjanu e-mail adresu.";
-    }
-    if (!formData.phone.trim() || formData.phone.length < 6) {
-      newErrors.phone = "Unesite valjani broj telefona.";
-    }
-    // Address is only required for home delivery, not for paketomat
-    if (formData.shippingMethod !== glsPaketomatId) {
-      if (!formData.address.trim() || formData.address.length < 5) {
-        newErrors.address = "Unesite punu adresu dostave.";
-      }
-    }
-    if (!formData.city.trim()) {
-      newErrors.city = "Unesite grad.";
-    }
-    const postalRegex = /^\d{5}$/;
-    if (!formData.postalCode.trim() || !postalRegex.test(formData.postalCode)) {
-      newErrors.postalCode = "Unesite valjani poštanski broj (5 znamenaka).";
-    }
-    // Require pickup point selection for paketomat
-    if (isGlsPaketomat && !formData.glsPickupPointId) {
-      newErrors.glsPickupPoint = "Odaberite GLS paketomat s karte ili popisa.";
-    }
-    if (!acceptedTerms) {
-      newErrors.terms =
-        "Morate prihvatiti uvjete kupnje i politiku privatnosti.";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    const e: FormErrors = {};
+    if (!formData.fullName.trim() || formData.fullName.length < 3) e.fullName = "Unesite ime i prezime (minimalno 3 znaka).";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = "Unesite valjanu e-mail adresu.";
+    if (!formData.phone.trim() || formData.phone.length < 6) e.phone = "Unesite valjani broj telefona.";
+    if (!isGlsPaketomat && (!formData.address.trim() || formData.address.length < 5)) e.address = "Unesite punu adresu dostave.";
+    if (!formData.city.trim()) e.city = "Unesite grad.";
+    if (!/^\d{5}$/.test(formData.postalCode)) e.postalCode = "Unesite valjani poštanski broj (5 znamenaka).";
+    if (isGlsPaketomat && !formData.glsPickupPointId) e.glsPickupPoint = "Odaberite GLS Paketomat.";
+    if (!acceptedTerms) e.terms = "Morate prihvatiti uvjete kupnje i politiku privatnosti.";
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => {
-      const updated = { ...prev, [name]: value };
-      // Reset GLS paketomat selection when switching away from it
+    setFormData(prev => {
+      const u = { ...prev, [name]: value };
       if (name === "shippingMethod" && value !== glsPaketomatId) {
-        updated.glsPickupPointId = "";
-        updated.glsPickupPointName = "";
-        updated.glsPickupPointAddress = "";
+        u.glsPickupPointId = ""; u.glsPickupPointName = ""; u.glsPickupPointAddress = "";
       }
-      return updated;
+      return u;
     });
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: "" }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
-    // Card payment flow: create Stripe checkout session
     if (formData.paymentMethod === "card") {
       setIsCreatingSession(true);
       setStripeError("");
@@ -204,324 +101,129 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            customerName: formData.fullName,
-            customerEmail: formData.email,
-            customerPhone: formData.phone,
-            address: formData.address,
-            city: formData.city,
-            postalCode: formData.postalCode,
-            note: formData.note,
-            items: items.map((item) => ({
-              productId: item.product.id,
-              productName: item.product.name,
-              sku: item.product.sku || undefined,
-              quantity: item.quantity,
-              unitPrice: item.product.price,
-              attributes: item.selectedAttributes,
-            })),
-            shippingMethodId: formData.shippingMethod,
-            paymentMethod: formData.paymentMethod,
-            // GLS fields
+            customerName: formData.fullName, customerEmail: formData.email,
+            customerPhone: formData.phone, address: formData.address,
+            city: formData.city, postalCode: formData.postalCode, note: formData.note,
+            items: items.map(i => ({ productId: i.product.id, productName: i.product.name, sku: i.product.sku, quantity: i.quantity, unitPrice: i.product.price })),
+            shippingMethodId: formData.shippingMethod, paymentMethod: formData.paymentMethod,
             glsPickupPointId: formData.glsPickupPointId || undefined,
             glsPickupPointName: formData.glsPickupPointName || undefined,
             glsPickupPointAddress: formData.glsPickupPointAddress || undefined,
           }),
         });
-
         const data = await res.json();
-
-        if (!res.ok) {
-          setStripeError(data.error || "Došlo je do greške prilikom kreiranja sesije plaćanja.");
-          return;
-        }
-
-        // Redirect to Stripe Checkout
+        if (!res.ok) { setStripeError(data.error || "Greška pri plaćanju."); return; }
         window.location.href = data.url;
-      } catch (err) {
-        setStripeError("Došlo je do greške prilikom kreiranja sesije plaćanja. Pokušajte ponovno.");
-        console.error("Stripe checkout session creation failed:", err);
-      } finally {
-        setIsCreatingSession(false);
-      }
+      } catch { setStripeError("Greška pri plaćanju. Pokušajte ponovno."); }
+      finally { setIsCreatingSession(false); }
       return;
     }
 
-    // Non-card payment flow (bank transfer / COD)
     setIsSubmitting(true);
     try {
       const order = await createOrder({
-        customerName: formData.fullName,
-        customerEmail: formData.email,
-        customerPhone: formData.phone,
-        address: formData.address,
-        city: formData.city,
-        postalCode: formData.postalCode,
-        note: formData.note,
-        items: items.map((item) => ({
-          productId: item.product.id,
-          productName: item.product.name,
-          sku: item.product.sku || undefined,
-          quantity: item.quantity,
-          unitPrice: item.product.price,
-          attributes: item.selectedAttributes,
-        })),
-        paymentMethod: formData.paymentMethod,
-        shippingMethodId: formData.shippingMethod,
-        shippingTotal: shippingPrice,
-        subtotal,
-        taxTotal: 0,
-        total,
-        // GLS fields
+        customerName: formData.fullName, customerEmail: formData.email,
+        customerPhone: formData.phone, address: formData.address,
+        city: formData.city, postalCode: formData.postalCode, note: formData.note,
+        items: items.map(i => ({ productId: i.product.id, productName: i.product.name, sku: i.product.sku, quantity: i.quantity, unitPrice: i.product.price })),
+        paymentMethod: formData.paymentMethod, shippingMethodId: formData.shippingMethod,
+        shippingTotal: shippingPrice, subtotal, taxTotal: 0, total,
         glsPickupPointId: formData.glsPickupPointId || undefined,
         glsPickupPointName: formData.glsPickupPointName || undefined,
         glsPickupPointAddress: formData.glsPickupPointAddress || undefined,
       });
-
       clearCart();
       router.push(`/checkout/uspjeh?orderNumber=${encodeURIComponent(order.orderNumber)}`);
-    } catch (err) {
-      setErrors({
-        form: "Došlo je do greške prilikom slanja narudžbe. Pokušajte ponovno.",
-      });
-      console.error("Order creation failed:", err);
-    } finally {
-      setIsSubmitting(false);
-    }
+    } catch {
+      setErrors({ form: "Greška pri slanju narudžbe. Pokušajte ponovno." });
+    } finally { setIsSubmitting(false); }
   };
 
   if (items.length === 0) return null;
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      noValidate
-      className="space-y-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm sm:p-8"
-    >
-      <h2 className="text-xl font-semibold text-slate-900">
-        Podaci za dostavu
-      </h2>
+    <form onSubmit={handleSubmit} noValidate className="space-y-6 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm sm:p-8">
+      <h2 className="text-xl font-semibold text-slate-900">Podaci za dostavu</h2>
 
-      {errors.form && (
-        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">
-          {errors.form}
-        </div>
-      )}
+      {errors.form && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">{errors.form}</div>}
+      {stripeError && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">{stripeError}</div>}
 
       <div className="grid gap-6 sm:grid-cols-2">
-        <Input
-          label="Ime i prezime"
-          name="fullName"
-          value={formData.fullName}
-          onChange={handleChange}
-          error={errors.fullName}
-          placeholder="Ivan Horvat"
-          required
-          aria-required="true"
-          autoComplete="name"
-        />
-        <Input
-          label="E-mail"
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={handleChange}
-          error={errors.email}
-          placeholder="ivan.horvat@email.hr"
-          required
-          aria-required="true"
-          autoComplete="email"
-        />
-        <Input
-          label="Telefon"
-          name="phone"
-          type="tel"
-          value={formData.phone}
-          onChange={handleChange}
-          error={errors.phone}
-          placeholder="+385 91 123 4567"
-          required
-          aria-required="true"
-          autoComplete="tel"
-        />
-        {formData.shippingMethod !== glsPaketomatId && (
+        <Input label="Ime i prezime" name="fullName" value={formData.fullName} onChange={handleChange} error={errors.fullName} placeholder="Ivan Horvat" required />
+        <Input label="E-mail" name="email" type="email" value={formData.email} onChange={handleChange} error={errors.email} placeholder="ivan.horvat@email.hr" required />
+        <Input label="Telefon" name="phone" type="tel" value={formData.phone} onChange={handleChange} error={errors.phone} placeholder="+385 91 123 4567" required />
+        {!isGlsPaketomat && (
           <div className="sm:col-span-2">
-            <Input
-              label="Adresa"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              error={errors.address}
-              placeholder="Ulica i kućni broj"
-              required
-              aria-required="true"
-              autoComplete="street-address"
-            />
+            <Input label="Adresa" name="address" value={formData.address} onChange={handleChange} error={errors.address} placeholder="Ulica i kućni broj" required />
           </div>
         )}
-        <Input
-          label="Grad"
-          name="city"
-          value={formData.city}
-          onChange={handleChange}
-          error={errors.city}
-          placeholder="Zagreb"
-          required
-          aria-required="true"
-          autoComplete="address-level2"
-        />
-        <Input
-          label="Poštanski broj"
-          name="postalCode"
-          value={formData.postalCode}
-          onChange={handleChange}
-          error={errors.postalCode}
-          placeholder="10000"
-          required
-          aria-required="true"
-          autoComplete="postal-code"
-        />
+        <Input label="Grad" name="city" value={formData.city} onChange={handleChange} error={errors.city} placeholder="Zagreb" required />
+        <Input label="Poštanski broj" name="postalCode" value={formData.postalCode} onChange={handleChange} error={errors.postalCode} placeholder="10000" required />
       </div>
 
-      {/* Shipping method */}
+      {/* Shipping methods */}
       <fieldset>
-        <legend className="mb-2 text-sm font-medium text-slate-700">
-          Način dostave
-        </legend>
+        <legend className="mb-2 text-sm font-medium text-slate-700">Način dostave</legend>
         <div className="space-y-2">
-          {shippingMethods.map((sm) => {
-            
-            const isSelected = formData.shippingMethod === sm.id;
+          {shippingMethods.map(sm => {
+            const sel = formData.shippingMethod === sm.id;
             return (
-              <label
-                key={sm.id}
-                className={`flex cursor-pointer items-center justify-between rounded-lg border p-3 ${
-                  isSelected
-                    ? "border-[#0055a8] bg-[#0055a8]/5"
-                    : "border-slate-200 hover:border-slate-300"
-                }`}
-              >
+              <label key={sm.id} className={`flex cursor-pointer items-center justify-between rounded-lg border p-3 ${sel ? "border-[#0055a8] bg-[#0055a8]/5" : "border-slate-200 hover:border-slate-300"}`}>
                 <div className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="shippingMethod"
-                    value={sm.id}
-                    checked={isSelected}
-                    onChange={handleChange}
-                    className="text-[#0055a8]"
-                    required
-                  />
+                  <input type="radio" name="shippingMethod" value={sm.id} checked={sel} onChange={handleChange} className="text-[#0055a8]" required />
                   <span className="text-sm font-medium text-slate-900">
                     {sm.name}
-                    {sm.name.includes("GLS") && (
-                      <img src="/images/shipping/gls-icon.png" alt="" width={47} height={16} className="ml-1 inline-block align-middle" />
-                    )}
+                    {sm.name.includes("GLS") && <img src="/images/shipping/gls-icon.png" alt="" width={47} height={16} className="ml-1 inline-block align-middle" />}
                   </span>
                 </div>
-                <span className="text-sm text-slate-600">
-                  {shippingPrice === 0 && isSelected
-                    ? "Besplatno"
-                    : formatPrice(sm.price)}
-                </span>
+                <span className="text-sm text-slate-600">{formatPrice(sm.price)}</span>
               </label>
             );
           })}
         </div>
       </fieldset>
 
-            {/* GLS Paketomat — službena GLS mapa */}
+      {/* GLS home delivery info */}
+      {isGlsHome && (
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-600">
+          📦 GLS dostava na vašu adresu — isporuka sljedeći radni dan.
+        </div>
+      )}
+
+      {/* GLS Paketomat — official widget picker */}
       {isGlsPaketomat && (
-        <div className="mt-4">
-          <div className="mb-3 flex items-center gap-3">
-            <p className="text-sm font-semibold text-slate-900">📍 Odaberite GLS Paketomat</p>
-          </div>
-          <div className="rounded-lg border border-[#0055a8]/20 overflow-hidden">
-            <GlsDeliveryMap
-              height="500px"
-              onSelect={(point: any) => {
-                if (point) {
-                  const addr = `${point.contact?.address || ""}, ${point.contact?.postalCode || ""} ${point.contact?.city || ""}`;
-                  setFormData((prev) => ({
-                    ...prev,
-                    glsPickupPointId: point.id,
-                    glsPickupPointName: point.name,
-                    glsPickupPointAddress: addr,
-                  }));
-                  if (errors.glsPickupPoint) {
-                    setErrors((prev) => ({ ...prev, glsPickupPoint: "" }));
-                  }
-                }
-              }}
-            />
-          </div>
-        </div>
+        <GlsWidgetPicker
+          onSelect={(point) => {
+            if (point) {
+              setFormData(prev => ({
+                ...prev,
+                glsPickupPointId: point.id,
+                glsPickupPointName: point.name,
+                glsPickupPointAddress: `${point.contact.address}, ${point.contact.postalCode} ${point.contact.city}`,
+              }));
+              setErrors(prev => ({ ...prev, glsPickupPoint: "" }));
+            }
+          }}
+          selectedName={formData.glsPickupPointName}
+        />
       )}
 
-      {/* Selected pickup indicator */}
-      {isGlsPaketomat && formData.glsPickupPointId && (
-        <div className="mt-2 rounded-lg bg-[#0055a8]/5 border border-[#0055a8]/20 px-3 py-2 text-sm">
-          <span className="font-medium text-[#0055a8]">Odabrani paketomat: </span>
-          <span className="text-slate-700">{formData.glsPickupPointName}</span>
-          <span className="text-xs text-slate-500 ml-2">{formData.glsPickupPointAddress}</span>
-        </div>
-      )}
-
-      {/* Terms checkbox */}
+      {/* Terms */}
       <div>
         <label className="flex cursor-pointer items-start gap-2">
-          <input
-            type="checkbox"
-            checked={acceptedTerms}
-            onChange={(e) => setAcceptedTerms(e.target.checked)}
-            className="mt-1 text-[#0055a8]"
-            required
-            aria-required="true"
-            aria-invalid={!!errors.terms}
-            aria-describedby="terms-error"
-          />
+          <input type="checkbox" checked={acceptedTerms} onChange={e => setAcceptedTerms(e.target.checked)} className="mt-1 text-[#0055a8]" required />
           <span className="text-sm text-slate-600">
-            Prihvaćam{" "}
-            <a href="/uvjeti-kupnje" className="text-[#0055a8] underline hover:text-blue-800">uvjete kupnje</a>
-            {" "}i{" "}
-            <a href="/pravila-o-privatnosti" className="text-[#0055a8] underline hover:text-blue-800">pravila privatnosti</a>.
+            Prihvaćam{" "}<a href="/uvjeti-kupnje" className="text-[#0055a8] underline hover:text-blue-800">uvjete kupnje</a>{" "}i{" "}<a href="/pravila-o-privatnosti" className="text-[#0055a8] underline hover:text-blue-800">pravila privatnosti</a>.
           </span>
         </label>
-        {errors.terms && (
-          <p id="terms-error" className="mt-1.5 text-sm text-red-600" role="alert">
-            {errors.terms}
-          </p>
-        )}
+        {errors.terms && <p className="mt-1.5 text-sm text-red-600" role="alert">{errors.terms}</p>}
       </div>
 
-      {formData.paymentMethod === "bank_transfer" && (
-        <p className="text-sm text-slate-500">
-          Nakon slanja narudžbe dobit ćete upute za plaćanje na e-mail.
-        </p>
-      )}
-      {formData.paymentMethod === "cod" && (
-        <p className="text-sm text-slate-500">
-          Plaćanje pouzećem prilikom preuzimanja paketa.
-        </p>
-      )}
-      {formData.paymentMethod === "card" && (
-        <p className="text-sm text-slate-500">
-          Sigurno plaćanje karticom putem Stripea. Apple Pay i Google Pay se prikazuju ako su dostupni na vašem uređaju.
-        </p>
-      )}
+      {formData.paymentMethod === "bank_transfer" && <p className="text-sm text-slate-500">Nakon slanja narudžbe dobit ćete upute za plaćanje na e-mail.</p>}
+      {formData.paymentMethod === "cod" && <p className="text-sm text-slate-500">Plaćanje pouzećem prilikom dostave.</p>}
 
-      {stripeError && (
-        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">
-          {stripeError}
-        </div>
-      )}
-
-      <Button
-        type="submit"
-        size="lg"
-        className="w-full"
-        isLoading={formData.paymentMethod === "card" ? isCreatingSession : isSubmitting}
-        disabled={isCreatingSession || isSubmitting}
-      >
-        Potvrdi narudžbu
+      <Button type="submit" size="lg" className="w-full" isLoading={isSubmitting || isCreatingSession} disabled={isSubmitting || isCreatingSession}>
+        {isCreatingSession ? "Preusmjeravanje na plaćanje..." : "Potvrdi narudžbu"}
       </Button>
     </form>
   );
