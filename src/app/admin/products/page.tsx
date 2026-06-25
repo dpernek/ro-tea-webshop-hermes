@@ -545,6 +545,20 @@ export default function AdminProductsPage() {
               </div>
             )}
 
+            {/* Sale handling for increase/decrease percent */}
+            {(bulkAction === "increasePercent" || bulkAction === "decreasePercent") && (
+              <select
+                value={saleHandling}
+                onChange={(e) => setSaleHandling(e.target.value as "keep" | "clear" | "recalculateSameDiscount")}
+                className="h-9 rounded-lg border border-[#0055a8]/30 px-3 text-sm focus:border-brand focus:ring-1 focus:ring-brand"
+                aria-label="Što s postojećim akcijskim cijenama?"
+              >
+                <option value="keep">Zadrži akciju ako je valjana</option>
+                <option value="clear">Makni akciju</option>
+                <option value="recalculateSameDiscount">Preračunaj isti popust</option>
+              </select>
+            )}
+
             {/* Preview button */}
             <Button
               size="sm"
