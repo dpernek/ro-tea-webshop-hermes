@@ -3,23 +3,17 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
-import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { useCartStore } from "@/store/cartStore";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/lib/actions/orders";
 import dynamic from "next/dynamic";
+import NextImage from "next/image";
 import { CreditCard, Building, Banknote } from "lucide-react";
 
 const GlsWidgetPicker = dynamic(() => import("./GlsWidgetPicker"), { ssr: false });
 
 interface FormErrors { [key: string]: string; }
-
-const PAYMENT_METHODS = [
-  { value: "card", label: "Kartica", icon: CreditCard },
-  { value: "bank_transfer", label: "Bankovna uplata / predračun", icon: Building },
-  { value: "cod", label: "Pouzeće", icon: Banknote },
-];
 
 export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: number) => void }) {
   const router = useRouter();
@@ -173,7 +167,9 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
                   <input type="radio" name="shippingMethod" value={sm.id} checked={sel} onChange={handleChange} className="text-[#0055a8]" required />
                   <span className="text-sm font-medium text-slate-900">
                     {sm.name}
-                    {sm.name.includes("GLS") && <img src="/images/shipping/gls-icon.png" alt="" width={47} height={16} className="ml-1 inline-block align-middle" />}
+                    {sm.name.includes("GLS") && (
+                      <NextImage src="/images/shipping/gls-icon.png" alt="GLS" width={47} height={16} className="ml-1 inline-block align-middle" />
+                    )}
                   </span>
                 </div>
                 <span className="text-sm text-slate-600">{formatPrice(sm.price)}</span>
@@ -207,6 +203,30 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
           selectedName={formData.glsPickupPointName}
         />
       )}
+
+      {/* Payment method */}
+      <fieldset>
+        <legend className="mb-2 text-sm font-medium text-slate-700">Način plaćanja</legend>
+        <div className="space-y-2">
+          {[
+            { value: "card", label: "Kartica", icon: CreditCard },
+            { value: "bank_transfer", label: "Bankovna uplata / predračun", icon: Building },
+            { value: "cod", label: "Pouzeće", icon: Banknote },
+          ].map(pm => {
+            const sel = formData.paymentMethod === pm.value;
+            const Icon = pm.icon;
+            return (
+              <label key={pm.value} className={`flex cursor-pointer items-center justify-between rounded-lg border p-3 ${sel ? "border-[#0055a8] bg-[#0055a8]/5" : "border-slate-200 hover:border-slate-300"}`}>
+                <div className="flex items-center gap-2">
+                  <input type="radio" name="paymentMethod" value={pm.value} checked={sel} onChange={handleChange} className="text-[#0055a8]" required />
+                  <Icon className="h-4 w-4 text-slate-400" />
+                  <span className="text-sm font-medium text-slate-900">{pm.label}</span>
+                </div>
+              </label>
+            );
+          })}
+        </div>
+      </fieldset>
 
       {/* Terms */}
       <div>
