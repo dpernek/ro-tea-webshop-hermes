@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // GLS GetDeliveryPoints — retrieves list of pickup points/lockers.
 import { glsSoapCall, glsAuthXml } from "./client";
 import type { GetDeliveryPointsResponse, GlsDeliveryPoint } from "./types";

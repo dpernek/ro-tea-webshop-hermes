@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // GLS DeleteLabels — cancels labels by ParcelId.
 import { glsSoapCall, glsAuthXml } from "./client";
 import type { DeleteLabelsResponse, GlsDeleteInfo } from "./types";

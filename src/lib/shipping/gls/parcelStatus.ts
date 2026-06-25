@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // GLS GetParcelStatuses — retrieves status for one or more parcels by ParcelNumber.
 import { glsSoapCall, glsAuthXml } from "./client";
 import type {

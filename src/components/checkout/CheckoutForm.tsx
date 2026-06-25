@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
@@ -105,14 +105,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     onShippingChange?.(shippingPrice);
   }, [shippingPrice, onShippingChange]);
 
-  // Fetch GLS delivery points when "GLS Paketomat" is selected
-  useEffect(() => {
-    if (formData.shippingMethod === "gls-paketomat" && !glsFetched) {
-      fetchDeliveryPoints();
-    }
-  }, [formData.shippingMethod, formData.city, formData.postalCode]);
-
-  const fetchDeliveryPoints = async () => {
+  const fetchDeliveryPoints = useCallback(async () => {
     setGlsLoading(true);
     setGlsError("");
     try {
@@ -136,7 +129,14 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       setGlsLoading(false);
       setGlsFetched(true);
     }
-  };
+  }, [formData.city, formData.postalCode]);
+
+  // Fetch GLS delivery points when "GLS Paketomat" is selected
+  useEffect(() => {
+    if (formData.shippingMethod === "gls-paketomat" && !glsFetched) {
+      fetchDeliveryPoints();
+    }
+  }, [formData.shippingMethod, formData.city, formData.postalCode, fetchDeliveryPoints, glsFetched]);
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
