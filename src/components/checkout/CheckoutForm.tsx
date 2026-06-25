@@ -412,7 +412,9 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
                   />
                   <span className="text-sm font-medium text-slate-900">
                     {sm.name}
-
+                    {sm.name.includes("GLS") && (
+                      <img src="/images/shipping/gls-icon.png" alt="" width={47} height={16} className="ml-1 inline-block align-middle" />
+                    )}
                   </span>
                 </div>
                 <span className="text-sm text-slate-600">
