@@ -43,10 +43,8 @@ function StatusTimeline({ order }: { order: any }) {
       <div className="space-y-0 relative">
         {steps.map((step, idx) => {
           let dotClasses = "h-7 w-7 rounded-full flex items-center justify-center border-2 bg-white";
-          let lineColor = "bg-slate-200";
           let textColor = "text-slate-400";
           let iconColor = "text-slate-400";
-          let bgClass = "";
 
           if (isCancelled) {
             if (idx === 0) {
@@ -59,14 +57,12 @@ function StatusTimeline({ order }: { order: any }) {
               dotClasses += " border-blue-400 bg-blue-50";
               textColor = "text-blue-700";
               iconColor = "text-blue-500";
-              lineColor = "bg-blue-200";
             }
           } else {
             if (idx < currentIdx) {
               dotClasses += " border-emerald-400 bg-emerald-50";
               textColor = "text-emerald-700";
               iconColor = "text-emerald-500";
-              lineColor = "bg-emerald-200";
             } else if (idx === currentIdx) {
               dotClasses += " border-[#0055a8] bg-[#0055a8]/10 ring-4 ring-[#0055a8]/20";
               textColor = "text-[#0055a8] font-semibold";

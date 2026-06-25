@@ -6,7 +6,6 @@ export const dynamic = "force-dynamic";
 
 const MAX_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/webp", "image/jpeg", "image/png"];
-const ALLOWED_EXTENSIONS = [".webp", ".jpg", ".jpeg", ".png"];
 
 export async function POST(request: NextRequest) {
   const session = await auth();

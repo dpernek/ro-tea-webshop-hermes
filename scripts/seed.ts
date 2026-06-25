@@ -171,10 +171,6 @@ async function seedProducts() {
     // Find or create brand
     let brandId: string | null = null;
     if (p.brand) {
-      const brandSlug = p.brand
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^\w-]/g, "");
       const b = await prisma.brand.findFirst({ where: { name: p.brand } });
       brandId = b?.id || null;
     }

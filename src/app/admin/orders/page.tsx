@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -23,8 +23,6 @@ const paymentMethodLabels: Record<string,string> = {
   cod: "Pouzeće",
   bank_transfer: "Bankovna transakcija",
 };
-
-const STRIPE_DASHBOARD_URL = "https://dashboard.stripe.com";
 
 function PaymentStatusBadge({ status }: { status: string }) {
   const colors: Record<string,string> = {
@@ -142,7 +140,7 @@ export default function AdminOrdersPage() {
     return params;
   };
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
@@ -156,9 +154,10 @@ export default function AdminOrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+    // buildParams accesses only the same deps
+  }, [page, statusFilter, paymentStatusFilter, dateFrom, dateTo]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => { load(); }, [page, statusFilter, paymentStatusFilter, dateFrom, dateTo]);
+  useEffect(() => { load(); }, [load]);
 
   const handleExportCsv = async () => {
     setExporting(true);
@@ -183,7 +182,7 @@ export default function AdminOrdersPage() {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-    } catch (err) {
+    } catch {
       alert("Greška pri izvozu CSV-a.");
     } finally {
       setExporting(false);

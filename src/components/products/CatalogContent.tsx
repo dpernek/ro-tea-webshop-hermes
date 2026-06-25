@@ -234,7 +234,6 @@ export function CatalogContent({
 
   // sync input when URL changes externally (e.g. browser back/forward)
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSearchInput(q);
   }, [q]);
 

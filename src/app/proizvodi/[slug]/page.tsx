@@ -95,48 +95,6 @@ function parseBenefitsArray(raw: string | null | undefined): string[] {
   }
 }
 
-function parseSpecs(raw: string): Record<string, string> {
-  try {
-    const parsed = JSON.parse(raw);
-    if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
-      return parsed as Record<string, string>;
-    }
-    return {};
-  } catch {
-    return {};
-  }
-}
-
-function generatePlaceholderSpecs(product: {
-  name: string;
-  category?: { name: string } | null;
-}): Record<string, string> {
-  const haystack =
-    `${product.name} ${product.category?.name ?? ""}`.toLowerCase();
-
-  let specKeys: string[] = [];
-  if (haystack.includes("brusilic") || haystack.includes("brus")) {
-    specKeys = ["Snaga", "Promjer diska", "Broj okretaja", "Težina"];
-  } else if (haystack.includes("bušilic") || haystack.includes("buš")) {
-    specKeys = ["Snaga", "Promjer stezne glave", "Broj okretaja", "Težina"];
-  } else if (haystack.includes("pil")) {
-    specKeys = ["Snaga", "Promjer lista", "Dubina reza", "Težina"];
-  } else if (haystack.includes("zavar")) {
-    specKeys = ["Struja zavarivanja", "Promjer elektrode", "Napon", "Težina"];
-  } else if (haystack.includes("kompresor")) {
-    specKeys = ["Snaga", "Kapacitet spremnika", "Maks. tlak", "Težina"];
-  } else if (haystack.includes("generator")) {
-    specKeys = ["Snaga", "Maks. snaga", "Gorivo", "Težina"];
-  } else {
-    specKeys = ["Snaga", "Dimenzije", "Težina", "Materijal"];
-  }
-
-  const result: Record<string, string> = {};
-  for (const key of specKeys) {
-    result[key] = "N/A";
-  }
-  return result;
-}
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;

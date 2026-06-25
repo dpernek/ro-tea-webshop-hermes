@@ -62,7 +62,8 @@ interface Change {
 
 function computeChange(p: ProductFull, action: string, value: number, saleHandling: string): Change {
   const oldPrice = p.price, oldReg = p.regularPrice, oldSale = p.salePrice;
-  let np = oldPrice, nr = oldReg, ns = oldSale;
+  let np = oldPrice, ns = oldSale;
+  const nr = oldReg;
   let updated = true, skip = "";
 
   if (action === "discountPercent") {
@@ -111,7 +112,7 @@ export async function POST(request: NextRequest) {
   const valErr = validateValue(action, value);
   if (valErr) return NextResponse.json({ error: valErr }, { status: 400 });
 
-  let targetIds = selectAll && filters
+  const targetIds = selectAll && filters
     ? (await db.product.findMany({ where: buildFilterWhere(filters), select: { id: true } })).map(p => p.id)
     : ids;
   if (!targetIds.length) return NextResponse.json({ error: "Nema odabranih proizvoda" }, { status: 400 });
@@ -162,8 +163,8 @@ export async function POST(request: NextRequest) {
       operationId = op.id;
 
       for (const c of changes) {
-        let itemOldPrice = c.oldPrice, itemOldReg = c.oldRegularPrice, itemOldSale = c.oldSalePrice;
-        let itemNewPrice = c.newPrice, itemNewReg = c.newRegularPrice, itemNewSale = c.newSalePrice;
+        const itemOldPrice = c.oldPrice, itemOldReg = c.oldRegularPrice, itemOldSale = c.oldSalePrice;
+        const itemNewPrice = c.newPrice, itemNewReg = c.newRegularPrice, itemNewSale = c.newSalePrice;
 
         if (c.updated) {
           const data: Record<string, unknown> = {};

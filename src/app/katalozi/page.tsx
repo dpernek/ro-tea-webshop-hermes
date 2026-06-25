@@ -1,8 +1,5 @@
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { Button } from "@/components/ui/Button";
 import { Download } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
 

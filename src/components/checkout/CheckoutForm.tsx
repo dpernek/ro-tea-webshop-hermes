@@ -323,7 +323,6 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
                   onChange={handleChange}
                   className="text-[#0055a8]"
                   required
-                  aria-required="true"
                 />
                 <span className="text-sm font-medium text-slate-900">
                   {sm.name}
@@ -362,7 +361,6 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
                 onChange={handleChange}
                 className="text-[#0055a8]"
                 required
-                aria-required="true"
               />
               <pm.icon className="ml-2 h-4 w-4 shrink-0 text-slate-400" />
               <span className="ml-2 text-sm font-medium text-slate-900">

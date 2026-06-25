@@ -124,7 +124,7 @@ async function main() {
   console.log('\n--- 7. Order Table Schema Check ---');
   // Check if all schema columns exist by doing a sample query
   try {
-    const order = await prisma.order.findFirst({
+    await db.order.findFirst({
       select: {
         id: true,
         viewed: true,

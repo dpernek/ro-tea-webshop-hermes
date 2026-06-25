@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Search, X, AlertCircle } from "lucide-react";
@@ -32,7 +32,7 @@ export default function AdminPaymentsPage() {
   const [filters, setFilters] = useState({ orderId: "", method: "", status: "", amountMin: "", amountMax: "" });
   const [applied, setApplied] = useState({ orderId: "", method: "", status: "", amountMin: "", amountMax: "" });
 
-  const load = async (p = 1, f = applied) => {
+  const load = useCallback(async (p = 1, f = applied) => {
     setLoading(true);
     setError("");
     try {
@@ -55,9 +55,9 @@ export default function AdminPaymentsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [applied]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   const applyFilters = () => {
     setApplied({ ...filters });

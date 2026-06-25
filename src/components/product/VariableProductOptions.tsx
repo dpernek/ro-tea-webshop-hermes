@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { Button } from "@/components/ui/Button";
-import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { ShoppingCart, Check } from "lucide-react";
 import type { Product } from "@/types";
 

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { AdminAlert } from "@/components/admin/AdminAlert";
@@ -180,7 +181,7 @@ export default function AdminProductsPage() {
   // When page changes or reloadKey bumps, fetch data
   useEffect(() => {
     load();
-  }, [page, reloadKey]);
+  }, [page, reloadKey, load]);
 
   // --- Delete ---
   const handleDelete = async (id: string) => {
@@ -358,8 +359,6 @@ export default function AdminProductsPage() {
   // --- Computed ---
   const totalPages = Math.ceil(total / LIMIT);
   const needsValueInput = bulkAction && bulkAction !== "removeSale";
-  const needsStatusSelect = bulkAction === "status";
-  const needsStockSelect = bulkAction === "stockStatus";
   const canPreview = bulkAction && (bulkAction === "removeSale" || bulkAction === "status" || bulkAction === "stockStatus" || bulkValue);
 
   // ==========================================================================
@@ -670,9 +669,11 @@ export default function AdminProductsPage() {
                           {/* Image */}
                           <td className="px-4 py-3">
                             {p.image ? (
-                              <img
+                              <Image
                                 src={p.image}
-                                className="h-10 w-10 rounded object-cover"
+                                width={40}
+                                height={40}
+                                className="rounded object-cover"
                                 alt=""
                               />
                             ) : (
