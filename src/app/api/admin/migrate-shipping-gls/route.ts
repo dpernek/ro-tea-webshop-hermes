@@ -21,8 +21,8 @@ export async function POST() {
     
     for (const m of methods) {
       await db.$executeRawUnsafe(
-        `INSERT INTO "ShippingMethod" (id, name, price, provider, "freeAboveAmount", active, "sortOrder") 
-         VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6)
+        `INSERT INTO "ShippingMethod" (id, name, price, provider, "freeAboveAmount", active, "sortOrder", "updatedAt") 
+         VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, NOW())
          ON CONFLICT DO NOTHING`,
         m.name, m.price, m.provider, m.freeAboveAmount, m.active, m.sortOrder
       );
