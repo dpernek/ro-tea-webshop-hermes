@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-// GLS official delivery points JSON feed
 const GLS_JSON = "https://map.gls-hungary.com/data/deliveryPoints/hr.json";
 
 let cache: { data: any[]; ts: number } | null = null;
@@ -26,6 +25,7 @@ export async function GET(req: NextRequest) {
   try {
     const all = await getPoints();
     let points = all.filter((p: any) => p.type === "parcel-locker");
+
     if (city) {
       const filtered = points.filter((p: any) =>
         p.contact?.city?.toLowerCase().includes(city)
@@ -36,10 +36,13 @@ export async function GET(req: NextRequest) {
     const result = points.map((p: any) => ({
       id: p.id,
       name: p.name,
-      address: `${p.contact?.address || ""}, ${p.contact?.postalCode || ""} ${p.contact?.city || ""}`,
+      street: p.contact?.address || "",
       city: p.contact?.city || "",
+      postalCode: p.contact?.postalCode || "",
       lat: p.location?.[0],
       lng: p.location?.[1],
+      // Full address string for display/legacy
+      address: `${p.contact?.address || ""}, ${p.contact?.postalCode || ""} ${p.contact?.city || ""}`.trim(),
     }));
 
     return NextResponse.json({ success: true, points: result });
