@@ -90,9 +90,9 @@ export default function AdminPaymentsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-slate-900">
-        Plaćanja {total > 0 && <span className="text-base font-normal text-slate-500">({total})</span>}
-      </h1>
+      <h2 className="text-2xl font-semibold text-slate-900">
+        Pregled plaćanja{total > 0 && <span className="text-base font-normal text-slate-500"> ({total})</span>}
+      </h2>
 
       {/* Filters */}
       <Card className="mb-6 p-4">
