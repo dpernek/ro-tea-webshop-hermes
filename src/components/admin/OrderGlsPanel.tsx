@@ -308,7 +308,7 @@ export default function OrderGlsPanel({ orderId, order, testMode }: OrderGlsPane
               className="w-full"
               variant="outline"
             >
-              {creating ? "Kreiranje..." : "Kreiraj GLS test pošiljku"}
+              {creating ? "Kreiranje..." : "Kreiraj GLS pošiljku"}
             </Button>
           )}
 

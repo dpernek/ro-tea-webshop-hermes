@@ -81,15 +81,15 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   const [glsPoints, setGlsPoints] = useState<GlsDeliveryPoint[]>([]);
   const [glsLoading, setGlsLoading] = useState(false);
   const [glsError, setGlsError] = useState("");
-  const [glsTestMode, setGlsTestMode] = useState(false);
   const [glsFetched, setGlsFetched] = useState(false);
+  const [shippingMethods, setShippingMethods] = useState<Array<{id:string;name:string;price:number;freeAboveAmount?:number;provider?:string}>>([]);
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
 
-  const shippingMethod = SHIPPING_METHODS.find(
+  const shippingMethod = shippingMethods.find(
     (sm) => sm.id === formData.shippingMethod
   );
   const shippingPrice =
@@ -101,6 +101,23 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   const total = subtotal + shippingPrice;
 
   // Notify parent when shipping price changes
+  // Fetch shipping methods from admin/baze
+  useEffect(() => {
+    fetch("/api/shipping")
+      .then(r => r.json())
+      .then(data => {
+        const methods = (data || []).filter((m: any) => m.active !== false).map((m: any) => ({
+          id: m.slug || m.id,
+          name: m.name,
+          price: m.price || 0,
+          freeAboveAmount: m.freeAboveAmount || undefined,
+          provider: m.provider || "other",
+        }));
+        setShippingMethods(methods);
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     onShippingChange?.(shippingPrice);
   }, [shippingPrice, onShippingChange]);
@@ -118,7 +135,6 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
 
       if (data.success) {
         setGlsPoints(data.points);
-        setGlsTestMode(data.testMode);
       } else {
         setGlsError(data.error || "Greška prilikom dohvaćanja paketomata.");
       }
@@ -132,6 +148,23 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   }, [formData.city, formData.postalCode]);
 
   // Fetch GLS delivery points when "GLS Paketomat" is selected
+  // Fetch shipping methods from admin/baze
+  useEffect(() => {
+    fetch("/api/shipping")
+      .then(r => r.json())
+      .then(data => {
+        const methods = (data || []).filter((m: any) => m.active !== false).map((m: any) => ({
+          id: m.slug || m.id,
+          name: m.name,
+          price: m.price || 0,
+          freeAboveAmount: m.freeAboveAmount || undefined,
+          provider: m.provider || "other",
+        }));
+        setShippingMethods(methods);
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     if (formData.shippingMethod === "gls-paketomat" && !glsFetched) {
       fetchDeliveryPoints();
@@ -407,7 +440,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
           Način dostave
         </legend>
         <div className="space-y-2">
-          {SHIPPING_METHODS.map((sm) => {
+          {shippingMethods.map((sm) => {
             const isGls = sm.provider === "gls";
             const isSelected = formData.shippingMethod === sm.id;
             return (
@@ -431,11 +464,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
                   />
                   <span className="text-sm font-medium text-slate-900">
                     {sm.name}
-                    {isGls && (
-                      <span className="ml-1.5 text-xs text-amber-600 font-normal">
-                        [test]
-                      </span>
-                    )}
+
                   </span>
                 </div>
                 <span className="text-sm text-slate-600">
@@ -457,11 +486,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
             <p className="text-sm font-medium text-amber-800">
               GLS Paketomat — odaberite lokaciju za preuzimanje
             </p>
-            {glsTestMode && (
-              <span className="ml-auto rounded bg-amber-200 px-2 py-0.5 text-xs font-medium text-amber-700">
-                TEST MODE
-              </span>
-            )}
+
           </div>
 
           {glsTestMode && (
