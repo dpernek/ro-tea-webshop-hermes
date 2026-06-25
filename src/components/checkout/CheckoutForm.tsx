@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { useCartStore } from "@/store/cartStore";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/lib/actions/orders";
+import dynamic from "next/dynamic";
 import { CreditCard, Building, Banknote, MapPin } from "lucide-react";
 
 interface FormErrors {
