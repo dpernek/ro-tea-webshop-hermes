@@ -407,9 +407,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
                   />
                   <span className="text-sm font-medium text-slate-900">
                     {sm.name}
-                    {sm.name.includes("GLS") && (
-                      
-                    )}
+
                   </span>
                 </div>
                 <span className="text-sm text-slate-600">
