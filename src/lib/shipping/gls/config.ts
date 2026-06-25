@@ -59,7 +59,7 @@ export function getGlsConfig(): GlsConfig {
     "https://api.test.mygls.hr",
   );
 
-  const wsdlUrl = `${apiBaseUrl}/ParcelService.svc?singleWsdl`;
+  const wsdlUrl = `${apiBaseUrl}/ParcelService.svc/soap`;
 
   const username = getEnv("GLS_USERNAME");
   const rawPassword = getEnv("GLS_PASSWORD");

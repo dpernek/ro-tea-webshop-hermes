@@ -28,11 +28,11 @@ export async function glsSoapCall<TResponse>(
 
   let response: Response;
   try {
-    response = await fetch(config.wsdlUrl, {
+    response = await fetch(config.apiBaseUrl + "/ParcelService.svc/soap", {
       method: "POST",
       headers: {
         "Content-Type": "text/xml; charset=utf-8",
-        SOAPAction: `${GLS_NS}IParcelService/${action}`,
+        SOAPAction: `${GLS_NS}ParcelService/${action}`,
       },
       body: soapEnvelope(bodyXml),
     });
