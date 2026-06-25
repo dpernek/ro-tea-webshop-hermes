@@ -1,5 +1,6 @@
 // GLS REST JSON client — replaces SOAP transport.
 import "server-only";
+import { createHash } from "crypto";
 import { getGlsConfig, GlsError } from "./config";
 // Types from ./types used for response shapes only
 
@@ -10,13 +11,11 @@ const BASE = () => {
 
 export function glsAuthPayload() {
   const config = getGlsConfig();
+  const rawPassword = process.env.GLS_PASSWORD || "";
+  const hash = createHash("sha512").update(rawPassword, "utf8").digest();
   return {
     Username: config.username,
-    Password: Array.from(
-      new Uint8Array(
-        Buffer.from(config.passwordHash, "base64")
-      )
-    ),
+    Password: Array.from(new Uint8Array(hash)),
     ClientNumber: config.clientNumber,
   };
 }
