@@ -8,10 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { useCartStore } from "@/store/cartStore";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/lib/actions/orders";
-import { CreditCard, Building, Banknote, Package, MapPin } from "lucide-react";
-import dynamic from "next/dynamic";
-
-const GlsParcelPicker = dynamic(() => import("./GlsParcelPicker"), { ssr: false });
+import { CreditCard, Building, Banknote, MapPin } from "lucide-react";
 
 interface FormErrors {
   [key: string]: string;
@@ -38,6 +35,7 @@ const PAYMENT_METHODS = [
 
 export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: number) => void }) {
   const router = useRouter();
+  const GlsParcelPicker = dynamic(() => import("./GlsParcelPicker"), { ssr: false });
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -473,11 +471,11 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         </div>
       </fieldset>
 
-      {/* GLS Paketomat picker */}
+            {/* GLS Paketomat picker */}
       {formData.shippingMethod === glsPaketomatId && (
-        <div className="mt-3">
+        <div className="mt-4">
           <GlsParcelPicker
-            onSelect={(point) => {
+            onSelect={(point: any) => {
               if (point) {
                 setFormData((prev) => ({
                   ...prev,
@@ -495,11 +493,12 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         </div>
       )}
 
-      {/* Selected pickup point indicator */}
+      {/* Selected pickup indicator */}
       {formData.shippingMethod === glsPaketomatId && formData.glsPickupPointId && (
         <div className="mt-2 rounded-lg bg-[#0055a8]/5 border border-[#0055a8]/20 px-3 py-2 text-sm">
-          <span className="text-[#0055a8] font-medium">Odabrani paketomat: </span>
-          {formData.glsPickupPointName}
+          <span className="font-medium text-[#0055a8]">Odabrani paketomat: </span>
+          <span className="text-slate-700">{formData.glsPickupPointName}</span>
+          <span className="text-xs text-slate-500 ml-2">{formData.glsPickupPointAddress}</span>
         </div>
       )}
 
