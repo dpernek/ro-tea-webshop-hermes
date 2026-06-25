@@ -6,35 +6,35 @@ export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
   try {
     const { code, subtotal } = await req.json();
+    if (!code) return NextResponse.json({ valid: false, error: "Unesite kod kupona." }, { status: 400 });
 
-    if (!code) {
-      return NextResponse.json({ valid: false, error: "Unesite kod kupona." }, { status: 400 });
-    }
-
-    const coupon = await (db as any).coupon?.findFirst({
+    const coupon = await db.coupon.findFirst({
       where: { code: { equals: code, mode: "insensitive" }, active: true },
     });
 
-    if (!coupon) {
-      return NextResponse.json({ valid: false, error: "Kupon nije pronađen ili nije aktivan." }, { status: 404 });
-    }
+    if (!coupon) return NextResponse.json({ valid: false, error: "Kupon nije pronađen ili nije aktivan." }, { status: 404 });
 
-    // Check min order
-    if (coupon.minOrderAmount && subtotal < coupon.minOrderAmount) {
-      return NextResponse.json({
-        valid: false,
-        error: `Minimalni iznos narudžbe za ovaj kupon je ${coupon.minOrderAmount.toFixed(2)} €.`,
-      });
+    // Date range checks
+    if (coupon.startsAt && new Date(coupon.startsAt) > new Date()) {
+      return NextResponse.json({ valid: false, error: "Kupon još nije aktivan." });
     }
-
-    // Check expiry
-    if (coupon.expiresAt && new Date(coupon.expiresAt) < new Date()) {
+    if (coupon.endsAt && new Date(coupon.endsAt) < new Date()) {
       return NextResponse.json({ valid: false, error: "Kupon je istekao." });
     }
 
-    // Check max uses
-    if (coupon.maxUses && coupon.usedCount >= coupon.maxUses) {
-      return NextResponse.json({ valid: false, error: "Kupon je već iskorišten maksimalni broj puta." });
+    // Min order
+    if (coupon.minimumOrderAmount && subtotal < coupon.minimumOrderAmount) {
+      return NextResponse.json({
+        valid: false,
+        error: `Minimalni iznos narudžbe za ovaj kupon je ${coupon.minimumOrderAmount.toFixed(2)} €.`,
+      });
+    }
+
+    // Usage limit
+    const limit = coupon.usageLimit || 0;
+    const used = coupon.usedCount || 0;
+    if (limit > 0 && used >= limit) {
+      return NextResponse.json({ valid: false, error: "Kupon je dosegao maksimalni broj korištenja." });
     }
 
     // Calculate discount
@@ -51,7 +51,6 @@ export async function POST(req: NextRequest) {
       discount: Math.round(discount * 100) / 100,
       type: coupon.type,
     });
-
   } catch {
     return NextResponse.json({ valid: false, error: "Greška pri provjeri kupona." }, { status: 500 });
   }
