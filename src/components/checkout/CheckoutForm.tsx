@@ -34,9 +34,10 @@ const PAYMENT_METHODS = [
   { value: "cod", label: "Pouzeće", icon: Banknote },
 ];
 
+const GlsParcelPicker = dynamic(() => import("./GlsParcelPicker"), { ssr: false });
+
 export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: number) => void }) {
   const router = useRouter();
-  const GlsParcelPicker = dynamic(() => import("./GlsParcelPicker"), { ssr: false });
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
   const [isSubmitting, setIsSubmitting] = useState(false);
