@@ -47,9 +47,9 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   // ── Derived state ──
   const currentMethod = shippingMethods.find(m => m.id === formData.shippingMethod);
   const currentName = currentMethod?.name || "";
-  const isGlsHome = currentName.includes("GLS") && !currentName.includes("Paketomat");
-  const isGlsPaketomat = currentName.includes("GLS") && currentName.includes("Paketomat");
-  const glsPaketomatId = shippingMethods.find(m => m.name.includes("GLS Paketomat"))?.id || "";
+  const isGlsHome = currentName === "GLS dostava";
+  const isGlsPaketomat = currentName === "GLS Paketomat";
+  const glsPaketomatId = shippingMethods.find(m => m.name === "GLS Paketomat")?.id || "";
 
   const subtotal = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
   const shippingPrice = currentMethod ? currentMethod.price : 0;
@@ -167,7 +167,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
                   <input type="radio" name="shippingMethod" value={sm.id} checked={sel} onChange={handleChange} className="text-[#0055a8]" required />
                   <span className="text-sm font-medium text-slate-900">
                     {sm.name}
-                    {sm.name.includes("GLS") && (
+                    {(sm.name === "GLS dostava" || sm.name === "GLS Paketomat") && (
                       <NextImage src="/images/shipping/gls-icon.png" alt="GLS" width={47} height={16} className="ml-1 inline-block align-middle" />
                     )}
                   </span>
