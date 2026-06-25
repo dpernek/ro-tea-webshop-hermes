@@ -1,8 +1,8 @@
 // Unified server-side pricing for orders. Single source of truth.
 // All price calculations MUST go through this module.
 
-export const SHIPPING_PRICE = 6.64;
-export const FREE_SHIPPING_THRESHOLD = 66.36;
+export const SHIPPING_PRICE = 8;
+export const FREE_SHIPPING_THRESHOLD = 70;
 export const TAX_RATE = 0.25; // Croatia PDV
 
 export interface PricingInput {

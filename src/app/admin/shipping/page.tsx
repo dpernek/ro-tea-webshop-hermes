@@ -116,10 +116,10 @@ export default function AdminShippingPage() {
               {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
             </div>
             <div>
-              <input className={`w-24 rounded-lg border px-3 py-2 text-sm ${errors.price ? "border-red-400" : "border-slate-200"}`} type="number" placeholder="Cijena" value={f.price} onChange={e => { setF({...f,price:parseFloat(e.target.value)||0}); clearError("price"); }} />
+              <input className={`w-24 rounded-lg border px-3 py-2 text-sm ${errors.price ? "border-red-400" : "border-slate-200"}`} type="number" placeholder="Cijena (s PDV-om)" step="0.01" value={f.price} onChange={e => { setF({...f,price:parseFloat(e.target.value)||0}); clearError("price"); }} />
               {errors.price && <p className="mt-1 text-xs text-red-600">{errors.price}</p>}
             </div>
-            <input className="w-32 rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Besplatno iznad" value={typeof f.freeAboveAmount === "number" ? f.freeAboveAmount : f.freeAboveAmount || ""} onChange={e => setF({...f,freeAboveAmount:e.target.value})} />
+            <input className="w-36 rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Besplatno iznad (s PDV-om)" type="number" step="0.01" value={typeof f.freeAboveAmount === "number" ? f.freeAboveAmount : f.freeAboveAmount || ""} onChange={e => setF({...f,freeAboveAmount:e.target.value})} />
             <label className="flex items-center gap-1 text-sm"><input type="checkbox" checked={f.active} onChange={e => setF({...f,active:e.target.checked})} /> Aktivno</label>
             <Button size="sm" onClick={save} disabled={saving}>
               {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />}
@@ -142,7 +142,7 @@ export default function AdminShippingPage() {
           ) : (
             <table className="w-full text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50">
-                <tr><th className="px-4 py-3 font-medium text-slate-600">Naziv</th><th className="px-4 py-3 font-medium text-slate-600">Cijena</th><th className="px-4 py-3 font-medium text-slate-600">Besplatno iznad</th><th className="px-4 py-3 font-medium text-slate-600">Aktivno</th><th className="px-4 py-3 text-right font-medium text-slate-600">Akcije</th></tr>
+                <th className="px-4 py-3 font-medium text-slate-600">Naziv</th><th className="px-4 py-3 font-medium text-slate-600">Cijena (s PDV-om)</th><th className="px-4 py-3 font-medium text-slate-600">Besplatno iznad (s PDV-om)</th><th className="px-4 py-3 font-medium text-slate-600">Aktivno</th><th className="px-4 py-3 text-right font-medium text-slate-600">Akcije</th>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {items.map(i => (

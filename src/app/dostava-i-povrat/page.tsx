@@ -24,8 +24,8 @@ export default function DostavaPovratPage() {
             <div className="mt-4 space-y-4 text-slate-600">
               <p>Dostava se vrši kurirskom službom na području cijele Hrvatske.</p>
               <ul className="list-disc pl-5 space-y-2">
-                <li><strong>Cijena dostave:</strong> 6,64 €</li>
-                <li><strong>Besplatna dostava:</strong> za narudžbe iznad 66,36 €</li>
+                <li><strong>Cijena dostave:</strong> 8,00 €</li>
+                <li><strong>Besplatna dostava:</strong> za narudžbe iznad 70,00 €</li>
                 <li><strong>Rok isporuke:</strong> 1–3 radna dana od primitka uplate (za bankovnu uplatu) ili potvrde narudžbe (za pouzeće i kartično plaćanje)</li>
                 <li><strong>Osobno preuzimanje:</strong> moguće na adresi Badalićeva 26b, 10000 Zagreb. Narudžba se priprema isti ili sljedeći radni dan. Osobno preuzimanje je besplatno.</li>
               </ul>

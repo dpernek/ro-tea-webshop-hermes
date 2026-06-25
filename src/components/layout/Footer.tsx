@@ -124,7 +124,7 @@ export function Footer() {
             <div>
               <h4 className="text-sm font-semibold text-slate-900">Dostava</h4>
               <p className="mt-1 text-sm leading-relaxed text-slate-600">
-                6,64 €. Besplatna dostava za narudžbe iznad 66,36 €.
+                8,00 €. Besplatna dostava za narudžbe iznad 70,00 €.
               </p>
             </div>
           </div>

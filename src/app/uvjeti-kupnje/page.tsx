@@ -47,8 +47,8 @@ Sve transakcije obrađuju se u eurima (EUR). Za pravne osobe izdajemo R1 račun 
     title: "Dostava",
     text: `Dostava se vrši putem GLS-a ili Hrvatske pošte na području cijele Republike Hrvatske.
 
-Cijena dostave: 6,64 € (PDV uključen).
-Besplatna dostava: za narudžbe u vrijednosti iznad 66,36 €.
+Cijena dostave: 8,00 € (PDV uključen).
+Besplatna dostava: za narudžbe u vrijednosti iznad 70,00 €.
 Rok isporuke: 1–3 radna dana od potvrde narudžbe (za kartično plaćanje i pouzeće), odnosno 1–3 radna dana od zaprimanja uplate (za bankovnu uplatu).
 
 Osobno preuzimanje: moguće na adresi Badalićeva 26b, 10000 Zagreb, uz prethodni dogovor. Osobno preuzimanje je besplatno. Narudžba se priprema isti ili sljedeći radni dan.

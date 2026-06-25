@@ -403,7 +403,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <TrustBadge
                 icon={<TruckIcon />}
                 label="Besplatna dostava"
-                sub="za narudžbe iznad 66,36 €"
+                sub="za narudžbe iznad 70,00 €"
               />
               <TrustBadge
                 icon={<ShieldIcon />}
@@ -599,7 +599,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <div>
                   <p className="font-semibold text-slate-900">Dostava</p>
                   <p className="mt-1 text-sm text-slate-600">
-                    Dostava: 6,64 € | Besplatno iznad 66,36 € | Osobno preuzimanje: 0,00 €
+                    Dostava: 8,00 € | Besplatno iznad 70,00 € | Osobno preuzimanje: 0,00 €
                   </p>
                 </div>
               </div>

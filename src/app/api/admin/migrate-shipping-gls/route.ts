@@ -11,8 +11,8 @@ export async function POST() {
   try {
     // Create GLS methods using Prisma upsert
     const methods = [
-      { id: "gls-dostava-prod", name: "GLS dostava", price: 6.64, freeAboveAmount: 66.36, active: true, sortOrder: 1 },
-      { id: "gls-paketomat-prod", name: "GLS Paketomat", price: 6.64, freeAboveAmount: 66.36, active: true, sortOrder: 2 },
+      { id: "gls-dostava-prod", name: "GLS dostava", price: 8, freeAboveAmount: 70, active: true, sortOrder: 1 },
+      { id: "gls-paketomat-prod", name: "GLS Paketomat", price: 8, freeAboveAmount: 70, active: true, sortOrder: 2 },
     ];
 
     for (const m of methods) {
