@@ -414,7 +414,9 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
                   />
                   <span className="text-sm font-medium text-slate-900">
                     {sm.name}
-
+                    {sm.name.includes("GLS") && (
+                      <img src="/images/shipping/gls-logo-blue.png" alt="GLS" className="ml-2 inline-block h-4" />
+                    )}
                   </span>
                 </div>
                 <span className="text-sm text-slate-600">
@@ -431,6 +433,13 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
             {/* GLS Paketomat — službena GLS mapa */}
       {formData.shippingMethod === glsPaketomatId && (
         <div className="mt-4">
+          <div className="mb-3 flex items-center gap-3">
+            <img src="/images/shipping/gls-paketomat.png" alt="GLS Paketomat" className="h-12" />
+            <div>
+              <p className="text-sm font-semibold text-slate-900">Odaberite GLS Paketomat</p>
+              <p className="text-xs text-slate-500">Pronađite najbliži paketomat na karti ispod</p>
+            </div>
+          </div>
           <div className="rounded-lg border border-[#0055a8]/20 overflow-hidden">
             <GlsDeliveryMap
               country="hr"
