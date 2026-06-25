@@ -17,6 +17,9 @@ const checkoutSessionSchema = z.object({
   postalCode: z.string().min(1, "Poštanski broj je obavezan"),
   shippingMethodId: z.string().min(1, "Način dostave je obavezan"),
   note: z.string().optional(),
+  glsPickupPointId: z.string().optional(),
+  glsPickupPointName: z.string().optional(),
+  glsPickupPointAddress: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -82,6 +85,9 @@ export async function POST(req: NextRequest) {
         subtotal: pricing.subtotal, shippingTotal: pricing.shipping, taxTotal: pricing.tax, total: pricing.total,
         currency: "EUR", status: "PENDING", paymentStatus: "UNPAID", paymentMethod: "card",
         shippingMethod: shippingMethod?.name || body.shippingMethodId, note: body.note || null,
+        glsPickupPointId: body.glsPickupPointId || null,
+        glsPickupPointName: body.glsPickupPointName || null,
+        glsPickupPointAddress: body.glsPickupPointAddress || null,
         items: {
           create: pricing.lineItems.map(li => ({
             productId: li.productId, productName: productMap.get(li.productId)!.name,

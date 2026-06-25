@@ -3,6 +3,8 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { sendEmail, statusChangeEmail } from "@/lib/email";
+import { isGlsConfigured } from "@/lib/shipping/gls/client";
+import { getGlsConfig } from "@/lib/shipping/gls/config";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +44,17 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
   const order = await db.order.findUnique({ where: { id }, include: { items: true } });
-  return NextResponse.json(order || null);
+  if (!order) return NextResponse.json(null);
+
+  // Attach GLS test mode info
+  let glsTestMode = false;
+  try {
+    if (isGlsConfigured()) {
+      glsTestMode = getGlsConfig().testMode;
+    }
+  } catch { /* GLS not configured */ }
+
+  return NextResponse.json({ ...order, glsTestMode });
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

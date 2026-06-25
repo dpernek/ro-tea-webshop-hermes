@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import OrderGlsPanel from "@/components/admin/OrderGlsPanel";
 import { ArrowLeft, Save, RefreshCw, ExternalLink, CheckCircle2, Package, Truck, Clock, XCircle, RotateCcw, AlertTriangle, Loader2 } from "lucide-react";
 import Link from "next/link";
 
@@ -497,6 +498,13 @@ export default function AdminOrderDetailPage() {
               )}
             </div>
           </Card>
+
+          {/* GLS Shipping Panel */}
+          <OrderGlsPanel
+            orderId={id}
+            order={order}
+            testMode={order.glsTestMode}
+          />
 
           <Card className="p-6">
             <h2 className="mb-4 text-lg font-semibold">Status narudžbe</h2>

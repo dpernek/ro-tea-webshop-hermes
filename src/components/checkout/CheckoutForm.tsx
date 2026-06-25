@@ -8,16 +8,36 @@ import { Button } from "@/components/ui/Button";
 import { useCartStore } from "@/store/cartStore";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/lib/actions/orders";
-import { CreditCard, Building, Banknote } from "lucide-react";
+import { CreditCard, Building, Banknote, Package, MapPin } from "lucide-react";
 
 interface FormErrors {
   [key: string]: string;
+}
+
+interface GlsDeliveryPoint {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  postalCode: string;
 }
 
 const SHIPPING_PRICE = 6.64;
 const FREE_SHIPPING_THRESHOLD = 66.36;
 
 const SHIPPING_METHODS = [
+  {
+    id: "gls-dostava",
+    name: "GLS dostava",
+    price: SHIPPING_PRICE,
+    provider: "gls",
+  },
+  {
+    id: "gls-paketomat",
+    name: "GLS Paketomat",
+    price: SHIPPING_PRICE,
+    provider: "gls",
+  },
   {
     id: "dostava-kurirskom-sluzbom",
     name: "Dostava kurirskom službom",
@@ -48,10 +68,21 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     postalCode: "",
     note: "",
     paymentMethod: "bank_transfer",
-    shippingMethod: "dostava-kurirskom-sluzbom",
+    shippingMethod: "gls-dostava",
+    // GLS Paketomat fields
+    glsPickupPointId: "",
+    glsPickupPointName: "",
+    glsPickupPointAddress: "",
   });
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+
+  // GLS delivery points state
+  const [glsPoints, setGlsPoints] = useState<GlsDeliveryPoint[]>([]);
+  const [glsLoading, setGlsLoading] = useState(false);
+  const [glsError, setGlsError] = useState("");
+  const [glsTestMode, setGlsTestMode] = useState(false);
+  const [glsFetched, setGlsFetched] = useState(false);
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -74,6 +105,39 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     onShippingChange?.(shippingPrice);
   }, [shippingPrice, onShippingChange]);
 
+  // Fetch GLS delivery points when "GLS Paketomat" is selected
+  useEffect(() => {
+    if (formData.shippingMethod === "gls-paketomat" && !glsFetched) {
+      fetchDeliveryPoints();
+    }
+  }, [formData.shippingMethod, formData.city, formData.postalCode]);
+
+  const fetchDeliveryPoints = async () => {
+    setGlsLoading(true);
+    setGlsError("");
+    try {
+      const params = new URLSearchParams();
+      if (formData.city) params.set("city", formData.city);
+      if (formData.postalCode) params.set("postalCode", formData.postalCode);
+
+      const res = await fetch(`/api/shipping/gls/delivery-points?${params.toString()}`);
+      const data = await res.json();
+
+      if (data.success) {
+        setGlsPoints(data.points);
+        setGlsTestMode(data.testMode);
+      } else {
+        setGlsError(data.error || "Greška prilikom dohvaćanja paketomata.");
+      }
+    } catch (err) {
+      setGlsError("Greška prilikom dohvaćanja GLS paketomata. Pokušajte ponovno.");
+      console.error("GLS delivery points fetch failed:", err);
+    } finally {
+      setGlsLoading(false);
+      setGlsFetched(true);
+    }
+  };
+
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -87,8 +151,11 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     if (!formData.phone.trim() || formData.phone.length < 6) {
       newErrors.phone = "Unesite valjani broj telefona.";
     }
-    if (!formData.address.trim() || formData.address.length < 5) {
-      newErrors.address = "Unesite punu adresu dostave.";
+    // Address is only required for home delivery, not for paketomat
+    if (formData.shippingMethod !== "gls-paketomat") {
+      if (!formData.address.trim() || formData.address.length < 5) {
+        newErrors.address = "Unesite punu adresu dostave.";
+      }
     }
     if (!formData.city.trim()) {
       newErrors.city = "Unesite grad.";
@@ -96,6 +163,10 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     const postalRegex = /^\d{5}$/;
     if (!formData.postalCode.trim() || !postalRegex.test(formData.postalCode)) {
       newErrors.postalCode = "Unesite valjani poštanski broj (5 znamenaka).";
+    }
+    // Require pickup point selection for paketomat
+    if (formData.shippingMethod === "gls-paketomat" && !formData.glsPickupPointId) {
+      newErrors.glsPickupPoint = "Odaberite GLS paketomat za preuzimanje.";
     }
     if (!acceptedTerms) {
       newErrors.terms =
@@ -112,9 +183,30 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: value };
+      // Reset GLS paketomat selection when switching away from it
+      if (name === "shippingMethod" && value !== "gls-paketomat") {
+        updated.glsPickupPointId = "";
+        updated.glsPickupPointName = "";
+        updated.glsPickupPointAddress = "";
+      }
+      return updated;
+    });
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleGlsPointSelect = (point: GlsDeliveryPoint) => {
+    setFormData((prev) => ({
+      ...prev,
+      glsPickupPointId: point.id,
+      glsPickupPointName: point.name,
+      glsPickupPointAddress: `${point.name}, ${point.address}, ${point.postalCode} ${point.city}`,
+    }));
+    if (errors.glsPickupPoint) {
+      setErrors((prev) => ({ ...prev, glsPickupPoint: "" }));
     }
   };
 
@@ -148,6 +240,10 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
             })),
             shippingMethodId: formData.shippingMethod,
             paymentMethod: formData.paymentMethod,
+            // GLS fields
+            glsPickupPointId: formData.glsPickupPointId || undefined,
+            glsPickupPointName: formData.glsPickupPointName || undefined,
+            glsPickupPointAddress: formData.glsPickupPointAddress || undefined,
           }),
         });
 
@@ -194,6 +290,10 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         subtotal,
         taxTotal: 0,
         total,
+        // GLS fields
+        glsPickupPointId: formData.glsPickupPointId || undefined,
+        glsPickupPointName: formData.glsPickupPointName || undefined,
+        glsPickupPointAddress: formData.glsPickupPointAddress || undefined,
       });
 
       clearCart();
@@ -262,19 +362,21 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
           aria-required="true"
           autoComplete="tel"
         />
-        <div className="sm:col-span-2">
-          <Input
-            label="Adresa"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            error={errors.address}
-            placeholder="Ulica i kućni broj"
-            required
-            aria-required="true"
-            autoComplete="street-address"
-          />
-        </div>
+        {formData.shippingMethod !== "gls-paketomat" && (
+          <div className="sm:col-span-2">
+            <Input
+              label="Adresa"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              error={errors.address}
+              placeholder="Ulica i kućni broj"
+              required
+              aria-required="true"
+              autoComplete="street-address"
+            />
+          </div>
+        )}
         <Input
           label="Grad"
           name="city"
@@ -305,38 +407,166 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
           Način dostave
         </legend>
         <div className="space-y-2">
-          {SHIPPING_METHODS.map((sm) => (
-            <label
-              key={sm.id}
-              className={`flex cursor-pointer items-center justify-between rounded-lg border p-3 ${
-                formData.shippingMethod === sm.id
-                  ? "border-[#0055a8] bg-[#0055a8]/5"
-                  : "border-slate-200 hover:border-slate-300"
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="shippingMethod"
-                  value={sm.id}
-                  checked={formData.shippingMethod === sm.id}
-                  onChange={handleChange}
-                  className="text-[#0055a8]"
-                  required
-                />
-                <span className="text-sm font-medium text-slate-900">
-                  {sm.name}
+          {SHIPPING_METHODS.map((sm) => {
+            const isGls = sm.provider === "gls";
+            const isSelected = formData.shippingMethod === sm.id;
+            return (
+              <label
+                key={sm.id}
+                className={`flex cursor-pointer items-center justify-between rounded-lg border p-3 ${
+                  isSelected
+                    ? "border-[#0055a8] bg-[#0055a8]/5"
+                    : "border-slate-200 hover:border-slate-300"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="shippingMethod"
+                    value={sm.id}
+                    checked={isSelected}
+                    onChange={handleChange}
+                    className="text-[#0055a8]"
+                    required
+                  />
+                  <span className="text-sm font-medium text-slate-900">
+                    {sm.name}
+                    {isGls && (
+                      <span className="ml-1.5 text-xs text-amber-600 font-normal">
+                        [test]
+                      </span>
+                    )}
+                  </span>
+                </div>
+                <span className="text-sm text-slate-600">
+                  {shippingPrice === 0 && isSelected
+                    ? "Besplatno"
+                    : formatPrice(sm.price)}
                 </span>
-              </div>
-              <span className="text-sm text-slate-600">
-                {shippingPrice === 0 && formData.shippingMethod === sm.id
-                  ? "Besplatno"
-                  : formatPrice(sm.price)}
-              </span>
-            </label>
-          ))}
+              </label>
+            );
+          })}
         </div>
       </fieldset>
+
+      {/* GLS Paketomat — delivery points selector */}
+      {formData.shippingMethod === "gls-paketomat" && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <MapPin className="h-4 w-4 text-amber-600" />
+            <p className="text-sm font-medium text-amber-800">
+              GLS Paketomat — odaberite lokaciju za preuzimanje
+            </p>
+            {glsTestMode && (
+              <span className="ml-auto rounded bg-amber-200 px-2 py-0.5 text-xs font-medium text-amber-700">
+                TEST MODE
+              </span>
+            )}
+          </div>
+
+          {glsTestMode && (
+            <p className="mb-3 text-xs text-amber-600">
+              ⚠️ GLS API nije konfiguriran — prikazuju se testni paketomati.
+              Postavite GLS_API_KEY i GLS_API_URL u .env za produkciju.
+            </p>
+          )}
+
+          {glsLoading && (
+            <div className="flex items-center gap-2 py-3 text-sm text-slate-500">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
+              Dohvaćanje GLS paketomata...
+            </div>
+          )}
+
+          {glsError && (
+            <div className="rounded bg-red-100 p-3 text-sm text-red-700" role="alert">
+              {glsError}
+              <button
+                type="button"
+                onClick={() => { setGlsFetched(false); fetchDeliveryPoints(); }}
+                className="ml-2 underline hover:text-red-800"
+              >
+                Pokušaj ponovno
+              </button>
+            </div>
+          )}
+
+          {!glsLoading && !glsError && (
+            <>
+              {glsPoints.length === 0 ? (
+                <p className="text-sm text-slate-500 py-2">
+                  Nema dostupnih paketomata za odabranu lokaciju. Unesite grad i poštanski broj pa pokušajte ponovno.
+                </p>
+              ) : (
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {glsPoints.map((point) => {
+                    const isPointSelected = formData.glsPickupPointId === point.id;
+                    return (
+                      <label
+                        key={point.id}
+                        className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                          isPointSelected
+                            ? "border-[#0055a8] bg-[#0055a8]/5"
+                            : "border-slate-200 hover:border-slate-300"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="glsPickupPoint"
+                          checked={isPointSelected}
+                          onChange={() => handleGlsPointSelect(point)}
+                          className="mt-0.5 text-[#0055a8]"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-900">
+                            {point.name}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {point.address}, {point.postalCode} {point.city}
+                          </p>
+                        </div>
+                        <Package className="h-4 w-4 shrink-0 text-amber-500 mt-0.5" />
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => { setGlsFetched(false); fetchDeliveryPoints(); }}
+                className="mt-3 text-xs text-amber-700 underline hover:text-amber-800"
+              >
+                Osvježi popis paketomata
+              </button>
+            </>
+          )}
+
+          {errors.glsPickupPoint && (
+            <p className="mt-2 text-sm text-red-600" role="alert">
+              {errors.glsPickupPoint}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* GLS dostava (home delivery) — test mode indicator */}
+      {formData.shippingMethod === "gls-dostava" && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+          <div className="flex items-center gap-2">
+            <Package className="h-4 w-4 text-amber-600" />
+            <p className="text-sm font-medium text-amber-800">
+              GLS dostava na vašu adresu
+            </p>
+            <span className="ml-auto rounded bg-amber-200 px-2 py-0.5 text-xs font-medium text-amber-700">
+              TEST MODE
+            </span>
+          </div>
+          <p className="mt-1 text-xs text-amber-600">
+            ⚠️ GLS API nije konfiguriran — dostava će biti obrađena ručno.
+            Postavite GLS_API_KEY i GLS_API_URL u .env za produkciju.
+          </p>
+        </div>
+      )}
 
       {/* Payment method */}
       <fieldset>

@@ -125,12 +125,20 @@ model Order {
   stripeCheckoutSessionId  String?
   stripePaymentIntentId    String?
   stripePaymentStatus      String?
+  glsPickupPointId         String?
+  glsPickupPointName       String?
+  glsPickupPointAddress    String?
   paidAt                   DateTime?
   paymentFailedAt          DateTime?
   paymentCancelledAt       DateTime?
   paymentErrorMessage      String?
   checkoutExpiresAt        DateTime?
   viewed                   Boolean     @default(false)
+  glsShipmentId            Int?
+  glsParcelNumber          String?
+  glsLabelData             String?
+  glsStatusData            String?
+  glsCreatedAt             DateTime?
   createdAt                DateTime    @default(now())
   updatedAt                DateTime    @updatedAt
   items                    OrderItem[]

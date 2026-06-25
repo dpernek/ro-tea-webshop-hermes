@@ -12,6 +12,7 @@ export async function createOrder(data: {
   items: Array<{ productId: string; productName: string; sku?: string; quantity: number; unitPrice: number }>;
   paymentMethod: string; shippingMethodId: string;
   shippingTotal: number; subtotal: number; taxTotal: number; total: number;
+  glsPickupPointId?: string; glsPickupPointName?: string; glsPickupPointAddress?: string;
 }) {
   if (!data.customerName || !data.customerEmail || !data.address || !data.city || !data.postalCode) {
     throw new Error("Molimo ispunite sva obavezna polja.");
@@ -66,6 +67,9 @@ export async function createOrder(data: {
       subtotal: pricing.subtotal, shippingTotal: pricing.shipping, taxTotal: pricing.tax, total: pricing.total,
       currency: "EUR", status: initialStatus, paymentStatus: "UNPAID", paymentMethod: data.paymentMethod,
       shippingMethod: shippingMethod?.name || data.shippingMethodId, note: data.note || null,
+      glsPickupPointId: data.glsPickupPointId || null,
+      glsPickupPointName: data.glsPickupPointName || null,
+      glsPickupPointAddress: data.glsPickupPointAddress || null,
       items: {
         create: pricing.lineItems.map(li => ({
           productId: li.productId, productName: productMap.get(li.productId)!.name,

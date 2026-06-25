@@ -32,6 +32,7 @@ export type OrderAvgAggregateOutputType = {
   taxTotal: number | null
   discountTotal: number | null
   total: number | null
+  glsShipmentId: number | null
 }
 
 export type OrderSumAggregateOutputType = {
@@ -40,6 +41,7 @@ export type OrderSumAggregateOutputType = {
   taxTotal: number | null
   discountTotal: number | null
   total: number | null
+  glsShipmentId: number | null
 }
 
 export type OrderMinAggregateOutputType = {
@@ -66,12 +68,20 @@ export type OrderMinAggregateOutputType = {
   stripeCheckoutSessionId: string | null
   stripePaymentIntentId: string | null
   stripePaymentStatus: string | null
+  glsPickupPointId: string | null
+  glsPickupPointName: string | null
+  glsPickupPointAddress: string | null
   paidAt: Date | null
   paymentFailedAt: Date | null
   paymentCancelledAt: Date | null
   paymentErrorMessage: string | null
   checkoutExpiresAt: Date | null
   viewed: boolean | null
+  glsShipmentId: number | null
+  glsParcelNumber: string | null
+  glsLabelData: string | null
+  glsStatusData: string | null
+  glsCreatedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -100,12 +110,20 @@ export type OrderMaxAggregateOutputType = {
   stripeCheckoutSessionId: string | null
   stripePaymentIntentId: string | null
   stripePaymentStatus: string | null
+  glsPickupPointId: string | null
+  glsPickupPointName: string | null
+  glsPickupPointAddress: string | null
   paidAt: Date | null
   paymentFailedAt: Date | null
   paymentCancelledAt: Date | null
   paymentErrorMessage: string | null
   checkoutExpiresAt: Date | null
   viewed: boolean | null
+  glsShipmentId: number | null
+  glsParcelNumber: string | null
+  glsLabelData: string | null
+  glsStatusData: string | null
+  glsCreatedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -134,12 +152,20 @@ export type OrderCountAggregateOutputType = {
   stripeCheckoutSessionId: number
   stripePaymentIntentId: number
   stripePaymentStatus: number
+  glsPickupPointId: number
+  glsPickupPointName: number
+  glsPickupPointAddress: number
   paidAt: number
   paymentFailedAt: number
   paymentCancelledAt: number
   paymentErrorMessage: number
   checkoutExpiresAt: number
   viewed: number
+  glsShipmentId: number
+  glsParcelNumber: number
+  glsLabelData: number
+  glsStatusData: number
+  glsCreatedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -152,6 +178,7 @@ export type OrderAvgAggregateInputType = {
   taxTotal?: true
   discountTotal?: true
   total?: true
+  glsShipmentId?: true
 }
 
 export type OrderSumAggregateInputType = {
@@ -160,6 +187,7 @@ export type OrderSumAggregateInputType = {
   taxTotal?: true
   discountTotal?: true
   total?: true
+  glsShipmentId?: true
 }
 
 export type OrderMinAggregateInputType = {
@@ -186,12 +214,20 @@ export type OrderMinAggregateInputType = {
   stripeCheckoutSessionId?: true
   stripePaymentIntentId?: true
   stripePaymentStatus?: true
+  glsPickupPointId?: true
+  glsPickupPointName?: true
+  glsPickupPointAddress?: true
   paidAt?: true
   paymentFailedAt?: true
   paymentCancelledAt?: true
   paymentErrorMessage?: true
   checkoutExpiresAt?: true
   viewed?: true
+  glsShipmentId?: true
+  glsParcelNumber?: true
+  glsLabelData?: true
+  glsStatusData?: true
+  glsCreatedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -220,12 +256,20 @@ export type OrderMaxAggregateInputType = {
   stripeCheckoutSessionId?: true
   stripePaymentIntentId?: true
   stripePaymentStatus?: true
+  glsPickupPointId?: true
+  glsPickupPointName?: true
+  glsPickupPointAddress?: true
   paidAt?: true
   paymentFailedAt?: true
   paymentCancelledAt?: true
   paymentErrorMessage?: true
   checkoutExpiresAt?: true
   viewed?: true
+  glsShipmentId?: true
+  glsParcelNumber?: true
+  glsLabelData?: true
+  glsStatusData?: true
+  glsCreatedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -254,12 +298,20 @@ export type OrderCountAggregateInputType = {
   stripeCheckoutSessionId?: true
   stripePaymentIntentId?: true
   stripePaymentStatus?: true
+  glsPickupPointId?: true
+  glsPickupPointName?: true
+  glsPickupPointAddress?: true
   paidAt?: true
   paymentFailedAt?: true
   paymentCancelledAt?: true
   paymentErrorMessage?: true
   checkoutExpiresAt?: true
   viewed?: true
+  glsShipmentId?: true
+  glsParcelNumber?: true
+  glsLabelData?: true
+  glsStatusData?: true
+  glsCreatedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -375,12 +427,20 @@ export type OrderGroupByOutputType = {
   stripeCheckoutSessionId: string | null
   stripePaymentIntentId: string | null
   stripePaymentStatus: string | null
+  glsPickupPointId: string | null
+  glsPickupPointName: string | null
+  glsPickupPointAddress: string | null
   paidAt: Date | null
   paymentFailedAt: Date | null
   paymentCancelledAt: Date | null
   paymentErrorMessage: string | null
   checkoutExpiresAt: Date | null
   viewed: boolean
+  glsShipmentId: number | null
+  glsParcelNumber: string | null
+  glsLabelData: string | null
+  glsStatusData: string | null
+  glsCreatedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: OrderCountAggregateOutputType | null
@@ -432,12 +492,20 @@ export type OrderWhereInput = {
   stripeCheckoutSessionId?: Prisma.StringNullableFilter<"Order"> | string | null
   stripePaymentIntentId?: Prisma.StringNullableFilter<"Order"> | string | null
   stripePaymentStatus?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsPickupPointId?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsPickupPointName?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsPickupPointAddress?: Prisma.StringNullableFilter<"Order"> | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   paymentFailedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   paymentCancelledAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   paymentErrorMessage?: Prisma.StringNullableFilter<"Order"> | string | null
   checkoutExpiresAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   viewed?: Prisma.BoolFilter<"Order"> | boolean
+  glsShipmentId?: Prisma.IntNullableFilter<"Order"> | number | null
+  glsParcelNumber?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsLabelData?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsStatusData?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsCreatedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
@@ -470,12 +538,20 @@ export type OrderOrderByWithRelationInput = {
   stripeCheckoutSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   stripePaymentIntentId?: Prisma.SortOrderInput | Prisma.SortOrder
   stripePaymentStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsPickupPointId?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsPickupPointName?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsPickupPointAddress?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentFailedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentCancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentErrorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   checkoutExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   viewed?: Prisma.SortOrder
+  glsShipmentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsParcelNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsLabelData?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsStatusData?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsCreatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   customer?: Prisma.CustomerOrderByWithRelationInput
@@ -511,12 +587,20 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   stripeCheckoutSessionId?: Prisma.StringNullableFilter<"Order"> | string | null
   stripePaymentIntentId?: Prisma.StringNullableFilter<"Order"> | string | null
   stripePaymentStatus?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsPickupPointId?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsPickupPointName?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsPickupPointAddress?: Prisma.StringNullableFilter<"Order"> | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   paymentFailedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   paymentCancelledAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   paymentErrorMessage?: Prisma.StringNullableFilter<"Order"> | string | null
   checkoutExpiresAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   viewed?: Prisma.BoolFilter<"Order"> | boolean
+  glsShipmentId?: Prisma.IntNullableFilter<"Order"> | number | null
+  glsParcelNumber?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsLabelData?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsStatusData?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsCreatedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
@@ -549,12 +633,20 @@ export type OrderOrderByWithAggregationInput = {
   stripeCheckoutSessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   stripePaymentIntentId?: Prisma.SortOrderInput | Prisma.SortOrder
   stripePaymentStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsPickupPointId?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsPickupPointName?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsPickupPointAddress?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentFailedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentCancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paymentErrorMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   checkoutExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   viewed?: Prisma.SortOrder
+  glsShipmentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsParcelNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsLabelData?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsStatusData?: Prisma.SortOrderInput | Prisma.SortOrder
+  glsCreatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.OrderCountOrderByAggregateInput
@@ -591,12 +683,20 @@ export type OrderScalarWhereWithAggregatesInput = {
   stripeCheckoutSessionId?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   stripePaymentIntentId?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   stripePaymentStatus?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  glsPickupPointId?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  glsPickupPointName?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  glsPickupPointAddress?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   paidAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
   paymentFailedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
   paymentCancelledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
   paymentErrorMessage?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   checkoutExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
   viewed?: Prisma.BoolWithAggregatesFilter<"Order"> | boolean
+  glsShipmentId?: Prisma.IntNullableWithAggregatesFilter<"Order"> | number | null
+  glsParcelNumber?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  glsLabelData?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  glsStatusData?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  glsCreatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
 }
@@ -624,12 +724,20 @@ export type OrderCreateInput = {
   stripeCheckoutSessionId?: string | null
   stripePaymentIntentId?: string | null
   stripePaymentStatus?: string | null
+  glsPickupPointId?: string | null
+  glsPickupPointName?: string | null
+  glsPickupPointAddress?: string | null
   paidAt?: Date | string | null
   paymentFailedAt?: Date | string | null
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
   viewed?: boolean
+  glsShipmentId?: number | null
+  glsParcelNumber?: string | null
+  glsLabelData?: string | null
+  glsStatusData?: string | null
+  glsCreatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerCreateNestedOneWithoutOrdersInput
@@ -662,12 +770,20 @@ export type OrderUncheckedCreateInput = {
   stripeCheckoutSessionId?: string | null
   stripePaymentIntentId?: string | null
   stripePaymentStatus?: string | null
+  glsPickupPointId?: string | null
+  glsPickupPointName?: string | null
+  glsPickupPointAddress?: string | null
   paidAt?: Date | string | null
   paymentFailedAt?: Date | string | null
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
   viewed?: boolean
+  glsShipmentId?: number | null
+  glsParcelNumber?: string | null
+  glsLabelData?: string | null
+  glsStatusData?: string | null
+  glsCreatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -698,12 +814,20 @@ export type OrderUpdateInput = {
   stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentFailedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  glsShipmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  glsParcelNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsLabelData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsStatusData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneWithoutOrdersNestedInput
@@ -736,12 +860,20 @@ export type OrderUncheckedUpdateInput = {
   stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentFailedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  glsShipmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  glsParcelNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsLabelData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsStatusData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -773,12 +905,20 @@ export type OrderCreateManyInput = {
   stripeCheckoutSessionId?: string | null
   stripePaymentIntentId?: string | null
   stripePaymentStatus?: string | null
+  glsPickupPointId?: string | null
+  glsPickupPointName?: string | null
+  glsPickupPointAddress?: string | null
   paidAt?: Date | string | null
   paymentFailedAt?: Date | string | null
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
   viewed?: boolean
+  glsShipmentId?: number | null
+  glsParcelNumber?: string | null
+  glsLabelData?: string | null
+  glsStatusData?: string | null
+  glsCreatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -806,12 +946,20 @@ export type OrderUpdateManyMutationInput = {
   stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentFailedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  glsShipmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  glsParcelNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsLabelData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsStatusData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -840,12 +988,20 @@ export type OrderUncheckedUpdateManyInput = {
   stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentFailedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  glsShipmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  glsParcelNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsLabelData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsStatusData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -884,12 +1040,20 @@ export type OrderCountOrderByAggregateInput = {
   stripeCheckoutSessionId?: Prisma.SortOrder
   stripePaymentIntentId?: Prisma.SortOrder
   stripePaymentStatus?: Prisma.SortOrder
+  glsPickupPointId?: Prisma.SortOrder
+  glsPickupPointName?: Prisma.SortOrder
+  glsPickupPointAddress?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
   paymentFailedAt?: Prisma.SortOrder
   paymentCancelledAt?: Prisma.SortOrder
   paymentErrorMessage?: Prisma.SortOrder
   checkoutExpiresAt?: Prisma.SortOrder
   viewed?: Prisma.SortOrder
+  glsShipmentId?: Prisma.SortOrder
+  glsParcelNumber?: Prisma.SortOrder
+  glsLabelData?: Prisma.SortOrder
+  glsStatusData?: Prisma.SortOrder
+  glsCreatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -900,6 +1064,7 @@ export type OrderAvgOrderByAggregateInput = {
   taxTotal?: Prisma.SortOrder
   discountTotal?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  glsShipmentId?: Prisma.SortOrder
 }
 
 export type OrderMaxOrderByAggregateInput = {
@@ -926,12 +1091,20 @@ export type OrderMaxOrderByAggregateInput = {
   stripeCheckoutSessionId?: Prisma.SortOrder
   stripePaymentIntentId?: Prisma.SortOrder
   stripePaymentStatus?: Prisma.SortOrder
+  glsPickupPointId?: Prisma.SortOrder
+  glsPickupPointName?: Prisma.SortOrder
+  glsPickupPointAddress?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
   paymentFailedAt?: Prisma.SortOrder
   paymentCancelledAt?: Prisma.SortOrder
   paymentErrorMessage?: Prisma.SortOrder
   checkoutExpiresAt?: Prisma.SortOrder
   viewed?: Prisma.SortOrder
+  glsShipmentId?: Prisma.SortOrder
+  glsParcelNumber?: Prisma.SortOrder
+  glsLabelData?: Prisma.SortOrder
+  glsStatusData?: Prisma.SortOrder
+  glsCreatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -960,12 +1133,20 @@ export type OrderMinOrderByAggregateInput = {
   stripeCheckoutSessionId?: Prisma.SortOrder
   stripePaymentIntentId?: Prisma.SortOrder
   stripePaymentStatus?: Prisma.SortOrder
+  glsPickupPointId?: Prisma.SortOrder
+  glsPickupPointName?: Prisma.SortOrder
+  glsPickupPointAddress?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
   paymentFailedAt?: Prisma.SortOrder
   paymentCancelledAt?: Prisma.SortOrder
   paymentErrorMessage?: Prisma.SortOrder
   checkoutExpiresAt?: Prisma.SortOrder
   viewed?: Prisma.SortOrder
+  glsShipmentId?: Prisma.SortOrder
+  glsParcelNumber?: Prisma.SortOrder
+  glsLabelData?: Prisma.SortOrder
+  glsStatusData?: Prisma.SortOrder
+  glsCreatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -976,6 +1157,7 @@ export type OrderSumOrderByAggregateInput = {
   taxTotal?: Prisma.SortOrder
   discountTotal?: Prisma.SortOrder
   total?: Prisma.SortOrder
+  glsShipmentId?: Prisma.SortOrder
 }
 
 export type OrderScalarRelationFilter = {
@@ -1094,12 +1276,20 @@ export type OrderCreateWithoutCustomerInput = {
   stripeCheckoutSessionId?: string | null
   stripePaymentIntentId?: string | null
   stripePaymentStatus?: string | null
+  glsPickupPointId?: string | null
+  glsPickupPointName?: string | null
+  glsPickupPointAddress?: string | null
   paidAt?: Date | string | null
   paymentFailedAt?: Date | string | null
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
   viewed?: boolean
+  glsShipmentId?: number | null
+  glsParcelNumber?: string | null
+  glsLabelData?: string | null
+  glsStatusData?: string | null
+  glsCreatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
@@ -1130,12 +1320,20 @@ export type OrderUncheckedCreateWithoutCustomerInput = {
   stripeCheckoutSessionId?: string | null
   stripePaymentIntentId?: string | null
   stripePaymentStatus?: string | null
+  glsPickupPointId?: string | null
+  glsPickupPointName?: string | null
+  glsPickupPointAddress?: string | null
   paidAt?: Date | string | null
   paymentFailedAt?: Date | string | null
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
   viewed?: boolean
+  glsShipmentId?: number | null
+  glsParcelNumber?: string | null
+  glsLabelData?: string | null
+  glsStatusData?: string | null
+  glsCreatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -1196,12 +1394,20 @@ export type OrderScalarWhereInput = {
   stripeCheckoutSessionId?: Prisma.StringNullableFilter<"Order"> | string | null
   stripePaymentIntentId?: Prisma.StringNullableFilter<"Order"> | string | null
   stripePaymentStatus?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsPickupPointId?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsPickupPointName?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsPickupPointAddress?: Prisma.StringNullableFilter<"Order"> | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   paymentFailedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   paymentCancelledAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   paymentErrorMessage?: Prisma.StringNullableFilter<"Order"> | string | null
   checkoutExpiresAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   viewed?: Prisma.BoolFilter<"Order"> | boolean
+  glsShipmentId?: Prisma.IntNullableFilter<"Order"> | number | null
+  glsParcelNumber?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsLabelData?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsStatusData?: Prisma.StringNullableFilter<"Order"> | string | null
+  glsCreatedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
 }
@@ -1229,12 +1435,20 @@ export type OrderCreateWithoutItemsInput = {
   stripeCheckoutSessionId?: string | null
   stripePaymentIntentId?: string | null
   stripePaymentStatus?: string | null
+  glsPickupPointId?: string | null
+  glsPickupPointName?: string | null
+  glsPickupPointAddress?: string | null
   paidAt?: Date | string | null
   paymentFailedAt?: Date | string | null
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
   viewed?: boolean
+  glsShipmentId?: number | null
+  glsParcelNumber?: string | null
+  glsLabelData?: string | null
+  glsStatusData?: string | null
+  glsCreatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerCreateNestedOneWithoutOrdersInput
@@ -1266,12 +1480,20 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   stripeCheckoutSessionId?: string | null
   stripePaymentIntentId?: string | null
   stripePaymentStatus?: string | null
+  glsPickupPointId?: string | null
+  glsPickupPointName?: string | null
+  glsPickupPointAddress?: string | null
   paidAt?: Date | string | null
   paymentFailedAt?: Date | string | null
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
   viewed?: boolean
+  glsShipmentId?: number | null
+  glsParcelNumber?: string | null
+  glsLabelData?: string | null
+  glsStatusData?: string | null
+  glsCreatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOrderInput
@@ -1317,12 +1539,20 @@ export type OrderUpdateWithoutItemsInput = {
   stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentFailedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  glsShipmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  glsParcelNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsLabelData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsStatusData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneWithoutOrdersNestedInput
@@ -1354,12 +1584,20 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentFailedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  glsShipmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  glsParcelNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsLabelData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsStatusData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutOrderNestedInput
@@ -1389,12 +1627,20 @@ export type OrderCreateWithoutPaymentsInput = {
   stripeCheckoutSessionId?: string | null
   stripePaymentIntentId?: string | null
   stripePaymentStatus?: string | null
+  glsPickupPointId?: string | null
+  glsPickupPointName?: string | null
+  glsPickupPointAddress?: string | null
   paidAt?: Date | string | null
   paymentFailedAt?: Date | string | null
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
   viewed?: boolean
+  glsShipmentId?: number | null
+  glsParcelNumber?: string | null
+  glsLabelData?: string | null
+  glsStatusData?: string | null
+  glsCreatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerCreateNestedOneWithoutOrdersInput
@@ -1426,12 +1672,20 @@ export type OrderUncheckedCreateWithoutPaymentsInput = {
   stripeCheckoutSessionId?: string | null
   stripePaymentIntentId?: string | null
   stripePaymentStatus?: string | null
+  glsPickupPointId?: string | null
+  glsPickupPointName?: string | null
+  glsPickupPointAddress?: string | null
   paidAt?: Date | string | null
   paymentFailedAt?: Date | string | null
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
   viewed?: boolean
+  glsShipmentId?: number | null
+  glsParcelNumber?: string | null
+  glsLabelData?: string | null
+  glsStatusData?: string | null
+  glsCreatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -1477,12 +1731,20 @@ export type OrderUpdateWithoutPaymentsInput = {
   stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentFailedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  glsShipmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  glsParcelNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsLabelData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsStatusData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneWithoutOrdersNestedInput
@@ -1514,12 +1776,20 @@ export type OrderUncheckedUpdateWithoutPaymentsInput = {
   stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentFailedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  glsShipmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  glsParcelNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsLabelData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsStatusData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -1549,12 +1819,20 @@ export type OrderCreateWithoutAuditLogsInput = {
   stripeCheckoutSessionId?: string | null
   stripePaymentIntentId?: string | null
   stripePaymentStatus?: string | null
+  glsPickupPointId?: string | null
+  glsPickupPointName?: string | null
+  glsPickupPointAddress?: string | null
   paidAt?: Date | string | null
   paymentFailedAt?: Date | string | null
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
   viewed?: boolean
+  glsShipmentId?: number | null
+  glsParcelNumber?: string | null
+  glsLabelData?: string | null
+  glsStatusData?: string | null
+  glsCreatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer?: Prisma.CustomerCreateNestedOneWithoutOrdersInput
@@ -1586,12 +1864,20 @@ export type OrderUncheckedCreateWithoutAuditLogsInput = {
   stripeCheckoutSessionId?: string | null
   stripePaymentIntentId?: string | null
   stripePaymentStatus?: string | null
+  glsPickupPointId?: string | null
+  glsPickupPointName?: string | null
+  glsPickupPointAddress?: string | null
   paidAt?: Date | string | null
   paymentFailedAt?: Date | string | null
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
   viewed?: boolean
+  glsShipmentId?: number | null
+  glsParcelNumber?: string | null
+  glsLabelData?: string | null
+  glsStatusData?: string | null
+  glsCreatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -1637,12 +1923,20 @@ export type OrderUpdateWithoutAuditLogsInput = {
   stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentFailedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  glsShipmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  glsParcelNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsLabelData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsStatusData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneWithoutOrdersNestedInput
@@ -1674,12 +1968,20 @@ export type OrderUncheckedUpdateWithoutAuditLogsInput = {
   stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentFailedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  glsShipmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  glsParcelNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsLabelData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsStatusData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -1709,12 +2011,20 @@ export type OrderCreateManyCustomerInput = {
   stripeCheckoutSessionId?: string | null
   stripePaymentIntentId?: string | null
   stripePaymentStatus?: string | null
+  glsPickupPointId?: string | null
+  glsPickupPointName?: string | null
+  glsPickupPointAddress?: string | null
   paidAt?: Date | string | null
   paymentFailedAt?: Date | string | null
   paymentCancelledAt?: Date | string | null
   paymentErrorMessage?: string | null
   checkoutExpiresAt?: Date | string | null
   viewed?: boolean
+  glsShipmentId?: number | null
+  glsParcelNumber?: string | null
+  glsLabelData?: string | null
+  glsStatusData?: string | null
+  glsCreatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1742,12 +2052,20 @@ export type OrderUpdateWithoutCustomerInput = {
   stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentFailedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  glsShipmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  glsParcelNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsLabelData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsStatusData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
@@ -1778,12 +2096,20 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
   stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentFailedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  glsShipmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  glsParcelNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsLabelData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsStatusData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -1814,12 +2140,20 @@ export type OrderUncheckedUpdateManyWithoutCustomerInput = {
   stripeCheckoutSessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   stripePaymentStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsPickupPointAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentFailedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentCancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paymentErrorMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   checkoutExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   viewed?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  glsShipmentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  glsParcelNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsLabelData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsStatusData?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  glsCreatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1897,12 +2231,20 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   stripeCheckoutSessionId?: boolean
   stripePaymentIntentId?: boolean
   stripePaymentStatus?: boolean
+  glsPickupPointId?: boolean
+  glsPickupPointName?: boolean
+  glsPickupPointAddress?: boolean
   paidAt?: boolean
   paymentFailedAt?: boolean
   paymentCancelledAt?: boolean
   paymentErrorMessage?: boolean
   checkoutExpiresAt?: boolean
   viewed?: boolean
+  glsShipmentId?: boolean
+  glsParcelNumber?: boolean
+  glsLabelData?: boolean
+  glsStatusData?: boolean
+  glsCreatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
@@ -1936,12 +2278,20 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   stripeCheckoutSessionId?: boolean
   stripePaymentIntentId?: boolean
   stripePaymentStatus?: boolean
+  glsPickupPointId?: boolean
+  glsPickupPointName?: boolean
+  glsPickupPointAddress?: boolean
   paidAt?: boolean
   paymentFailedAt?: boolean
   paymentCancelledAt?: boolean
   paymentErrorMessage?: boolean
   checkoutExpiresAt?: boolean
   viewed?: boolean
+  glsShipmentId?: boolean
+  glsParcelNumber?: boolean
+  glsLabelData?: boolean
+  glsStatusData?: boolean
+  glsCreatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
@@ -1971,12 +2321,20 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   stripeCheckoutSessionId?: boolean
   stripePaymentIntentId?: boolean
   stripePaymentStatus?: boolean
+  glsPickupPointId?: boolean
+  glsPickupPointName?: boolean
+  glsPickupPointAddress?: boolean
   paidAt?: boolean
   paymentFailedAt?: boolean
   paymentCancelledAt?: boolean
   paymentErrorMessage?: boolean
   checkoutExpiresAt?: boolean
   viewed?: boolean
+  glsShipmentId?: boolean
+  glsParcelNumber?: boolean
+  glsLabelData?: boolean
+  glsStatusData?: boolean
+  glsCreatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
@@ -2006,17 +2364,25 @@ export type OrderSelectScalar = {
   stripeCheckoutSessionId?: boolean
   stripePaymentIntentId?: boolean
   stripePaymentStatus?: boolean
+  glsPickupPointId?: boolean
+  glsPickupPointName?: boolean
+  glsPickupPointAddress?: boolean
   paidAt?: boolean
   paymentFailedAt?: boolean
   paymentCancelledAt?: boolean
   paymentErrorMessage?: boolean
   checkoutExpiresAt?: boolean
   viewed?: boolean
+  glsShipmentId?: boolean
+  glsParcelNumber?: boolean
+  glsLabelData?: boolean
+  glsStatusData?: boolean
+  glsCreatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "customerId" | "customerEmail" | "customerName" | "customerPhone" | "billingAddress" | "shippingAddress" | "subtotal" | "shippingTotal" | "taxTotal" | "discountTotal" | "total" | "currency" | "status" | "paymentStatus" | "paymentMethod" | "shippingMethod" | "note" | "adminNote" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "stripePaymentStatus" | "paidAt" | "paymentFailedAt" | "paymentCancelledAt" | "paymentErrorMessage" | "checkoutExpiresAt" | "viewed" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "customerId" | "customerEmail" | "customerName" | "customerPhone" | "billingAddress" | "shippingAddress" | "subtotal" | "shippingTotal" | "taxTotal" | "discountTotal" | "total" | "currency" | "status" | "paymentStatus" | "paymentMethod" | "shippingMethod" | "note" | "adminNote" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "stripePaymentStatus" | "glsPickupPointId" | "glsPickupPointName" | "glsPickupPointAddress" | "paidAt" | "paymentFailedAt" | "paymentCancelledAt" | "paymentErrorMessage" | "checkoutExpiresAt" | "viewed" | "glsShipmentId" | "glsParcelNumber" | "glsLabelData" | "glsStatusData" | "glsCreatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
@@ -2063,12 +2429,20 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     stripeCheckoutSessionId: string | null
     stripePaymentIntentId: string | null
     stripePaymentStatus: string | null
+    glsPickupPointId: string | null
+    glsPickupPointName: string | null
+    glsPickupPointAddress: string | null
     paidAt: Date | null
     paymentFailedAt: Date | null
     paymentCancelledAt: Date | null
     paymentErrorMessage: string | null
     checkoutExpiresAt: Date | null
     viewed: boolean
+    glsShipmentId: number | null
+    glsParcelNumber: string | null
+    glsLabelData: string | null
+    glsStatusData: string | null
+    glsCreatedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["order"]>
@@ -2521,12 +2895,20 @@ export interface OrderFieldRefs {
   readonly stripeCheckoutSessionId: Prisma.FieldRef<"Order", 'String'>
   readonly stripePaymentIntentId: Prisma.FieldRef<"Order", 'String'>
   readonly stripePaymentStatus: Prisma.FieldRef<"Order", 'String'>
+  readonly glsPickupPointId: Prisma.FieldRef<"Order", 'String'>
+  readonly glsPickupPointName: Prisma.FieldRef<"Order", 'String'>
+  readonly glsPickupPointAddress: Prisma.FieldRef<"Order", 'String'>
   readonly paidAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly paymentFailedAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly paymentCancelledAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly paymentErrorMessage: Prisma.FieldRef<"Order", 'String'>
   readonly checkoutExpiresAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly viewed: Prisma.FieldRef<"Order", 'Boolean'>
+  readonly glsShipmentId: Prisma.FieldRef<"Order", 'Int'>
+  readonly glsParcelNumber: Prisma.FieldRef<"Order", 'String'>
+  readonly glsLabelData: Prisma.FieldRef<"Order", 'String'>
+  readonly glsStatusData: Prisma.FieldRef<"Order", 'String'>
+  readonly glsCreatedAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Order", 'DateTime'>
 }
