@@ -107,30 +107,6 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     onShippingChange?.(shippingPrice);
   }, [shippingPrice, onShippingChange]);
 
-  const fetchDeliveryPoints = useCallback(async () => {
-    setGlsLoading(true);
-    setGlsError("");
-    try {
-      const params = new URLSearchParams();
-      if (formData.city) params.set("city", formData.city);
-      if (formData.postalCode) params.set("postalCode", formData.postalCode);
-
-      const res = await fetch(`/api/shipping/gls/delivery-points?${params.toString()}`);
-      const data = await res.json();
-
-      if (data.success) {
-        setGlsPoints(data.points);
-      } else {
-        setGlsError(data.error || "Greška prilikom dohvaćanja paketomata.");
-      }
-    } catch (err) {
-      setGlsError("Greška prilikom dohvaćanja GLS paketomata. Pokušajte ponovno.");
-      console.error("GLS delivery points fetch failed:", err);
-    } finally {
-      setGlsLoading(false);
-      setGlsFetched(true);
-    }
-  }, [formData.city, formData.postalCode]);
 
   // Fetch GLS delivery points when "GLS Paketomat" is selected
   // Fetch shipping methods from admin/baze
@@ -220,17 +196,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     }
   };
 
-  const handleGlsPointSelect = (point: GlsDeliveryPoint) => {
-    setFormData((prev) => ({
-      ...prev,
-      glsPickupPointId: point.id,
-      glsPickupPointName: point.name,
-      glsPickupPointAddress: `${point.name}, ${point.address}, ${point.postalCode} ${point.city}`,
-    }));
-    if (errors.glsPickupPoint) {
-      setErrors((prev) => ({ ...prev, glsPickupPoint: "" }));
-    }
-  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
