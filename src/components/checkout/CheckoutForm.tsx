@@ -11,7 +11,7 @@ import dynamic from "next/dynamic";
 import NextImage from "next/image";
 import { CreditCard, Building, Banknote } from "lucide-react";
 
-const GlsWidgetPicker = dynamic(() => import("./GlsWidgetPicker"), { ssr: false });
+const GlsParcelPicker = dynamic(() => import("./GlsParcelPicker"), { ssr: false });
 
 interface FormErrors { [key: string]: string; }
 
@@ -188,7 +188,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
 
       {/* GLS Paketomat — official widget picker */}
       {isGlsPaketomat && (
-        <GlsWidgetPicker
+        <GlsParcelPicker
           onSelect={(point) => {
             if (point) {
               setFormData(prev => ({
