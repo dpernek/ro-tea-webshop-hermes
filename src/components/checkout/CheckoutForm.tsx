@@ -209,6 +209,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
             }
           }}
           selectedName={formData.glsPickupPointName}
+          selectedAddress={formData.glsPickupPointAddress}
           city={formData.city}
           postalCode={formData.postalCode}
           customerAddress={formData.address}

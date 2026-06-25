@@ -21,6 +21,7 @@ interface GPoint {
 interface Props {
   onSelect: (point: { id: string; name: string; contact: { address: string; city: string; postalCode: string; countryCode: string } }) => void;
   selectedName?: string;
+  selectedAddress?: string;
   city?: string;
   postalCode?: string;
   customerAddress?: string;
@@ -85,7 +86,7 @@ function FitBounds({ points }: { points: GPoint[] }) {
   return null;
 }
 
-export default function GlsParcelPicker({ onSelect, selectedName, city, postalCode, customerAddress }: Props) {
+export default function GlsParcelPicker({ onSelect, selectedName, selectedAddress, city, postalCode, customerAddress }: Props) {
   const [points, setPoints] = useState<GPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -193,7 +194,10 @@ export default function GlsParcelPicker({ onSelect, selectedName, city, postalCo
             <MapPin className="h-4 w-4 text-[#0055a8] flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-slate-900">Odabrani paketomat:</p>
-              <p className="text-sm text-slate-700">{selectedName || "—"}</p>
+              <p className="text-sm text-slate-700">{selectedAddress || selectedName || "—"}</p>
+              {selectedAddress && selectedName && (
+                <p className="text-xs text-slate-500">{selectedName}</p>
+              )}
             </div>
             <Button type="button" size="sm" variant="outline" onClick={() => setOpen(true)}>Promijeni</Button>
           </div>
