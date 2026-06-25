@@ -42,6 +42,8 @@ export interface GlsServiceParameter {
 // ── PrepareLabels ────────────────────────────────────────────────
 
 export interface PrepareLabelsRequest {
+  ParcelList?: Array<Record<string, unknown>>;
+  // Legacy SOAP format:
   Username: string;
   Password: string; // SHA512 hex digest
   ClientNumber: number;
@@ -71,6 +73,14 @@ export interface PrintParams {
 }
 
 export interface PrepareLabelsResponse {
+  ParcelInfoList?: Array<{
+    ParcelId: number;
+    ParcelNumber: string;
+  }>;
+  PrepareLabelsError?: Array<{
+    ErrorCode: string;
+    ErrorDescription: string;
+  }>;
   PrepareLabelsResult?: {
     ParcelInfoList?: {
       ParcelInfo: GlsPrintLabelsInfo[];

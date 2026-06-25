@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDeliveryPoints } from "@/lib/shipping/gls/deliveryPoints";
+import { getDeliveryPoints } from "@/lib/shipping/gls/restClient";
 import { isGlsConfigured } from "@/lib/shipping/gls/config";
 import type { DeliveryPointResult } from "@/lib/shipping/gls/deliveryPoints";
 

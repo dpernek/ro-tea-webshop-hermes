@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { isGlsConfigured } from "@/lib/shipping/gls/client";
-import { getParcelStatuses as fetchParcelStatuses } from "@/lib/shipping/gls/parcelStatus";
+import { isGlsConfigured } from "@/lib/shipping/gls/config";
+import { getParcelStatuses } from "@/lib/shipping/gls/restClient";
 
 export const dynamic = "force-dynamic";
 
@@ -49,7 +49,7 @@ export async function POST(
   }
 
   try {
-    const results = await fetchParcelStatuses([order.glsParcelNumber]);
+    const results = await getParcelStatuses([order.glsParcelNumber]);
     const statusData = results[0];
 
     if (!statusData) {
@@ -62,7 +62,7 @@ export async function POST(
     // Store updated status
     const statusJson = JSON.stringify({
       updatedAt: new Date().toISOString(),
-      statusInfo: statusData.statuses,
+      statusInfo: statusData,
     });
 
     await db.order.update({
@@ -73,7 +73,7 @@ export async function POST(
     return NextResponse.json({
       success: true,
       parcelNumber: order.glsParcelNumber,
-      statuses: statusData.statuses,
+      statuses: statusData,
     });
   } catch (error: any) {
     console.error("[GLS STATUS]", error);

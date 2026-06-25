@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { isGlsConfigured } from "@/lib/shipping/gls/client";
-import { cancelLabels } from "@/lib/shipping/gls/deleteLabels";
+import { isGlsConfigured } from "@/lib/shipping/gls/config";
+import { cancelLabels } from "@/lib/shipping/gls/restClient";
 
 export const dynamic = "force-dynamic";
 
@@ -62,7 +62,7 @@ export async function POST(
     if (!result.success) {
       return NextResponse.json(
         {
-          error: `GLS nije uspio stornirati naljepnicu: ${result.errorDescription || "Nepoznata greška"}`,
+          error: `GLS nije uspio stornirati naljepnicu: ${"Failed"}`,
         },
         { status: 500 },
       );

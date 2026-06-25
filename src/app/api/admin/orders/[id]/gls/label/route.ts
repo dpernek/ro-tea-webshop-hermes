@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { isGlsConfigured } from "@/lib/shipping/gls/client";
+import { isGlsConfigured } from "@/lib/shipping/gls/config";
 
 export const dynamic = "force-dynamic";
 

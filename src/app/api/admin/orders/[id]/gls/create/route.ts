@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { isGlsConfigured } from "@/lib/shipping/gls/client";
-import { getGlsConfig } from "@/lib/shipping/gls/config";
-import { prepareLabelsWithLabels } from "@/lib/shipping/gls/prepareLabels";
-import type { GlsParcelInfo } from "@/lib/shipping/gls/types";
+import { isGlsConfigured } from "@/lib/shipping/gls/config";
+
+import { prepareLabels } from "@/lib/shipping/gls/restClient";
+
 
 export const dynamic = "force-dynamic";
 
@@ -87,10 +87,9 @@ export async function POST(
     city = cityPostal;
   }
 
-  const config = getGlsConfig();
   const isCod = order.shippingMethod?.toLowerCase().includes("pouzeće") || false;
 
-  const parcelInfo: GlsParcelInfo = {
+  const parcelInfo = {
     ClientReference: order.orderNumber,
     CODAmount: isCod ? order.total : undefined,
     CODReference: isCod ? order.orderNumber : undefined,
@@ -102,21 +101,18 @@ export async function POST(
       HouseNumber: houseNumber || undefined,
       City: city,
       ZipCode: zipCode,
-      CountryCode: config.countryCode,
+      CountryCode: "HR",
       ContactName: order.customerName,
       ContactPhone: order.customerPhone,
       ContactEmail: order.customerEmail,
     },
-    Service: {
-      Code: "PSD",
-      ...(isCod ? { Parameter: [{ Code: "COD", Value: order.total?.toFixed(2) || "0" }] } : {}),
-    },
+    Service: isCod ? { Code: "PSD", Parameter: [{ Code: "COD", Value: order.total?.toFixed(2) || "0" }] } : { Code: "PSD" },
     Weight: 1,
   };
 
   try {
-    const result = await prepareLabelsWithLabels([parcelInfo]);
-    const parcel = result.parcels[0];
+    const result = await prepareLabels([parcelInfo]);
+    const parcel = result[0];
 
     if (!parcel) {
       return NextResponse.json(
@@ -130,7 +126,7 @@ export async function POST(
       data: {
         glsShipmentId: parcel.parcelId,
         glsParcelNumber: parcel.parcelNumber,
-        glsLabelData: result.labelsBase64 || null,
+        glsLabelData: null,
         glsStatusData: JSON.stringify({ status: "CREATED", createdAt: new Date().toISOString() }),
         glsCreatedAt: new Date(),
       },
@@ -140,7 +136,7 @@ export async function POST(
       success: true,
       parcelId: parcel.parcelId,
       parcelNumber: parcel.parcelNumber,
-      hasLabel: !!result.labelsBase64,
+      hasLabel: false,
     });
   } catch (error: any) {
     console.error("[GLS CREATE]", error);

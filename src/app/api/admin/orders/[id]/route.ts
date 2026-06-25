@@ -3,7 +3,7 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { sendEmail, statusChangeEmail } from "@/lib/email";
-import { isGlsConfigured } from "@/lib/shipping/gls/client";
+import { isGlsConfigured } from "@/lib/shipping/gls/config";
 import { getGlsConfig } from "@/lib/shipping/gls/config";
 
 export const dynamic = "force-dynamic";

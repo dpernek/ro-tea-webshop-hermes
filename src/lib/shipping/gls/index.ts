@@ -37,7 +37,7 @@ export type {
   GlsErrorInfo,
 } from "./types";
 
-export { prepareLabels, prepareLabelsWithLabels } from "./prepareLabels";
+export { prepareLabels } from "./restClient";
 export {
   getParcelStatuses,
   getParcelStatus,
@@ -56,3 +56,5 @@ export type { DeliveryPointResult } from "./deliveryPoints";
 
 export { deleteLabels, deleteLabel, cancelLabels } from "./deleteLabels";
 export type { DeleteLabelResult } from "./deleteLabels";
+
+export { glsAuthPayload } from "./restClient";
