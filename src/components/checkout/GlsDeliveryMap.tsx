@@ -1,14 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "gls-dpm": any;
-    }
-  }
-}
-
 interface GlsWidgetProps {
   country?: string;
   language?: string;
@@ -64,7 +56,7 @@ export default function GlsDeliveryMap({
 
   return (
     <div ref={containerRef} style={{ height, width: "100%" }}>
-      {/* @ts-ignore — GLS custom element */}
+      {/* @ts-expect-error — GLS custom element */}
       <gls-dpm
         country={country}
         language={language}
