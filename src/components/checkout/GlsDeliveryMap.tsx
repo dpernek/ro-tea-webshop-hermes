@@ -1,24 +1,6 @@
 "use client";
 import Script from "next/script";
 
-"use client";
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "gls-dpm": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & {
-          country?: string;
-          language?: string;
-          "filter-type"?: string;
-        },
-        HTMLElement
-      >;
-    }
-  }
-}
-import Script from "next/script";
-
 interface Props {
   onSelect?: (point: any) => void;
   height?: string;
@@ -33,6 +15,7 @@ export default function GlsDeliveryMap({ onSelect, height = "500px" }: Props) {
         strategy="afterInteractive"
       />
       <div style={{ height, width: "100%" }}>
+        {/* @ts-expect-error — GLS custom element */}
         <gls-dpm
           country="hr"
           language="hr"
