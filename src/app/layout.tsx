@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import "leaflet/dist/leaflet.css";
 import { ConditionalPublicLayout } from "@/components/layout/ConditionalPublicLayout";
 import { site } from "@/lib/data";
 
