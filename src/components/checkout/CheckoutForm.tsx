@@ -15,7 +15,7 @@ const GlsParcelPicker = dynamic(() => import("./GlsParcelPicker"), { ssr: false 
 
 interface FormErrors { [key: string]: string; }
 
-export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: number) => void }) {
+export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: number, freeAbove?: number | null) => void }) {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
   const clearCart = useCartStore((s) => s.clearCart);
@@ -29,7 +29,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   });
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [shippingMethods, setShippingMethods] = useState<Array<{ id: string; name: string; price: number }>>([]);
+  const [shippingMethods, setShippingMethods] = useState<Array<{ id: string; name: string; price: number; freeAboveAmount?: number | null }>>([]);
 
   // ── Single shipping fetch (no auto-select) ──
   useEffect(() => {
@@ -38,6 +38,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       .then(data => {
         const methods = (data || []).map((m: any) => ({
           id: m.id, name: m.name, price: m.price || 0,
+          freeAboveAmount: m.freeAboveAmount ?? null,
         }));
         setShippingMethods(methods);
       })
@@ -56,17 +57,21 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   const glsPaketomatId = shippingMethods.find(m => m.name === GLS_PAKETOMAT)?.id || "";
 
   const subtotal = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
-  const shippingPrice = currentMethod ? currentMethod.price : 0;
+  // Free shipping: if method has freeAboveAmount and subtotal reaches it, shipping is 0
+  const methodPrice = currentMethod?.price ?? 0;
+  const freeAbove = currentMethod?.freeAboveAmount ?? null;
+  const isFreeShipping = freeAbove !== null && subtotal >= freeAbove;
+  const shippingPrice = isFreeShipping ? 0 : methodPrice;
   const total = subtotal + shippingPrice;
 
-  useEffect(() => { onShippingChange?.(shippingPrice); }, [shippingPrice, onShippingChange]);
+  useEffect(() => { onShippingChange?.(shippingPrice, freeAbove); }, [shippingPrice, freeAbove, onShippingChange]);
 
   const validate = (): boolean => {
     const e: FormErrors = {};
     if (!formData.fullName.trim() || formData.fullName.length < 3) e.fullName = "Unesite ime i prezime (minimalno 3 znaka).";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = "Unesite valjanu e-mail adresu.";
     if (!formData.phone.trim() || formData.phone.length < 6) e.phone = "Unesite valjani broj telefona.";
-    if (!isGlsPaketomat && (!formData.address.trim() || formData.address.length < 5)) e.address = "Unesite punu adresu dostave.";
+    if (!formData.address.trim() || formData.address.length < 5) e.address = "Unesite punu adresu dostave.";
     if (!formData.city.trim()) e.city = "Unesite grad.";
     if (!/^\d{5}$/.test(formData.postalCode)) e.postalCode = "Unesite valjani poštanski broj (5 znamenaka).";
     if (isGlsPaketomat && !formData.glsPickupPointId) e.glsPickupPoint = "Odaberite GLS Paketomat.";
@@ -150,11 +155,10 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         <Input label="Ime i prezime" name="fullName" value={formData.fullName} onChange={handleChange} error={errors.fullName} placeholder="Ivan Horvat" required />
         <Input label="E-mail" name="email" type="email" value={formData.email} onChange={handleChange} error={errors.email} placeholder="ivan.horvat@email.hr" required />
         <Input label="Telefon" name="phone" type="tel" value={formData.phone} onChange={handleChange} error={errors.phone} placeholder="+385 91 123 4567" required />
-        {!isGlsPaketomat && (
+        {/* Address always visible for geocoding */}
           <div className="sm:col-span-2">
-            <Input label="Adresa" name="address" value={formData.address} onChange={handleChange} error={errors.address} placeholder="Ulica i kućni broj" required />
+            <Input label="Adresa (ulica i kućni broj)" name="address" value={formData.address} onChange={handleChange} error={errors.address} placeholder="Ulica i kućni broj" required />
           </div>
-        )}
         <Input label="Grad" name="city" value={formData.city} onChange={handleChange} error={errors.city} placeholder="Zagreb" required />
         <Input label="Poštanski broj" name="postalCode" value={formData.postalCode} onChange={handleChange} error={errors.postalCode} placeholder="10000" required />
       </div>

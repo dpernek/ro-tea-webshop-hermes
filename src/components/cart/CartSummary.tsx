@@ -7,9 +7,6 @@ import Link from "next/link";
 import { Tag, X, Loader2, Truck, ShieldCheck } from "lucide-react";
 
 const VAT_RATE = 0.25;
-// Fallback defaults (overridden by DB when available)
-const FALLBACK_SHIPPING = 8;
-const FALLBACK_FREE_ABOVE = 70;
 
 function pluralArtikala(n: number): string {
   if (n % 10 === 1 && n % 100 !== 11) return "artikl";
@@ -39,11 +36,13 @@ export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAbov
   const vatAmount = subtotalWithVat - subtotalNoVat;
 
   // Use DB-provided pricing if available, else fallback
-  const effectiveShipping = shippingPrice ?? FALLBACK_SHIPPING;
-  const effectiveFreeAbove = freeAboveAmount ?? FALLBACK_FREE_ABOVE;
-  const isFree = subtotalWithVat >= effectiveFreeAbove || effectiveShipping === 0;
+  // Use DB-provided pricing if available (from checkout), else show neutral message
+  const hasPricing = shippingPrice !== undefined || freeAboveAmount !== undefined;
+  const effectiveShipping = shippingPrice ?? 0;
+  const effectiveFreeAbove = freeAboveAmount ?? null;
+  const isFree = (effectiveFreeAbove !== null && subtotalWithVat >= effectiveFreeAbove) || effectiveShipping === 0;
   const shipping = isFree ? 0 : effectiveShipping;
-  const shippingGap = effectiveFreeAbove - subtotalWithVat;
+  const shippingGap = effectiveFreeAbove !== null ? effectiveFreeAbove - subtotalWithVat : 0;
 
   const total = subtotalWithVat + shipping - couponDiscount;
 
@@ -95,7 +94,7 @@ export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAbov
           <span className="font-medium">{shipping === 0 ? "Besplatno" : formatPrice(shipping)}</span>
         </div>
 
-        {shipping > 0 && subtotalWithVat > 0 && <p className="text-xs text-amber-600">Dodajte još {formatPrice(shippingGap)} za besplatnu dostavu</p>}
+        {shipping > 0 && subtotalWithVat > 0 && <p className="text-xs text-amber-600">{hasPricing ? `Dodajte još ${formatPrice(shippingGap)} za besplatnu dostavu` : "Točan trošak dostave bit će prikazan na blagajni."}</p>}
         {shipping === 0 && subtotalWithVat > 0 && <p className="text-xs text-emerald-600">Ostvarili ste besplatnu dostavu</p>}
       </div>
 

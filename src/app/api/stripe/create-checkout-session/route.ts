@@ -48,11 +48,18 @@ export async function POST(req: NextRequest) {
     }
 
     // Unified server-side pricing
-    const isPickup = body.shippingMethodId === "osobno-preuzimanje";
+    const isPickup = body.shippingMethodId?.includes("osobno");
     const pricing = computePrices(
       body.items.map(i => ({ productId: i.productId, quantity: i.quantity, price: productMap.get(i.productId)!.price, salePrice: productMap.get(i.productId)!.salePrice, stock: productMap.get(i.productId)!.stock })),
-      isPickup
     );
+
+    // Get shipping from DB
+    const shipMethod = await db.shippingMethod.findUnique({ where: { id: body.shippingMethodId }, select: { price: true, freeAboveAmount: true, name: true } });
+    const shipPrice = shipMethod?.price ?? 0;
+    const shipFreeAbove = shipMethod?.freeAboveAmount ?? null;
+    const isFreeShip = isPickup || (shipFreeAbove != null && pricing.subtotal >= shipFreeAbove);
+    const shippingTotal = isFreeShip ? 0 : shipPrice;
+    const total = pricing.subtotal + shippingTotal;
 
     // Stripe line items in cents
     const lineItems = pricing.lineItems.map(li => ({
@@ -75,16 +82,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Fetch shipping method
-    const shippingMethod = await db.shippingMethod.findUnique({ where: { id: body.shippingMethodId } });
+    
 
     // Create order BEFORE Stripe redirect
     const order = await db.order.create({
       data: {
         orderNumber, customerId: customer.id, customerEmail: body.customerEmail, customerName: body.customerName,
         customerPhone: body.customerPhone, shippingAddress, billingAddress: shippingAddress,
-        subtotal: pricing.subtotal, shippingTotal: pricing.shipping, taxTotal: pricing.tax, total: pricing.total,
+        subtotal: pricing.subtotal, shippingTotal: shippingTotal, taxTotal: pricing.tax, total: total,
         currency: "EUR", status: "PENDING", paymentStatus: "UNPAID", paymentMethod: "card",
-        shippingMethod: shippingMethod?.name || body.shippingMethodId, note: body.note || null,
+        shippingMethod: shipMethod?.name || body.shippingMethodId, note: body.note || null,
         glsPickupPointId: body.glsPickupPointId || null,
         glsPickupPointName: body.glsPickupPointName || null,
         glsPickupPointAddress: body.glsPickupPointAddress || null,
@@ -100,7 +107,7 @@ export async function POST(req: NextRequest) {
 
     // Create payment record
     await db.payment.create({
-      data: { orderId: order.id, provider: "stripe", method: "card", status: "PENDING", amount: pricing.total, currency: "EUR" },
+      data: { orderId: order.id, provider: "stripe", method: "card", status: "PENDING", amount: total, currency: "EUR" },
     });
 
     // Create Stripe Checkout Session
@@ -113,11 +120,11 @@ export async function POST(req: NextRequest) {
       currency: "eur",
       payment_method_types: ["card"],
       customer_email: body.customerEmail,
-      shipping_options: pricing.shipping > 0 ? [{
+      shipping_options: shippingTotal > 0 ? [{
         shipping_rate_data: {
           display_name: "Dostava",
           type: "fixed_amount",
-          fixed_amount: { amount: Math.round(pricing.shipping * 100), currency: "eur" },
+          fixed_amount: { amount: Math.round(shippingTotal * 100), currency: "eur" },
         },
       }] : [],
       metadata: { orderId: order.id, orderNumber },

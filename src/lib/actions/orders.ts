@@ -34,12 +34,22 @@ export async function createOrder(data: {
     if (p.stock != null && p.stock < item.quantity) throw new Error(`Proizvod "${p.name}" nema dovoljno zaliha.`);
   }
 
-  // Unified pricing
-  const isPickup = data.shippingMethodId === "osobno-preuzimanje";
+  // Unified pricing (line items only — no shipping)
+  const isPickup = data.shippingMethodId?.includes("osobno");
   const pricing = computePrices(
     data.items.map(i => ({ productId: i.productId, quantity: i.quantity, price: productMap.get(i.productId)!.price, salePrice: productMap.get(i.productId)!.salePrice, stock: productMap.get(i.productId)!.stock })),
-    isPickup
   );
+
+  // Get shipping from DB
+  let shippingTotal = data.shippingTotal;
+  if (!shippingTotal && data.shippingMethodId) {
+    const shipMethod = await db.shippingMethod.findUnique({ where: { id: data.shippingMethodId }, select: { price: true, freeAboveAmount: true } });
+    if (shipMethod) {
+      const isFree = shipMethod.freeAboveAmount != null && pricing.subtotal >= shipMethod.freeAboveAmount;
+      shippingTotal = isFree || isPickup ? 0 : shipMethod.price;
+    }
+  }
+  const total = pricing.subtotal + (shippingTotal || 0);
 
   // Order number
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
@@ -64,7 +74,7 @@ export async function createOrder(data: {
     data: {
       orderNumber, customerId: customer.id, customerEmail: data.customerEmail, customerName: data.customerName,
       customerPhone: data.customerPhone, shippingAddress, billingAddress: shippingAddress,
-      subtotal: pricing.subtotal, shippingTotal: pricing.shipping, taxTotal: pricing.tax, total: pricing.total,
+      subtotal: pricing.subtotal, shippingTotal: shippingTotal, taxTotal: pricing.tax, total: total,
       currency: "EUR", status: initialStatus, paymentStatus: "UNPAID", paymentMethod: data.paymentMethod,
       shippingMethod: shippingMethod?.name || data.shippingMethodId, note: data.note || null,
       glsPickupPointId: data.glsPickupPointId || null,
@@ -83,7 +93,7 @@ export async function createOrder(data: {
   // Payment
   await db.payment.create({
     data: { orderId: order.id, provider: "manual", method: data.paymentMethod,
-      status: "UNPAID", amount: pricing.total, currency: "EUR" },
+      status: "UNPAID", amount: total, currency: "EUR" },
   });
 
   // Decrease stock immediately for bank_transfer and cod
@@ -107,7 +117,7 @@ export async function createOrder(data: {
         subject: `Narudžba ${orderNumber} – potvrda`,
         html: customerEmail({
           orderNumber,
-          total: pricing.total,
+          total: total,
           paymentMethod: data.paymentMethod,
           shippingMethod: data.shippingMethodId,
           items: pricing.lineItems.map(li => ({
@@ -130,7 +140,7 @@ export async function createOrder(data: {
           subject: `Nova narudžba: ${orderNumber}`,
           html: adminNewOrderEmail({
             orderNumber,
-            total: pricing.total,
+            total: total,
             paymentMethod: data.paymentMethod,
             customerName: data.customerName,
             customerEmail: data.customerEmail,
