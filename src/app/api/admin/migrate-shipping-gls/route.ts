@@ -9,21 +9,24 @@ export async function POST() {
   if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    // Create GLS methods using Prisma upsert
-    const methods = [
-      { id: "gls-dostava-prod", name: "GLS dostava", price: 8, freeAboveAmount: 70, active: true, sortOrder: 1 },
-      { id: "gls-paketomat-prod", name: "GLS Paketomat", price: 8, freeAboveAmount: 70, active: true, sortOrder: 2 },
-    ];
+    const now = new Date();
+    // Update existing GLS methods by name
+    const home = await db.shippingMethod.findFirst({ where: { name: "GLS dostava" } });
+    const locker = await db.shippingMethod.findFirst({ where: { name: "GLS Paketomat" } });
 
-    for (const m of methods) {
-      await db.shippingMethod.upsert({
-        where: { id: m.id },
-        update: { name: m.name, price: m.price, freeAboveAmount: m.freeAboveAmount, active: m.active, sortOrder: m.sortOrder },
-        create: m,
-      });
+    if (home) {
+      await db.shippingMethod.update({ where: { id: home.id }, data: { price: 8, freeAboveAmount: 70, active: true } });
+    } else {
+      await db.shippingMethod.create({ data: { name: "GLS dostava", price: 8, freeAboveAmount: 70, active: true, sortOrder: 1, updatedAt: now } });
     }
 
-    return NextResponse.json({ ok: true, count: methods.length });
+    if (locker) {
+      await db.shippingMethod.update({ where: { id: locker.id }, data: { price: 8, freeAboveAmount: 70, active: true } });
+    } else {
+      await db.shippingMethod.create({ data: { name: "GLS Paketomat", price: 8, freeAboveAmount: 70, active: true, sortOrder: 2, updatedAt: now } });
+    }
+
+    return NextResponse.json({ ok: true });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
