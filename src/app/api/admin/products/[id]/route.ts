@@ -28,7 +28,7 @@ export async function DELETE(
     where: { id },
     data: { status: "ARCHIVED" },
   });
-  return NextResponse.json({ ok: true, archived: true });
+  return NextResponse.json({ ok: true, archived: true, message: "Proizvod je arhiviran." });
 }
 
 export async function GET(

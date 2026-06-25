@@ -57,8 +57,15 @@ export async function GET(request: NextRequest) {
   const search = url.searchParams.get("search") || "";
   const categoryId = url.searchParams.get("categoryId") || "";
   const brandId = url.searchParams.get("brandId") || "";
+  const status = url.searchParams.get("status") || "";
 
   const where: any = {};
+  // Default: exclude ARCHIVED, unless explicitly requested
+  if (status) {
+    where.status = status;
+  } else {
+    where.status = { not: "ARCHIVED" };
+  }
   if (search) {
     where.OR = [
       { name: { contains: search, mode: "insensitive" } },

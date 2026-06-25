@@ -140,6 +140,7 @@ export default function AdminProductsPage() {
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
+    setSuccess("");
     try {
       const params = new URLSearchParams({
         page: String(page),
@@ -185,17 +186,22 @@ export default function AdminProductsPage() {
 
   // --- Delete ---
   const handleDelete = async (id: string) => {
-    if (!confirm("Jeste li sigurni da želite obrisati proizvod?")) return;
+    if (!confirm("Jeste li sigurni da želite arhivirati proizvod?")) return;
     setIsDeleting((prev) => new Set(prev).add(id));
     try {
       const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Neuspješno brisanje proizvoda");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || errData.message || "Neuspješno arhiviranje proizvoda");
+      }
       setSelectedIds((prev) => {
         const next = new Set(prev);
         next.delete(id);
         return next;
       });
-      load();
+      setProducts(prev => prev.filter(p => p.id !== id));
+      setTotal(prev => prev - 1);
+      setSuccess("Proizvod je arhiviran.");
     } catch (e: unknown) {
       setError(
         e instanceof Error ? e.message : "Greška pri brisanju proizvoda"
@@ -319,7 +325,6 @@ export default function AdminProductsPage() {
       setLastOperationId(data.operationId || null);
       setSuccess(`Ažurirano ${data.updated}, preskočeno ${data.skipped}`);
       clearSelection();
-      load();
     } catch (e: unknown) {
       setError(
         e instanceof Error ? e.message : "Greška pri ažuriranju proizvoda"
@@ -347,7 +352,6 @@ export default function AdminProductsPage() {
 
       setSuccess(`Vraćeno ${data.restored} proizvoda na prethodne vrijednosti.`);
       setLastOperationId(null);
-      load();
     } catch (e: unknown) {
       setError(
         e instanceof Error ? e.message : "Greška pri vraćanju promjene"
@@ -741,10 +745,11 @@ export default function AdminProductsPage() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                className="text-red-600 hover:bg-red-50"
+                                className="text-amber-600 hover:bg-amber-50"
                                 onClick={() => handleDelete(p.id)}
                                 disabled={deleting}
                                 isLoading={deleting}
+                                title="Arhiviraj"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
