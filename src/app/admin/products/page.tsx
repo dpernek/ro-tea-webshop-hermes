@@ -822,24 +822,14 @@ export default function AdminProductsPage() {
                 <table className="w-full text-left text-sm">
                   <thead>
                     <tr className="border-b border-slate-200">
-                      <th className="py-2 pr-3 font-medium text-slate-600">
-                        Proizvod
-                      </th>
-                      <th className="py-2 px-3 font-medium text-slate-600 text-right">
-                        Trenutna cijena
-                      </th>
-                      <th className="py-2 px-3 font-medium text-slate-600 text-right">
-                        Stara akcijska
-                      </th>
-                      <th className="py-2 px-3 font-medium text-slate-600 text-right">
-                        Nova cijena
-                      </th>
-                      <th className="py-2 px-3 font-medium text-slate-600 text-right">
-                        Nova akcijska
-                      </th>
-                      <th className="py-2 pl-3 font-medium text-slate-600">
-                        Status
-                      </th>
+                      <th className="py-2 pr-3 font-medium text-slate-600">Proizvod</th>
+                      <th className="py-2 px-3 font-medium text-slate-600 text-right">Stara cijena</th>
+                      <th className="py-2 px-3 font-medium text-slate-600 text-right">Stara redovna</th>
+                      <th className="py-2 px-3 font-medium text-slate-600 text-right">Stara akcijska</th>
+                      <th className="py-2 px-3 font-medium text-slate-600 text-right">Nova cijena</th>
+                      <th className="py-2 px-3 font-medium text-slate-600 text-right">Nova redovna</th>
+                      <th className="py-2 px-3 font-medium text-slate-600 text-right">Nova akcijska</th>
+                      <th className="py-2 pl-3 font-medium text-slate-600">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
