@@ -9,24 +9,16 @@ export async function POST() {
   if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
+    // Delete duplicate GLS records (keep only the most recent ones with 8€/70€)
     const now = new Date();
-    // Update existing GLS methods by name
-    const home = await db.shippingMethod.findFirst({ where: { name: "GLS dostava" } });
-    const locker = await db.shippingMethod.findFirst({ where: { name: "GLS Paketomat" } });
 
-    if (home) {
-      await db.shippingMethod.update({ where: { id: home.id }, data: { price: 8, freeAboveAmount: 70, active: true } });
-    } else {
-      await db.shippingMethod.create({ data: { name: "GLS dostava", price: 8, freeAboveAmount: 70, active: true, sortOrder: 1, updatedAt: now } });
-    }
+    // Delete ALL old GLS dostava and GLS Paketomat entries, then recreate
+    await (db as any).$executeRawUnsafe(`DELETE FROM "ShippingMethod" WHERE name IN ('GLS dostava', 'GLS Paketomat')`);
 
-    if (locker) {
-      await db.shippingMethod.update({ where: { id: locker.id }, data: { price: 8, freeAboveAmount: 70, active: true } });
-    } else {
-      await db.shippingMethod.create({ data: { name: "GLS Paketomat", price: 8, freeAboveAmount: 70, active: true, sortOrder: 2, updatedAt: now } });
-    }
+    await db.shippingMethod.create({ data: { name: "GLS dostava", price: 8, freeAboveAmount: 70, active: true, sortOrder: 1, updatedAt: now } });
+    await db.shippingMethod.create({ data: { name: "GLS Paketomat", price: 8, freeAboveAmount: 70, active: true, sortOrder: 2, updatedAt: now } });
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, msg: "GLS methods reset to 8€/70€" });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
