@@ -1,77 +1,52 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-interface GlsWidgetProps {
-  country?: string;
-  language?: string;
-  filterType?: "parcel-locker" | "parcel-shop";
-  onSelect?: (point: {
-    id: string;
-    name: string;
-    contact: { countryCode: string; postalCode: string; city: string; address: string };
-  }) => void;
-  height?: string;
-}
-
 export default function GlsDeliveryMap({
   country = "hr",
   language = "hr",
-  filterType = "parcel-locker",
   onSelect,
   height = "500px",
-}: GlsWidgetProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [ready, setReady] = useState(false);
+}: {
+  country?: string;
+  language?: string;
+  onSelect?: (point: any) => void;
+  height?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container || ready) return;
+    const container = ref.current;
+    if (!container || loaded) return;
 
-    // Load GLS widget script
+    // Load GLS script
     const script = document.createElement("script");
     script.type = "module";
     script.src = "https://map.gls-hungary.com/widget/gls-dpm.js";
+    
     script.onload = () => {
-      // Create the custom element after script loads
-      const el = document.createElement("gls-dpm");
-      el.setAttribute("country", country);
-      el.setAttribute("language", language);
-      el.setAttribute("filter-type", filterType);
-      el.style.width = "100%";
-      el.style.height = "100%";
-      el.style.display = "block";
-
-      // Listen for selection changes
-      if (onSelect) {
-        el.addEventListener("change", ((e: CustomEvent) => {
-          if (e.detail) onSelect(e.detail);
-        }) as EventListener);
-      }
-
-      container.innerHTML = "";
-      container.appendChild(el);
-      setReady(true);
+      requestAnimationFrame(() => {
+        const el = container.querySelector("gls-dpm");
+        if (el && onSelect) {
+          el.addEventListener("change", ((e: CustomEvent) => {
+            e.detail && onSelect(e.detail);
+          }) as EventListener);
+        }
+        setLoaded(true);
+      });
     };
-    script.onerror = () => {
-      setReady(true); // Show fallback message
-    };
+    
+    script.onerror = () => setLoaded(true);
     document.head.appendChild(script);
-
-    return () => {
-      // Cleanup
-    };
-  }, [country, language, filterType]);
+  }, []);
 
   return (
-    <div
-      ref={containerRef}
-      style={{ height, width: "100%", background: "#f8fafc" }}
-    >
-      {!ready && (
-        <div className="flex h-full items-center justify-center text-sm text-slate-400">
-          Učitavanje GLS karte...
-        </div>
-      )}
+    <div ref={ref} style={{ height, width: "100%" }}>
+      <div
+        dangerouslySetInnerHTML={{
+          __html: `<gls-dpm country="${country}" language="${language}" filter-type="parcel-locker" style="width:100%;height:${height};display:block"></gls-dpm>`,
+        }}
+      />
     </div>
   );
 }

@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/Button";
 import { useCartStore } from "@/store/cartStore";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/lib/actions/orders";
+import dynamic from "next/dynamic";
+
+const GlsDeliveryMap = dynamic(() => import("./GlsDeliveryMap"), { ssr: false });
 import { CreditCard, Building, Banknote } from "lucide-react";
 
 interface FormErrors {
@@ -427,12 +430,27 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
           <div className="mb-3 flex items-center gap-3">
             <p className="text-sm font-semibold text-slate-900">📍 Odaberite GLS Paketomat</p>
           </div>
-          <iframe
-              src="https://map.gls-hungary.com/widget/example/widget.html?country=hr&language=hr&filter-type=parcel-locker"
-              className="w-full rounded-lg border border-[#0055a8]/20"
-              style={{ height: "500px", border: "none" }}
-              title="GLS Paketomat karta"
+          <div className="rounded-lg border border-[#0055a8]/20 overflow-hidden">
+            <GlsDeliveryMap
+              country="hr"
+              language="hr"
+              height="500px"
+              onSelect={(point: any) => {
+                if (point) {
+                  const addr = `${point.contact?.address || ""}, ${point.contact?.postalCode || ""} ${point.contact?.city || ""}`;
+                  setFormData((prev) => ({
+                    ...prev,
+                    glsPickupPointId: point.id,
+                    glsPickupPointName: point.name,
+                    glsPickupPointAddress: addr,
+                  }));
+                  if (errors.glsPickupPoint) {
+                    setErrors((prev) => ({ ...prev, glsPickupPoint: "" }));
+                  }
+                }
+              }}
             />
+          </div>
         </div>
       )}
 
