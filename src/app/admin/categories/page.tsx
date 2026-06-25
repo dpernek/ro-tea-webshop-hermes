@@ -79,7 +79,8 @@ export default function AdminCategoriesPage() {
       const res = await fetch(`/api/admin/categories/${id}`, { method: "DELETE" });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        setSaveMsg({ type: "error", text: d.error || "Greška pri brisanju." });
+        const msg = d.error || d.errors?.category || Object.values(d.errors||{})[0] || "Greška pri brisanju.";
+        setSaveMsg({ type: "error", text: msg });
         return;
       }
       await load();

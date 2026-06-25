@@ -22,7 +22,7 @@ function Skeleton() {
   );
 }
 
-const emptyForm = { name: "", description: "", website: "" };
+const emptyForm = { name: "", description: "" };
 
 export default function AdminBrandsPage() {
   const [items, setItems] = useState<any[]>([]);
@@ -49,7 +49,7 @@ export default function AdminBrandsPage() {
   useEffect(() => { load(); }, []);
 
   const startCreate = () => { setF({ ...emptyForm }); setErrors({}); setSaveMsg(null); setMode("create"); setEditId(null); };
-  const startEdit = (item: any) => { setF({ name: item.name||"", description: item.description||"", website: item.website||"" }); setErrors({}); setSaveMsg(null); setEditId(item.id); setMode("edit"); };
+  const startEdit = (item: any) => { setF({ name: item.name||"", description: item.description||"" }); setErrors({}); setSaveMsg(null); setEditId(item.id); setMode("edit"); };
   const cancel = () => { setMode("closed"); setEditId(null); setErrors({}); setSaveMsg(null); };
 
   const save = async () => {
@@ -110,7 +110,6 @@ export default function AdminBrandsPage() {
               {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
             </div>
             <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Opis" value={f.description} onChange={e => setF({...f,description:e.target.value})} />
-            <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Web stranica" value={f.website} onChange={e => setF({...f,website:e.target.value})} />
           </div>
           <div className="mt-4 flex gap-2">
             <Button size="sm" onClick={save} disabled={saving}>{saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Spremi</Button>
@@ -125,15 +124,14 @@ export default function AdminBrandsPage() {
         ) : (
           <table className="w-full text-left text-sm">
             <thead className="border-b border-slate-200 bg-slate-50">
-              <tr><th className="px-4 py-3 font-medium text-slate-600">Naziv</th><th className="px-4 py-3 font-medium text-slate-600">Opis</th><th className="px-4 py-3 font-medium text-slate-600">Web</th><th className="px-4 py-3 text-right font-medium text-slate-600">Akcije</th></tr>
+              <tr><th className="px-4 py-3 font-medium text-slate-600">Naziv</th><th className="px-4 py-3 font-medium text-slate-600">Opis</th><th className="px-4 py-3 text-right font-medium text-slate-600">Akcije</th></tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {items.map(i => (
                 <tr key={i.id} className={mode === "edit" && editId === i.id ? "bg-blue-50" : ""}>
                   <td className="px-4 py-3 font-medium">{i.name}</td>
                   <td className="px-4 py-3 text-slate-500">{i.description || "—"}</td>
-                  <td className="px-4 py-3 text-slate-500">{i.website || "—"}</td>
-                  <td className="px-4 py-3 text-right">
+                                    <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-1">
                       <Button size="sm" variant="ghost" onClick={() => startEdit(i)} disabled={mode === "edit"}><Pencil className="h-4 w-4" /></Button>
                       <Button size="sm" variant="ghost" onClick={() => remove(i.id)} disabled={deleting === i.id}>{deleting === i.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-red-500" />}</Button>
