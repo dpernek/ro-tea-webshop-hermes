@@ -33,7 +33,12 @@ function buildFilterWhere(filters?: { search?: string; categoryId?: string; bran
 }
 
 function validateValue(action: string, value: unknown): string | null {
-  if (["discountPercent", "increasePercent", "decreasePercent"].includes(action)) {
+  if (action === "discountPercent") {
+    const n = Number(value);
+    if (isNaN(n) || n < 0.01 || n > 95) return "Popust mora biti između 0.01 i 95";
+  } else if (action === "increasePercent" || action === "decreasePercent") {
+    const n = Number(value);
+    if (isNaN(n) || n < 0.01 || n > 100) return "Postotak mora biti između 0.01 i 100";
     const n = Number(value);
     if (isNaN(n) || n < 0.01 || n > 100) return "Postotak mora biti između 0.01 i 100";
   } else if (action === "setSalePrice") {

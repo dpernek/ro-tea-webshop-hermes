@@ -302,6 +302,7 @@ export default function AdminProductsPage() {
         },
         action: bulkAction,
         value: bulkAction === "removeSale" ? null : Number(bulkValue),
+        saleHandling: saleHandling as "keep" | "clear" | "recalculateSameDiscount",
         preview: false,
       };
 
@@ -837,6 +838,11 @@ export default function AdminProductsPage() {
                           {item.oldPrice.toFixed(2)} €
                         </td>
                         <td className="py-2 px-3 text-right">
+                          {item.oldRegularPrice != null
+                            ? `${item.oldRegularPrice.toFixed(2)} €`
+                            : "—"}
+                        </td>
+                        <td className="py-2 px-3 text-right">
                           {item.oldSalePrice != null
                             ? `${item.oldSalePrice.toFixed(2)} €`
                             : "—"}
@@ -851,6 +857,11 @@ export default function AdminProductsPage() {
                               {item.newPrice.toFixed(2)} €
                             </span>
                           )}
+                        </td>
+                        <td className="py-2 px-3 text-right">
+                          {item.newRegularPrice != null
+                            ? `${item.newRegularPrice.toFixed(2)} €`
+                            : "—"}
                         </td>
                         <td className="py-2 px-3 text-right">
                           {item.newSalePrice != null ? (
