@@ -49,7 +49,7 @@ export default function CheckoutPage() {
             <CheckoutForm onShippingChange={setShippingOverride} />
           </AnimatedSection>
           <AnimatedSection delay={0.2}>
-            <CartSummary showCheckoutButton={false} shippingOverride={shippingOverride} />
+            <CartSummary showCheckoutButton={false} shippingPrice={shippingOverride ?? undefined} />
           </AnimatedSection>
         </div>
       </div>
