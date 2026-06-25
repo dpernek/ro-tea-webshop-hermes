@@ -1,22 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { Card } from "@/components/ui/Card"; import { Button } from "@/components/ui/Button";
 import { Plus, Pencil, Trash2, Save, X, Loader2, AlertCircle } from "lucide-react";
-import { categorySchema, formatZodErrors } from "@/lib/validations";
+
+type Mode = "closed" | "create" | "edit";
 
 function Skeleton() {
   return (
     <div className="animate-pulse">
-      {[1, 2, 3, 4, 5].map((i) => (
+      {[1, 2, 3, 4].map((i) => (
         <div key={i} className="flex items-center gap-4 border-b border-slate-100 px-4 py-3">
-          <div className="h-4 w-32 rounded bg-slate-200" />
           <div className="h-4 w-24 rounded bg-slate-200" />
           <div className="h-4 w-8 rounded bg-slate-200" />
+          <div className="h-4 w-16 rounded bg-slate-200" />
           <div className="ml-auto flex gap-2">
-            <div className="h-8 w-8 rounded bg-slate-200" />
-            <div className="h-8 w-8 rounded bg-slate-200" />
+            <div className="h-8 w-8 rounded bg-slate-200" /><div className="h-8 w-8 rounded bg-slate-200" />
           </div>
         </div>
       ))}
@@ -24,70 +23,53 @@ function Skeleton() {
   );
 }
 
+const emptyForm = { name: "", description: "", sortOrder: 0 };
+
 export default function AdminCategoriesPage() {
-  const [categories, setCategories] = useState<any[]>([]);
+  const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [mode, setMode] = useState<Mode>("closed");
   const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", description: "", sortOrder: 0 });
+  const [f, setF] = useState({ ...emptyForm });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [saveMsg, setSaveMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const load = async () => {
-    setLoading(true);
-    setError("");
+    setLoading(true); setError("");
     try {
       const res = await fetch("/api/admin/categories");
-      if (!res.ok) throw new Error("Greška pri učitavanju kategorija.");
-      setCategories(await res.json());
-    } catch (e: any) {
-      setError(e.message || "Greška pri učitavanju kategorija.");
-    } finally {
-      setLoading(false);
-    }
+      if (!res.ok) throw new Error("Greška pri učitavanju.");
+      setItems(await res.json());
+    } catch (e: any) { setError(e.message); }
+    finally { setLoading(false); }
   };
 
   useEffect(() => { load(); }, []);
 
+  const startCreate = () => { setF({ ...emptyForm }); setErrors({}); setSaveMsg(null); setMode("create"); setEditId(null); };
+  const startEdit = (item: any) => { setF({ name: item.name||"", description: item.description||"", sortOrder: item.sortOrder??0 }); setErrors({}); setSaveMsg(null); setEditId(item.id); setMode("edit"); };
+  const cancel = () => { setMode("closed"); setEditId(null); setErrors({}); setSaveMsg(null); };
+
   const save = async () => {
-    setErrors({});
-    setSaveMsg(null);
-    const result = categorySchema.safeParse(form);
-    if (!result.success) {
-      setErrors(formatZodErrors(result.error));
-      return;
-    }
-
-    setSaving(true);
+    const method = mode === "create" ? "POST" : "PATCH";
+    const url = mode === "create" ? "/api/admin/categories" : `/api/admin/categories/${editId}`;
+    setSaving(true); setSaveMsg(null);
     try {
-      const res = editId
-        ? await fetch(`/api/admin/categories/${editId}`, {
-            method: "PATCH",
-            body: JSON.stringify(result.data),
-            headers: { "Content-Type": "application/json" },
-          })
-        : await fetch("/api/admin/categories", {
-            method: "POST",
-            body: JSON.stringify(result.data),
-            headers: { "Content-Type": "application/json" },
-          });
-
+      const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(f) });
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error((err as any).message || "Greška pri spremanju kategorije.");
+        const d = await res.json().catch(() => ({}));
+        if (d.errors && typeof d.errors === "object") { setErrors(d.errors); setSaveMsg({ type: "error", text: "Ispravite označena polja." }); }
+        else setSaveMsg({ type: "error", text: d.error || "Greška pri spremanju." });
+        return;
       }
-
-      setSaveMsg({ type: "success", text: editId ? "Kategorija ažurirana." : "Kategorija dodana." });
-      setEditId(null);
-      setForm({ name: "", description: "", sortOrder: 0 });
-      load();
-    } catch (e: any) {
-      setSaveMsg({ type: "error", text: e.message || "Greška pri spremanju." });
-    } finally {
-      setSaving(false);
-    }
+      setSaveMsg({ type: "success", text: mode === "create" ? "Kategorija dodana." : "Kategorija ažurirana." });
+      await load();
+      setTimeout(() => cancel(), 500);
+    } catch { setSaveMsg({ type: "error", text: "Greška pri spremanju." }); }
+    finally { setSaving(false); }
   };
 
   const remove = async (id: string) => {
@@ -95,98 +77,74 @@ export default function AdminCategoriesPage() {
     setDeleting(id);
     try {
       const res = await fetch(`/api/admin/categories/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Greška pri brisanju.");
-      load();
-    } catch (e: any) {
-      setSaveMsg({ type: "error", text: e.message || "Greška pri brisanju." });
-    } finally {
-      setDeleting(null);
-    }
-  };
-
-  const startEdit = (c: any) => {
-    setEditId(c.id);
-    setForm({ name: c.name, description: c.description || "", sortOrder: c.sortOrder || 0 });
-    setErrors({});
-    setSaveMsg(null);
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        setSaveMsg({ type: "error", text: d.error || "Greška pri brisanju." });
+        return;
+      }
+      await load();
+      setSaveMsg({ type: "success", text: "Kategorija obrisana." });
+    } catch { setSaveMsg({ type: "error", text: "Greška pri brisanju." }); }
+    finally { setDeleting(null); }
   };
 
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Kategorije</h1>
-        <Button onClick={() => { setEditId(null); setForm({ name: "", description: "", sortOrder: 0 }); setErrors({}); setSaveMsg(null); }}>
-          <Plus className="mr-2 h-4 w-4" /> Nova kategorija
-        </Button>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-semibold text-slate-900">Kategorije</h2>
+        {mode === "closed" && <Button size="sm" onClick={startCreate}><Plus className="mr-1 h-4 w-4" /> Nova kategorija</Button>}
       </div>
 
+      {error && <Card className="flex items-center gap-2 border-red-200 bg-red-50 p-4 text-sm text-red-700"><AlertCircle className="h-4 w-4" />{error}</Card>}
       {saveMsg && (
-        <div className={`mb-4 flex items-center gap-2 rounded-lg px-4 py-3 text-sm ${saveMsg.type === "success" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"}`}>
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+        <Card className={`flex items-center gap-2 p-4 text-sm ${saveMsg.type === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-red-200 bg-red-50 text-red-700"}`}>
           {saveMsg.text}
-          <button onClick={() => setSaveMsg(null)} className="ml-auto text-current opacity-60 hover:opacity-100"><X className="h-4 w-4" /></button>
-        </div>
+        </Card>
       )}
 
-      {editId !== null && (
-        <Card className="mb-6 p-4">
-          <div className="flex flex-col gap-3">
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <input className={`w-full rounded-lg border px-3 py-2 text-sm ${errors.name ? "border-red-400" : "border-slate-200"}`} placeholder="Naziv *" value={form.name} onChange={e => { setForm({ ...form, name: e.target.value }); if (errors.name) setErrors({ ...errors, name: "" }); }} />
-                {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
-              </div>
-              <div>
-                <input className={`w-20 rounded-lg border px-3 py-2 text-sm ${errors.sortOrder ? "border-red-400" : "border-slate-200"}`} placeholder="Red." type="number" value={form.sortOrder} onChange={e => { setForm({ ...form, sortOrder: parseInt(e.target.value) || 0 }); if (errors.sortOrder) setErrors({ ...errors, sortOrder: "" }); }} />
-                {errors.sortOrder && <p className="mt-1 text-xs text-red-600">{errors.sortOrder}</p>}
-              </div>
-              <Button size="sm" onClick={save} disabled={saving}>
-                {saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />}
-                {saving ? "Spremanje..." : "Spremi"}
-              </Button>
-              <Button size="sm" variant="ghost" onClick={() => { setEditId(null); setErrors({}); }} disabled={saving}><X className="h-4 w-4" /></Button>
+      {mode !== "closed" && (
+        <Card className="p-6">
+          <h3 className="mb-4 font-semibold text-slate-900">{mode === "create" ? "Nova kategorija" : "Uredi kategoriju"}</h3>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <input className={`w-full rounded-lg border px-3 py-2 text-sm ${errors.name ? "border-red-400" : "border-slate-200"}`} placeholder="Naziv" value={f.name} onChange={e => { setF({...f,name:e.target.value}); setErrors(prev => ({...prev,name:""})); }} />
+              {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
             </div>
+            <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Opis" value={f.description} onChange={e => setF({...f,description:e.target.value})} />
+            <input className="w-24 rounded-lg border border-slate-200 px-3 py-2 text-sm" type="number" placeholder="Sort" value={f.sortOrder} onChange={e => setF({...f,sortOrder:parseInt(e.target.value)||0})} />
+          </div>
+          <div className="mt-4 flex gap-2">
+            <Button size="sm" onClick={save} disabled={saving}>{saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Spremi</Button>
+            <Button size="sm" variant="ghost" onClick={cancel}><X className="mr-1 h-4 w-4" /> Odustani</Button>
           </div>
         </Card>
       )}
 
       <Card>
-        <div className="overflow-x-auto">
-          {error ? (
-            <div className="flex items-center gap-2 px-4 py-8 text-center text-red-600">
-              <AlertCircle className="h-5 w-5 flex-shrink-0" />
-              <p>{error}</p>
-            </div>
-          ) : loading ? (
-            <Skeleton />
-          ) : (
-            <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-200 bg-slate-50">
-                <tr>
-                  <th className="px-4 py-3 font-medium text-slate-600">Naziv</th>
-                  <th className="px-4 py-3 font-medium text-slate-600">Slug</th>
-                  <th className="px-4 py-3 font-medium text-slate-600">Red.</th>
-                  <th className="px-4 py-3 text-right font-medium text-slate-600">Akcije</th>
+        {loading ? <Skeleton /> : items.length === 0 ? (
+          <p className="px-4 py-12 text-center text-sm text-slate-400">Nema kategorija.</p>
+        ) : (
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-slate-200 bg-slate-50">
+              <tr><th className="px-4 py-3 font-medium text-slate-600">Naziv</th><th className="px-4 py-3 font-medium text-slate-600">Opis</th><th className="px-4 py-3 font-medium text-slate-600">Sort</th><th className="px-4 py-3 text-right font-medium text-slate-600">Akcije</th></tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {items.map(i => (
+                <tr key={i.id} className={mode === "edit" && editId === i.id ? "bg-blue-50" : ""}>
+                  <td className="px-4 py-3 font-medium">{i.name}</td>
+                  <td className="px-4 py-3 text-slate-500">{i.description || "—"}</td>
+                  <td className="px-4 py-3">{i.sortOrder}</td>
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex justify-end gap-1">
+                      <Button size="sm" variant="ghost" onClick={() => startEdit(i)} disabled={mode === "edit"}><Pencil className="h-4 w-4" /></Button>
+                      <Button size="sm" variant="ghost" onClick={() => remove(i.id)} disabled={deleting === i.id}>{deleting === i.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4 text-red-500" />}</Button>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {categories.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 font-medium text-slate-900">{c.name}</td>
-                    <td className="px-4 py-3 text-slate-500">{c.slug}</td>
-                    <td className="px-4 py-3 text-slate-500">{c.sortOrder}</td>
-                    <td className="px-4 py-3 text-right">
-                      <Button size="sm" variant="ghost" onClick={() => startEdit(c)} disabled={deleting === c.id}><Pencil className="h-4 w-4" /></Button>
-                      <Button size="sm" variant="ghost" className="text-red-600" onClick={() => remove(c.id)} disabled={deleting === c.id}>
-                        {deleting === c.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+              ))}
+            </tbody>
+          </table>
+        )}
       </Card>
     </div>
   );
