@@ -39,8 +39,6 @@ function validateValue(action: string, value: unknown): string | null {
   } else if (action === "increasePercent" || action === "decreasePercent") {
     const n = Number(value);
     if (isNaN(n) || n < 0.01 || n > 100) return "Postotak mora biti između 0.01 i 100";
-    const n = Number(value);
-    if (isNaN(n) || n < 0.01 || n > 100) return "Postotak mora biti između 0.01 i 100";
   } else if (action === "setSalePrice") {
     if (Number(value) < 0) return "Akcijska cijena mora biti pozitivna";
   } else if (action === "status" && !["ACTIVE","DRAFT","ARCHIVED"].includes(value as string)) {
