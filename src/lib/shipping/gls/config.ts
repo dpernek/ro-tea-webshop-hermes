@@ -65,7 +65,7 @@ export function getGlsConfig(): GlsConfig {
   const rawPassword = getEnv("GLS_PASSWORD");
   const passwordHash = createHash("sha512")
     .update(rawPassword, "utf8")
-    .digest("hex").toUpperCase();
+    .digest("base64");
 
   const clientNumber = Number(getEnv("GLS_CLIENT_NUMBER"));
 
