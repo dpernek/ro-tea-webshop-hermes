@@ -1,6 +1,8 @@
 "use client";
 import Script from "next/script";
 
+"use client";
+
 declare global {
   namespace JSX {
     interface IntrinsicElements {
@@ -15,7 +17,6 @@ declare global {
     }
   }
 }
-"use client";
 import Script from "next/script";
 
 interface Props {
