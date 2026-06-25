@@ -161,7 +161,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     if (formData.shippingMethod === glsPaketomatId && !glsFetched) {
       fetchDeliveryPoints();
     }
-  }, [formData.shippingMethod, formData.city, formData.postalCode, fetchDeliveryPoints, glsFetched]);
+  }, [formData.shippingMethod, formData.city, formData.postalCode, fetchDeliveryPoints, glsFetched, glsPaketomatId]);
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
