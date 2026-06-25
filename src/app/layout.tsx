@@ -55,8 +55,6 @@ export default function RootLayout({
           href="/images/hero/hero-welder-1920w.webp"
           fetchPriority="high"
         />
-        {/* GLS ParcelShop map widget — loads custom <gls-dpm> element */}
-        <script type="module" src="https://map.gls-hungary.com/widget/gls-dpm.js" />
       </head>
       <body className="flex min-h-full flex-col font-sans">
         <ConditionalPublicLayout>{children}</ConditionalPublicLayout>
