@@ -63,10 +63,10 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   const [glsLoading, setGlsLoading] = useState(false);
   const [glsError, setGlsError] = useState("");
   const [glsFetched, setGlsFetched] = useState(false);
+  const [shippingMethods, setShippingMethods] = useState<Array<{id:string;name:string;price:number;freeAboveAmount?:number}>>([]);
   // Dynamic GLS method IDs (detected from fetched shipping methods)
   const glsHomeId = shippingMethods.find(m => m.name.includes("GLS dostava") && !m.name.includes("Paketomat"))?.id || "";
   const glsPaketomatId = shippingMethods.find(m => m.name.includes("GLS Paketomat"))?.id || "";
-  const [shippingMethods, setShippingMethods] = useState<Array<{id:string;name:string;price:number;freeAboveAmount?:number;provider?:string}>>([]);
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
