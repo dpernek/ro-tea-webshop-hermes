@@ -1,52 +1,38 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import Script from "next/script";
 
-export default function GlsDeliveryMap({
-  country = "hr",
-  language = "hr",
-  onSelect,
-  height = "500px",
-}: {
-  country?: string;
-  language?: string;
+interface Props {
   onSelect?: (point: any) => void;
   height?: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [loaded, setLoaded] = useState(false);
+}
 
-  useEffect(() => {
-    const container = ref.current;
-    if (!container || loaded) return;
-
-    // Load GLS script
-    const script = document.createElement("script");
-    script.type = "module";
-    script.src = "https://map.gls-hungary.com/widget/gls-dpm.js";
-    
-    script.onload = () => {
-      requestAnimationFrame(() => {
-        const el = container.querySelector("gls-dpm");
-        if (el && onSelect) {
-          el.addEventListener("change", ((e: CustomEvent) => {
-            e.detail && onSelect(e.detail);
-          }) as EventListener);
-        }
-        setLoaded(true);
-      });
-    };
-    
-    script.onerror = () => setLoaded(true);
-    document.head.appendChild(script);
-  }, []);
-
+export default function GlsDeliveryMap({ onSelect, height = "500px" }: Props) {
   return (
-    <div ref={ref} style={{ height, width: "100%" }}>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: `<gls-dpm country="${country}" language="${language}" filter-type="parcel-locker" style="width:100%;height:${height};display:block"></gls-dpm>`,
-        }}
+    <>
+      <Script
+        src="https://map.gls-hungary.com/widget/gls-dpm.js"
+        type="module"
+        strategy="afterInteractive"
       />
-    </div>
+      <div style={{ height, width: "100%" }}>
+        <gls-dpm
+          country="hr"
+          language="hr"
+          filter-type="parcel-locker"
+          ref={(el: any) => {
+            if (el && onSelect) {
+              el.addEventListener("change", (e: CustomEvent) => {
+                if (e.detail) onSelect(e.detail);
+              });
+            }
+          }}
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "block",
+          }}
+        />
+      </div>
+    </>
   );
 }
