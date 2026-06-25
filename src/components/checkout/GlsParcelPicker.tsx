@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -13,22 +13,66 @@ const icon = new L.Icon({
   iconSize: [25, 41], iconAnchor: [12, 41],
 });
 
-interface Point {
+interface GPoint {
   id: string; name: string; street: string; city: string; postalCode: string;
-  address: string; lat?: number; lng?: number;
+  address: string; lat?: number; lng?: number; distanceMeters?: number;
 }
 
 interface Props {
-  onSelect: (point: {
-    id: string; name: string;
-    contact: { address: string; city: string; postalCode: string; countryCode: string };
-  }) => void;
+  onSelect: (point: { id: string; name: string; contact: { address: string; city: string; postalCode: string; countryCode: string } }) => void;
   selectedName?: string;
   city?: string;
   postalCode?: string;
+  customerAddress?: string;
 }
 
-function FitBounds({ points }: { points: Point[] }) {
+// ── Haversine ──
+function haversineM(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371000;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function formatDist(m: number): string {
+  if (m < 1000) return `${Math.round(m)} m`;
+  return `${(m / 1000).toFixed(1)} km`;
+}
+
+// ── Croatian stopwords ──
+const STOPWORDS = new Set([
+  "ulica", "trg", "avenija", "aleja", "put", "prolaz", "prilaz",
+  "bb", "grada", "setaliste", "šetalište", "obala", "pristaniste", "pristanište",
+]);
+
+function norm(s: string) {
+  return s.toLowerCase()
+    .replace(/č/g, "c").replace(/ć/g, "c").replace(/š/g, "s")
+    .replace(/đ/g, "d").replace(/ž/g, "z");
+}
+
+function meaningfulTokens(s: string): string[] {
+  return norm(s).split(/[\s,.-]+/).filter(t => t.length > 1 && !STOPWORDS.has(t));
+}
+
+function textScore(point: GPoint, tokens: string[]): number {
+  let score = 0;
+  const haystack = norm(`${point.street} ${point.city} ${point.postalCode} ${point.name}`);
+  for (const t of tokens) {
+    if (point.postalCode === t) score += 50;
+    else if (norm(point.city).includes(t)) score += 20;
+    else if (norm(point.street).includes(t)) score += 10;
+    else if (norm(point.name).includes(t)) score += 5;
+  }
+  return score;
+}
+
+// ── FitBounds ──
+function FitBounds({ points }: { points: GPoint[] }) {
   const map = useMap();
   useEffect(() => {
     const valid = points.filter(p => p.lat && p.lng);
@@ -42,66 +86,58 @@ function FitBounds({ points }: { points: Point[] }) {
   return null;
 }
 
-function norm(s: string) {
-  return s.toLowerCase()
-    .replace(/č/g, "c").replace(/ć/g, "c").replace(/š/g, "s")
-    .replace(/đ/g, "d").replace(/ž/g, "z");
-}
-
-function tokenize(s: string): string[] {
-  return norm(s).split(/[\s,.-]+/).filter(t => t.length > 1);
-}
-
-function rankPoints(points: Point[], search: string): Point[] {
-  if (!search) return points;
-  const tokens = tokenize(search);
-  if (!tokens.length) return points;
-
-  const scored = points.map(p => {
-    let score = 0;
-    const nameN = norm(p.name);
-    const streetN = norm(p.street);
-    const cityN = norm(p.city);
-    const zipN = p.postalCode;
-
-    for (const t of tokens) {
-      if (zipN === t) score += 100;
-      if (zipN.includes(t)) score += 50;
-      if (cityN.includes(t)) score += 30;
-      if (streetN.includes(t)) score += 20;
-      if (nameN.includes(t)) score += 10;
-    }
-    return { point: p, score };
-  });
-
-  return scored
-    .sort((a, b) => b.score - a.score)
-    .map(s => s.point);
-}
-
-export default function GlsParcelPicker({ onSelect, selectedName, city, postalCode }: Props) {
-  const [points, setPoints] = useState<Point[]>([]);
+export default function GlsParcelPicker({ onSelect, selectedName, city, postalCode, customerAddress }: Props) {
+  const [points, setPoints] = useState<GPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<Point | null>(null);
+  const [selected, setSelected] = useState<GPoint | null>(null);
+  const [geoLat, setGeoLat] = useState<number | null>(null);
+  const [geoLng, setGeoLng] = useState<number | null>(null);
+  const [geoDisplay, setGeoDisplay] = useState("");
+  const [geoError, setGeoError] = useState(false);
 
+  // Auto-open
   useEffect(() => {
     if (!loading && !selectedName) setOpen(true);
   }, [loading, selectedName]);
 
+  // Fetch GLS points
   useEffect(() => {
     fetch("/api/shipping/gls/delivery-points")
       .then(r => r.json())
-      .then(d => { setPoints(d.points || []); setLoading(false); })
-      .catch(() => setLoading(false));
+      .then(d => setPoints(d.points || []))
+      .finally(() => setLoading(false));
   }, []);
 
-  // 1) Filter by postalCode (exact) → city (contains) → all
+  // Geocode customer address
+  useEffect(() => {
+    if (!open || !customerAddress) return;
+    const full = [customerAddress, postalCode, city, "HR"].filter(Boolean).join(", ");
+    setGeoError(false);
+
+    fetch("/api/shipping/geocode", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address: customerAddress, city, postalCode, countryCode: "HR" }),
+    })
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          setGeoLat(d.lat);
+          setGeoLng(d.lng);
+          setGeoDisplay(d.displayName);
+        } else {
+          setGeoError(true);
+        }
+      })
+      .catch(() => setGeoError(true));
+  }, [open, customerAddress, city, postalCode]);
+
+  // 1) Filter by postalCode → city → all
   const localPoints = useMemo(() => {
     const zip = (postalCode || "").trim();
     const c = norm(city || "");
-
     if (zip) {
       const byZip = points.filter(p => p.postalCode === zip);
       if (byZip.length) return byZip;
@@ -113,27 +149,36 @@ export default function GlsParcelPicker({ onSelect, selectedName, city, postalCo
     return points;
   }, [points, postalCode, city]);
 
-  // 2) Search: rank by token match
-  const displayPoints = useMemo(() => {
-    if (!search) return localPoints;
-    return rankPoints(localPoints, search);
-  }, [localPoints, search]);
+  // 2) Attach distances if geocoded
+  const withDist = useMemo(() => {
+    if (geoLat == null || geoLng == null) return localPoints;
+    return localPoints.map(p => ({
+      ...p,
+      distanceMeters: p.lat && p.lng ? haversineM(geoLat, geoLng, p.lat, p.lng) : undefined,
+    }));
+  }, [localPoints, geoLat, geoLng]);
 
-  const isExactMatch = useMemo(() => {
-    if (!search) return true;
-    const tokens = tokenize(search);
-    return displayPoints.some(p => {
-      const haystack = norm(`${p.street} ${p.city} ${p.postalCode} ${p.name}`);
-      return tokens.every(t => haystack.includes(t));
+  // 3) Sort: distance first, text score second
+  const sorted = useMemo(() => {
+    if (!search) {
+      // No search — sort by distance if available, else keep original
+      return [...withDist].sort((a, b) => (a.distanceMeters ?? Infinity) - (b.distanceMeters ?? Infinity));
+    }
+    const tokens = meaningfulTokens(search);
+    return [...withDist].sort((a, b) => {
+      const aDist = a.distanceMeters ?? Infinity;
+      const bDist = b.distanceMeters ?? Infinity;
+      // If distances differ significantly (>200m), distance wins
+      if (Math.abs(aDist - bDist) > 200) return aDist - bDist;
+      // Otherwise use text score
+      return textScore(b, tokens) - textScore(a, tokens);
     });
-  }, [search, displayPoints]);
+  }, [withDist, search]);
 
-  const handleSelect = (p: Point) => {
+  const handleSelect = (p: GPoint) => {
     onSelect({
       id: p.id, name: p.name,
-      contact: {
-        address: p.street, city: p.city, postalCode: p.postalCode, countryCode: "HR",
-      },
+      contact: { address: p.street, city: p.city, postalCode: p.postalCode, countryCode: "HR" },
     });
     setSelected(p);
     setOpen(false);
@@ -177,23 +222,24 @@ export default function GlsParcelPicker({ onSelect, selectedName, city, postalCo
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <input
                   className="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-4 text-sm focus:border-[#0055a8] focus:outline-none"
-                  placeholder="Pretraži po nazivu, ulici, gradu ili poštanskom broju"
+                  placeholder="Pretraži paketomate po nazivu ili adresi"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   autoFocus
                 />
               </div>
-              {/* Info line */}
               <p className="mt-2 text-xs text-slate-400">
-                {search && !isExactMatch
-                  ? `Nema točnog podudaranja. Prikazani najrelevantniji paketomati${city ? ` za ${city}` : ""}.`
-                  : `${displayPoints.length} paketomata${city ? ` za ${city}` : ""}${postalCode ? ` (${postalCode})` : ""}`
+                {geoLat != null
+                  ? `📍 Prikazani najbliži GLS paketomati za: ${geoDisplay?.split(",").slice(0, 3).join(", ") || `${customerAddress}, ${postalCode} ${city}`}`
+                  : geoError
+                    ? "Točna lokacija adrese nije pronađena. Prikazani su paketomati za vaš grad."
+                    : `${sorted.length} paketomata${city ? ` za ${city}` : ""}${postalCode ? ` (${postalCode})` : ""}`
                 }
               </p>
-              {search && !isExactMatch && (
+              {geoError && (
                 <div className="mt-2 flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-700">
                   <Info className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
-                  <span>Nema točnog podudaranja za unesenu adresu. Prikazani su najbliži dostupni paketomati za vaš grad.</span>
+                  <span>Točna lokacija adrese nije pronađena. Prikazani su paketomati za vaš grad.</span>
                 </div>
               )}
             </div>
@@ -201,18 +247,16 @@ export default function GlsParcelPicker({ onSelect, selectedName, city, postalCo
             <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-2">
               <div className="h-[350px] md:h-full">
                 {loading ? (
-                  <div className="flex h-full items-center justify-center bg-slate-50 text-sm text-slate-400">
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Učitavanje karte...
-                  </div>
+                  <div className="flex h-full items-center justify-center bg-slate-50 text-sm text-slate-400"><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Učitavanje...</div>
                 ) : (
                   <MapContainer center={[45.815, 15.982]} zoom={7} className="h-full w-full" scrollWheelZoom={true}>
                     <TileLayer attribution='&copy; OpenStreetMap' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    {displayPoints.map(p => (
+                    {sorted.map(p => (
                       <Marker key={p.id} position={[p.lat || 45.8, p.lng || 16.0]} icon={icon} eventHandlers={{ click: () => handleSelect(p) }}>
-                        <Popup><strong>{p.name}</strong><br />{p.address}</Popup>
+                        <Popup><strong>{p.name}</strong><br />{p.address}{p.distanceMeters ? <><br />{formatDist(p.distanceMeters)}</> : null}</Popup>
                       </Marker>
                     ))}
-                    <FitBounds points={displayPoints} />
+                    <FitBounds points={sorted} />
                   </MapContainer>
                 )}
               </div>
@@ -220,16 +264,19 @@ export default function GlsParcelPicker({ onSelect, selectedName, city, postalCo
               <div className="overflow-y-auto border-t md:border-t-0 md:border-l border-slate-100">
                 {loading ? (
                   <div className="flex items-center justify-center py-16 text-sm text-slate-400"><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Učitavanje...</div>
-                ) : displayPoints.length === 0 ? (
+                ) : sorted.length === 0 ? (
                   <p className="py-16 text-center text-sm text-slate-400">Nema dostupnih paketomata.</p>
                 ) : (
-                  displayPoints.map(p => (
+                  sorted.map(p => (
                     <button key={p.id} onClick={() => handleSelect(p)} className={`flex w-full items-start gap-3 border-b border-slate-50 px-4 py-3 text-left transition-colors hover:bg-slate-50 ${selected?.id === p.id ? "bg-blue-50" : ""}`}>
                       <MapPin className={`mt-0.5 h-4 w-4 flex-shrink-0 ${selected?.id === p.id ? "text-[#0055a8]" : "text-slate-400"}`} />
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-slate-900">{p.name}</p>
                         <p className="text-xs text-slate-500 truncate">{p.address}</p>
                       </div>
+                      {p.distanceMeters != null && (
+                        <span className="text-xs font-medium text-[#0055a8] whitespace-nowrap">{formatDist(p.distanceMeters)}</span>
+                      )}
                     </button>
                   ))
                 )}
