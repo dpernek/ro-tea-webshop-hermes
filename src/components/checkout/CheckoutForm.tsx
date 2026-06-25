@@ -130,11 +130,6 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       .catch(() => {});
   }, []);
 
-  useEffect(() => {
-    if (formData.shippingMethod === glsPaketomatId && !glsFetched) {
-      fetchDeliveryPoints();
-    }
-  }, [formData.shippingMethod, formData.city, formData.postalCode, fetchDeliveryPoints, glsFetched, glsPaketomatId]);
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
