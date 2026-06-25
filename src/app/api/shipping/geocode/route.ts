@@ -29,6 +29,9 @@ export async function POST(req: NextRequest) {
         displayName: cached.displayName,
       });
     }
+    if (cached) {
+      cache.delete(query);
+    }
 
     const params = new URLSearchParams({
       q: query,
