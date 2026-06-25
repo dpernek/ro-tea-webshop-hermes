@@ -144,7 +144,8 @@ export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAbov
 
       <div className="mt-5 space-y-1.5 border-t border-slate-100 pt-4 text-xs text-slate-400">
         <p className="flex items-center gap-1"><ShieldCheck className="h-3 w-3" /> Cijene su iskazane s PDV-om</p>
-        <p>Trošak dostave izračunava se prema odabranom načinu dostave</p>
+        {fType === "shipping" && <p>Trošak dostave izračunava se prema odabranom načinu dostave</p>}
+        {fType === "pickup" && <p>Narudžbu preuzimate osobno u poslovnici</p>}
         <p>Plaćanje karticom, pouzećem ili bankovnom uplatom</p>
       </div>
     </div>
