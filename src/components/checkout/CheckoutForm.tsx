@@ -558,14 +558,9 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
             <p className="text-sm font-medium text-amber-800">
               GLS dostava na vašu adresu
             </p>
-            <span className="ml-auto rounded bg-amber-200 px-2 py-0.5 text-xs font-medium text-amber-700">
-              TEST MODE
-            </span>
+
           </div>
-          <p className="mt-1 text-xs text-amber-600">
-            ⚠️ GLS API nije konfiguriran — dostava će biti obrađena ručno.
-            Postavite GLS_API_KEY i GLS_API_URL u .env za produkciju.
-          </p>
+
         </div>
       )}
 
