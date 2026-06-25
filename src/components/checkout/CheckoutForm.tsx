@@ -61,8 +61,10 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
 
   // GLS delivery points state
   const [shippingMethods, setShippingMethods] = useState<Array<{id:string;name:string;price:number;freeAboveAmount?:number}>>([]);
-  // Dynamic GLS method IDs (detected from fetched shipping methods)
-  const glsHomeId = shippingMethods.find(m => m.name.includes("GLS dostava") && !m.name.includes("Paketomat"))?.id || "";
+  // GLS method detection by name (works regardless of UUID)
+  const currentShippingName = shippingMethods.find(m => m.id === formData.shippingMethod)?.name || "";
+  const isGlsDostava = currentShippingName.includes("GLS") && !currentShippingName.includes("Paketomat");
+  const isGlsPaketomat = currentShippingName.includes("GLS") && currentShippingName.includes("Paketomat");
   const glsPaketomatId = shippingMethods.find(m => m.name.includes("GLS Paketomat"))?.id || "";
 
   const subtotal = items.reduce(
@@ -156,7 +158,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       newErrors.postalCode = "Unesite valjani poštanski broj (5 znamenaka).";
     }
     // Require pickup point selection for paketomat
-    if (formData.shippingMethod === glsPaketomatId && !formData.glsPickupPointId) {
+    if (isGlsPaketomat && !formData.glsPickupPointId) {
       newErrors.glsPickupPoint = "Odaberite GLS paketomat s karte ili popisa.";
     }
     if (!acceptedTerms) {
@@ -425,7 +427,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       </fieldset>
 
             {/* GLS Paketomat — službena GLS mapa */}
-      {formData.shippingMethod === glsPaketomatId && (
+      {isGlsPaketomat && (
         <div className="mt-4">
           <div className="mb-3 flex items-center gap-3">
             <p className="text-sm font-semibold text-slate-900">📍 Odaberite GLS Paketomat</p>
@@ -453,7 +455,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       )}
 
       {/* Selected pickup indicator */}
-      {formData.shippingMethod === glsPaketomatId && formData.glsPickupPointId && (
+      {isGlsPaketomat && formData.glsPickupPointId && (
         <div className="mt-2 rounded-lg bg-[#0055a8]/5 border border-[#0055a8]/20 px-3 py-2 text-sm">
           <span className="font-medium text-[#0055a8]">Odabrani paketomat: </span>
           <span className="text-slate-700">{formData.glsPickupPointName}</span>
