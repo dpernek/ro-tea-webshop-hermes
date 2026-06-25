@@ -120,7 +120,7 @@ export async function POST(
 
     if (!parcel) {
       return NextResponse.json(
-        { error: "GLS nije vratio podatke o pošiljci." },
+        { error: "GLS nije vratio podatke o pošiljci. Provjerite GLS vjerodajnice u .env datoteci." },
         { status: 500 },
       );
     }
