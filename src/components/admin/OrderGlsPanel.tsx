@@ -34,7 +34,6 @@ interface OrderGlsPanelProps {
     shippingMethod?: string | null;
     shippingAddress?: string | null;
   };
-  readonly testMode?: boolean;
 }
 
 function parseGlsStatus(glsStatusData?: string | null): {
@@ -52,7 +51,7 @@ function parseGlsStatus(glsStatusData?: string | null): {
   }
 }
 
-export default function OrderGlsPanel({ orderId, order, testMode }: OrderGlsPanelProps) {
+export default function OrderGlsPanel({ orderId, order}: OrderGlsPanelProps) {
   const [creating, setCreating] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [cancelling, setCancelling] = useState(false);
@@ -175,12 +174,7 @@ export default function OrderGlsPanel({ orderId, order, testMode }: OrderGlsPane
     <Card className="p-6">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold">GLS Dostava</h2>
-        {testMode && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
-            <AlertTriangle className="h-3 w-3" />
-            TEST MODE
-          </span>
-        )}
+  
       </div>
 
       <div className="space-y-4">

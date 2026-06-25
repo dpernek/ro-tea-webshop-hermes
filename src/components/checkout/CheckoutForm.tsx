@@ -25,26 +25,7 @@ interface GlsDeliveryPoint {
 const SHIPPING_PRICE = 6.64;
 const FREE_SHIPPING_THRESHOLD = 66.36;
 
-const SHIPPING_METHODS = [
-  {
-    id: "gls-dostava",
-    name: "GLS dostava",
-    price: SHIPPING_PRICE,
-    provider: "gls",
-  },
-  {
-    id: "gls-paketomat",
-    name: "GLS Paketomat",
-    price: SHIPPING_PRICE,
-    provider: "gls",
-  },
-  {
-    id: "dostava-kurirskom-sluzbom",
-    name: "Dostava kurirskom službom",
-    price: SHIPPING_PRICE,
-  },
-  { id: "osobno-preuzimanje", name: "Osobno preuzimanje", price: 0 },
-];
+
 
 const PAYMENT_METHODS = [
   { value: "card", label: "Kartica", icon: CreditCard },
@@ -199,7 +180,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     }
     // Require pickup point selection for paketomat
     if (formData.shippingMethod === "gls-paketomat" && !formData.glsPickupPointId) {
-      newErrors.glsPickupPoint = "Odaberite GLS paketomat za preuzimanje.";
+      newErrors.glsPickupPoint = "Odaberite GLS paketomat s karte ili popisa.";
     }
     if (!acceptedTerms) {
       newErrors.terms =
@@ -441,7 +422,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         </legend>
         <div className="space-y-2">
           {shippingMethods.map((sm) => {
-            const isGls = sm.provider === "gls";
+            
             const isSelected = formData.shippingMethod === sm.id;
             return (
               <label

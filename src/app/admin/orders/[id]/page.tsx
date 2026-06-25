@@ -503,7 +503,7 @@ export default function AdminOrderDetailPage() {
           <OrderGlsPanel
             orderId={id}
             order={order}
-            testMode={order.glsTestMode}
+           
           />
 
           <Card className="p-6">
