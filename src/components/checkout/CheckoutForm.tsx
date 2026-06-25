@@ -9,7 +9,7 @@ import { useCartStore } from "@/store/cartStore";
 import { formatPrice } from "@/lib/utils";
 import { createOrder } from "@/lib/actions/orders";
 import dynamic from "next/dynamic";
-import { CreditCard, Building, Banknote, MapPin } from "lucide-react";
+import { CreditCard, Building, Banknote } from "lucide-react";
 
 interface FormErrors {
   [key: string]: string;
@@ -25,8 +25,6 @@ interface GlsDeliveryPoint {
 
 const SHIPPING_PRICE = 6.64;
 const FREE_SHIPPING_THRESHOLD = 66.36;
-
-
 
 const PAYMENT_METHODS = [
   { value: "card", label: "Kartica", icon: CreditCard },
@@ -62,10 +60,6 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   const [errors, setErrors] = useState<FormErrors>({});
 
   // GLS delivery points state
-  const [glsPoints, setGlsPoints] = useState<GlsDeliveryPoint[]>([]);
-  const [glsLoading, setGlsLoading] = useState(false);
-  const [glsError, setGlsError] = useState("");
-  const [glsFetched, setGlsFetched] = useState(false);
   const [shippingMethods, setShippingMethods] = useState<Array<{id:string;name:string;price:number;freeAboveAmount?:number}>>([]);
   // Dynamic GLS method IDs (detected from fetched shipping methods)
   const glsHomeId = shippingMethods.find(m => m.name.includes("GLS dostava") && !m.name.includes("Paketomat"))?.id || "";
