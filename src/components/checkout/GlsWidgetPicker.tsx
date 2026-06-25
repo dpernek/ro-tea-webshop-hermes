@@ -19,7 +19,7 @@ export default function GlsWidgetPicker({ onSelect, selectedName }: Props) {
   const dialogElRef = useRef<HTMLElement | null>(null);
   const [ready, setReady] = useState(false);
   const onSelectRef = useRef(onSelect);
-  onSelectRef.current = onSelect;
+  useEffect(() => { onSelectRef.current = onSelect; }, [onSelect]);
 
   // Load GLS script once, track readiness
   useEffect(() => {
