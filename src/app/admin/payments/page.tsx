@@ -28,6 +28,7 @@ export default function AdminPaymentsPage() {
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [filtering, setFiltering] = useState(false);
   const [error, setError] = useState("");
   const [filters, setFilters] = useState({ orderId: "", method: "", status: "", amountMin: "", amountMax: "" });
   const [applied, setApplied] = useState({ orderId: "", method: "", status: "", amountMin: "", amountMax: "" });
@@ -59,16 +60,20 @@ export default function AdminPaymentsPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const applyFilters = () => {
+  const applyFilters = async () => {
+    setFiltering(true);
     setApplied({ ...filters });
-    load(1, filters);
+    await load(1, filters);
+    setFiltering(false);
   };
 
-  const clearFilters = () => {
+  const clearFilters = async () => {
+    setFiltering(true);
     const empty = { orderId: "", method: "", status: "", amountMin: "", amountMax: "" };
     setFilters(empty);
     setApplied(empty);
-    load(1, empty);
+    await load(1, empty);
+    setFiltering(false);
   };
 
   const hasFilters = applied.orderId || applied.method || applied.status || applied.amountMin || applied.amountMax;
@@ -152,11 +157,11 @@ export default function AdminPaymentsPage() {
               onChange={(e) => setFilters({ ...filters, amountMax: e.target.value })}
             />
           </div>
-          <Button size="sm" onClick={applyFilters}>
-            <Search className="mr-1 h-4 w-4" /> Filtriraj
+          <Button size="sm" onClick={applyFilters} disabled={filtering} isLoading={filtering}>
+            <Search className="mr-1 h-4 w-4" /> {filtering ? "Filtriranje..." : "Filtriraj"}
           </Button>
           {hasFilters && (
-            <Button size="sm" variant="ghost" onClick={clearFilters}>
+            <Button size="sm" variant="ghost" onClick={clearFilters} disabled={filtering}>
               <X className="mr-1 h-4 w-4" /> Očisti
             </Button>
           )}

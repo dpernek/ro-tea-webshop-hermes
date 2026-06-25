@@ -183,7 +183,7 @@ export default function AdminOrdersPage() {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch {
-      alert("Greška pri izvozu CSV-a.");
+      setError("Greška pri izvozu CSV-a. Pokušajte ponovno.");
     } finally {
       setExporting(false);
     }
