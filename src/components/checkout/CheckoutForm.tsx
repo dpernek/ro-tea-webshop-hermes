@@ -32,7 +32,7 @@ const PAYMENT_METHODS = [
   { value: "cod", label: "Pouzeće", icon: Banknote },
 ];
 
-const GlsParcelPicker = dynamic(() => import("./GlsParcelPicker"), { ssr: false });
+const GlsDeliveryMap = dynamic(() => import("./GlsDeliveryMap"), { ssr: false });
 
 export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: number) => void }) {
   const router = useRouter();
@@ -428,25 +428,31 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         </div>
       </fieldset>
 
-            {/* GLS Paketomat picker */}
+            {/* GLS Paketomat — službena GLS mapa */}
       {formData.shippingMethod === glsPaketomatId && (
         <div className="mt-4">
-          <GlsParcelPicker
-            onSelect={(point: any) => {
-              if (point) {
-                setFormData((prev) => ({
-                  ...prev,
-                  glsPickupPointId: point.id,
-                  glsPickupPointName: point.name,
-                  glsPickupPointAddress: `${point.name}, ${point.address}`,
-                }));
-                if (errors.glsPickupPoint) {
-                  setErrors((prev) => ({ ...prev, glsPickupPoint: "" }));
+          <div className="rounded-lg border border-[#0055a8]/20 overflow-hidden">
+            <GlsDeliveryMap
+              country="hr"
+              language="hr"
+              filterType="parcel-locker"
+              height="500px"
+              onSelect={(point: any) => {
+                if (point) {
+                  const addr = `${point.contact?.address || ""}, ${point.contact?.postalCode || ""} ${point.contact?.city || ""}`;
+                  setFormData((prev) => ({
+                    ...prev,
+                    glsPickupPointId: point.id,
+                    glsPickupPointName: point.name,
+                    glsPickupPointAddress: addr,
+                  }));
+                  if (errors.glsPickupPoint) {
+                    setErrors((prev) => ({ ...prev, glsPickupPoint: "" }));
+                  }
                 }
-              }
-            }}
-            initialCity={formData.city}
-          />
+              }}
+            />
+          </div>
         </div>
       )}
 
