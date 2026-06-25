@@ -125,7 +125,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         customerName: formData.fullName, customerEmail: formData.email,
         customerPhone: formData.phone, address: formData.address,
         city: formData.city, postalCode: formData.postalCode, note: formData.note,
-        items: items.map(i => ({ productId: i.product.id, productName: i.product.name, sku: i.product.sku, quantity: i.quantity, unitPrice: i.product.price })),
+        items: items.map(i => ({ productId: i.product.id, productName: i.product.name, sku: i.product.sku ?? undefined, quantity: i.quantity, unitPrice: i.product.price })),
         paymentMethod: formData.paymentMethod, shippingMethodId: formData.shippingMethod,
         shippingTotal: shippingPrice, subtotal, taxTotal: 0, total,
         glsPickupPointId: formData.glsPickupPointId || undefined,
