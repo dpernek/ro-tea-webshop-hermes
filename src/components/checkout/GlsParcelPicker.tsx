@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -61,7 +61,6 @@ function meaningfulTokens(s: string): string[] {
 
 function textScore(point: GPoint, tokens: string[]): number {
   let score = 0;
-  const haystack = norm(`${point.street} ${point.city} ${point.postalCode} ${point.name}`);
   for (const t of tokens) {
     if (point.postalCode === t) score += 50;
     else if (norm(point.city).includes(t)) score += 20;
@@ -113,7 +112,6 @@ export default function GlsParcelPicker({ onSelect, selectedName, city, postalCo
   // Geocode customer address
   useEffect(() => {
     if (!open || !customerAddress) return;
-    const full = [customerAddress, postalCode, city, "HR"].filter(Boolean).join(", ");
     setGeoError(false);
 
     fetch("/api/shipping/geocode", {
