@@ -100,7 +100,12 @@ export default function AdminCouponsPage() {
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(parse.data) });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        setSaveMsg({ type: "error", text: d.error || "Greška pri spremanju." });
+        if (d.errors && typeof d.errors === "object") {
+          setErrors(prev => ({ ...prev, ...d.errors }));
+          setSaveMsg({ type: "error", text: "Ispravite označena polja." });
+        } else {
+          setSaveMsg({ type: "error", text: d.error || "Greška pri spremanju." });
+        }
         return;
       }
       setSaveMsg({ type: "success", text: mode === "create" ? "Kupon dodan." : "Kupon ažuriran." });

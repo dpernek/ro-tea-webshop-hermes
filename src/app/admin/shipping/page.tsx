@@ -78,11 +78,18 @@ export default function AdminShippingPage() {
 
   const clearError = (field: string) => setErrors(prev => ({ ...prev, [field]: "" }));
 
-  const save = async () => {
+  const validateForm = (): boolean => {
     const errs: Record<string, string> = {};
-    if (!f.name.trim()) errs.name = "Naziv je obavezan.";
+    if (!f.name.trim() || f.name.trim().length < 2) errs.name = "Naziv je obavezan (min. 2 znaka).";
     if (f.price < 0) errs.price = "Cijena ne može biti negativna.";
-    if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (f.price > 10000) errs.price = "Cijena je previsoka.";
+    if (f.freeAboveAmount !== "" && f.freeAboveAmount !== null && Number(f.freeAboveAmount) < 0) errs.freeAboveAmount = "Iznos ne može biti negativan.";
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const save = async () => {
+    if (!validateForm()) return;
 
     setSaving(true);
     setSaveMsg(null);
@@ -93,7 +100,12 @@ export default function AdminShippingPage() {
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        setSaveMsg({ type: "error", text: d.error || "Greška pri spremanju." });
+        if (d.errors && typeof d.errors === "object") {
+          setErrors(prev => ({ ...prev, ...d.errors }));
+          setSaveMsg({ type: "error", text: "Ispravite označena polja." });
+        } else {
+          setSaveMsg({ type: "error", text: d.error || "Greška pri spremanju." });
+        }
         return;
       }
       setSaveMsg({ type: "success", text: mode === "create" ? "Metoda dodana." : "Metoda ažurirana." });
@@ -138,6 +150,7 @@ export default function AdminShippingPage() {
               {errors.price && <p className="mt-1 text-xs text-red-600">{errors.price}</p>}
             </div>
             <input className="w-36 rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Besplatno iznad (s PDV-om)" type="number" step="0.01" value={typeof f.freeAboveAmount === "number" ? f.freeAboveAmount : f.freeAboveAmount || ""} onChange={e => setF({...f,freeAboveAmount:e.target.value})} />
+            {errors.freeAboveAmount && <p className="text-xs text-red-600">{errors.freeAboveAmount}</p>}
             <label className="flex items-center gap-1 text-sm"><input type="checkbox" checked={f.active} onChange={e => setF({...f,active:e.target.checked})} /> Aktivno</label>
             <Button size="sm" onClick={save} disabled={saving}>{saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Spremi</Button>
             <Button size="sm" variant="ghost" onClick={cancel}><X className="mr-1 h-4 w-4" /> Odustani</Button>
