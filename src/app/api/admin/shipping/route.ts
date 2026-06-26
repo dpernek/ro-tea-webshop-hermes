@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -20,14 +20,14 @@ const shippingCreateSchema = z.object({
 });
 
 export async function GET() {
-  const s = await auth();
-  if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAdmin();
+  if (access) return access;
   return NextResponse.json(await db.shippingMethod.findMany({ orderBy: { sortOrder: "asc" } }));
 }
 
 export async function POST(req: NextRequest) {
-  const s = await auth();
-  if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAdmin();
+  if (access) return access;
 
   const raw = await req.json();
   const parsed = shippingCreateSchema.safeParse(raw);

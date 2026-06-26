@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { sendEmail, customerEmail } from "@/lib/email";
 export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
-  const s = await auth();
-  if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAdmin();
+  if (access) return access;
   const { to, html: customHtml, subject: customSubject } = await req.json();
   const html = customHtml || customerEmail({
     orderNumber: "ROTEA-20260624-0001", total: 19.64, paymentMethod: "bank_transfer",

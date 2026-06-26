@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/Input";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/admin";
+  const rawCallback = searchParams.get("callbackUrl") || "";
+  const callbackUrl = rawCallback.startsWith("/") && !rawCallback.startsWith("//") ? rawCallback : "/admin";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

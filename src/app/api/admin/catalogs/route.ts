@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -16,15 +16,15 @@ const catalogSchema = z.object({
 });
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAdmin();
+  if (access) return access;
   const catalogs = await db.catalog.findMany({ orderBy: { sortOrder: "asc" } });
   return NextResponse.json(catalogs);
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAdmin();
+  if (access) return access;
 
   const raw = await request.json();
   const parsed = catalogSchema.safeParse({

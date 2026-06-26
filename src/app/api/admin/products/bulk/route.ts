@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -99,8 +99,8 @@ function computeChange(p: ProductFull, action: string, value: number, saleHandli
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAdmin();
+  if (access) return access;
 
   let raw: unknown;
   try { raw = await request.json(); } catch { return NextResponse.json({ error: "Neispravan JSON" }, { status: 400 }); }

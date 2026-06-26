@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { paymentSchema, formatZodErrors } from "@/lib/validations";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const s = await auth();
-  if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAdmin();
+  if (access) return access;
 
   const url = new URL(req.url);
   const page = parseInt(url.searchParams.get("page") || "1");
@@ -43,8 +43,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const s = await auth();
-  if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAdmin();
+  if (access) return access;
 
   const body = await req.json();
   const result = paymentSchema.safeParse(body);

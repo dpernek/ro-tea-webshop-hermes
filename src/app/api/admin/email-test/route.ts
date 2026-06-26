@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { sendEmail, adminNewOrderEmail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
 export async function POST() {
-  const session = await auth();
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAdmin();
+  if (access) return access;
 
   const to = process.env.ORDER_NOTIFICATION_EMAIL || "info@ro-tea.hr";
   const html = adminNewOrderEmail({

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { sendEmail, statusChangeEmail } from "@/lib/email";
 import { isGlsConfigured } from "@/lib/shipping/gls/config";
@@ -40,8 +40,8 @@ const orderUpdateSchema = z.object({
 }).strict();
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const s = await auth();
-  if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAdmin();
+  if (access) return access;
   const { id } = await params;
   const order = await db.order.findUnique({ where: { id }, include: { items: true } });
   if (!order) return NextResponse.json(null);
@@ -58,8 +58,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const s = await auth();
-  if (!s?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAdmin();
+  if (access) return access;
   const { id } = await params;
 
   const raw = await req.json();
