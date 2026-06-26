@@ -3,6 +3,7 @@ import { FeaturedCategories } from "@/components/home/FeaturedCategories";
 import { PopularProducts } from "@/components/home/PopularProducts";
 import { Benefits } from "@/components/home/Benefits";
 import { CTASection } from "@/components/home/CTASection";
+import { ContentBlock } from "@/components/home/ContentBlock";
 import Image from "next/image";
 import { Truck, ShieldCheck, Users, Wrench } from "lucide-react";
 import type { Metadata } from "next";
@@ -48,16 +49,12 @@ const targetAudience = [
   },
 ];
 
-import { getContentSection } from "@/lib/content";
-import type { Metadata } from "next";
-
-
-
-export default async function HomePage() {
+export default function HomePage() {
   return (
     <>
-      <ContentBlock sectionKey="hero" className="bg-slate-900" />
+      {/* hero content: server-loaded */}
       <Hero />
+      <ContentBlock sectionKey="hero" className="bg-slate-900 py-12" />
 
       {/* Trust bar */}
       <section className="border-b border-slate-100 bg-white py-10">
@@ -143,9 +140,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-<ContentBlock sectionKey="trust" />
       <Benefits />
-<ContentBlock sectionKey="cta" className="bg-[#0055a8] text-white" />
+      <ContentBlock sectionKey="trust" />
       <CTASection />
     </>
   );
