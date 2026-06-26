@@ -131,6 +131,17 @@ export async function loadInitialCatalog(params: {
     "dormer-pramet",
   ];
 
+  // Get product counts per category (manual, avoids _count relation issues)
+  const catCounts = await db.product.groupBy({
+    by: ["categoryId"],
+    where: { status: "ACTIVE", categoryId: { not: null } },
+    _count: { id: true },
+  });
+  const catCountMap: Record<string, number> = {};
+  for (const g of catCounts) {
+    if (g.categoryId) catCountMap[g.categoryId] = g._count.id;
+  }
+
   const [products, total, categories, brands] = await Promise.all([
     db.product.findMany({
       where,
@@ -142,12 +153,9 @@ export async function loadInitialCatalog(params: {
     db.product.count({ where }),
     db.category.findMany({
       where: { status: "ACTIVE" },
-      orderBy: { sortOrder: "asc" },
-      include: {
-        _count: { select: { products: { where: { status: "ACTIVE" } } } },
-      },
+      select: { id: true, slug: true, name: true, description: true, image: true },
     }),
-    db.brand.findMany({ orderBy: { name: "asc" } }),
+    db.brand.findMany({ select: { id: true, slug: true, name: true }, orderBy: { name: "asc" } }),
   ]);
 
   return {
@@ -160,7 +168,7 @@ export async function loadInitialCatalog(params: {
         name: c.name,
         description: c.description,
         image: c.image ?? "",
-        count: c._count.products,
+        count: catCountMap[c.id] || 0,
       }))
       .filter((c) => c.count > 0),
     brands: brands
