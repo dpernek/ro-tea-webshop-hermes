@@ -66,8 +66,6 @@ export async function POST(req: NextRequest) {
     const isFreeShip = isPickup || (shipFreeAbove != null && pricing.subtotal >= shipFreeAbove);
     const shippingTotal = isFreeShip ? 0 : shipPrice;
     // Validate coupon server-side
-    let couponDiscount = 0;
-    let appliedCoupon = null;
     const couponCode = body.couponCode?.trim() || null;
     let couponDiscount = 0;
     let appliedCouponCode: string | null = null;
