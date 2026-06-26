@@ -24,7 +24,8 @@ const benefits = [
   { icon: Wrench, label: "Stručna podrška" },
 ];
 
-export function Hero() {
+interface HeroProps { title?: string; subtitle?: string; }
+export function Hero({ title: titleOverride, subtitle: subtitleOverride }: HeroProps = {}) {
   const containerRef = useRef<HTMLElement>(null);
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);

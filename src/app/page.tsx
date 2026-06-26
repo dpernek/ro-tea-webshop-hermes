@@ -3,7 +3,6 @@ import { FeaturedCategories } from "@/components/home/FeaturedCategories";
 import { PopularProducts } from "@/components/home/PopularProducts";
 import { Benefits } from "@/components/home/Benefits";
 import { CTASection } from "@/components/home/CTASection";
-import { ContentBlock } from "@/components/home/ContentBlock";
 import Image from "next/image";
 import { Truck, ShieldCheck, Users, Wrench } from "lucide-react";
 import type { Metadata } from "next";
@@ -51,12 +50,17 @@ const targetAudience = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { getContentSection } = await import("@/lib/content");
+  const [heroContent, ctaContent] = await Promise.all([
+    getContentSection("hero"),
+    getContentSection("cta"),
+  ]);
+
   return (
     <>
       {/* hero content: server-loaded */}
-      <Hero />
-      <ContentBlock sectionKey="hero" className="bg-slate-900 py-12" />
+      <Hero title={heroContent?.title || undefined} subtitle={heroContent?.body || undefined} />
 
       {/* Trust bar */}
       <section className="border-b border-slate-100 bg-white py-10">
@@ -143,8 +147,7 @@ export default function HomePage() {
       </section>
 
       <Benefits />
-      <ContentBlock sectionKey="trust" />
-      <CTASection />
+      <CTASection title={ctaContent?.title || undefined} body={ctaContent?.body || undefined} ctaLabel={ctaContent?.ctaLabel || undefined} ctaHref={ctaContent?.ctaHref || undefined} />
     </>
   );
 }
