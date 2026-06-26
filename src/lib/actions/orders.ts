@@ -44,13 +44,13 @@ export async function createOrder(data: {
 
   // Get shipping from DB
   let shippingTotal = data.shippingTotal;
-  if (!shippingTotal && data.shippingMethodId) {
-    const shipMethod = await db.shippingMethod.findUnique({ where: { id: data.shippingMethodId }, select: { price: true, freeAboveAmount: true } });
+  let shipMethodName: string | null = null;
+  if (data.shippingMethodId) {
+    const shipMethod = await db.shippingMethod.findUnique({ where: { id: data.shippingMethodId }, select: { price: true, freeAboveAmount: true, name: true } });
     if (!shipMethod) throw new Error("Odabrani način dostave više nije dostupan.");
-    if (shipMethod) {
-      const isFree = shipMethod.freeAboveAmount != null && pricing.subtotal >= shipMethod.freeAboveAmount;
-      shippingTotal = isFree || isPickup ? 0 : shipMethod.price;
-    }
+    shipMethodName = shipMethod.name;
+    const isFree = shipMethod.freeAboveAmount != null && pricing.subtotal >= shipMethod.freeAboveAmount;
+    if (!shippingTotal) shippingTotal = isFree || isPickup ? 0 : shipMethod.price;
   }
   const couponCode = data.couponCode?.trim() || null;
   let couponDiscount = 0;
@@ -133,7 +133,7 @@ export async function createOrder(data: {
           couponCode: couponCode || undefined,
           total,
           paymentMethod: data.paymentMethod,
-          shippingMethod: shipMethod?.name || data.shippingMethodId,
+          shippingMethod: shipMethodName || data.shippingMethodId,
           items: pricing.lineItems.map(li => ({
             name: productMap.get(li.productId)!.name,
             quantity: li.quantity,
@@ -160,7 +160,7 @@ export async function createOrder(data: {
             couponCode: couponCode || undefined,
             total,
             paymentMethod: data.paymentMethod,
-            shippingMethod: shipMethod?.name || data.shippingMethodId,
+            shippingMethod: shipMethodName || data.shippingMethodId,
             customerName: data.customerName,
             customerEmail: data.customerEmail,
             customerPhone: data.customerPhone,

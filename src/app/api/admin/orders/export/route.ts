@@ -65,8 +65,8 @@ export async function POST(req: NextRequest) {
     orderBy: { createdAt: "desc" },
     select: {
       orderNumber: true, customerName: true, customerEmail: true, customerPhone: true,
-      shippingAddress: true, subtotal: true, shippingTotal: true, couponDiscount: true,
-      couponCode: true, total: true, status: true, paymentStatus: true,
+      shippingAddress: true, subtotal: true, shippingTotal: true, discountTotal: true,
+       total: true, status: true, paymentStatus: true,
       paymentMethod: true, shippingMethod: true, stripeCheckoutSessionId: true,
       createdAt: true, paidAt: true,
     },
