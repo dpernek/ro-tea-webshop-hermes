@@ -47,3 +47,25 @@ Created product "Test Proizvod QA" with all 4 content fields:
 /katalozi ✅ /kosarica ✅ /checkout ✅ /checkout/success?session_id=FAKE ✅
 /checkout/uspjeh?orderNumber=FAKE ✅ /dostava-i-povrat ✅ /admin ✅
 /admin/products ✅ /admin/orders ✅ /admin/categories ✅ /admin/brands ✅
+
+---
+
+## Deploy Gate (Definition of Done)
+
+Pass nije gotov dok nisu potvrđeni:
+
+1. `npm run lint` — 0 errors
+2. `npm run build` — prolazi
+3. Deploy na Vercel produkciju
+4. `node scripts/smoke-production.mjs` — 12/12 PASS
+
+**Smoke test pokretanje:**
+```bash
+node scripts/smoke-production.mjs                    # produkcija
+node scripts/smoke-production.mjs https://preview... # preview deploy
+```
+
+**Obavezna lista ruta:** `/`, `/proizvodi`, 3 produkta, 2 kategorije, `/katalozi`, API categories/brands/products, `/sitemap.xml`
+
+**Fail kriteriji:** status ≠ 200, prazan body, `This page couldn't load`, `Application error`, `DIGEST` u HTML-u.
+
