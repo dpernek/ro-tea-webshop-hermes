@@ -4,59 +4,41 @@ import bcrypt from "bcryptjs";
 
 export const dynamic = "force-dynamic";
 
-export async function POST(req: Request) {
+export async function POST() {
   try {
-    const body = await req.json();
     const email = "davor.pernek@ro-tea.hr";
+    const USER_SELECT = { id: true, email: true, name: true, role: true, createdAt: true, updatedAt: true } as const;
     
-    const user = await db.user.findUnique({ where: { email }, select: { id: true, email: true, name: true, role: true, active: true, createdAt: true, updatedAt: true } });
+    let user = await db.user.findUnique({ where: { email }, select: USER_SELECT });
     
-    const result: any = {};
+    const result: any = { email };
     
     if (!user) {
-      // Create
+      // Create user
       const hash = await bcrypt.hash("admin", 12);
-      const created = await db.user.create({
-        data: { email, name: "Davor", role: "ADMIN", active: true, passwordHash: hash },
-        select: { id: true, email: true, name: true, role: true, active: true, createdAt: true },
+      user = await db.user.create({
+        data: { email, name: "Davor", role: "ADMIN", passwordHash: hash },
+        select: USER_SELECT,
       });
       result.action = "created";
-      result.user = created;
       result.tempPassword = "admin";
-    } else if (!user.active) {
-      // Activate without changing role
-      const existingRole = user.role;
-      const updated = await db.user.update({
-        where: { email },
-        data: { active: true },
-        select: { id: true, email: true, name: true, role: true, active: true, updatedAt: true },
-      });
-      result.action = "activated";
-      result.previous = { active: false, role: existingRole };
-      result.user = updated;
-    } else if (user.role !== "ADMIN") {
-      // Already active, just set admin role
-      const updated = await db.user.update({
-        where: { email },
-        data: { role: "ADMIN" },
-        select: { id: true, email: true, name: true, role: true, active: true, updatedAt: true },
-      });
-      result.action = "promoted";
-      result.previous = { role: user.role };
-      result.user = updated;
     } else {
-      // Active + ADMIN — password issue. Reset password.
-      const hash = await bcrypt.hash(body.newPassword || "admin", 12);
-      const updated = await db.user.update({
-        where: { email },
-        data: { passwordHash: hash },
-        select: { id: true, email: true, name: true, role: true, active: true, updatedAt: true },
-      });
-      result.action = "password_reset";
-      result.user = updated;
-      result.tempPassword = body.newPassword || "admin";
+      if (user.role !== "ADMIN") {
+        user = await db.user.update({
+          where: { email },
+          data: { role: "ADMIN" },
+          select: USER_SELECT,
+        });
+        result.action = "promoted_to_admin";
+      }
+      // Reset password to known value
+      const hash = await bcrypt.hash("admin", 12);
+      await db.user.update({ where: { email }, data: { passwordHash: hash } });
+      result.action = result.action || "password_reset";
+      result.tempPassword = "admin";
     }
     
+    result.user = user;
     result.canLogin = true;
     return NextResponse.json(result);
   } catch (e: any) {
