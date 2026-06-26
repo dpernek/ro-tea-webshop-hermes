@@ -52,8 +52,9 @@ const targetAudience = [
 
 export default async function HomePage() {
   const { getContentSection } = await import("@/lib/content");
-  const [heroContent, ctaContent] = await Promise.all([
+  const [heroContent, trustContent, ctaContent] = await Promise.all([
     getContentSection("hero"),
+    getContentSection("trust"),
     getContentSection("cta"),
   ]);
 
@@ -146,7 +147,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <Benefits />
+      <Benefits title={trustContent?.title || undefined} items={(() => { try { const parsed = trustContent?.body ? JSON.parse(trustContent.body) : null; return Array.isArray(parsed) ? parsed : undefined; } catch { return undefined; } })() || undefined} />
       <CTASection title={ctaContent?.title || undefined} body={ctaContent?.body || undefined} ctaLabel={ctaContent?.ctaLabel || undefined} ctaHref={ctaContent?.ctaHref || undefined} />
     </>
   );

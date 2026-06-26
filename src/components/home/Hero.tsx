@@ -85,11 +85,10 @@ export function Hero({ title: titleOverride, subtitle: subtitleOverride }: HeroP
             {site.name} d.o.o.
           </p>
           <h1 className="hero-animate mt-6 text-4xl leading-tight font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Profesionalni alati i oprema za industriju, obrt i dom
+            {titleOverride || "Profesionalni alati i oprema za industriju, obrt i dom"}
           </h1>
           <p className="hero-animate mt-6 max-w-xl text-lg leading-relaxed text-slate-200">
-            Specijalizirana trgovina za obradu metala, održavanje i
-            proizvodnju – za majstore, obrtnike i tvrtke.
+            {subtitleOverride || "Specijalizirana trgovina za obradu metala, održavanje i proizvodnju – za majstore, obrtnike i tvrtke."}
           </p>
 
           <div className="hero-animate mt-10 flex flex-wrap gap-4">
