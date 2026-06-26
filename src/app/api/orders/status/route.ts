@@ -7,33 +7,17 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const orderNumber = searchParams.get("orderNumber");
   const sessionId = searchParams.get("session_id");
+  if (!orderNumber && !sessionId) return NextResponse.json({ error: "Missing parameter" }, { status: 400 });
 
-  if (!orderNumber && !sessionId) {
-    return NextResponse.json({ error: "Missing parameter" }, { status: 400 });
-  }
+  const select = {
+    orderNumber: true, paymentMethod: true, paymentStatus: true, status: true,
+    subtotal: true, shippingTotal: true, total: true,
+    shippingMethod: true, shippingAddress: true,
+  };
+  const order = sessionId
+    ? await db.order.findFirst({ where: { stripeCheckoutSessionId: sessionId }, select })
+    : await db.order.findUnique({ where: { orderNumber: orderNumber || "" }, select });
 
-  let order: {
-    orderNumber: string;
-    paymentMethod: string;
-    paymentStatus: string;
-    total: number;
-  } | null = null;
-
-  if (sessionId) {
-    order = await db.order.findFirst({
-      where: { stripeCheckoutSessionId: sessionId },
-      select: { orderNumber: true, paymentMethod: true, paymentStatus: true, total: true },
-    });
-  } else if (orderNumber) {
-    order = await db.order.findUnique({
-      where: { orderNumber },
-      select: { orderNumber: true, paymentMethod: true, paymentStatus: true, total: true },
-    });
-  }
-
-  if (!order) {
-    return NextResponse.json({ error: "Narudžba nije pronađena" }, { status: 404 });
-  }
-
+  if (!order) return NextResponse.json({ error: "Narudžba nije pronađena" }, { status: 404 });
   return NextResponse.json(order);
 }

@@ -10,7 +10,7 @@ const BOOLEAN_HEADERS = [
   "Email",
   "Telefon",
   "Adresa",
-  "Ukupno (€)",
+  "Međuzbroj (€)","Ukupno (€)",
   "Status narudžbe",
   "Status plaćanja",
   "Način plaćanja",
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
       customerEmail: true,
       customerPhone: true,
       shippingAddress: true,
-      total: true,
+      subtotal: true, shippingTotal: true, total: true,
       status: true,
       paymentStatus: true,
       paymentMethod: true,
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
   const header = BOOLEAN_HEADERS.map(escapeCsvField).join(",");
   const rows = orders.map((o) =>
     [
-      escapeCsvField(o.orderNumber),
+      o.subtotal != null ? o.subtotal.toFixed(2) : "0.00",
       escapeCsvField(o.customerName),
       escapeCsvField(o.customerEmail),
       escapeCsvField(o.customerPhone),
