@@ -1,13 +1,8 @@
-"use client";
-import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { redirect } from "next/navigation";
+import { NextPage } from "next";
 
-export default function SuccessRedirect() {
-  const router = useRouter();
-  const params = useSearchParams();
-  useEffect(() => {
-    const sessionId = params.get("session_id");
-    router.replace(`/checkout/uspjeh${sessionId ? `?session_id=${sessionId}` : ""}`);
-  }, []);
-  return null;
-}
+const Page: NextPage = () => {
+  redirect("/checkout/uspjeh");
+};
+
+export default Page;
