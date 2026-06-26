@@ -6,7 +6,7 @@ import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { ShoppingCart, Check, ArrowRight } from "lucide-react";
+import { ShoppingCart, Check, ArrowRight, Heart } from "lucide-react";
 import { useState } from "react";
 import type { Product } from "@/types";
 
@@ -17,6 +17,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, index }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
+  const { add: addWish, remove: removeWish, has: isWished } = useWishlistStore();
   const [added, setAdded] = useState(false);
   const isVariable = product.type === "variable";
 
@@ -47,6 +48,14 @@ export function ProductCard({ product, index }: ProductCardProps) {
             AKCIJA
           </span>
         )}
+        <button
+          type="button"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); isWished(product.id) ? removeWish(product.id) : addWish({ id: product.id, name: product.name, price: product.price, image: product.image, slug: product.slug }); }}
+          className={`absolute bottom-3 right-3 z-10 rounded-full p-2 shadow-sm transition-all ${isWished(product.id) ? "bg-red-500 text-white" : "bg-white/90 text-slate-400 hover:text-red-500 hover:bg-white"}`}
+          aria-label={isWished(product.id) ? "Ukloni iz liste želja" : "Dodaj u listu želja"}
+        >
+          <Heart className={`h-4 w-4 ${isWished(product.id) ? "fill-white" : ""}`} />
+        </button>
         {product.featured && (
           <span className="absolute top-3 left-3 rounded-full bg-blue-500 px-2.5 py-1 text-xs font-bold text-white shadow-sm">
             Istaknuto
