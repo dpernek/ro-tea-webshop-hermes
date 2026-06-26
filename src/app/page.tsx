@@ -138,8 +138,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {trustContent ? <Benefits /> : <Benefits />}
-      {/* cta content: server-loaded */}
+      <Benefits />
       <CTASection />
     </>
   );
