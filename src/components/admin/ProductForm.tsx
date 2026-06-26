@@ -32,65 +32,52 @@ export function ProductForm({ product, categories, brands }: {
   const isEdit = !!product?.id;
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
+
+  const clearError = (field: string) => setFieldErrors(prev => { const next = { ...prev }; delete next[field]; return next; });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
     setSuccess(false);
     setSaving(true);
 
     try {
       const form = new FormData(e.currentTarget);
       const body: Record<string, any> = {
-        name: form.get("name"),
-        slug: form.get("slug"),
+        name: form.get("name"), slug: form.get("slug"),
         price: Number(form.get("price")) || 0,
         image: form.get("image") || "/images/placeholder.svg",
         stock: Number(form.get("stock")) || 0,
-        stockStatus: form.get("stockStatus"),
-        status: form.get("status"),
-        type: form.get("type"),
+        stockStatus: form.get("stockStatus"), status: form.get("status"), type: form.get("type"),
         featured: form.get("featured") === "on",
         shortDescription: form.get("shortDescription") || "",
         description: form.get("description") || "",
-        brandId: form.get("brandId") || "",
-        categoryId: form.get("categoryId") || "",
-        sku: form.get("sku") || "",
-        badge: form.get("badge") || "",
-        benefits: form.get("benefits") || "",
-        usage: form.get("usage") || "",
-        warranty: form.get("warranty") || "",
-        deliveryNote: form.get("deliveryNote") || "",
+        brandId: form.get("brandId") || "", categoryId: form.get("categoryId") || "",
+        sku: form.get("sku") || "", badge: form.get("badge") || "",
+        benefits: form.get("benefits") || "", usage: form.get("usage") || "",
+        warranty: form.get("warranty") || "", deliveryNote: form.get("deliveryNote") || "",
       };
-
-      // Clean: remove empty optional strings
-      for (const key of ["sku", "badge", "brandId", "categoryId", "shortDescription", "description"]) {
+      for (const key of ["sku", "badge", "brandId", "categoryId", "shortDescription", "description"])
         if (!body[key]) delete body[key];
-      }
 
-      // Optional numeric fields
       const rp = n(form.get("regularPrice") as string);
       const sp = n(form.get("salePrice") as string);
       if (rp !== null) body.regularPrice = rp;
       if (sp !== null) body.salePrice = sp;
 
       const url = isEdit ? `/api/admin/products/${product!.id}` : "/api/admin/products";
-      const method = isEdit ? "PATCH" : "POST";
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+      const res = await fetch(url, { method: isEdit ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         if (data.errors && typeof data.errors === "object") {
-          const msg = Object.entries(data.errors).map(([k,v]) => `${k}: ${v}`).join("; ");
-          setError(msg || "Ispravite označena polja.");
+          setFieldErrors(data.errors);
+          setError("Ispravite označena polja.");
         } else {
-          setError(data.error || data.message || `Greška ${res.status}`);
+          setError(data.error || `Greška ${res.status}`);
         }
         return;
       }
@@ -99,20 +86,15 @@ export function ProductForm({ product, categories, brands }: {
       setTimeout(() => { router.push("/admin/products"); router.refresh(); }, 600);
     } catch (e: any) {
       setError(e.message || "Greška pri spremanju");
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   };
 
   return (
     <div>
       <div className="mb-6 flex items-center gap-4">
-        <Link href="/admin/products" className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm text-slate-600 hover:text-slate-900">
-          <ArrowLeft className="h-4 w-4" /> Natrag
-        </Link>
+        <Link href="/admin/products" className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm text-slate-600 hover:text-slate-900"><ArrowLeft className="h-4 w-4" /> Natrag</Link>
         <h1 className="text-2xl font-bold text-slate-900">{isEdit ? "Uredi proizvod" : "Novi proizvod"}</h1>
       </div>
-
       {success && <AdminAlert variant="success">Proizvod spremljen!</AdminAlert>}
       {error && <AdminAlert variant="error">{error}</AdminAlert>}
 
@@ -122,69 +104,68 @@ export function ProductForm({ product, categories, brands }: {
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium">Naziv *</label>
-              <input name="name" defaultValue={product?.name} required className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              <input name="name" defaultValue={product?.name} required onChange={() => clearError("name")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              {fieldErrors.name && <p className="mt-1 text-xs text-red-600">{fieldErrors.name}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Slug *</label>
-              <input name="slug" defaultValue={product?.slug} required className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              <input name="slug" defaultValue={product?.slug} required onChange={() => clearError("slug")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              {fieldErrors.slug && <p className="mt-1 text-xs text-red-600">{fieldErrors.slug}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">EAN</label>
-              <input name="sku" defaultValue={product?.sku || ""} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              <input name="sku" defaultValue={product?.sku || ""} onChange={() => clearError("sku")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              {fieldErrors.sku && <p className="mt-1 text-xs text-red-600">{fieldErrors.sku}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Cijena (€) *</label>
-              <input name="price" type="number" step="0.01" min="0" defaultValue={product?.price || 0} required className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              <input name="price" type="number" step="0.01" min="0" defaultValue={product?.price || 0} required onChange={() => clearError("price")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              {fieldErrors.price && <p className="mt-1 text-xs text-red-600">{fieldErrors.price}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Redovna cijena</label>
-              <input name="regularPrice" type="number" step="0.01" min="0" defaultValue={product?.regularPrice || ""} placeholder="—" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              <input name="regularPrice" type="number" step="0.01" min="0" defaultValue={product?.regularPrice || ""} placeholder="—" onChange={() => clearError("regularPrice")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              {fieldErrors.regularPrice && <p className="mt-1 text-xs text-red-600">{fieldErrors.regularPrice}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Akcijska cijena</label>
-              <input name="salePrice" type="number" step="0.01" min="0" defaultValue={product?.salePrice || ""} placeholder="—" className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              <input name="salePrice" type="number" step="0.01" min="0" defaultValue={product?.salePrice || ""} placeholder="—" onChange={() => clearError("salePrice")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              {fieldErrors.salePrice && <p className="mt-1 text-xs text-red-600">{fieldErrors.salePrice}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Zaliha</label>
-              <input name="stock" type="number" step="1" min="0" defaultValue={product?.stock || 0} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              <input name="stock" type="number" step="1" min="0" defaultValue={product?.stock || 0} onChange={() => clearError("stock")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              {fieldErrors.stock && <p className="mt-1 text-xs text-red-600">{fieldErrors.stock}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Status zalihe</label>
-              <select name="stockStatus" defaultValue={product?.stockStatus || "UNKNOWN"} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
-                <option value="INSTOCK">Dostupno</option>
-                <option value="OUTOFSTOCK">Nije dostupno</option>
-                <option value="ONBACKORDER">Po narudžbi</option>
-                <option value="UNKNOWN">Nepoznato</option>
+              <select name="stockStatus" defaultValue={product?.stockStatus || "UNKNOWN"} onChange={() => clearError("stockStatus")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                <option value="INSTOCK">Dostupno</option><option value="OUTOFSTOCK">Nije dostupno</option><option value="ONBACKORDER">Po narudžbi</option><option value="UNKNOWN">Nepoznato</option>
               </select>
+              {fieldErrors.stockStatus && <p className="mt-1 text-xs text-red-600">{fieldErrors.stockStatus}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Status</label>
-              <select name="status" defaultValue={product?.status || "ACTIVE"} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
-                <option value="DRAFT">Skica</option>
-                <option value="ACTIVE">Aktivno</option>
-                <option value="ARCHIVED">Arhivirano</option>
+              <select name="status" defaultValue={product?.status || "ACTIVE"} onChange={() => clearError("status")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                <option value="DRAFT">Skica</option><option value="ACTIVE">Aktivno</option><option value="ARCHIVED">Arhivirano</option>
               </select>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">Tip</label>
-              <select name="type" defaultValue={product?.type || "SIMPLE"} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
-                <option value="SIMPLE">Jednostavan</option>
-                <option value="VARIABLE">Varijabilan</option>
-              </select>
+              {fieldErrors.status && <p className="mt-1 text-xs text-red-600">{fieldErrors.status}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Kategorija</label>
-              <select name="categoryId" defaultValue={product?.categoryId || ""} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <select name="categoryId" defaultValue={product?.categoryId || ""} onChange={() => clearError("categoryId")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
                 <option value="">—</option>
                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
+              {fieldErrors.categoryId && <p className="mt-1 text-xs text-red-600">{fieldErrors.categoryId}</p>}
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Brend</label>
-              <select name="brandId" defaultValue={product?.brandId || ""} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <select name="brandId" defaultValue={product?.brandId || ""} onChange={() => clearError("brandId")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
                 <option value="">—</option>
                 {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
               </select>
+              {fieldErrors.brandId && <p className="mt-1 text-xs text-red-600">{fieldErrors.brandId}</p>}
             </div>
           </div>
           <div className="mt-4 flex items-center gap-4">
@@ -201,36 +182,24 @@ export function ProductForm({ product, categories, brands }: {
 
         <div className="rounded-xl border border-slate-200 bg-white p-6">
           <h2 className="mb-4 text-lg font-semibold">Slika *</h2>
-          <input name="image" defaultValue={product?.image || "/images/placeholder.svg"} required className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+          <input name="image" defaultValue={product?.image || "/images/placeholder.svg"} required onChange={() => clearError("image")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+          {fieldErrors.image && <p className="mt-1 text-xs text-red-600">{fieldErrors.image}</p>}
           <p className="text-xs text-slate-400 mt-1">Preporučena veličina: 1200×1200 px, WebP ili JPG, do 5 MB.</p>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-6">
           <h2 className="mb-4 text-lg font-semibold">Dodatne informacije</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-medium">Ključne značajke</label>
-              <textarea name="benefits" defaultValue={product?.benefits || ""} rows={2} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder='npr. ["Izdržljiv","Precizan"]' />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">Preporučena upotreba</label>
-              <input name="usage" defaultValue={product?.usage || ""} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="npr. Za obradu metala" />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">Jamstvo</label>
-              <input name="warranty" defaultValue={product?.warranty || ""} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="npr. 2 godine" />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">Napomena o dostavi</label>
-              <input name="deliveryNote" defaultValue={product?.deliveryNote || ""} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="npr. Dostava 3-5 radnih dana" />
-            </div>
+            <div><label className="mb-1 block text-sm font-medium">Ključne značajke</label><textarea name="benefits" defaultValue={product?.benefits || ""} rows={2} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></div>
+            <div><label className="mb-1 block text-sm font-medium">Preporučena upotreba</label><input name="usage" defaultValue={product?.usage || ""} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></div>
+            <div><label className="mb-1 block text-sm font-medium">Jamstvo</label><input name="warranty" defaultValue={product?.warranty || ""} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></div>
+            <div><label className="mb-1 block text-sm font-medium">Napomena o dostavi</label><input name="deliveryNote" defaultValue={product?.deliveryNote || ""} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" /></div>
           </div>
         </div>
 
         <div className="flex justify-end gap-3">
           <Link href="/admin/products" className="inline-flex h-11 items-center rounded-lg border-2 border-slate-200 px-6 text-slate-700 hover:border-slate-300">Odustani</Link>
-          <button type="submit" disabled={saving}
-            className="inline-flex h-11 items-center gap-2 rounded-lg bg-[#0055a8] px-6 text-white hover:bg-[#004080] disabled:opacity-60">
+          <button type="submit" disabled={saving} className="inline-flex h-11 items-center gap-2 rounded-lg bg-[#0055a8] px-6 text-white hover:bg-[#004080] disabled:opacity-60">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {saving ? "Spremanje..." : isEdit ? "Spremi" : "Kreiraj"}
           </button>
