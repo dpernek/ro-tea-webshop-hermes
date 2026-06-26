@@ -33,10 +33,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                   role: "ADMIN",
                 },
               });
-              console.log(
-                "[auth] Auto-seeded admin user:",
-                seedEmail.toLowerCase().trim()
-              );
+              // console.log("[auth] Auto-seeded admin user:", seedEmail.toLowerCase().trim());
             }
           }
         } catch (e) {
