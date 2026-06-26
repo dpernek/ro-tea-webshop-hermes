@@ -195,7 +195,7 @@ export default function AdminUsersPage() {
             <h3 className="text-lg font-semibold">Obrisati korisnika?</h3>
             <p className="text-sm text-slate-600">Ova akcija se ne može poništiti. Sigurni ste da želite trajno obrisati ovog korisnika?</p>
             <div className="flex gap-3">
-              <Button variant="destructive" onClick={() => remove(users.find(u => u.id === deleteConfirm)!)} isLoading={busyIds.has(deleteConfirm)}>Obriši</Button>
+              <Button variant="outline" className="border-red-300 text-red-600 hover:bg-red-50" onClick={() => remove(users.find(u => u.id === deleteConfirm)!)} isLoading={busyIds.has(deleteConfirm)}>Obriši</Button>
               <Button variant="outline" disabled={busyIds.has(deleteConfirm)} onClick={() => setDeleteConfirm(null)}>Odustani</Button>
             </div>
           </div>
