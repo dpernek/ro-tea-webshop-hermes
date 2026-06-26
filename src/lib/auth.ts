@@ -17,26 +17,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const email = String(credentials.email).toLowerCase().trim();
         const password = String(credentials.password);
 
-        // Use raw SQL to bypass Prisma schema validation for missing columns
-        const rows = await db.$queryRawUnsafe<Array<{
-          id: string; name: string | null; email: string; role: string; "passwordHash": string;
-        }>>(
-          `SELECT id, name, email, role, "passwordHash" FROM "User" WHERE email = $1`,
-          email
-        );
-
-        const user = rows[0];
+        const user = await db.user.findUnique({ where: { email } });
         if (!user) return null;
+        if (user.active === false) return null;
 
-        const validPassword = await bcrypt.compare(password, user.passwordHash);
-        if (!validPassword) return null;
+        const valid = await bcrypt.compare(password, user.passwordHash);
+        if (!valid) return null;
 
-        return {
-          id: user.id,
-          name: user.name ?? user.email,
-          email: user.email,
-          role: user.role,
-        };
+        return { id: user.id, name: user.name ?? user.email, email: user.email, role: user.role };
       },
     }),
   ],
