@@ -11,7 +11,7 @@ interface CategoryPageProps { params: Promise<{ slug: string }>; }
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const cat = await db.category.findUnique({ where: { slug } });
+  const cat = await db.category.findUnique({ where: { slug }, select: { id: true, slug: true, name: true, description: true, image: true, parentId: true } });
   if (!cat) return { title: "Kategorija | RO-TEA" };
   return {
     title: `${cat.name} | RO-TEA`,
@@ -24,11 +24,11 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
-  const cat = await db.category.findUnique({ where: { slug } });
+  const cat = await db.category.findUnique({ where: { slug }, select: { id: true, slug: true, name: true, description: true, image: true, parentId: true, status: true } });
   if (!cat || cat.status !== "ACTIVE") notFound();
 
   // Fetch all categories, ordered by sortOrder
-  const allCatsRaw = await db.category.findMany({ orderBy: { sortOrder: "asc" } });
+  const allCatsRaw = await db.category.findMany({ select: { id: true, slug: true, name: true, description: true, image: true, parentId: true, sortOrder: true, status: true }, orderBy: { sortOrder: "asc" } });
 
   // Count only ACTIVE products per category for accurate sidebar counts
   const activeProducts = await db.product.findMany({
