@@ -27,6 +27,8 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     note: "", paymentMethod: "bank_transfer", shippingMethod: "",
     glsPickupPointId: "", glsPickupPointName: "", glsPickupPointAddress: "",
   });
+  const [couponCode, setCouponCode] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [shippingMethods, setShippingMethods] = useState<Array<{ id: string; name: string; price: number; freeAboveAmount?: number | null }>>([]);
@@ -57,7 +59,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   const freeAbove = currentMethod?.freeAboveAmount ?? null;
   const isFreeShipping = freeAbove !== null && subtotal >= freeAbove;
   const shippingPrice = isFreeShipping ? 0 : methodPrice;
-  const total = subtotal + shippingPrice;
+  const total = subtotal + shippingPrice - couponDiscount;
 
   useEffect(() => { onShippingChange?.(shippingPrice, freeAbove, currentMethod?.name); }, [shippingPrice, freeAbove, currentMethod?.name, onShippingChange]);
 
@@ -70,6 +72,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     if (!formData.city.trim()) e.city = "Unesite grad.";
     if (!/^\d{5}$/.test(formData.postalCode)) e.postalCode = "Unesite poštanski broj (5 znamenaka).";
     if (isGlsPaketomat && !formData.glsPickupPointId) e.glsPickupPoint = "Odaberite paketomat za preuzimanje.";
+    if (!formData.shippingMethod) e.shippingMethod = "Odaberite način dostave.";
     if (!acceptedTerms) e.terms = "Prihvatite uvjete kupnje.";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -107,6 +110,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
             glsPickupPointId: formData.glsPickupPointId || undefined,
             glsPickupPointName: formData.glsPickupPointName || undefined,
             glsPickupPointAddress: formData.glsPickupPointAddress || undefined,
+            couponCode: couponCode || undefined, couponDiscount: couponDiscount || undefined,
           }),
         });
         const data = await res.json();
@@ -125,7 +129,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         city: formData.city, postalCode: formData.postalCode, note: formData.note,
         items: items.map(i => ({ productId: i.product.id, productName: i.product.name, sku: i.product.sku ?? undefined, quantity: i.quantity, unitPrice: i.product.price })),
         paymentMethod: formData.paymentMethod, shippingMethodId: formData.shippingMethod,
-        shippingTotal: shippingPrice, subtotal, taxTotal: 0, total,
+        shippingTotal: shippingPrice, subtotal, taxTotal: 0, total, couponCode: couponCode || undefined, couponDiscount: couponDiscount || 0,
         glsPickupPointId: formData.glsPickupPointId || undefined,
         glsPickupPointName: formData.glsPickupPointName || undefined,
         glsPickupPointAddress: formData.glsPickupPointAddress || undefined,
@@ -158,6 +162,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       </div>
 
       {/* Shipping */}
+      {errors.shippingMethod && <p className="text-xs text-red-600 -mt-2 mb-2">{errors.shippingMethod}</p>}
       <div>
         <p className="mb-3 text-sm font-medium text-slate-700">Način dostave</p>
         <div className="space-y-2">
@@ -240,7 +245,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         <label className="flex cursor-pointer items-start gap-2.5">
           <input type="checkbox" checked={acceptedTerms} onChange={e => setAcceptedTerms(e.target.checked)} className="mt-0.5 text-[#0055a8]" required />
           <span className="text-sm text-slate-600">
-            Prihvaćam{" "}<a href="/uvjeti-kupnje" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">uvjete kupnje</a>{" "}i{" "}<a href="/pravila-o-privatnosti" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">pravila privatnosti</a>.
+            Prihvaćam{" "}<a href="/uvjeti-kupnje" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">uvjete kupnje</a>,{" "}<a href="/pravila-o-privatnosti" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">pravila privatnosti</a>{" "}i{" "}<a href="/povrat-i-zamjena" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">uvjete povrata</a>.
           </span>
         </label>
         {errors.terms && <p className="mt-1.5 text-sm text-red-600" role="alert">{errors.terms}</p>}
