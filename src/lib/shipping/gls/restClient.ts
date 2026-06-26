@@ -27,7 +27,7 @@ async function glsRestCall<T>(
 ): Promise<T> {
   const url = `${BASE()}/${service}.svc/json/${method}`;
   const payload = { ...body, ...glsAuthPayload() };
-  console.log("[GLS REST] Auth payload password type:", typeof payload.Password, "length:", Array.isArray(payload.Password) ? payload.Password.length : "N/A");
+  // [GLS REST] Auth payload password type: ${typeof payload.Password} length: ${Array.isArray(payload.Password) ? payload.Password.length : "N/A"}
 
   let response: Response;
   try {

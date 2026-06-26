@@ -10,7 +10,7 @@ export async function sendEmail(payload: { to: string; subject: string; html: st
       return result;
     }
     if (provider === "disabled" || provider === "") {
-      console.log("[EMAIL DISABLED] To:", payload.to, "Subject:", payload.subject);
+      // [EMAIL DISABLED] To: ${payload.to} Subject: ${payload.subject}
       return false;
     }
     return false;
