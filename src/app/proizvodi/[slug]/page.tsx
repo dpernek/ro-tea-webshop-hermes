@@ -111,16 +111,32 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!product || product.status !== "ACTIVE") notFound();
 
   // --- Related products (same category, exclude current) ---
-  const relatedProducts = product.categoryId
-    ? await db.product.findMany({
-        where: {
-          categoryId: product.categoryId,
-          id: { not: product.id },
-          status: "ACTIVE",
-        },
-        take: 4,
-      })
-    : [];
+  // Related products: same brand + category > same category > featured
+  let relatedProducts: any[] = [];
+  if (product.categoryId && product.brandId) {
+    relatedProducts = await db.product.findMany({
+      where: { categoryId: product.categoryId, brandId: product.brandId, id: { not: product.id }, status: "ACTIVE" },
+      take: 4,
+    });
+  }
+  if (relatedProducts.length < 4 && product.categoryId) {
+    const existing = new Set(relatedProducts.map(p => p.id));
+    existing.add(product.id);
+    const more = await db.product.findMany({
+      where: { categoryId: product.categoryId, status: "ACTIVE", id: { notIn: Array.from(existing) } },
+      take: 4 - relatedProducts.length,
+    });
+    relatedProducts = [...relatedProducts, ...more];
+  }
+  if (relatedProducts.length < 4) {
+    const existing = new Set(relatedProducts.map(p => p.id));
+    existing.add(product.id);
+    const more = await db.product.findMany({
+      where: { status: "ACTIVE", featured: true, id: { notIn: Array.from(existing) } },
+      take: 4 - relatedProducts.length,
+    });
+    relatedProducts = [...relatedProducts, ...more];
+  }
 
   // --- Derived data ---
   const galleryImages: string[] = [
