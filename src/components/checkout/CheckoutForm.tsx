@@ -32,6 +32,8 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [shippingMethods, setShippingMethods] = useState<Array<{ id: string; name: string; price: number; freeAboveAmount?: number | null }>>([]);
+  const [shippingLoading, setShippingLoading] = useState(true);
+  const [shippingError, setShippingError] = useState("");
 
   useEffect(() => {
     fetch("/api/shipping")
@@ -42,7 +44,8 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
           freeAboveAmount: m.freeAboveAmount ?? null,
         })));
       })
-      .catch(() => {});
+      .catch(() => setShippingError("Nije moguće učitati načine dostave."));
+      .finally(() => setShippingLoading(false));
   }, []);
 
   const GLS_HOME = "GLS dostava";
@@ -110,6 +113,8 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
             glsPickupPointId: formData.glsPickupPointId || undefined,
             glsPickupPointName: formData.glsPickupPointName || undefined,
             glsPickupPointAddress: formData.glsPickupPointAddress || undefined,
+        couponCode: couponCode || undefined,
+            couponCode: couponCode || undefined,
           }),
         });
         const data = await res.json();
@@ -132,6 +137,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         glsPickupPointId: formData.glsPickupPointId || undefined,
         glsPickupPointName: formData.glsPickupPointName || undefined,
         glsPickupPointAddress: formData.glsPickupPointAddress || undefined,
+        couponCode: couponCode || undefined,
       });
       clearCart();
       router.push(`/checkout/uspjeh?orderNumber=${encodeURIComponent(order.orderNumber)}`);
@@ -160,6 +166,9 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         <Input label="Poštanski broj" name="postalCode" value={formData.postalCode} onChange={handleChange} error={errors.postalCode} placeholder="10000" required />
       </div>
 
+      {shippingLoading && <p className="text-sm text-slate-400">Učitavanje načina dostave...</p>}
+      {shippingError && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{shippingError}</div>}
+      {!shippingLoading && !shippingError && (
       {/* Shipping */}
       {errors.shippingMethod && <p className="text-xs text-red-600 -mt-2 mb-2">{errors.shippingMethod}</p>}
       <div>
@@ -214,6 +223,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         />
       )}
 
+      )}
       {/* Payment */}
       <div>
         <p className="mb-3 text-sm font-medium text-slate-700">Način plaćanja</p>
@@ -244,13 +254,13 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         <label className="flex cursor-pointer items-start gap-2.5">
           <input type="checkbox" checked={acceptedTerms} onChange={e => setAcceptedTerms(e.target.checked)} className="mt-0.5 text-[#0055a8]" required />
           <span className="text-sm text-slate-600">
-            Prihvaćam{" "}<a href="/uvjeti-kupnje" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">uvjete kupnje</a>,{" "}<a href="/pravila-o-privatnosti" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">pravila privatnosti</a>{" "}i{" "}<a href="/povrat-i-zamjena" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">uvjete povrata</a>.
+            Prihvaćam{" "}<a href="/uvjeti-kupnje" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">uvjete kupnje</a>,{" "}<a href="/pravila-o-privatnosti" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">pravila privatnosti</a>,{" "}<a href="/povrat-i-zamjena" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">uvjete povrata</a>,{" "}<a href="/raskid-ugovora" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">jednostrani raskid</a>{" "}i{" "}<a href="/sigurnost-online-placanja" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">sigurnost plaćanja</a>.
           </span>
         </label>
         {errors.terms && <p className="mt-1.5 text-sm text-red-600" role="alert">{errors.terms}</p>}
       </div>
 
-      <Button type="submit" size="lg" className="w-full" isLoading={isSubmitting || isCreatingSession} disabled={isSubmitting || isCreatingSession}>
+      <Button type="submit" size="lg" className="w-full" isLoading={isSubmitting || isCreatingSession || shippingLoading} disabled={isSubmitting || isCreatingSession || shippingLoading || !!shippingError}>
         {isCreatingSession ? "Preusmjeravanje na plaćanje…" : "Potvrdi narudžbu"}
       </Button>
     </form>

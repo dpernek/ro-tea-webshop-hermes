@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { computePrices } from "@/lib/pricing";
+import { validateCoupon } from "@/lib/coupon-validation";
 import { sendEmail, customerEmail, adminNewOrderEmail } from "@/lib/email";
 
 export async function createOrder(data: {
@@ -13,6 +14,7 @@ export async function createOrder(data: {
   paymentMethod: string; shippingMethodId: string;
   shippingTotal: number; subtotal: number; taxTotal: number; total: number;
   glsPickupPointId?: string; glsPickupPointName?: string; glsPickupPointAddress?: string;
+  couponCode?: string;
 }) {
   if (!data.customerName || !data.customerEmail || !data.address || !data.city || !data.postalCode) {
     throw new Error("Molimo ispunite sva obavezna polja.");
@@ -49,7 +51,13 @@ export async function createOrder(data: {
       shippingTotal = isFree || isPickup ? 0 : shipMethod.price;
     }
   }
-  const total = pricing.subtotal + (shippingTotal || 0);
+  let couponDiscount = 0;
+  let appliedCoupon = null;
+  if (data.couponCode) {
+    const validated = await validateCoupon(data.couponCode, pricing.subtotal);
+    if (validated) { couponDiscount = validated.discount; appliedCoupon = validated; }
+  }
+  const total = pricing.subtotal + (shippingTotal || 0) - couponDiscount;
 
   // Order number
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
@@ -80,6 +88,7 @@ export async function createOrder(data: {
       glsPickupPointId: data.glsPickupPointId || null,
       glsPickupPointName: data.glsPickupPointName || null,
       glsPickupPointAddress: data.glsPickupPointAddress || null,
+      couponCode: appliedCoupon?.code || null, couponDiscount: appliedCoupon?.discount || null,
       items: {
         create: pricing.lineItems.map(li => ({
           productId: li.productId, productName: productMap.get(li.productId)!.name,

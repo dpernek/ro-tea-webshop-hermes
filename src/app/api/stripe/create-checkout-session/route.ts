@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { validateCoupon } from "@/lib/coupon-validation";
 import { stripe } from "@/lib/stripe";
 import { computePrices } from "@/lib/pricing";
 import { revalidatePath } from "next/cache";
@@ -61,7 +62,15 @@ export async function POST(req: NextRequest) {
     const shipFreeAbove = shipMethod?.freeAboveAmount ?? null;
     const isFreeShip = isPickup || (shipFreeAbove != null && pricing.subtotal >= shipFreeAbove);
     const shippingTotal = isFreeShip ? 0 : shipPrice;
-    const total = pricing.subtotal + shippingTotal - (body.couponDiscount || 0);
+    // Validate coupon server-side
+    let couponDiscount = 0;
+    let appliedCoupon = null;
+    if (body.couponCode) {
+      const validated = await validateCoupon(body.couponCode, pricing.subtotal);
+      if (validated) { couponDiscount = validated.discount; appliedCoupon = validated; }
+      else if (!body.couponDiscount) { /* silently ignore invalid */ }
+    }
+    const total = pricing.subtotal + shippingTotal - couponDiscount;
 
     // Stripe line items in cents
     const lineItems = pricing.lineItems.map(li => ({
@@ -97,6 +106,7 @@ export async function POST(req: NextRequest) {
         glsPickupPointId: body.glsPickupPointId || null,
         glsPickupPointName: body.glsPickupPointName || null,
         glsPickupPointAddress: body.glsPickupPointAddress || null,
+        couponCode: appliedCoupon?.code || null, couponDiscount: appliedCoupon?.discount || null,
         items: {
           create: pricing.lineItems.map(li => ({
             productId: li.productId, productName: productMap.get(li.productId)!.name,
