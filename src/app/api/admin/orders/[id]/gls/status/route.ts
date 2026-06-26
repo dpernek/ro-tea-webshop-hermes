@@ -32,7 +32,7 @@ export async function POST(
   const order = await db.order.findUnique({
     where: { id },
     select: {
-      id: true,
+      id: true, orderNumber: true,
       glsShipmentId: true,
       glsParcelNumber: true,
     },
