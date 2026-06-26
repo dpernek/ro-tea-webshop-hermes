@@ -91,7 +91,8 @@ export default function AdminProductsPage() {
 
   // --- Data state ---
   const [products, setProducts] = useState<Product[]>([]);
-  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [brandId, setBrandId] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
@@ -145,7 +146,7 @@ export default function AdminProductsPage() {
       const params = new URLSearchParams({
         page: String(page),
         limit: String(LIMIT),
-        search,
+        appliedSearch,
       });
       if (categoryId) params.set("categoryId", categoryId);
       if (brandId) params.set("brandId", brandId);
@@ -161,7 +162,7 @@ export default function AdminProductsPage() {
       );
     }
     setLoading(false);
-  }, [page, search, categoryId, brandId]);
+  }, [page, appliedSearch, categoryId, brandId]);
 
   // --- Reload counter (bumps on any filter/search/pagination change) ---
   const [reloadKey, setReloadKey] = useState(0);
@@ -169,6 +170,7 @@ export default function AdminProductsPage() {
   const triggerReload = () => setReloadKey((k) => k + 1);
 
   const doSearch = () => {
+    setAppliedSearch(searchInput);
     setPage(1);
     setSelectedIds(new Set());
     setSelectAllFiltered(false);
@@ -386,8 +388,8 @@ export default function AdminProductsPage() {
           <input
             className="w-full rounded-lg border border-slate-200 py-2 pl-10 pr-4 text-sm"
             placeholder="Pretraži..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && doSearch()}
           />
         </div>

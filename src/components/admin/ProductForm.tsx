@@ -32,11 +32,13 @@ export function ProductForm({ product, categories, brands }: {
   const isEdit = !!product?.id;
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string,string>>({});
   const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
     setSuccess(false);
     setSaving(true);
 
@@ -87,8 +89,8 @@ export function ProductForm({ product, categories, brands }: {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         if (data.errors && typeof data.errors === "object") {
-          const fieldList = Object.entries(data.errors).map(([k, v]) => `${k}: ${v}`).join("; ");
-          setError(fieldList || "Ispravite označena polja.");
+          setFieldErrors(data.errors);
+          setError("Ispravite označena polja.");
         } else {
           setError(data.error || data.message || `Greška ${res.status}`);
         }
@@ -122,6 +124,7 @@ export function ProductForm({ product, categories, brands }: {
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium">Naziv *</label>
+              {fieldErrors.name && <p className="text-xs text-red-600 mb-1">{fieldErrors.name}</p>}
               <input name="name" defaultValue={product?.name} required className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
             </div>
             <div>
