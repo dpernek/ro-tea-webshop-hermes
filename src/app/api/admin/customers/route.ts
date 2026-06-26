@@ -1,3 +1,9 @@
-import { NextResponse } from "next/server"; import { auth } from "@/lib/auth"; import { db } from "@/lib/db";
-export const dynamic = "force-dynamic";
-export async function GET() { const s=await auth(); if(!s?.user) return NextResponse.json({error:"Unauthorized"},{status:401}); return NextResponse.json(await db.customer.findMany({orderBy:{createdAt:"desc"},take:50})); }
+import { NextResponse } from "next/server";
+import { requirePermission } from "@/lib/admin-auth";
+import { db } from "@/lib/db";
+
+export async function GET() {
+  const access = await requirePermission("customers", "read");
+  if (access) return access;
+  return NextResponse.json(await db.customer.findMany({ orderBy: { createdAt: "desc" }, take: 50 }));
+}
