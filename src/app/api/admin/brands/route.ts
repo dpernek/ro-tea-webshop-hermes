@@ -21,7 +21,7 @@ export async function GET() {
   const access = await requirePermission("brands", "read");
   if (access) return access;
   return NextResponse.json(await db.brand.findMany({
-    select: { id: true, slug: true, name: true, description: true, image: true, seoTitle: true, seoDescription: true, introText: true },
+    select: { id: true, slug: true, name: true, description: true, image: true },
     orderBy: { createdAt: "desc" },
   }));
 }
