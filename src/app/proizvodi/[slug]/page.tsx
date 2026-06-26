@@ -738,6 +738,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
       </div>
+      <RecentlyViewedBlock />
+      <ProductTracker product={{ id: product.id, name: product.name, price: product.price || product.salePrice || 0, image: product.image, slug: product.slug }} />
     </div>
   );
 }
