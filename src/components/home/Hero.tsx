@@ -71,7 +71,6 @@ export function Hero() {
             fetchPriority={isFirst ? "high" : "auto"}
             loading={isFirst ? "eager" : "lazy"}
             sizes="100vw"
-            unoptimized
           />
         );
       })}
