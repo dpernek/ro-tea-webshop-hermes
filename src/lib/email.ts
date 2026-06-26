@@ -102,7 +102,8 @@ function bankPaymentBox(orderNumber: string, total: number): string {
 // ── Templates ───────────────────────────────────────────────────
 
 export function customerEmail(data: {
-  orderNumber: string; total: number; paymentMethod: string; shippingMethod?: string;
+  orderNumber: string; subtotal?: number; shipping?: number; couponDiscount?: number; couponCode?: string;
+  total: number; paymentMethod: string; shippingMethod?: string;
   items: { name: string; quantity: number; price: number }[];
 }): string {
   const isBank = data.paymentMethod === "bank_transfer";
@@ -112,13 +113,21 @@ export function customerEmail(data: {
     <div class="body">
       <h2 style="color:#0f172a;margin:0 0 4px;font-size:22px">Hvala na narudžbi!</h2>
       <p class="meta">Vaša narudžba je zaprimljena i bit će obrađena u najkraćem roku.</p>
+
       <div class="card">
         <table style="width:100%;font-size:14px">
           <tr><td style="color:#64748b;padding:2px 0">Broj narudžbe:</td><td style="font-weight:600">${data.orderNumber}</td></tr>
           <tr><td style="color:#64748b;padding:2px 0">Način plaćanja:</td><td>${paymentLabel(data.paymentMethod)}</td></tr>
-          <tr><td style="color:#64748b;padding:2px 0">Ukupno:</td><td class="total">${data.total.toFixed(2)} EUR</td></tr>
+          ${data.shippingMethod ? `<tr><td style="color:#64748b;padding:2px 0">Dostava:</td><td>${data.shippingMethod}</td></tr>` : ""}
+        </table>
+        <table style="width:100%;font-size:14px;margin-top:12px;border-top:1px solid #e2e8f0;padding-top:12px">
+          ${data.subtotal != null ? `<tr><td style="color:#64748b;padding:2px 0">Međuzbroj</td><td style="text-align:right;font-weight:600">${data.subtotal.toFixed(2)} €</td></tr>` : ""}
+          ${data.shipping != null ? `<tr><td style="color:#64748b;padding:2px 0">Dostava</td><td style="text-align:right;font-weight:600">${data.shipping === 0 ? "Besplatno" : data.shipping.toFixed(2) + " €"}</td></tr>` : ""}
+          ${data.couponDiscount && data.couponDiscount > 0 ? `<tr><td style="color:#059669;padding:2px 0">Kupon ${data.couponCode || ""}</td><td style="text-align:right;font-weight:600;color:#059669">−${data.couponDiscount.toFixed(2)} €</td></tr>` : ""}
+          <tr><td style="color:#0f172a;font-weight:700;font-size:15px;padding:4px 0">Ukupno</td><td class="total">${data.total.toFixed(2)} EUR</td></tr>
         </table>
       </div>
+
       ${isBank ? bankPaymentBox(data.orderNumber, data.total) : ""}
       ${isPickup ? `<div class="card" style="border-color:#0055a8;background:#f0f7ff">
         <h3 style="color:#0055a8">📍 Osobno preuzimanje</h3>
@@ -138,7 +147,8 @@ export function customerEmail(data: {
 }
 
 export function adminNewOrderEmail(data: {
-  orderNumber: string; total: number; paymentMethod: string;
+  orderNumber: string; subtotal?: number; shipping?: number; couponDiscount?: number; couponCode?: string;
+  total: number; paymentMethod: string;
   customerName: string; customerEmail: string; customerPhone?: string;
   shippingMethod?: string; items?: { name: string; quantity: number; price: number }[];
 }): string {
@@ -149,14 +159,21 @@ export function adminNewOrderEmail(data: {
       <p class="meta">${data.orderNumber} · ${paymentLabel(data.paymentMethod)}</p>
       <div class="card">
         <h3>Kupac</h3>
+
         <table style="width:100%;font-size:14px">
           <tr><td style="color:#64748b;padding:2px 0">Ime:</td><td style="font-weight:600">${data.customerName}</td></tr>
           <tr><td style="color:#64748b;padding:2px 0">Email:</td><td>${data.customerEmail}</td></tr>
           ${data.customerPhone ? `<tr><td style="color:#64748b;padding:2px 0">Telefon:</td><td>${data.customerPhone}</td></tr>` : ""}
           <tr><td style="color:#64748b;padding:2px 0">Plaćanje:</td><td>${paymentLabel(data.paymentMethod)}</td></tr>
           ${data.shippingMethod ? `<tr><td style="color:#64748b;padding:2px 0">Dostava:</td><td>${data.shippingMethod}</td></tr>` : ""}
-          <tr><td style="color:#64748b;padding:2px 0">Ukupno:</td><td class="total">${data.total.toFixed(2)} EUR</td></tr>
         </table>
+        <table style="width:100%;font-size:14px;margin-top:12px;border-top:1px solid #e2e8f0;padding-top:12px">
+          ${data.subtotal != null ? `<tr><td style="color:#64748b;padding:2px 0">Međuzbroj</td><td style="text-align:right;font-weight:600">${data.subtotal.toFixed(2)} €</td></tr>` : ""}
+          ${data.shipping != null ? `<tr><td style="color:#64748b;padding:2px 0">Dostava</td><td style="text-align:right;font-weight:600">${data.shipping === 0 ? "Besplatno" : data.shipping.toFixed(2) + " €"}</td></tr>` : ""}
+          ${data.couponDiscount && data.couponDiscount > 0 ? `<tr><td style="color:#059669;padding:2px 0">Kupon ${data.couponCode || ""}</td><td style="text-align:right;font-weight:600;color:#059669">−${data.couponDiscount.toFixed(2)} €</td></tr>` : ""}
+          <tr><td style="color:#0f172a;font-weight:700;font-size:15px;padding:4px 0">Ukupno</td><td class="total">${data.total.toFixed(2)} EUR</td></tr>
+        </table>
+
       </div>
       ${data.items && data.items.length ? `<h3 style="color:#0f172a;font-size:15px;margin:24px 0 12px">Proizvodi</h3>${itemsTable(data.items)}` : ""}
       <a href="${URL_BASE}/admin/orders" class="btn">Otvori admin panel →</a>

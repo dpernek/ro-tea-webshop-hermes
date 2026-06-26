@@ -4,13 +4,17 @@ import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-const BOOLEAN_HEADERS = [
+const HEADERS = [
   "Broj narudžbe",
-  "Kupac",
+  "Ime kupca",
   "Email",
   "Telefon",
   "Adresa",
-  "Međuzbroj (€)","Ukupno (€)",
+  "Međuzbroj (€)",
+  "Dostava (€)",
+  "Popust (€)",
+  "Kupon kod",
+  "Ukupno (€)",
   "Status narudžbe",
   "Status plaćanja",
   "Način plaćanja",
@@ -21,36 +25,23 @@ const BOOLEAN_HEADERS = [
 ];
 
 const statusLabels: Record<string, string> = {
-  PENDING: "Na čekanju",
-  CONFIRMED: "Potvrđeno",
-  PROCESSING: "U obradi",
-  SHIPPED: "Poslano",
-  COMPLETED: "Završeno",
-  CANCELLED: "Otkazano",
+  PENDING: "Na čekanju", CONFIRMED: "Potvrđeno", PROCESSING: "U obradi",
+  SHIPPED: "Poslano", COMPLETED: "Završeno", CANCELLED: "Otkazano",
   REFUNDED: "Refundirano",
 };
 
 const paymentLabels: Record<string, string> = {
-  UNPAID: "Nije plaćeno",
-  PENDING: "Plaćanje u tijeku",
-  PAID: "Plaćeno",
-  FAILED: "Neuspjelo",
-  CANCELLED: "Otkazano",
-  EXPIRED: "Isteklo",
-  REFUNDED: "Refundirano",
+  UNPAID: "Nije plaćeno", PENDING: "Plaćanje u tijeku", PAID: "Plaćeno",
+  FAILED: "Neuspjelo", CANCELLED: "Otkazano", EXPIRED: "Isteklo",
 };
 
 const paymentMethodLabels: Record<string, string> = {
-  card: "Kartica (Stripe)",
-  cod: "Pouzeće",
-  bank_transfer: "Bankovna transakcija",
+  card: "Kartica (Stripe)", cod: "Pouzeće", bank_transfer: "Bankovna transakcija",
 };
 
-function escapeCsvField(val: string): string {
-  if (val.includes(",") || val.includes('"') || val.includes("\n")) {
-    return `"${val.replace(/"/g, '""')}"`;
-  }
-  return val;
+function esc(val: string): string {
+  return val.includes(",") || val.includes('"') || val.includes("\n")
+    ? `"${val.replace(/"/g, '""')}"` : val;
 }
 
 export async function POST(req: NextRequest) {
@@ -66,59 +57,46 @@ export async function POST(req: NextRequest) {
   if (dateFrom || dateTo) {
     where.createdAt = {};
     if (dateFrom) where.createdAt.gte = new Date(dateFrom);
-    if (dateTo) {
-      const toDate = new Date(dateTo);
-      toDate.setHours(23, 59, 59, 999);
-      where.createdAt.lte = toDate;
-    }
+    if (dateTo) where.createdAt.lte = new Date(dateTo + "T23:59:59.999Z");
   }
 
   const orders = await db.order.findMany({
     where,
     orderBy: { createdAt: "desc" },
     select: {
-      orderNumber: true,
-      customerName: true,
-      customerEmail: true,
-      customerPhone: true,
-      shippingAddress: true,
-      subtotal: true, shippingTotal: true, total: true,
-      status: true,
-      paymentStatus: true,
-      paymentMethod: true,
-      shippingMethod: true,
-      stripeCheckoutSessionId: true,
-      createdAt: true,
-      paidAt: true,
+      orderNumber: true, customerName: true, customerEmail: true, customerPhone: true,
+      shippingAddress: true, subtotal: true, shippingTotal: true, couponDiscount: true,
+      couponCode: true, total: true, status: true, paymentStatus: true,
+      paymentMethod: true, shippingMethod: true, stripeCheckoutSessionId: true,
+      createdAt: true, paidAt: true,
     },
   });
 
-  const header = BOOLEAN_HEADERS.map(escapeCsvField).join(",");
-  const rows = orders.map((o) =>
+  const header = HEADERS.map(esc).join(",");
+  const rows = orders.map(o =>
     [
-      o.subtotal != null ? o.subtotal.toFixed(2) : "0.00",
-      escapeCsvField(o.customerName),
-      escapeCsvField(o.customerEmail),
-      escapeCsvField(o.customerPhone),
-      escapeCsvField(o.shippingAddress || ""),
-      escapeCsvField(o.total.toFixed(2)),
-      escapeCsvField(statusLabels[o.status] || o.status),
-      escapeCsvField(paymentLabels[o.paymentStatus] || o.paymentStatus),
-      escapeCsvField(paymentMethodLabels[o.paymentMethod] || o.paymentMethod),
-      escapeCsvField(o.shippingMethod || ""),
-      escapeCsvField(o.stripeCheckoutSessionId || ""),
-      escapeCsvField(new Date(o.createdAt).toLocaleDateString("hr-HR")),
-      escapeCsvField(o.paidAt ? new Date(o.paidAt).toLocaleDateString("hr-HR") : ""),
+      esc(o.orderNumber),
+      esc(o.customerName),
+      esc(o.customerEmail),
+      esc(o.customerPhone || ""),
+      esc(o.shippingAddress || ""),
+      o.subtotal?.toFixed(2) || "0.00",
+      o.shippingTotal?.toFixed(2) || "0.00",
+      o.couponDiscount ? `-${o.couponDiscount.toFixed(2)}` : "0.00",
+      o.couponCode || "",
+      o.total?.toFixed(2) || "0.00",
+      esc(statusLabels[o.status] || o.status),
+      esc(paymentLabels[o.paymentStatus] || o.paymentStatus),
+      esc(paymentMethodLabels[o.paymentMethod] || o.paymentMethod),
+      esc(o.shippingMethod || ""),
+      esc(o.stripeCheckoutSessionId || ""),
+      esc(o.createdAt ? new Date(o.createdAt).toISOString() : ""),
+      esc(o.paidAt ? new Date(o.paidAt).toISOString() : ""),
     ].join(",")
   );
 
-  const bom = "\uFEFF"; // BOM for Excel to recognize UTF-8
-  const csv = bom + [header, ...rows].join("\n");
-
+  const csv = "\uFEFF" + header + "\n" + rows.join("\n");
   return new NextResponse(csv, {
-    headers: {
-      "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="narudzbe-${new Date().toISOString().slice(0, 10)}.csv"`,
-    },
+    headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": "attachment; filename=orders-export.csv" },
   });
 }

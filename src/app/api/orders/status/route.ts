@@ -11,8 +11,8 @@ export async function GET(req: Request) {
 
   const select = {
     orderNumber: true, paymentMethod: true, paymentStatus: true, status: true,
-    subtotal: true, shippingTotal: true, total: true,
-    shippingMethod: true, shippingAddress: true,
+    subtotal: true, shippingTotal: true, couponDiscount: true, couponCode: true,
+    total: true, shippingMethod: true, shippingAddress: true,
   };
   const order = sessionId
     ? await db.order.findFirst({ where: { stripeCheckoutSessionId: sessionId }, select })
