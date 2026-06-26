@@ -257,7 +257,7 @@ export default function AdminProductsPage() {
         ids: Array.from(selectedIds),
         selectAll: selectAllFiltered,
         filters: {
-          search,
+          appliedSearch,
           categoryId: categoryId || undefined,
           brandId: brandId || undefined,
         },
@@ -301,7 +301,7 @@ export default function AdminProductsPage() {
         ids: Array.from(selectedIds),
         selectAll: selectAllFiltered,
         filters: {
-          search,
+          appliedSearch,
           categoryId: categoryId || undefined,
           brandId: brandId || undefined,
         },
