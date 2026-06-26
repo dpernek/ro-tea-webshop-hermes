@@ -13,7 +13,7 @@ const userSchema = z.object({
 });
 
 export async function GET() {
-  const access = await requirePermission("users", "write");
+  const access = await requirePermission("users", "read");
   if (access) return access;
 
   const users = await db.user.findMany({
