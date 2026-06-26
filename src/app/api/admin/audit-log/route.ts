@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     where,
     orderBy: { createdAt: "desc" },
     take: 500,
-    select: { id: true, resource: true, action: true, message: true, userEmail: true, targetId: true, createdAt: true },
+    select: { id: true, resource: true, action: true, summary: true, userEmail: true, entityId: true, createdAt: true },
   });
 
   return NextResponse.json(logs);
