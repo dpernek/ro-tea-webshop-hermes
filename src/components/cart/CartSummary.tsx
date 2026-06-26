@@ -69,7 +69,7 @@ export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAbov
       if (!res.ok || !data.valid) { setCouponError(data.error || "Kupon nije valjan."); return; }
       setActiveCoupon(data.code || couponCode.trim());
       setCouponDiscount(data.discount || 0);
-      trackEvent("apply_coupon", { code: data.code || couponCode.trim(), discount: data.discount || 0, subtotal });
+      trackEvent("apply_coupon", { code: data.code || couponCode.trim(), discount: data.discount || 0, subtotal: subtotalWithVat });
     } catch { setCouponError("Greška pri provjeri kupona."); }
     finally { setCouponLoading(false); }
   };
