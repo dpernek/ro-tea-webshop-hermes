@@ -8,6 +8,8 @@ import Image from "next/image";
 import { Truck, ShieldCheck, Users, Wrench } from "lucide-react";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "RO-TEA | Profesionalni alati i oprema za industriju i obrt",
   description:
