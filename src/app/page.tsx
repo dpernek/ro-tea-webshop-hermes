@@ -4,7 +4,6 @@ import { PopularProducts } from "@/components/home/PopularProducts";
 import { Benefits } from "@/components/home/Benefits";
 import { CTASection } from "@/components/home/CTASection";
 import Image from "next/image";
-import { Truck, ShieldCheck, Users, Wrench } from "lucide-react";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -23,13 +22,6 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
-
-const trustItems = [
-  { icon: Wrench, label: "Tehnička oprema za industriju i obrt" },
-  { icon: ShieldCheck, label: "Sigurna online narudžba – kartica, virman, pouzeće" },
-  { icon: Users, label: "Podrška za poslovne kupce i veće količine" },
-  { icon: Truck, label: "Dostava diljem Hrvatske" },
-];
 
 const targetAudience = [
   {
@@ -62,22 +54,6 @@ export default async function HomePage() {
     <>
       {/* hero content: server-loaded */}
       <Hero title={heroContent?.title || undefined} subtitle={heroContent?.body || undefined} />
-
-      {/* Trust bar */}
-      <section className="border-b border-slate-100 bg-white py-10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {trustItems.map((item) => (
-              <div key={item.label} className="flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#0055a8]/10">
-                  <item.icon className="h-5 w-5 text-[#0055a8]" aria-hidden="true" />
-                </div>
-                <p className="text-sm font-medium text-slate-700">{item.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       <FeaturedCategories />
 
