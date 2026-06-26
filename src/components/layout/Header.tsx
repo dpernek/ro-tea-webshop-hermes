@@ -22,6 +22,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const totalItems = useCartStore((state) => state.getTotalItems());
+  const wishlistCount = useWishlistStore((state) => state.items.length);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
