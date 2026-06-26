@@ -70,6 +70,10 @@ function LoginForm() {
           Prijava
         </Button>
       </form>
+
+      <p className="mt-6 text-center text-xs text-slate-400">
+        Problemi s pristupom? Obratite se administratoru sustava.
+      </p>
     </>
   );
 }
