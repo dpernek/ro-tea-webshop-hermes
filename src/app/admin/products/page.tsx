@@ -163,10 +163,6 @@ export default function AdminProductsPage() {
     setLoading(false);
   }, [page, search, categoryId, brandId]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
-
   // --- Reload counter (bumps on any filter/search/pagination change) ---
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -179,10 +175,10 @@ export default function AdminProductsPage() {
     triggerReload();
   };
 
-  // When page changes or reloadKey bumps, fetch data
+  // Fetch: page changes OR reloadKey bumps (search/filter via doSearch button)
   useEffect(() => {
     load();
-  }, [page, reloadKey, load]);
+  }, [page, reloadKey, categoryId, brandId]);
 
   // --- Delete ---
   const handleDelete = async (id: string) => {
