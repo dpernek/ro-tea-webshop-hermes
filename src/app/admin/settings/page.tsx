@@ -10,7 +10,6 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; msg: string } | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<Record<string,string>>({});
 
   useEffect(() => {
     fetch("/api/admin/settings")
@@ -30,8 +29,8 @@ export default function AdminSettingsPage() {
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
         if (d.errors && typeof d.errors === "object") {
-          setFieldErrors(d.errors);
-          setFeedback({ type: "error", msg: "Ispravite označena polja." });
+          const msg = Object.entries(d.errors).map(([k,v]) => `${k}: ${v}`).join("; ");
+          setFeedback({ type: "error", msg: msg || "Ispravite označena polja." });
         } else {
           setFeedback({ type: "error", msg: d.error || "Greška pri spremanju." });
         }
