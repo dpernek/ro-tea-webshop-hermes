@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
 import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
 import { productSchema, formatZodErrors } from "@/lib/validations";
@@ -10,7 +10,7 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const access = await requireAdmin();
+  const access = await requirePermission("products", "write");
   if (access)
     return access;
   const { id } = await params;
@@ -36,7 +36,7 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const access = await requireAdmin();
+  const access = await requirePermission("products", "write");
   if (access)
     return access;
   const { id } = await params;
@@ -48,7 +48,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const access = await requireAdmin();
+  const access = await requirePermission("products", "write");
   if (access)
     return access;
 

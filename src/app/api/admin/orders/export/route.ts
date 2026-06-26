@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -45,7 +45,7 @@ function esc(val: string): string {
 }
 
 export async function POST(req: NextRequest) {
-  const access = await requireAdmin();
+  const access = await requirePermission("orders", "write");
   if (access) return access;
 
   const body = await req.json().catch(() => ({}));

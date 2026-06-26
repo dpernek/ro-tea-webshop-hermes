@@ -8,13 +8,23 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const resource = searchParams.get("resource");
+  const userEmail = searchParams.get("userEmail");
+  const dateFrom = searchParams.get("dateFrom");
+  const dateTo = searchParams.get("dateTo");
+
   const where: any = {};
   if (resource) where.resource = resource;
+  if (userEmail) where.userEmail = { contains: userEmail, mode: "insensitive" };
+  if (dateFrom || dateTo) {
+    where.createdAt = {};
+    if (dateFrom) where.createdAt.gte = new Date(dateFrom);
+    if (dateTo) where.createdAt.lte = new Date(dateTo + "T23:59:59.999Z");
+  }
 
   const logs = await db.auditLog.findMany({
     where,
     orderBy: { createdAt: "desc" },
-    take: 200,
+    take: 500,
   });
 
   return NextResponse.json(logs);

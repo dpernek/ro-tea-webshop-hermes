@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 const rollbackSchema = z.object({ operationId: z.string().min(1) });
 
 export async function POST(request: NextRequest) {
-  const access = await requireAdmin();
+  const access = await requirePermission("products", "write");
   if (access) return access;
 
   let raw: unknown;

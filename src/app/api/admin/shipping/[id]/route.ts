@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +20,7 @@ const shippingUpdateSchema = z.object({
 });
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const access = await requireAdmin();
+  const access = await requirePermission("shipping", "write");
   if (access) return access;
   const { id } = await params;
 
@@ -41,7 +41,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const access = await requireAdmin();
+  const access = await requirePermission("shipping", "write");
   if (access) return access;
   const { id } = await params;
   await db.shippingMethod.delete({ where: { id } });

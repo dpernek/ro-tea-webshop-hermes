@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -16,14 +16,14 @@ const catalogSchema = z.object({
 });
 
 export async function GET() {
-  const access = await requireAdmin();
+  const access = await requirePermission("catalogs", "write");
   if (access) return access;
   const catalogs = await db.catalog.findMany({ orderBy: { sortOrder: "asc" } });
   return NextResponse.json(catalogs);
 }
 
 export async function POST(request: NextRequest) {
-  const access = await requireAdmin();
+  const access = await requirePermission("catalogs", "write");
   if (access) return access;
 
   const raw = await request.json();

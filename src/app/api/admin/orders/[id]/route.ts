@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
 import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
 import { sendEmail, statusChangeEmail } from "@/lib/email";
@@ -41,7 +41,7 @@ const orderUpdateSchema = z.object({
 }).strict();
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const access = await requireAdmin();
+  const access = await requirePermission("orders", "write");
   if (access) return access;
   const { id } = await params;
   const order = await db.order.findUnique({ where: { id }, include: { items: true } });
@@ -59,7 +59,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const access = await requireAdmin();
+  const access = await requirePermission("orders", "write");
   if (access) return access;
   const { id } = await params;
 

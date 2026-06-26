@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
 import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
 
@@ -49,7 +49,7 @@ const productCreateSchema = z.object({
 });
 
 export async function GET(request: NextRequest) {
-  const access = await requireAdmin();
+  const access = await requirePermission("products", "write");
   if (access) return access;
 
   const url = new URL(request.url);
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const access = await requireAdmin();
+  const access = await requirePermission("products", "write");
   if (access) return access;
 
   const raw = await request.json();

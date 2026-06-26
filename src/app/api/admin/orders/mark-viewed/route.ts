@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-  const access = await requireAdmin();
+  const access = await requirePermission("orders", "write");
   if (access) return access;
 
   const { ids } = await req.json().catch(() => ({}));

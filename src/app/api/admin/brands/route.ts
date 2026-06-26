@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
 import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
 
@@ -18,13 +18,13 @@ const brandCreateSchema = z.object({
 });
 
 export async function GET() {
-  const access = await requireAdmin();
+  const access = await requirePermission("brands", "write");
   if (access) return access;
   return NextResponse.json(await db.brand.findMany({ orderBy: { createdAt: "desc" } }));
 }
 
 export async function POST(req: NextRequest) {
-  const access = await requireAdmin();
+  const access = await requirePermission("brands", "write");
   if (access) return access;
 
   const raw = await req.json();

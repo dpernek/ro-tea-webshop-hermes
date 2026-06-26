@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
 import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
 
@@ -21,14 +21,14 @@ const categoryCreateSchema = z.object({
 });
 
 export async function GET() {
-  const access = await requireAdmin();
+  const access = await requirePermission("categories", "write");
   if (access) return access;
   const data = await db.category.findMany({ orderBy: { sortOrder: "asc" } });
   return NextResponse.json(data);
 }
 
 export async function POST(req: NextRequest) {
-  const access = await requireAdmin();
+  const access = await requirePermission("categories", "write");
   if (access) return access;
 
   const raw = await req.json();

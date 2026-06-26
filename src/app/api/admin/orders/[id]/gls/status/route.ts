@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { isGlsConfigured } from "@/lib/shipping/gls/config";
 import { getParcelStatuses } from "@/lib/shipping/gls/restClient";
@@ -14,7 +14,7 @@ export async function POST(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const access = await requireAdmin();
+  const access = await requirePermission("orders", "write");
   if (access) {
     return NextResponse.json({ error: "Neovlašten pristup." }, { status: 401 });
   }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -16,7 +16,7 @@ const catalogUpdateSchema = z.object({
 });
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const access = await requireAdmin();
+  const access = await requirePermission("catalogs", "write");
   if (access) return access;
 
   const { id } = await params;
@@ -46,7 +46,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const access = await requireAdmin();
+  const access = await requirePermission("catalogs", "write");
   if (access) return access;
 
   const { id } = await params;
