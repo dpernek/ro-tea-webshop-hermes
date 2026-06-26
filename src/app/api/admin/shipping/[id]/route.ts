@@ -44,6 +44,15 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   const access = await requirePermission("shipping", "write");
   if (access) return access;
   const { id } = await params;
+
+  // Guard: don't delete a method that's used in existing orders
+  const usedCount = await db.order.count({ where: { shippingMethod: { contains: (await db.shippingMethod.findUnique({ where: { id }, select: { name: true } }))?.name || id } } });
+  if (usedCount > 0) {
+    // Deactivate instead of deleting
+    await db.shippingMethod.update({ where: { id }, data: { active: false } });
+    return NextResponse.json({ ok: true, deactivated: true, message: "Metoda dostave je deaktivirana jer je korištena u postojećim narudžbama." });
+  }
+
   await db.shippingMethod.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }

@@ -53,6 +53,8 @@ export async function GET(
   // The label is stored as base64 PDF data
   const pdfBuffer = Buffer.from(order.glsLabelData, "base64");
 
+  await logAction("orders", "gls_label", `GLS labela preuzeta za ${order.orderNumber}`, order.id);
+
   return new NextResponse(pdfBuffer, {
     status: 200,
     headers: {

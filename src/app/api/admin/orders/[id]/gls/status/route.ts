@@ -71,6 +71,8 @@ export async function POST(
       data: { glsStatusData: statusJson },
     });
 
+    await logAction("orders", "gls_status", `GLS status osvježen za ${order.orderNumber}`, order.id);
+
     return NextResponse.json({
       success: true,
       parcelNumber: order.glsParcelNumber,

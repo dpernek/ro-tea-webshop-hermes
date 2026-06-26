@@ -133,6 +133,8 @@ export async function POST(
       },
     });
 
+    await logAction("orders", "gls_create", `GLS pošiljka kreirana: ${parcel.parcelNumber} za ${order.orderNumber}`, order.id);
+
     return NextResponse.json({
       success: true,
       parcelId: parcel.parcelId,

@@ -81,6 +81,8 @@ export async function POST(
       },
     });
 
+    await logAction("orders", "gls_cancel", `GLS pošiljka stornirana za ${order.orderNumber}`, order.id);
+
     return NextResponse.json({
       success: true,
       message: "GLS naljepnica je uspješno stornirana.",
