@@ -21,6 +21,7 @@ export default async function KataloziPage() {
   const catalogs = await db.catalog.findMany({
     where: { active: true },
     orderBy: { sortOrder: "asc" },
+    select: { name: true, fileUrl: true, brand: true, description: true },
   });
 
   if (catalogs.length === 0) {
