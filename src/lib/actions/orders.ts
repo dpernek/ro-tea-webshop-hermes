@@ -46,16 +46,18 @@ export async function createOrder(data: {
   let shippingTotal = data.shippingTotal;
   if (!shippingTotal && data.shippingMethodId) {
     const shipMethod = await db.shippingMethod.findUnique({ where: { id: data.shippingMethodId }, select: { price: true, freeAboveAmount: true } });
+    if (!shipMethod) throw new Error("Odabrani način dostave više nije dostupan.");
     if (shipMethod) {
       const isFree = shipMethod.freeAboveAmount != null && pricing.subtotal >= shipMethod.freeAboveAmount;
       shippingTotal = isFree || isPickup ? 0 : shipMethod.price;
     }
   }
+  const couponCode = data.couponCode?.trim() || null;
   let couponDiscount = 0;
-  let appliedCoupon = null;
-  if (data.couponCode) {
-    const validated = await validateCoupon(data.couponCode, pricing.subtotal);
-    if (validated) { couponDiscount = validated.discount; appliedCoupon = validated; }
+  if (couponCode) {
+    const validated = await validateCoupon(couponCode, pricing.subtotal);
+    if (!validated) throw new Error("Kod za popust nije valjan ili je istekao.");
+    couponDiscount = validated.discount;
   }
   const total = pricing.subtotal + (shippingTotal || 0) - couponDiscount;
 

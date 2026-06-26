@@ -58,6 +58,9 @@ export async function POST(req: NextRequest) {
 
     // Get shipping from DB
     const shipMethod = await db.shippingMethod.findUnique({ where: { id: body.shippingMethodId }, select: { price: true, freeAboveAmount: true, name: true } });
+    if (!shipMethod) {
+      return NextResponse.json({ error: "Odabrani način dostave više nije dostupan." }, { status: 400 });
+    }
     const shipPrice = shipMethod?.price ?? 0;
     const shipFreeAbove = shipMethod?.freeAboveAmount ?? null;
     const isFreeShip = isPickup || (shipFreeAbove != null && pricing.subtotal >= shipFreeAbove);
@@ -65,10 +68,16 @@ export async function POST(req: NextRequest) {
     // Validate coupon server-side
     let couponDiscount = 0;
     let appliedCoupon = null;
-    if (body.couponCode) {
-      const validated = await validateCoupon(body.couponCode, pricing.subtotal);
-      if (validated) { couponDiscount = validated.discount; appliedCoupon = validated; }
-      else if (!body.couponDiscount) { /* silently ignore invalid */ }
+    const couponCode = body.couponCode?.trim() || null;
+    let couponDiscount = 0;
+    let appliedCouponCode: string | null = null;
+    if (couponCode) {
+      const validated = await validateCoupon(couponCode, pricing.subtotal);
+      if (!validated) {
+        return NextResponse.json({ error: "Kod za popust nije valjan ili je istekao." }, { status: 400 });
+      }
+      couponDiscount = validated.discount;
+      appliedCouponCode = validated.code;
     }
     const total = pricing.subtotal + shippingTotal - couponDiscount;
 
