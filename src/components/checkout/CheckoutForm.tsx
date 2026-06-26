@@ -110,7 +110,6 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
             glsPickupPointId: formData.glsPickupPointId || undefined,
             glsPickupPointName: formData.glsPickupPointName || undefined,
             glsPickupPointAddress: formData.glsPickupPointAddress || undefined,
-            couponCode: couponCode || undefined, couponDiscount: couponDiscount || undefined,
           }),
         });
         const data = await res.json();

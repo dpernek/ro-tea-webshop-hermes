@@ -97,7 +97,6 @@ export async function POST(req: NextRequest) {
         glsPickupPointId: body.glsPickupPointId || null,
         glsPickupPointName: body.glsPickupPointName || null,
         glsPickupPointAddress: body.glsPickupPointAddress || null,
-        couponCode: body.couponCode || null, couponDiscount: body.couponDiscount || null,
         items: {
           create: pricing.lineItems.map(li => ({
             productId: li.productId, productName: productMap.get(li.productId)!.name,
