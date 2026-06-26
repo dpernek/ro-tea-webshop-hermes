@@ -16,14 +16,14 @@ const catalogSchema = z.object({
 });
 
 export async function GET() {
-  const access = await requirePermission("catalogs", "write");
+  const access = await requirePermission("catalogs", "read");
   if (access) return access;
   const catalogs = await db.catalog.findMany({ orderBy: { sortOrder: "asc" } });
   return NextResponse.json(catalogs);
 }
 
 export async function POST(request: NextRequest) {
-  const access = await requirePermission("catalogs", "write");
+  const access = await requirePermission("catalogs", "read");
   if (access) return access;
 
   const raw = await request.json();

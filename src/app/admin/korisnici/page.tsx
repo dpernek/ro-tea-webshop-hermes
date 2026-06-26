@@ -9,10 +9,13 @@ interface User { id: string; name: string; email: string; role: string; active: 
 type Mode = "closed" | "create" | "edit";
 const EMPTY = { name: "", email: "", role: "STAFF" as const, password: "", passwordConfirm: "" };
 
+function ForbiddenCard() { return (<div className="flex items-center justify-center min-h-[60vh]"><Card className="flex flex-col items-center gap-3 py-12 px-8 text-center"><AlertCircle size={32} className="text-red-400" /><p className="text-lg font-semibold text-slate-700">Nemate pristup ovoj stranici</p><p className="text-sm text-slate-400">Ova sekcija je dostupna samo administratorima.</p></Card></div>); }
+
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [forbidden, setForbidden] = useState(false);
   const [mode, setMode] = useState<Mode>("closed");
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(EMPTY);
@@ -34,7 +37,8 @@ export default function AdminUsersPage() {
     setLoading(true); setError("");
     try {
       const r = await fetch("/api/admin/users");
-      if (!r.ok) throw new Error("Ne mogu učitati korisnike.");
+      if (r.status === 403) { setForbidden(true); setLoading(false); return; }
+        if (!r.ok) throw new Error("Ne mogu učitati korisnike.");
       setUsers(await r.json());
     } catch { setError("Greška pri učitavanju korisnika."); }
     setLoading(false);

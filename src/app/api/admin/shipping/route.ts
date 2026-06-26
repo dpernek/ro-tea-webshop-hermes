@@ -21,13 +21,13 @@ const shippingCreateSchema = z.object({
 });
 
 export async function GET() {
-  const access = await requirePermission("shipping", "write");
+  const access = await requirePermission("shipping", "read");
   if (access) return access;
   return NextResponse.json(await db.shippingMethod.findMany({ orderBy: { sortOrder: "asc" } }));
 }
 
 export async function POST(req: NextRequest) {
-  const access = await requirePermission("shipping", "write");
+  const access = await requirePermission("shipping", "read");
   if (access) return access;
 
   const raw = await req.json();

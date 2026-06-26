@@ -6,7 +6,7 @@ import { paymentSchema, formatZodErrors } from "@/lib/validations";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const access = await requirePermission("payments", "write");
+  const access = await requirePermission("payments", "read");
   if (access) return access;
 
   const url = new URL(req.url);
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const access = await requirePermission("payments", "write");
+  const access = await requirePermission("payments", "read");
   if (access) return access;
 
   const body = await req.json();

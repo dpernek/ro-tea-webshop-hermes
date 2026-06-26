@@ -13,7 +13,7 @@ const userSchema = z.object({
 });
 
 export async function GET() {
-  const access = await requirePermission("users", "write");
+  const access = await requirePermission("users", "read");
   if (access) return access;
 
   const users = await db.user.findMany({
@@ -24,7 +24,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const access = await requirePermission("users", "write");
+  const access = await requirePermission("users", "read");
   if (access) return access;
 
   const raw = await req.json().catch(() => ({}));

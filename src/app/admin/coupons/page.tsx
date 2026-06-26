@@ -29,10 +29,13 @@ function Skeleton() {
 
 const emptyForm = { code:"", type:"PERCENTAGE", value:10, active:true, startsAt:"", endsAt:"", minimumOrderAmount:"" as string|number|null, usageLimit:"" as string|number|null };
 
+function ForbiddenCard() { return (<div className="flex items-center justify-center min-h-[60vh]"><Card className="flex flex-col items-center gap-3 py-12 px-8 text-center"><AlertCircle size={32} className="text-red-400" /><p className="text-lg font-semibold text-slate-700">Nemate pristup ovoj stranici</p><p className="text-sm text-slate-400">Ova sekcija je dostupna samo administratorima.</p></Card></div>); }
+
 export default function AdminCouponsPage() {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [forbidden, setForbidden] = useState(false);
   const [mode, setMode] = useState<Mode>("closed");
   const [editId, setEditId] = useState<string | null>(null);
   const [f, setF] = useState({ ...emptyForm });

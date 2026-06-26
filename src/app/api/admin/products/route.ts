@@ -49,7 +49,7 @@ const productCreateSchema = z.object({
 });
 
 export async function GET(request: NextRequest) {
-  const access = await requirePermission("products", "write");
+  const access = await requirePermission("products", "read");
   if (access) return access;
 
   const url = new URL(request.url);
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const access = await requirePermission("products", "write");
+  const access = await requirePermission("products", "read");
   if (access) return access;
 
   const raw = await request.json();
