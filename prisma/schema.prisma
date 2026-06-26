@@ -114,6 +114,8 @@ model Order {
   shippingTotal            Float       @default(0)
   taxTotal                 Float       @default(0)
   discountTotal            Float       @default(0)
+  couponCode               String?
+  couponDiscount           Float?
   total                    Float
   currency                 String      @default("EUR")
   status                   String      @default("PENDING")     // PENDING, CONFIRMED, PROCESSING, SHIPPED, COMPLETED, CANCELLED, REFUNDED

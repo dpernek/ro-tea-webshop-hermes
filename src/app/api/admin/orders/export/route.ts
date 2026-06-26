@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     orderBy: { createdAt: "desc" },
     select: {
       orderNumber: true, customerName: true, customerEmail: true, customerPhone: true,
-      shippingAddress: true, subtotal: true, shippingTotal: true, discountTotal: true,
+      shippingAddress: true, subtotal: true, shippingTotal: true, discountTotal: true, couponCode: true, couponDiscount: true,
        total: true, status: true, paymentStatus: true,
       paymentMethod: true, shippingMethod: true, stripeCheckoutSessionId: true,
       createdAt: true, paidAt: true,
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
       esc(o.shippingAddress || ""),
       o.subtotal?.toFixed(2) || "0.00",
       o.shippingTotal?.toFixed(2) || "0.00",
-      o.discountTotal > 0 ? `-${(o.discountTotal || 0).toFixed(2)}` : "0.00",
+      o(o.couponDiscount || o.discountTotal) > 0 ? `-${((o.couponDiscount || o.discountTotal) || 0).toFixed(2)}` : "0.00",
       "",
       o.total?.toFixed(2) || "0.00",
       esc(statusLabels[o.status] || o.status),
