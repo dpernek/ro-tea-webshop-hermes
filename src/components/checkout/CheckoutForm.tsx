@@ -168,7 +168,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
 
       {shippingLoading && <p className="text-sm text-slate-400">Učitavanje načina dostave...</p>}
       {shippingError && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{shippingError}</div>}
-      {!shippingLoading && !shippingError && (
+      {!shippingLoading && !shippingError && <>
       {/* Shipping */}
       {errors.shippingMethod && <p className="text-xs text-red-600 -mt-2 mb-2">{errors.shippingMethod}</p>}
       <div>
@@ -223,7 +223,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         />
       )}
 
-      )}
+      </>}
       {/* Payment */}
       <div>
         <p className="mb-3 text-sm font-medium text-slate-700">Način plaćanja</p>
