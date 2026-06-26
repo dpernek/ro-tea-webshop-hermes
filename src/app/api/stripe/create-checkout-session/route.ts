@@ -22,7 +22,6 @@ const checkoutSessionSchema = z.object({
   glsPickupPointName: z.string().optional(),
   glsPickupPointAddress: z.string().optional(),
   couponCode: z.string().optional(),
-  couponDiscount: z.number().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -68,14 +67,12 @@ export async function POST(req: NextRequest) {
     // Validate coupon server-side
     const couponCode = body.couponCode?.trim() || null;
     let couponDiscount = 0;
-    let appliedCouponCode: string | null = null;
     if (couponCode) {
       const validated = await validateCoupon(couponCode, pricing.subtotal);
       if (!validated) {
         return NextResponse.json({ error: "Kod za popust nije valjan ili je istekao." }, { status: 400 });
       }
       couponDiscount = validated.discount;
-      appliedCouponCode = validated.code;
     }
     const total = pricing.subtotal + shippingTotal - couponDiscount;
 

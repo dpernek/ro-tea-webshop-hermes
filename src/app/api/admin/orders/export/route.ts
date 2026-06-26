@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
       esc(o.shippingAddress || ""),
       o.subtotal?.toFixed(2) || "0.00",
       o.shippingTotal?.toFixed(2) || "0.00",
-      (o.couponDiscount || o.discountTotal) > 0 ? `-${((o.couponDiscount || o.discountTotal) || 0).toFixed(2)}` : "0.00",
+      o.couponDiscount > 0 ? `-${o.couponDiscount.toFixed(2)}` : "0.00",
       o.couponCode || "",
       o.total?.toFixed(2) || "0.00",
       esc(statusLabels[o.status] || o.status),

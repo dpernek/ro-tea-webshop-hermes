@@ -28,7 +28,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     glsPickupPointId: "", glsPickupPointName: "", glsPickupPointAddress: "",
   });
   const [couponCode, setCouponCode] = useState("");
-  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponDiscount] = useState(0);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [shippingMethods, setShippingMethods] = useState<Array<{ id: string; name: string; price: number; freeAboveAmount?: number | null }>>([]);

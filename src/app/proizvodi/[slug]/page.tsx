@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
-import { site, siteUrl } from "@/lib/data";
+import { siteUrl } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
