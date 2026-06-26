@@ -1,5 +1,4 @@
 import { Hero } from "@/components/home/Hero";
-import { getContentSection } from "@/lib/content";
 import { FeaturedCategories } from "@/components/home/FeaturedCategories";
 import { PopularProducts } from "@/components/home/PopularProducts";
 import { Benefits } from "@/components/home/Benefits";
@@ -49,13 +48,7 @@ const targetAudience = [
   },
 ];
 
-export default async function HomePage() {
-  const [heroContent, trustContent, ctaContent] = await Promise.all([
-    getContentSection("hero"),
-    getContentSection("trust"),
-    getContentSection("cta"),
-  ]);
-
+export default function HomePage() {
   return (
     <>
       {/* hero content: server-loaded */}
