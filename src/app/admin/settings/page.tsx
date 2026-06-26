@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/Card"; import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { AlertCircle } from "lucide-react"; from "@/components/ui/Card"; import { Button } from "@/components/ui/Button";
 import { Save, Loader2, CheckCircle, XCircle } from "lucide-react";
 
 function ForbiddenCard() { return (<div className="flex items-center justify-center min-h-[60vh]"><Card className="flex flex-col items-center gap-3 py-12 px-8 text-center"><AlertCircle size={32} className="text-red-400" /><p className="text-lg font-semibold text-slate-700">Nemate pristup ovoj stranici</p><p className="text-sm text-slate-400">Ova sekcija je dostupna samo administratorima.</p></Card></div>); }
