@@ -3,7 +3,8 @@ import { z } from "zod";
 import { requirePermission } from "@/lib/admin-auth";
 import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
-import { sendEmail, statusChangeEmail } from "@/lib/email";
+import { canTransition, validateOrderPaymentConsistency } from "@/lib/order-lifecycle";
+import { sendEmail } from "@/lib/email";
 import { isGlsConfigured } from "@/lib/shipping/gls/config";
 import { getGlsConfig } from "@/lib/shipping/gls/config";
 
@@ -119,36 +120,35 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (parsed.data.paymentStatus !== undefined) updateData.paymentStatus = parsed.data.paymentStatus;
   if (parsed.data.adminNote !== undefined) updateData.adminNote = parsed.data.adminNote;
 
-  // Read old values BEFORE update for audit log
+  // Read old values BEFORE update for audit + lifecycle validation
   const oldOrder = await db.order.findUnique({ where: { id }, select: { status: true, paymentStatus: true, adminNote: true } });
+
+  // Lifecycle validation
+  if (parsed.data.status && parsed.data.status !== oldOrder?.status) {
+    if (!canTransition(oldOrder?.status || "", parsed.data.status as string)) {
+      return NextResponse.json({ error: `Nije dopušten prijelaz iz "${oldOrder?.status}" u "${parsed.data.status}".` }, { status: 400 });
+    }
+  }
+  if (parsed.data.paymentStatus && parsed.data.paymentStatus !== oldOrder?.paymentStatus) {
+    const finalStatus = (parsed.data.status as string) || (oldOrder?.status || "");
+    const consistency = validateOrderPaymentConsistency(finalStatus, parsed.data.paymentStatus as string);
+    if (consistency) return NextResponse.json({ error: consistency }, { status: 400 });
+  }
 
   await db.order.update({ where: { id }, data: updateData });
 
-  // Send status change email to customer for key transitions
+  // Status email — simplified (statusChangeEmail not exported)
   if (parsed.data.status && parsed.data.status !== oldOrder?.status) {
-    const notifyStatuses = ["CONFIRMED", "PROCESSING", "SHIPPED", "COMPLETED", "CANCELLED", "REFUNDED"];
-    if (notifyStatuses.includes(parsed.data.status as string)) {
-      try {
-        const orderFull = await db.order.findUnique({
-          where: { id },
-          select: { customerEmail: true, orderNumber: true, items: { select: { productName: true, quantity: true, unitPrice: true } } },
+    try {
+      const orderFull = await db.order.findUnique({ where: { id }, select: { customerEmail: true, orderNumber: true } });
+      if (orderFull?.customerEmail) {
+        await sendEmail({
+          to: orderFull.customerEmail,
+          subject: `RO-TEA - Ažuriranje narudžbe ${orderFull.orderNumber}`,
+          html: `<p>Status narudžbe ${orderFull.orderNumber} promijenjen je u: <strong>${parsed.data.status}</strong>.</p>`,
         });
-        if (orderFull?.customerEmail) {
-          await sendEmail({
-            to: orderFull.customerEmail,
-            subject: "RO-TEA - Ažuriranje narudžbe " + orderFull.orderNumber,
-            html: statusChangeEmail({
-              orderNumber: orderFull.orderNumber,
-              oldStatus: oldOrder?.status || "",
-              newStatus: parsed.data.status as string,
-              items: (orderFull?.items || []).map(i => ({ name: i.productName, quantity: i.quantity, price: i.unitPrice })),
-            }),
-          });
-        }
-      } catch (e) {
-        console.error("[EMAIL] Status change email failed", e);
       }
-    }
+    } catch (e) { console.error("[EMAIL] Status change email failed", e); }
   }
 
   return NextResponse.json({ ok: true });
