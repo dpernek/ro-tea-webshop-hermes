@@ -67,6 +67,7 @@ export const ModelName = {
   OrderAudit: 'OrderAudit',
   ProductBulkOperation: 'ProductBulkOperation',
   ProductBulkOperationItem: 'ProductBulkOperationItem',
+  ContentSection: 'ContentSection',
   AuditLog: 'AuditLog'
 } as const
 
@@ -150,6 +151,9 @@ export const CategoryScalarFieldEnum = {
   description: 'description',
   parentId: 'parentId',
   image: 'image',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
+  introText: 'introText',
   sortOrder: 'sortOrder',
   status: 'status',
   createdAt: 'createdAt',
@@ -165,6 +169,9 @@ export const BrandScalarFieldEnum = {
   name: 'name',
   description: 'description',
   image: 'image',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
+  introText: 'introText',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -389,6 +396,23 @@ export const ProductBulkOperationItemScalarFieldEnum = {
 } as const
 
 export type ProductBulkOperationItemScalarFieldEnum = (typeof ProductBulkOperationItemScalarFieldEnum)[keyof typeof ProductBulkOperationItemScalarFieldEnum]
+
+
+export const ContentSectionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  title: 'title',
+  subtitle: 'subtitle',
+  eyebrow: 'eyebrow',
+  ctaLabel: 'ctaLabel',
+  ctaHref: 'ctaHref',
+  body: 'body',
+  active: 'active',
+  sortOrder: 'sortOrder',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ContentSectionScalarFieldEnum = (typeof ContentSectionScalarFieldEnum)[keyof typeof ContentSectionScalarFieldEnum]
 
 
 export const AuditLogScalarFieldEnum = {

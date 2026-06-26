@@ -32,6 +32,7 @@ const allNavItems: NavItem[] = [
   { href: "/admin/katalozi",   label: "Katalozi",     icon: FileText,       resource: "catalogs" },
   { href: "/admin/settings",   label: "Postavke",     icon: Settings,       resource: "settings" },
   { href: "/admin/audit-log",  label: "Audit",        icon: History,        resource: "audit_log" },
+  { href: "/admin/content",    label: "Sadržaj",      icon: FileText,       resource: "content" },
 ];
 
 export function AdminSidebar() {

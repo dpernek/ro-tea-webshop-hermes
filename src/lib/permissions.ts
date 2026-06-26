@@ -7,7 +7,7 @@ export type Resource =
   | "dashboard" | "products" | "categories" | "brands"
   | "orders" | "customers" | "users" | "payments"
   | "shipping" | "coupons" | "catalogs" | "settings"
-  | "audit_log" | "system";
+  | "content" | "audit_log" | "system";
 
 export type Action = "read" | "write";
 
@@ -17,7 +17,7 @@ const MATRIX: Record<string, Partial<Record<Resource, Action[]>>> = {
     brands: ["read", "write"], orders: ["read", "write"], customers: ["read"],
     users: ["read", "write"], payments: ["read"], shipping: ["read", "write"],
     coupons: ["read", "write"], catalogs: ["read", "write"], settings: ["read", "write"],
-    audit_log: ["read"], system: ["read", "write"],
+    content: ["read", "write"], audit_log: ["read"], system: ["read", "write"],
   },
   STAFF: {
     dashboard: ["read"], products: ["read", "write"], categories: ["read", "write"],

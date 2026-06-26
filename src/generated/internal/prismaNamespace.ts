@@ -400,6 +400,7 @@ export const ModelName = {
   OrderAudit: 'OrderAudit',
   ProductBulkOperation: 'ProductBulkOperation',
   ProductBulkOperationItem: 'ProductBulkOperationItem',
+  ContentSection: 'ContentSection',
   AuditLog: 'AuditLog'
 } as const
 
@@ -416,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "product" | "category" | "brand" | "customer" | "order" | "orderItem" | "payment" | "shippingMethod" | "coupon" | "storeSettings" | "catalog" | "stripeEvent" | "orderAudit" | "productBulkOperation" | "productBulkOperationItem" | "auditLog"
+    modelProps: "user" | "product" | "category" | "brand" | "customer" | "order" | "orderItem" | "payment" | "shippingMethod" | "coupon" | "storeSettings" | "catalog" | "stripeEvent" | "orderAudit" | "productBulkOperation" | "productBulkOperationItem" | "contentSection" | "auditLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1604,6 +1605,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ContentSection: {
+      payload: Prisma.$ContentSectionPayload<ExtArgs>
+      fields: Prisma.ContentSectionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ContentSectionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentSectionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ContentSectionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentSectionPayload>
+        }
+        findFirst: {
+          args: Prisma.ContentSectionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentSectionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ContentSectionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentSectionPayload>
+        }
+        findMany: {
+          args: Prisma.ContentSectionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentSectionPayload>[]
+        }
+        create: {
+          args: Prisma.ContentSectionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentSectionPayload>
+        }
+        createMany: {
+          args: Prisma.ContentSectionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ContentSectionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentSectionPayload>[]
+        }
+        delete: {
+          args: Prisma.ContentSectionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentSectionPayload>
+        }
+        update: {
+          args: Prisma.ContentSectionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentSectionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ContentSectionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ContentSectionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ContentSectionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentSectionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ContentSectionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentSectionPayload>
+        }
+        aggregate: {
+          args: Prisma.ContentSectionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateContentSection>
+        }
+        groupBy: {
+          args: Prisma.ContentSectionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentSectionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ContentSectionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentSectionCountAggregateOutputType> | number
+        }
+      }
+    }
     AuditLog: {
       payload: Prisma.$AuditLogPayload<ExtArgs>
       fields: Prisma.AuditLogFieldRefs
@@ -1781,6 +1856,9 @@ export const CategoryScalarFieldEnum = {
   description: 'description',
   parentId: 'parentId',
   image: 'image',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
+  introText: 'introText',
   sortOrder: 'sortOrder',
   status: 'status',
   createdAt: 'createdAt',
@@ -1796,6 +1874,9 @@ export const BrandScalarFieldEnum = {
   name: 'name',
   description: 'description',
   image: 'image',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
+  introText: 'introText',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -2020,6 +2101,23 @@ export const ProductBulkOperationItemScalarFieldEnum = {
 } as const
 
 export type ProductBulkOperationItemScalarFieldEnum = (typeof ProductBulkOperationItemScalarFieldEnum)[keyof typeof ProductBulkOperationItemScalarFieldEnum]
+
+
+export const ContentSectionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  title: 'title',
+  subtitle: 'subtitle',
+  eyebrow: 'eyebrow',
+  ctaLabel: 'ctaLabel',
+  ctaHref: 'ctaHref',
+  body: 'body',
+  active: 'active',
+  sortOrder: 'sortOrder',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ContentSectionScalarFieldEnum = (typeof ContentSectionScalarFieldEnum)[keyof typeof ContentSectionScalarFieldEnum]
 
 
 export const AuditLogScalarFieldEnum = {
@@ -2254,6 +2352,7 @@ export type GlobalOmitConfig = {
   orderAudit?: Prisma.OrderAuditOmit
   productBulkOperation?: Prisma.ProductBulkOperationOmit
   productBulkOperationItem?: Prisma.ProductBulkOperationItemOmit
+  contentSection?: Prisma.ContentSectionOmit
   auditLog?: Prisma.AuditLogOmit
 }
 

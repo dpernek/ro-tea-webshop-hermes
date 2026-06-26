@@ -71,6 +71,9 @@ model Category {
   parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryHierarchy")
   image       String?
+  seoTitle    String    @default("")
+  seoDescription String @default("")
+  introText   String    @default("")
   sortOrder   Int       @default(0)
   status      String    @default("ACTIVE")
   createdAt   DateTime  @default(now())
@@ -84,6 +87,9 @@ model Brand {
   name        String
   description String    @default("")
   image       String?
+  seoTitle    String    @default("")
+  seoDescription String @default("")
+  introText   String    @default("")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   products    Product[]
@@ -281,6 +287,20 @@ model ProductBulkOperationItem {
   newSalePrice    Float?
   skipped         Boolean              @default(false)
   skipReason      String?
+}
+
+model ContentSection {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  title     String   @default("")
+  subtitle  String   @default("")
+  eyebrow   String   @default("")
+  ctaLabel  String   @default("")
+  ctaHref   String   @default("")
+  body      String   @default("")
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  updatedAt DateTime @updatedAt
 }
 
 model AuditLog {
