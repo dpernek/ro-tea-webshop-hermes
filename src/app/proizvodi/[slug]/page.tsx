@@ -111,11 +111,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!product || product.status !== "ACTIVE") notFound();
 
   // --- Related products (same category, exclude current) ---
-  // Related products: same brand + category > same category > featured
+  // Related products: same brand + category > same category > featured/dostupni
   let relatedProducts: any[] = [];
   if (product.categoryId && product.brandId) {
     relatedProducts = await db.product.findMany({
       where: { categoryId: product.categoryId, brandId: product.brandId, id: { not: product.id }, status: "ACTIVE" },
+      orderBy: [{ featured: "desc" }, { salePrice: "asc" }, { createdAt: "desc" }],
       take: 4,
     });
   }
@@ -124,6 +125,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
     existing.add(product.id);
     const more = await db.product.findMany({
       where: { categoryId: product.categoryId, status: "ACTIVE", id: { notIn: Array.from(existing) } },
+      orderBy: [{ featured: "desc" }, { salePrice: "asc" }, { createdAt: "desc" }],
+      take: 4 - relatedProducts.length,
+    });
+    relatedProducts = [...relatedProducts, ...more];
+  }
+  if (relatedProducts.length < 4) {
+    const existing = new Set(relatedProducts.map(p => p.id));
+    existing.add(product.id);
+    // Prefer featured + instock first, then featured + active as last resort
+    const more = await db.product.findMany({
+      where: { status: "ACTIVE", featured: true, stockStatus: "INSTOCK", id: { notIn: Array.from(existing) } },
+      orderBy: [{ createdAt: "desc" }],
       take: 4 - relatedProducts.length,
     });
     relatedProducts = [...relatedProducts, ...more];
@@ -133,6 +146,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     existing.add(product.id);
     const more = await db.product.findMany({
       where: { status: "ACTIVE", featured: true, id: { notIn: Array.from(existing) } },
+      orderBy: [{ createdAt: "desc" }],
       take: 4 - relatedProducts.length,
     });
     relatedProducts = [...relatedProducts, ...more];
@@ -656,7 +670,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               Srodni proizvodi
             </h2>
             <p className="mt-2 mb-6 text-sm text-slate-500">
-              Kupci su često kupovali i ove proizvode
+              Izdvojili smo slične proizvode koji bi vas mogli zanimati
             </p>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {relatedProducts.map((rp) => (
