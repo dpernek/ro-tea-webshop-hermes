@@ -1,0 +1,43 @@
+import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/admin-auth";
+import { db } from "@/lib/db";
+import bcrypt from "bcryptjs";
+import { z } from "zod";
+
+const userSchema = z.object({
+  name: z.string().min(1, "Ime je obavezno."),
+  email: z.string().email("Nevažeća e-mail adresa."),
+  role: z.enum(["ADMIN", "STAFF"]),
+  password: z.string().min(8, "Lozinka mora imati najmanje 8 znakova."),
+});
+
+export async function GET() {
+  const access = await requireAdmin();
+  if (access) return access;
+
+  const users = await db.user.findMany({
+    select: { id: true, name: true, email: true, role: true, active: true, createdAt: true },
+    orderBy: { createdAt: "desc" },
+  });
+  return NextResponse.json(users);
+}
+
+export async function POST(req: NextRequest) {
+  const access = await requireAdmin();
+  if (access) return access;
+
+  const raw = await req.json().catch(() => ({}));
+  const parsed = userSchema.safeParse(raw);
+  if (!parsed.success) {
+    const errors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) errors[issue.path.join(".")] = issue.message;
+    return NextResponse.json({ errors }, { status: 400 });
+  }
+
+  const existing = await db.user.findUnique({ where: { email: parsed.data.email } });
+  if (existing) return NextResponse.json({ errors: { email: "E-mail adresa je već zauzeta." } }, { status: 400 });
+
+  const passwordHash = await bcrypt.hash(parsed.data.password, 12);
+  const user = await db.user.create({ data: { name: parsed.data.name, email: parsed.data.email, role: parsed.data.role, passwordHash } });
+  return NextResponse.json({ id: user.id, name: user.name, email: user.email, role: user.role });
+}

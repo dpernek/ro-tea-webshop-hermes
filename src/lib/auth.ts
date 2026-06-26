@@ -43,6 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // --- Verify against DB User table ---
         const user = await db.user.findUnique({ where: { email } });
         if (!user) return null;
+        if (user.active === false) return null;
 
         const validPassword = await bcrypt.compare(password, user.passwordHash);
         if (!validPassword) return null;

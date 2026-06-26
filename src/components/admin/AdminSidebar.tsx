@@ -29,6 +29,7 @@ const navItems = [
   { href: "/admin/brands", label: "Brendovi", icon: Building2 },
   { href: "/admin/orders", label: "Narudžbe", icon: ShoppingCart },
   { href: "/admin/customers", label: "Kupci", icon: Users },
+  { href: "/admin/korisnici", label: "Korisnici", icon: Users },
   { href: "/admin/payments", label: "Plaćanja", icon: CreditCard },
   { href: "/admin/shipping", label: "Dostava", icon: Truck },
   { href: "/admin/coupons", label: "Kuponi", icon: TicketPercent },

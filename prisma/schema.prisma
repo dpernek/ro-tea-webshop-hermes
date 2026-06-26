@@ -13,8 +13,9 @@ model User {
   name         String
   email        String   @unique
   passwordHash String
-  role         String   @default("ADMIN")  // ADMIN, STAFF, CUSTOMER
-  createdAt    DateTime @default(now())
+  role         String    @default("ADMIN")  // ADMIN, STAFF, CUSTOMER
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
   updatedAt    DateTime @updatedAt
 }
 
