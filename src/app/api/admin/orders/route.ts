@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
   }
 
   const [orders, total] = await Promise.all([
-    db.order.findMany({ where, skip: (page - 1) * limit, take: limit, orderBy: { createdAt: "desc" }, select: { id: true, orderNumber: true, customerName: true, customerEmail: true, total: true, shippingTotal: true, discountTotal: true, couponCode: true, couponDiscount: true, status: true, paymentStatus: true, paymentMethod: true, shippingMethod: true, shippingMethodId: true, createdAt: true, viewed: true, updatedAt: true } }),
+    db.order.findMany({ where, skip: (page - 1) * limit, take: limit, orderBy: { createdAt: "desc" }, select: { id: true, orderNumber: true, customerName: true, customerEmail: true, total: true, shippingTotal: true, discountTotal: true, couponCode: true, couponDiscount: true, status: true, paymentStatus: true, paymentMethod: true, shippingMethod: true, createdAt: true, viewed: true, updatedAt: true } }),
     db.order.count({ where }),
   ]);
   return NextResponse.json({ orders, total, pages: Math.ceil(total / limit) });
