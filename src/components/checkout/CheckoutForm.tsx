@@ -128,7 +128,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         city: formData.city, postalCode: formData.postalCode, note: formData.note,
         items: items.map(i => ({ productId: i.product.id, productName: i.product.name, sku: i.product.sku ?? undefined, quantity: i.quantity, unitPrice: i.product.price })),
         paymentMethod: formData.paymentMethod, shippingMethodId: formData.shippingMethod,
-        shippingTotal: shippingPrice, subtotal, taxTotal: 0, total, couponCode: couponCode || undefined, couponDiscount: couponDiscount || 0,
+        shippingTotal: shippingPrice, subtotal, taxTotal: 0, total,
         glsPickupPointId: formData.glsPickupPointId || undefined,
         glsPickupPointName: formData.glsPickupPointName || undefined,
         glsPickupPointAddress: formData.glsPickupPointAddress || undefined,
