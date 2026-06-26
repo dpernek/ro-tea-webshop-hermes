@@ -43,7 +43,7 @@ export default function WishlistPage() {
               <Link href={`/proizvodi/${item.slug}`} className="font-medium text-slate-900 hover:text-[#0055a8]">{item.name}</Link>
               <p className="text-sm text-slate-500">{formatPrice(item.price)}</p>
             </div>
-            <Button size="sm" onClick={() => { addItem({ product: { id: item.id, name: item.name, price: item.price, image: item.image || "", slug: item.slug, stock: null, status: "ACTIVE", sku: "" }, quantity: 1, product: { id: item.id, name: item.name, price: item.price, image: item.image || "", slug: item.slug, stock: null, status: "ACTIVE", sku: "" } } as any); }}>
+            <Button size="sm" onClick={() => { addItem({ product: { id: item.id, name: item.name, price: item.price, image: item.image || "", slug: item.slug, stock: null, status: "ACTIVE", sku: "" }, quantity: 1 } as any); }}>
               <ShoppingCart size={14} />
             </Button>
             <button onClick={() => remove(item.id)} className="text-slate-400 hover:text-red-500 p-1">

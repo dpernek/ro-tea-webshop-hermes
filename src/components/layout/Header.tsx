@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { useWishlistStore } from "@/store/wishlistStore";
-import { Menu, X, ShoppingCart, Phone } from "lucide-react";
+import { Menu, X, ShoppingCart, Phone, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { site } from "@/lib/data";
 import Image from "next/image";
