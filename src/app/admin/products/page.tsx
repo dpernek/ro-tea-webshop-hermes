@@ -178,7 +178,7 @@ export default function AdminProductsPage() {
   // Fetch: page changes OR reloadKey bumps (search/filter via doSearch button)
   useEffect(() => {
     load();
-  }, [page, reloadKey, categoryId, brandId]);
+  }, [page, reloadKey, categoryId, brandId, load]);
 
   // --- Delete ---
   const handleDelete = async (id: string) => {

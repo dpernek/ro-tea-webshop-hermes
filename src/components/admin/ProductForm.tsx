@@ -32,13 +32,11 @@ export function ProductForm({ product, categories, brands }: {
   const isEdit = !!product?.id;
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<Record<string,string>>({});
   const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-    setFieldErrors({});
     setSuccess(false);
     setSaving(true);
 
@@ -89,8 +87,8 @@ export function ProductForm({ product, categories, brands }: {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         if (data.errors && typeof data.errors === "object") {
-          setFieldErrors(data.errors);
-          setError("Ispravite označena polja.");
+          const fieldList = Object.entries(data.errors).map(([k, v]) => `${k}: ${v}`).join("; ");
+          setError(fieldList || "Ispravite označena polja.");
         } else {
           setError(data.error || data.message || `Greška ${res.status}`);
         }
