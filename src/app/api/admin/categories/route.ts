@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-auth";
+import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -46,5 +47,6 @@ export async function POST(req: NextRequest) {
   const slug = body.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
   const cat = await db.category.create({ data: { ...body, slug, id: slug } });
+  await logAction("categories", "create", `Kreirana kategorija ${cat.name}`, cat.id);
   return NextResponse.json(cat);
 }

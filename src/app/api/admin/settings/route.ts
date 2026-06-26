@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
+import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +22,7 @@ const storeSettingsSchema = z.object({
 });
 
 export async function GET() {
-  const access = await requireAdmin();
+  const access = await requirePermission("settings", "write");
   if (access) {
     return access;
   }
@@ -31,7 +32,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const access = await requireAdmin();
+  const access = await requirePermission("settings", "write");
   if (access) {
     return access;
   }

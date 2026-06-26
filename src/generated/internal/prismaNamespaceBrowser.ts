@@ -66,7 +66,8 @@ export const ModelName = {
   StripeEvent: 'StripeEvent',
   OrderAudit: 'OrderAudit',
   ProductBulkOperation: 'ProductBulkOperation',
-  ProductBulkOperationItem: 'ProductBulkOperationItem'
+  ProductBulkOperationItem: 'ProductBulkOperationItem',
+  AuditLog: 'AuditLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -388,6 +389,20 @@ export const ProductBulkOperationItemScalarFieldEnum = {
 } as const
 
 export type ProductBulkOperationItemScalarFieldEnum = (typeof ProductBulkOperationItemScalarFieldEnum)[keyof typeof ProductBulkOperationItemScalarFieldEnum]
+
+
+export const AuditLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  userEmail: 'userEmail',
+  resource: 'resource',
+  entityId: 'entityId',
+  action: 'action',
+  summary: 'summary',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
 
 
 export const SortOrder = {

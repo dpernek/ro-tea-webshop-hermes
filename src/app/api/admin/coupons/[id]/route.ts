@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
+import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -22,7 +23,7 @@ const couponUpdateSchema = z.object({
 });
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const access = await requireAdmin();
+  const access = await requirePermission("coupons", "write");
   if (access) return access;
   const { id } = await params;
 
@@ -39,13 +40,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 
   await db.coupon.update({ where: { id }, data: parsed.data });
+  await logAction("coupons", "delete", `Obrisan kupon`, id);
   return NextResponse.json({ ok: true });
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const access = await requireAdmin();
+  const access = await requirePermission("coupons", "write");
   if (access) return access;
   const { id } = await params;
   await db.coupon.delete({ where: { id } });
+  await logAction("coupons", "delete", `Obrisan kupon`, id);
   return NextResponse.json({ ok: true });
 }

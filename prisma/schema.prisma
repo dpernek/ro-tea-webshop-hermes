@@ -282,3 +282,14 @@ model ProductBulkOperationItem {
   skipped         Boolean              @default(false)
   skipReason      String?
 }
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  userEmail String
+  resource  String
+  entityId  String?
+  action    String
+  summary   String
+  createdAt DateTime @default(now())
+}

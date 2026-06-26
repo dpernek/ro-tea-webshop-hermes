@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { getPermissions } from "@/lib/permissions";
 import { signOut, useSession } from "next-auth/react";
 import {
   LayoutDashboard,
@@ -13,7 +14,7 @@ import {
   CreditCard,
   Truck,
   TicketPercent,
-  FileText,
+  FileText, History,
   Settings,
   LogOut,
   Menu,
@@ -22,7 +23,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-const navItems = [
+const allNavItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Proizvodi", icon: ShoppingBag },
   { href: "/admin/categories", label: "Kategorije", icon: Tags },
@@ -35,9 +36,12 @@ const navItems = [
   { href: "/admin/coupons", label: "Kuponi", icon: TicketPercent },
   { href: "/admin/katalozi", label: "Katalozi", icon: FileText },
   { href: "/admin/settings", label: "Postavke", icon: Settings },
+  { href: "/admin/audit-log", label: "Audit", icon: History },
 ];
 
 export function AdminSidebar() {
+  const allowed = getPermissions((session?.user as any)?.role || "");
+  const navItems = allNavItems.filter(i => allowed.some(p => i.href.includes(p) || (i.href === "/admin" && p === "dashboard")));
   const pathname = usePathname();
   const { data: session } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);

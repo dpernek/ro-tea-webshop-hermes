@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin, getAdminEmail } from "@/lib/admin-auth";
+import { requirePermission, getAdminEmail } from "@/lib/admin-auth";
+import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
@@ -13,7 +14,7 @@ const updateSchema = z.object({
 });
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const access = await requireAdmin();
+  const access = await requirePermission("users", "write");
   if (access) return access;
 
   const { id } = await params;
@@ -61,11 +62,13 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (parsed.data.newPassword) data.passwordHash = await bcrypt.hash(parsed.data.newPassword, 12);
 
   const updated = await db.user.update({ where: { id }, data, select: { id: true, name: true, email: true, role: true, active: true } });
+  const action = parsed.data.newPassword ? "password_change" : "edit";
+  await logAction("users", action, `Ažuriran korisnik ${updated.email}`, updated.id);
   return NextResponse.json(updated);
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const access = await requireAdmin();
+  const access = await requirePermission("users", "write");
   if (access) return access;
 
   const { id } = await params;
@@ -85,5 +88,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   }
 
   await db.user.delete({ where: { id } });
+  await logAction("users", "delete", `Obrisan korisnik ${user.email}`, id);
   return NextResponse.json({ ok: true });
 }

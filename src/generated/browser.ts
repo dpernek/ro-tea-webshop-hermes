@@ -97,3 +97,8 @@ export type ProductBulkOperation = Prisma.ProductBulkOperationModel
  * 
  */
 export type ProductBulkOperationItem = Prisma.ProductBulkOperationItemModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel

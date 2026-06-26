@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requirePermission } from "@/lib/admin-auth";
+import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
@@ -12,7 +13,7 @@ const userSchema = z.object({
 });
 
 export async function GET() {
-  const access = await requireAdmin();
+  const access = await requirePermission("users", "write");
   if (access) return access;
 
   const users = await db.user.findMany({
@@ -23,7 +24,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const access = await requireAdmin();
+  const access = await requirePermission("users", "write");
   if (access) return access;
 
   const raw = await req.json().catch(() => ({}));
@@ -40,5 +41,6 @@ export async function POST(req: NextRequest) {
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 12);
   const user = await db.user.create({ data: { name: parsed.data.name, email: normalizedEmail, role: parsed.data.role, passwordHash } });
+  await logAction("users", "create", `Kreiran korisnik ${user.email}`, user.id);
   return NextResponse.json({ id: user.id, name: user.name, email: user.email, role: user.role });
 }
