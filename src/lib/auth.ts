@@ -17,40 +17,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const email = String(credentials.email).toLowerCase().trim();
         const password = String(credentials.password);
 
-        // --- First-run auto-seed: if DB has zero users and env vars are set ---
-        try {
-          const count = await db.user.count();
-          if (count === 0) {
-            const seedEmail = process.env.ADMIN_EMAIL;
-            const seedPassword = process.env.ADMIN_PASSWORD;
-            if (seedEmail && seedPassword) {
-              const hash = await bcrypt.hash(seedPassword, 12);
-              await db.user.create({
-                data: {
-                  name: "Admin",
-                  email: seedEmail.toLowerCase().trim(),
-                  passwordHash: hash,
-                  role: "ADMIN",
-                },
-              });
-              // console.log("[auth] Auto-seeded admin user:", seedEmail.toLowerCase().trim());
-            }
-          }
-        } catch (e) {
-          console.error("[auth] Auto-seed check failed:", e);
-        }
+        // Use raw SQL to bypass Prisma schema validation for missing columns
+        const rows = await db.$queryRawUnsafe<Array<{
+          id: string; name: string | null; email: string; role: string; "passwordHash": string;
+        }>>(
+          `SELECT id, name, email, role, "passwordHash" FROM "User" WHERE email = $1`,
+          email
+        );
 
-        // --- Verify against DB User table ---
-        const user = await db.user.findUnique({ where: { email } });
+        const user = rows[0];
         if (!user) return null;
-        if (user.active === false) return null;
 
         const validPassword = await bcrypt.compare(password, user.passwordHash);
         if (!validPassword) return null;
 
         return {
           id: user.id,
-          name: user.name,
+          name: user.name ?? user.email,
           email: user.email,
           role: user.role,
         };
