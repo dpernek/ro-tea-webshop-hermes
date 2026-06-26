@@ -6,8 +6,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const cats = await db.category.findMany({
-      select: { id: true, slug: true, name: true, description: true, image: true, parentId: true, sortOrder: true },
-      orderBy: { sortOrder: "asc" },
+      select: { id: true, slug: true, name: true, description: true, image: true, parentId: true },
     });
 
     const products = await db.product.findMany({
