@@ -23,11 +23,8 @@ function createClient(): PrismaClient {
     });
   }
 
-  // SQLite fallback
-  const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3");
-  return new (PrismaClient as any)({
-    adapter: new (PrismaBetterSqlite3 as any)({ url: url.replace("file:", "") || "./prisma/dev.db" }),
-  });
+  // No valid database URL configured
+  throw new Error("DATABASE_URL not configured. Set a valid postgres connection string.");
 }
 
 const handler: ProxyHandler<any> = {

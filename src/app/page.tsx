@@ -6,7 +6,6 @@ import { CTASection } from "@/components/home/CTASection";
 import Image from "next/image";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "RO-TEA | Profesionalni alati i oprema za industriju i obrt",
@@ -42,18 +41,11 @@ const targetAudience = [
   },
 ];
 
-export default async function HomePage() {
-  const { getContentSection } = await import("@/lib/content");
-  const [heroContent, trustContent, ctaContent] = await Promise.all([
-    getContentSection("hero"),
-    getContentSection("trust"),
-    getContentSection("cta"),
-  ]);
-
+export default function HomePage() {
   return (
     <>
       {/* hero content: server-loaded */}
-      <Hero title={heroContent?.title || undefined} subtitle={heroContent?.body || undefined} />
+      <Hero />
 
       <FeaturedCategories />
 
@@ -123,8 +115,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <Benefits title={trustContent?.title || undefined} items={(() => { try { const parsed = trustContent?.body ? JSON.parse(trustContent.body) : null; return Array.isArray(parsed) ? parsed : undefined; } catch { return undefined; } })() || undefined} />
-      <CTASection title={ctaContent?.title || undefined} body={ctaContent?.body || undefined} ctaLabel={ctaContent?.ctaLabel || undefined} ctaHref={ctaContent?.ctaHref || undefined} />
+      <Benefits />
+      <CTASection />
     </>
   );
 }
