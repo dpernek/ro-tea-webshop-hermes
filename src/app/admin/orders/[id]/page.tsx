@@ -234,7 +234,7 @@ export default function AdminOrderDetailPage() {
       let data: any = {};
       try { data = JSON.parse(text); } catch {}
       if (!res.ok) {
-        setSaveMessage(data.errors ? Object.values(data.errors).join(", ") : `Greška ${res.status}: ${text.slice(0, 200)}`);
+        setSaveMessage(data.errors ? Object.entries(data.errors).map(([k,v]) => k === '_root' ? v : `${k}: ${v}`).join('; ') || 'Greška pri ažuriranju.' : `Greška ${res.status}: ${text.slice(0, 200)}`);
         return;
       }
       setSaveMessage("Promjene spremljene.");
