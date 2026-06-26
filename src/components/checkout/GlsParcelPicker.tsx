@@ -105,7 +105,7 @@ export default function GlsParcelPicker({ onSelect, selectedName, selectedAddres
   // Fetch GLS points
   useEffect(() => {
     fetch("/api/shipping/gls/delivery-points")
-      .then(r => r.json())
+      .then(r => r.ok ? r.json() : [])
       .then(d => setPoints(d.points || []))
       .finally(() => setLoading(false));
   }, []);
@@ -123,7 +123,7 @@ export default function GlsParcelPicker({ onSelect, selectedName, selectedAddres
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ address: customerAddress, city, postalCode, countryCode: "HR" }),
     })
-      .then(r => r.json())
+      .then(r => r.ok ? r.json() : [])
       .then(d => {
         if (d.success) {
           setGeoLat(d.lat);

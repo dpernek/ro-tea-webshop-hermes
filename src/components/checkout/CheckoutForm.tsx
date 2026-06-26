@@ -37,7 +37,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
 
   useEffect(() => {
     fetch("/api/shipping")
-      .then(r => r.json())
+      .then(r => r.ok ? r.json() : [])
       .then(data => {
         setShippingMethods((data || []).map((m: any) => ({
           id: m.id, name: m.name, price: m.price || 0,

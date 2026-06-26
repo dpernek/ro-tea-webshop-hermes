@@ -11,7 +11,7 @@ export function FeaturedCategories() {
 
   useEffect(() => {
     fetch("/api/catalog/categories")
-      .then(r => r.json())
+      .then(r => r.ok ? r.json() : [])
       .then(data => {
         // Only show categories with products, top 4
         const withProducts = data.filter((c: any) => c.count > 0).sort((a: any, b: any) => b.count - a.count).slice(0, 4);
