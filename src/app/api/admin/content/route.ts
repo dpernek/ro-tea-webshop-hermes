@@ -19,7 +19,10 @@ const contentSchema = z.object({
 export async function GET() {
   const access = await requirePermission("content", "read");
   if (access) return access;
-  const sections = await db.contentSection.findMany({ orderBy: { sortOrder: "asc" } });
+  const sections = await db.contentSection.findMany({
+    orderBy: { sortOrder: "asc" },
+    select: { id: true, key: true, title: true, subtitle: true, eyebrow: true, ctaLabel: true, ctaHref: true, body: true, active: true, sortOrder: true },
+  });
   return NextResponse.json(sections);
 }
 
