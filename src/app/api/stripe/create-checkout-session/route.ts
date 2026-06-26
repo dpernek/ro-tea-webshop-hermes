@@ -20,6 +20,8 @@ const checkoutSessionSchema = z.object({
   glsPickupPointId: z.string().optional(),
   glsPickupPointName: z.string().optional(),
   glsPickupPointAddress: z.string().optional(),
+  couponCode: z.string().optional(),
+  couponDiscount: z.number().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -59,7 +61,7 @@ export async function POST(req: NextRequest) {
     const shipFreeAbove = shipMethod?.freeAboveAmount ?? null;
     const isFreeShip = isPickup || (shipFreeAbove != null && pricing.subtotal >= shipFreeAbove);
     const shippingTotal = isFreeShip ? 0 : shipPrice;
-    const total = pricing.subtotal + shippingTotal;
+    const total = pricing.subtotal + shippingTotal - (body.couponDiscount || 0);
 
     // Stripe line items in cents
     const lineItems = pricing.lineItems.map(li => ({
@@ -95,6 +97,7 @@ export async function POST(req: NextRequest) {
         glsPickupPointId: body.glsPickupPointId || null,
         glsPickupPointName: body.glsPickupPointName || null,
         glsPickupPointAddress: body.glsPickupPointAddress || null,
+        couponCode: body.couponCode || null, couponDiscount: body.couponDiscount || null,
         items: {
           create: pricing.lineItems.map(li => ({
             productId: li.productId, productName: productMap.get(li.productId)!.name,
