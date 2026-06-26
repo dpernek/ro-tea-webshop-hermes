@@ -42,10 +42,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const allCats = allCatsRaw
     .map((c) => ({ id: c.id, slug: c.slug, name: c.name, description: c.description, image: c.image || "", count: countMap[c.id] || 0 }))
     .filter((c) => c.count > 0 || c.id === currentCatId);
-
+  // Fetch products for this category (ACTIVE only, newest first)
   const products = await db.product.findMany({
     where: { categoryId: cat.id, status: "ACTIVE" },
     orderBy: { createdAt: "desc" },
+    select: { id: true, slug: true, name: true, price: true, salePrice: true, regularPrice: true, image: true, badge: true, featured: true, type: true, shortDescription: true, stock: true, stockStatus: true, category: { select: { slug: true, name: true } }, brand: { select: { slug: true, name: true } } },
   });
 
   return (
