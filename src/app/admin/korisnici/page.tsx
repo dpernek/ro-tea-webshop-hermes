@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card"; import { Button } from "@/components/ui/Button";
-import { Plus, Pencil, Trash2, Save, X, Loader2, CheckCircle, XCircle, Lock } from "lucide-react";
+import { Plus, Pencil, Trash2, Save, X, CheckCircle, XCircle, Lock } from "lucide-react";
 
 interface User { id: string; name: string; email: string; role: string; active: boolean; createdAt: string; }
 
