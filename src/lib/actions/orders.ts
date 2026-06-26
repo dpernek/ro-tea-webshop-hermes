@@ -90,6 +90,8 @@ export async function createOrder(data: {
       glsPickupPointId: data.glsPickupPointId || null,
       glsPickupPointName: data.glsPickupPointName || null,
       glsPickupPointAddress: data.glsPickupPointAddress || null,
+      couponCode: couponCode || null,
+      couponDiscount: couponDiscount || 0,
       items: {
         create: pricing.lineItems.map(li => ({
           productId: li.productId, productName: productMap.get(li.productId)!.name,
