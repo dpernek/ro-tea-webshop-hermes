@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { ConditionalPublicLayout } from "@/components/layout/ConditionalPublicLayout";
-import { site } from "@/lib/data";
+import { site, siteUrl } from "@/lib/data";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -46,9 +46,9 @@ export default function RootLayout({
     <html lang="hr" className={`${inter.variable} h-full antialiased`}>
       <head>
         {/* Preconnect to critical origins */}
-        <link rel="preconnect" href="https://ro-tea-webshop-hermes.vercel.app" />
+        <link rel="preconnect" href={siteUrl} />
         {/* DNS-prefetch for external resources */}
-        <link rel="dns-prefetch" href="https://ro-tea-webshop-hermes.vercel.app" />
+        <link rel="dns-prefetch" href={siteUrl} />
         {/* Preload LCP hero image (first slide) */}
         <link
           rel="preload"
@@ -56,6 +56,16 @@ export default function RootLayout({
           href="/images/hero/hero-welder-1920w.webp"
           fetchPriority="high"
         />
+      
+        {/* Structured Data */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            { "@type": "Organization", "name": site.name, "url": siteUrl, "logo": `${siteUrl}/logo.png`, "contactPoint": { "@type": "ContactPoint", "telephone": site.contact.phoneDisplay, "contactType": "customer service" } },
+            { "@type": "WebSite", "name": site.name, "url": siteUrl },
+          ]
+        }) }} />
+
       </head>
       <body className="flex min-h-full flex-col font-sans">
         <ConditionalPublicLayout>{children}</ConditionalPublicLayout>

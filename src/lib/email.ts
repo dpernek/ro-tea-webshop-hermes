@@ -18,7 +18,8 @@ export async function sendEmail(payload: { to: string; subject: string; html: st
 }
 
 const BRAND = "#0055a8";
-const URL_BASE = "https://ro-tea-webshop-hermes.vercel.app";
+import { siteUrl } from "@/lib/data";
+const URL_BASE = siteUrl;
 const IBAN = "HR8923600001101238701";
 const COMPANY = "RO-TEA d.o.o.";
 
@@ -58,9 +59,9 @@ function footer(isAdmin: boolean = false): string {
     <p style="margin:0;font-size:11px;color:#cbd5e1">
       <a href="${URL_BASE}/uvjeti-kupnje">Uvjeti kupovine</a> &nbsp;·&nbsp;
       <a href="${URL_BASE}/pravila-o-privatnosti">Pravila privatnosti</a> &nbsp;·&nbsp;
-      <a href="${URL_BASE}/izjava-o-sigurnosti-online-placanja">Sigurnost plaćanja</a> &nbsp;·&nbsp;
-      <a href="${URL_BASE}/pravila-povrata-i-zamjene">Povrat i zamjena</a> &nbsp;·&nbsp;
-      <a href="${URL_BASE}/jednostrani-raskid-ugovora">Raskid ugovora</a>
+      <a href="${URL_BASE}/sigurnost-online-placanja">Sigurnost plaćanja</a> &nbsp;·&nbsp;
+      <a href="${URL_BASE}/povrat-i-zamjena">Povrat i zamjena</a> &nbsp;·&nbsp;
+      <a href="${URL_BASE}/raskid-ugovora">Raskid ugovora</a>
     </p>
     ${isAdmin ? '' : '<p style="margin:12px 0 0;color:#94a3b8;font-size:11px">Primili ste ovaj email jer ste naručili proizvode na RO-TEA webshopu.</p>'}
   </div>`;

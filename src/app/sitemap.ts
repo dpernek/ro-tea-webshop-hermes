@@ -3,7 +3,8 @@ import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-const BASE_URL = "https://ro-tea-webshop-hermes.vercel.app";
+import { siteUrl } from "@/lib/data";
+const BASE_URL = siteUrl;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all ACTIVE products (skip archived)

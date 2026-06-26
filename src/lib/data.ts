@@ -11,3 +11,4 @@ export const products: Product[] = (productsJson as Product[]).map((p) => ({
 export const categories: Category[] = categoriesJson as Category[];
 export const brands: Brand[] = brandsJson as Brand[];
 export const site: SiteConfig = siteJson as SiteConfig;
+export const siteUrl = site.url;

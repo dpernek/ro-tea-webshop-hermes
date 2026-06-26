@@ -179,7 +179,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               ? "BackOrder"
               : "InStock"
       }`,
-      url: `https://ro-tea-webshop-hermes.vercel.app/proizvodi/${product.slug}`,
+      url: `${siteUrl}/proizvodi/${product.slug}`,
       priceValidUntil: new Date(
         Date.now() + 365 * 24 * 60 * 60 * 1000
       ).toISOString().split("T")[0],
