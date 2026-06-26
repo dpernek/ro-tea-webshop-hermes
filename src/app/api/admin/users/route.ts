@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireAdmin, getAdminEmail } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 const userSchema = z.object({
   name: z.string().min(1, "Ime je obavezno."),
-  email: z.string().email("Nevažeća e-mail adresa."),
+  email: z.string().email("Nevažeća e-mail adresa.").transform(e => e.toLowerCase().trim()),
   role: z.enum(["ADMIN", "STAFF"]),
   password: z.string().min(8, "Lozinka mora imati najmanje 8 znakova."),
 });
@@ -34,10 +34,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ errors }, { status: 400 });
   }
 
-  const existing = await db.user.findUnique({ where: { email: parsed.data.email } });
+  const normalizedEmail = parsed.data.email;
+  const existing = await db.user.findUnique({ where: { email: normalizedEmail } });
   if (existing) return NextResponse.json({ errors: { email: "E-mail adresa je već zauzeta." } }, { status: 400 });
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 12);
-  const user = await db.user.create({ data: { name: parsed.data.name, email: parsed.data.email, role: parsed.data.role, passwordHash } });
+  const user = await db.user.create({ data: { name: parsed.data.name, email: normalizedEmail, role: parsed.data.role, passwordHash } });
   return NextResponse.json({ id: user.id, name: user.name, email: user.email, role: user.role });
 }
