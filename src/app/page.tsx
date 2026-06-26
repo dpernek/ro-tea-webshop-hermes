@@ -1,4 +1,5 @@
 import { Hero } from "@/components/home/Hero";
+import { getContentSection } from "@/lib/content";
 import { FeaturedCategories } from "@/components/home/FeaturedCategories";
 import { PopularProducts } from "@/components/home/PopularProducts";
 import { Benefits } from "@/components/home/Benefits";
@@ -48,9 +49,16 @@ const targetAudience = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [heroContent, trustContent, ctaContent] = await Promise.all([
+    getContentSection("hero"),
+    getContentSection("trust"),
+    getContentSection("cta"),
+  ]);
+
   return (
     <>
+      {/* hero content: server-loaded */}
       <Hero />
 
       {/* Trust bar */}
@@ -137,7 +145,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <Benefits />
+      {trustContent ? <Benefits /> : <Benefits />}
+      {/* cta content: server-loaded */}
       <CTASection />
     </>
   );
