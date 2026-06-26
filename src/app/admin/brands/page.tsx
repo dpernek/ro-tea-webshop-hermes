@@ -22,7 +22,7 @@ function Skeleton() {
   );
 }
 
-const emptyForm = { name: "", description: "" };
+const emptyForm = { name: "", description: "", seoTitle: "", seoDescription: "", introText: "" };
 
 export default function AdminBrandsPage() {
   const [items, setItems] = useState<any[]>([]);
@@ -49,7 +49,7 @@ export default function AdminBrandsPage() {
   useEffect(() => { load(); }, []);
 
   const startCreate = () => { setF({ ...emptyForm }); setErrors({}); setSaveMsg(null); setMode("create"); setEditId(null); };
-  const startEdit = (item: any) => { setF({ name: item.name||"", description: item.description||"" }); setErrors({}); setSaveMsg(null); setEditId(item.id); setMode("edit"); };
+  const startEdit = (item: any) => { setF({ name: item.name||"", description: item.description||"", seoTitle: item.seoTitle||"", seoDescription: item.seoDescription||"", introText: item.introText||"" }); setErrors({}); setSaveMsg(null); setEditId(item.id); setMode("edit"); };
   const cancel = () => { setMode("closed"); setEditId(null); setErrors({}); setSaveMsg(null); };
 
   const save = async () => {
@@ -111,6 +111,9 @@ export default function AdminBrandsPage() {
               {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
             </div>
             <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Opis" value={f.description} onChange={e => setF({...f,description:e.target.value})} />
+            <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm mt-3" placeholder="SEO naslov" value={f.seoTitle} onChange={e => setF({...f,seoTitle:e.target.value})} />
+            <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm mt-3" placeholder="SEO opis" value={f.seoDescription} onChange={e => setF({...f,seoDescription:e.target.value})} />
+            <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm mt-3" placeholder="Uvodni tekst" value={f.introText} onChange={e => setF({...f,introText:e.target.value})} />
           </div>
           <div className="mt-4 flex gap-2">
             <Button size="sm" onClick={save} disabled={saving}>{saving ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />} Spremi</Button>

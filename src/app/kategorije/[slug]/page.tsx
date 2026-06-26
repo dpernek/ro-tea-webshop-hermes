@@ -14,8 +14,8 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   const cat = await db.category.findUnique({ where: { slug } });
   if (!cat) return { title: "Kategorija | RO-TEA" };
   return {
-    title: `${cat.name} | RO-TEA`,
-    description: cat.description || "",
+    title: (cat as any).seoTitle || `${cat.name} | RO-TEA`,
+    description: (cat as any).seoDescription || cat.description || "",
     alternates: {
       canonical: `/kategorije/${slug}`,
     },
@@ -76,8 +76,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               <span className="text-slate-400">{cat.name}</span>
             </nav>
             <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">{cat.name}</h1>
-            {cat.description && (
-              <p className="mt-3 max-w-2xl text-slate-600 leading-relaxed">{cat.description}</p>
+            {((cat as any).introText || cat.description) && (
+              <p className="mt-3 max-w-2xl text-slate-600 leading-relaxed">{(cat as any).introText || cat.description}</p>
             )}
             <p className="mt-2 text-sm font-medium text-slate-500">
               {products.length} proizvoda
