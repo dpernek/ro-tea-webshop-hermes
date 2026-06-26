@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
+import { useWishlistStore } from "@/store/wishlistStore";
 import { Menu, X, ShoppingCart, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { site } from "@/lib/data";
@@ -71,7 +72,8 @@ export function Header() {
             className="hover:text-brand relative flex h-10 w-10 items-center justify-center rounded-lg text-slate-700 transition-colors hover:bg-slate-100"
             aria-label="Košarica"
           >
-            <ShoppingCart className="h-5 w-5" />
+            <Link href="/lista-zelja" className="relative p-1.5 text-slate-600 hover:text-red-500 transition-colors"><Heart className="h-5 w-5" />{wishlistCount > 0 && <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">{wishlistCount}</span>}</Link>
+          <ShoppingCart className="h-5 w-5" />
             {mounted && totalItems > 0 && (
               <span className="bg-brand absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white">
                 {totalItems > 99 ? "99+" : totalItems}

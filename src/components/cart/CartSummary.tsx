@@ -1,5 +1,6 @@
 "use client";
 import { useCartStore } from "@/store/cartStore";
+import { trackEvent } from "@/lib/analytics";
 import { useState } from "react";
 import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";

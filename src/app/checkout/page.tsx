@@ -1,4 +1,5 @@
 "use client";
+import { trackEvent } from "@/lib/analytics";
 
 import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/cartStore";
@@ -15,7 +16,7 @@ export default function CheckoutPage() {
   const [freeAboveOverride, setFreeAboveOverride] = useState<number | null>(null);
   const [shippingMethodName, setShippingMethodName] = useState<string>("");
 
-  useEffect(() => {
+  useEffect(() => { trackEvent("begin_checkout");
     document.title = "Blagajna | RO-TEA";
   }, []);
 

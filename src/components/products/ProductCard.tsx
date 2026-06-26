@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cartStore";
+import { useWishlistStore } from "@/store/wishlistStore";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { ShoppingCart, Check, ArrowRight } from "lucide-react";

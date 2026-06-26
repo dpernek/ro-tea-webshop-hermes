@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 import { Badge } from "@/components/ui/Badge";
 import { AddToCartButton } from "@/components/product/AddToCartButton";
+import { ProductTracker } from "@/components/product/ProductTracker";
 import { VariableProductOptions } from "@/components/product/VariableProductOptions";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ReadMore } from "@/components/ui/ReadMore";
