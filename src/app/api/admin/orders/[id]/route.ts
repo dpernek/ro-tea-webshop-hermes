@@ -42,7 +42,7 @@ const orderUpdateSchema = z.object({
 }).strict();
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const access = await requirePermission("orders", "write");
+  const access = await requirePermission("orders", "read");
   if (access) return access;
   const { id } = await params;
   const order = await db.order.findUnique({ where: { id }, include: { items: true } });

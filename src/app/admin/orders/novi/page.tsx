@@ -68,8 +68,7 @@ export default function AdminNewOrderPage() {
     try {
       const payload = {
         ...form,
-        items: items.map(i => ({ productId: i.productId, productName: i.productName, sku: i.sku, quantity: i.quantity, unitPrice: i.unitPrice })),
-        subtotal, shippingTotal: effectiveShipping, total,
+        items: items.map(i => ({ productId: i.productId, quantity: i.quantity })),
       };
       const res = await fetch("/api/admin/orders/create", {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
