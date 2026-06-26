@@ -40,10 +40,10 @@ const allNavItems = [
 ];
 
 export function AdminSidebar() {
-  const allowed = getPermissions((session?.user as any)?.role || "");
-  const navItems = allNavItems.filter(i => allowed.some(p => i.href.includes(p) || (i.href === "/admin" && p === "dashboard")));
   const pathname = usePathname();
   const { data: session } = useSession();
+  const allowed = getPermissions((session?.user as any)?.role || "");
+  const navItems = allNavItems.filter(i => allowed.some(p => i.href.includes(p) || (i.href === "/admin" && p === "dashboard")));
   const [mobileOpen, setMobileOpen] = useState(false);
 
   // Hide on login page
