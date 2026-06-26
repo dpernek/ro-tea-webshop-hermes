@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
+import { logAction } from "@/lib/audit";
 import { isGlsConfigured } from "@/lib/shipping/gls/config";
 
 import { prepareLabels } from "@/lib/shipping/gls/restClient";
