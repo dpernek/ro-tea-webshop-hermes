@@ -203,7 +203,7 @@ export async function POST(request: NextRequest) {
 
     await db.$transaction(async (tx) => {
       const op = await tx.productBulkOperation.create({
-        data: { type: action, createdBy: "admin" || "", selectedCount: products.length, affectedCount: 0 },
+        data: { type: action, createdBy: "admin", selectedCount: products.length, affectedCount: 0 },
         select: { id: true },
       });
       operationId = op.id;
