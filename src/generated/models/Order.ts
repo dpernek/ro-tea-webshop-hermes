@@ -31,6 +31,7 @@ export type OrderAvgAggregateOutputType = {
   shippingTotal: number | null
   taxTotal: number | null
   discountTotal: number | null
+  couponDiscount: number | null
   total: number | null
   glsShipmentId: number | null
 }
@@ -40,6 +41,7 @@ export type OrderSumAggregateOutputType = {
   shippingTotal: number | null
   taxTotal: number | null
   discountTotal: number | null
+  couponDiscount: number | null
   total: number | null
   glsShipmentId: number | null
 }
@@ -57,6 +59,8 @@ export type OrderMinAggregateOutputType = {
   shippingTotal: number | null
   taxTotal: number | null
   discountTotal: number | null
+  couponCode: string | null
+  couponDiscount: number | null
   total: number | null
   currency: string | null
   status: string | null
@@ -99,6 +103,8 @@ export type OrderMaxAggregateOutputType = {
   shippingTotal: number | null
   taxTotal: number | null
   discountTotal: number | null
+  couponCode: string | null
+  couponDiscount: number | null
   total: number | null
   currency: string | null
   status: string | null
@@ -141,6 +147,8 @@ export type OrderCountAggregateOutputType = {
   shippingTotal: number
   taxTotal: number
   discountTotal: number
+  couponCode: number
+  couponDiscount: number
   total: number
   currency: number
   status: number
@@ -177,6 +185,7 @@ export type OrderAvgAggregateInputType = {
   shippingTotal?: true
   taxTotal?: true
   discountTotal?: true
+  couponDiscount?: true
   total?: true
   glsShipmentId?: true
 }
@@ -186,6 +195,7 @@ export type OrderSumAggregateInputType = {
   shippingTotal?: true
   taxTotal?: true
   discountTotal?: true
+  couponDiscount?: true
   total?: true
   glsShipmentId?: true
 }
@@ -203,6 +213,8 @@ export type OrderMinAggregateInputType = {
   shippingTotal?: true
   taxTotal?: true
   discountTotal?: true
+  couponCode?: true
+  couponDiscount?: true
   total?: true
   currency?: true
   status?: true
@@ -245,6 +257,8 @@ export type OrderMaxAggregateInputType = {
   shippingTotal?: true
   taxTotal?: true
   discountTotal?: true
+  couponCode?: true
+  couponDiscount?: true
   total?: true
   currency?: true
   status?: true
@@ -287,6 +301,8 @@ export type OrderCountAggregateInputType = {
   shippingTotal?: true
   taxTotal?: true
   discountTotal?: true
+  couponCode?: true
+  couponDiscount?: true
   total?: true
   currency?: true
   status?: true
@@ -416,6 +432,8 @@ export type OrderGroupByOutputType = {
   shippingTotal: number
   taxTotal: number
   discountTotal: number
+  couponCode: string | null
+  couponDiscount: number | null
   total: number
   currency: string
   status: string
@@ -481,6 +499,8 @@ export type OrderWhereInput = {
   shippingTotal?: Prisma.FloatFilter<"Order"> | number
   taxTotal?: Prisma.FloatFilter<"Order"> | number
   discountTotal?: Prisma.FloatFilter<"Order"> | number
+  couponCode?: Prisma.StringNullableFilter<"Order"> | string | null
+  couponDiscount?: Prisma.FloatNullableFilter<"Order"> | number | null
   total?: Prisma.FloatFilter<"Order"> | number
   currency?: Prisma.StringFilter<"Order"> | string
   status?: Prisma.StringFilter<"Order"> | string
@@ -527,6 +547,8 @@ export type OrderOrderByWithRelationInput = {
   shippingTotal?: Prisma.SortOrder
   taxTotal?: Prisma.SortOrder
   discountTotal?: Prisma.SortOrder
+  couponCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  couponDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
   total?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -576,6 +598,8 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   shippingTotal?: Prisma.FloatFilter<"Order"> | number
   taxTotal?: Prisma.FloatFilter<"Order"> | number
   discountTotal?: Prisma.FloatFilter<"Order"> | number
+  couponCode?: Prisma.StringNullableFilter<"Order"> | string | null
+  couponDiscount?: Prisma.FloatNullableFilter<"Order"> | number | null
   total?: Prisma.FloatFilter<"Order"> | number
   currency?: Prisma.StringFilter<"Order"> | string
   status?: Prisma.StringFilter<"Order"> | string
@@ -622,6 +646,8 @@ export type OrderOrderByWithAggregationInput = {
   shippingTotal?: Prisma.SortOrder
   taxTotal?: Prisma.SortOrder
   discountTotal?: Prisma.SortOrder
+  couponCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  couponDiscount?: Prisma.SortOrderInput | Prisma.SortOrder
   total?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -672,6 +698,8 @@ export type OrderScalarWhereWithAggregatesInput = {
   shippingTotal?: Prisma.FloatWithAggregatesFilter<"Order"> | number
   taxTotal?: Prisma.FloatWithAggregatesFilter<"Order"> | number
   discountTotal?: Prisma.FloatWithAggregatesFilter<"Order"> | number
+  couponCode?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  couponDiscount?: Prisma.FloatNullableWithAggregatesFilter<"Order"> | number | null
   total?: Prisma.FloatWithAggregatesFilter<"Order"> | number
   currency?: Prisma.StringWithAggregatesFilter<"Order"> | string
   status?: Prisma.StringWithAggregatesFilter<"Order"> | string
@@ -713,6 +741,8 @@ export type OrderCreateInput = {
   shippingTotal?: number
   taxTotal?: number
   discountTotal?: number
+  couponCode?: string | null
+  couponDiscount?: number | null
   total: number
   currency?: string
   status?: string
@@ -759,6 +789,8 @@ export type OrderUncheckedCreateInput = {
   shippingTotal?: number
   taxTotal?: number
   discountTotal?: number
+  couponCode?: string | null
+  couponDiscount?: number | null
   total: number
   currency?: string
   status?: string
@@ -803,6 +835,8 @@ export type OrderUpdateInput = {
   shippingTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   taxTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   discountTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -849,6 +883,8 @@ export type OrderUncheckedUpdateInput = {
   shippingTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   taxTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   discountTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -894,6 +930,8 @@ export type OrderCreateManyInput = {
   shippingTotal?: number
   taxTotal?: number
   discountTotal?: number
+  couponCode?: string | null
+  couponDiscount?: number | null
   total: number
   currency?: string
   status?: string
@@ -935,6 +973,8 @@ export type OrderUpdateManyMutationInput = {
   shippingTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   taxTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   discountTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -977,6 +1017,8 @@ export type OrderUncheckedUpdateManyInput = {
   shippingTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   taxTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   discountTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1029,6 +1071,8 @@ export type OrderCountOrderByAggregateInput = {
   shippingTotal?: Prisma.SortOrder
   taxTotal?: Prisma.SortOrder
   discountTotal?: Prisma.SortOrder
+  couponCode?: Prisma.SortOrder
+  couponDiscount?: Prisma.SortOrder
   total?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -1063,6 +1107,7 @@ export type OrderAvgOrderByAggregateInput = {
   shippingTotal?: Prisma.SortOrder
   taxTotal?: Prisma.SortOrder
   discountTotal?: Prisma.SortOrder
+  couponDiscount?: Prisma.SortOrder
   total?: Prisma.SortOrder
   glsShipmentId?: Prisma.SortOrder
 }
@@ -1080,6 +1125,8 @@ export type OrderMaxOrderByAggregateInput = {
   shippingTotal?: Prisma.SortOrder
   taxTotal?: Prisma.SortOrder
   discountTotal?: Prisma.SortOrder
+  couponCode?: Prisma.SortOrder
+  couponDiscount?: Prisma.SortOrder
   total?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -1122,6 +1169,8 @@ export type OrderMinOrderByAggregateInput = {
   shippingTotal?: Prisma.SortOrder
   taxTotal?: Prisma.SortOrder
   discountTotal?: Prisma.SortOrder
+  couponCode?: Prisma.SortOrder
+  couponDiscount?: Prisma.SortOrder
   total?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -1156,6 +1205,7 @@ export type OrderSumOrderByAggregateInput = {
   shippingTotal?: Prisma.SortOrder
   taxTotal?: Prisma.SortOrder
   discountTotal?: Prisma.SortOrder
+  couponDiscount?: Prisma.SortOrder
   total?: Prisma.SortOrder
   glsShipmentId?: Prisma.SortOrder
 }
@@ -1265,6 +1315,8 @@ export type OrderCreateWithoutCustomerInput = {
   shippingTotal?: number
   taxTotal?: number
   discountTotal?: number
+  couponCode?: string | null
+  couponDiscount?: number | null
   total: number
   currency?: string
   status?: string
@@ -1309,6 +1361,8 @@ export type OrderUncheckedCreateWithoutCustomerInput = {
   shippingTotal?: number
   taxTotal?: number
   discountTotal?: number
+  couponCode?: string | null
+  couponDiscount?: number | null
   total: number
   currency?: string
   status?: string
@@ -1383,6 +1437,8 @@ export type OrderScalarWhereInput = {
   shippingTotal?: Prisma.FloatFilter<"Order"> | number
   taxTotal?: Prisma.FloatFilter<"Order"> | number
   discountTotal?: Prisma.FloatFilter<"Order"> | number
+  couponCode?: Prisma.StringNullableFilter<"Order"> | string | null
+  couponDiscount?: Prisma.FloatNullableFilter<"Order"> | number | null
   total?: Prisma.FloatFilter<"Order"> | number
   currency?: Prisma.StringFilter<"Order"> | string
   status?: Prisma.StringFilter<"Order"> | string
@@ -1424,6 +1480,8 @@ export type OrderCreateWithoutItemsInput = {
   shippingTotal?: number
   taxTotal?: number
   discountTotal?: number
+  couponCode?: string | null
+  couponDiscount?: number | null
   total: number
   currency?: string
   status?: string
@@ -1469,6 +1527,8 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   shippingTotal?: number
   taxTotal?: number
   discountTotal?: number
+  couponCode?: string | null
+  couponDiscount?: number | null
   total: number
   currency?: string
   status?: string
@@ -1528,6 +1588,8 @@ export type OrderUpdateWithoutItemsInput = {
   shippingTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   taxTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   discountTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1573,6 +1635,8 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   shippingTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   taxTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   discountTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1616,6 +1680,8 @@ export type OrderCreateWithoutPaymentsInput = {
   shippingTotal?: number
   taxTotal?: number
   discountTotal?: number
+  couponCode?: string | null
+  couponDiscount?: number | null
   total: number
   currency?: string
   status?: string
@@ -1661,6 +1727,8 @@ export type OrderUncheckedCreateWithoutPaymentsInput = {
   shippingTotal?: number
   taxTotal?: number
   discountTotal?: number
+  couponCode?: string | null
+  couponDiscount?: number | null
   total: number
   currency?: string
   status?: string
@@ -1720,6 +1788,8 @@ export type OrderUpdateWithoutPaymentsInput = {
   shippingTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   taxTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   discountTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1765,6 +1835,8 @@ export type OrderUncheckedUpdateWithoutPaymentsInput = {
   shippingTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   taxTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   discountTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1808,6 +1880,8 @@ export type OrderCreateWithoutAuditLogsInput = {
   shippingTotal?: number
   taxTotal?: number
   discountTotal?: number
+  couponCode?: string | null
+  couponDiscount?: number | null
   total: number
   currency?: string
   status?: string
@@ -1853,6 +1927,8 @@ export type OrderUncheckedCreateWithoutAuditLogsInput = {
   shippingTotal?: number
   taxTotal?: number
   discountTotal?: number
+  couponCode?: string | null
+  couponDiscount?: number | null
   total: number
   currency?: string
   status?: string
@@ -1912,6 +1988,8 @@ export type OrderUpdateWithoutAuditLogsInput = {
   shippingTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   taxTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   discountTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1957,6 +2035,8 @@ export type OrderUncheckedUpdateWithoutAuditLogsInput = {
   shippingTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   taxTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   discountTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2000,6 +2080,8 @@ export type OrderCreateManyCustomerInput = {
   shippingTotal?: number
   taxTotal?: number
   discountTotal?: number
+  couponCode?: string | null
+  couponDiscount?: number | null
   total: number
   currency?: string
   status?: string
@@ -2041,6 +2123,8 @@ export type OrderUpdateWithoutCustomerInput = {
   shippingTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   taxTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   discountTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2085,6 +2169,8 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
   shippingTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   taxTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   discountTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2129,6 +2215,8 @@ export type OrderUncheckedUpdateManyWithoutCustomerInput = {
   shippingTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   taxTotal?: Prisma.FloatFieldUpdateOperationsInput | number
   discountTotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponDiscount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   total?: Prisma.FloatFieldUpdateOperationsInput | number
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2220,6 +2308,8 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   shippingTotal?: boolean
   taxTotal?: boolean
   discountTotal?: boolean
+  couponCode?: boolean
+  couponDiscount?: boolean
   total?: boolean
   currency?: boolean
   status?: boolean
@@ -2267,6 +2357,8 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   shippingTotal?: boolean
   taxTotal?: boolean
   discountTotal?: boolean
+  couponCode?: boolean
+  couponDiscount?: boolean
   total?: boolean
   currency?: boolean
   status?: boolean
@@ -2310,6 +2402,8 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   shippingTotal?: boolean
   taxTotal?: boolean
   discountTotal?: boolean
+  couponCode?: boolean
+  couponDiscount?: boolean
   total?: boolean
   currency?: boolean
   status?: boolean
@@ -2353,6 +2447,8 @@ export type OrderSelectScalar = {
   shippingTotal?: boolean
   taxTotal?: boolean
   discountTotal?: boolean
+  couponCode?: boolean
+  couponDiscount?: boolean
   total?: boolean
   currency?: boolean
   status?: boolean
@@ -2382,7 +2478,7 @@ export type OrderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "customerId" | "customerEmail" | "customerName" | "customerPhone" | "billingAddress" | "shippingAddress" | "subtotal" | "shippingTotal" | "taxTotal" | "discountTotal" | "total" | "currency" | "status" | "paymentStatus" | "paymentMethod" | "shippingMethod" | "note" | "adminNote" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "stripePaymentStatus" | "glsPickupPointId" | "glsPickupPointName" | "glsPickupPointAddress" | "paidAt" | "paymentFailedAt" | "paymentCancelledAt" | "paymentErrorMessage" | "checkoutExpiresAt" | "viewed" | "glsShipmentId" | "glsParcelNumber" | "glsLabelData" | "glsStatusData" | "glsCreatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderNumber" | "customerId" | "customerEmail" | "customerName" | "customerPhone" | "billingAddress" | "shippingAddress" | "subtotal" | "shippingTotal" | "taxTotal" | "discountTotal" | "couponCode" | "couponDiscount" | "total" | "currency" | "status" | "paymentStatus" | "paymentMethod" | "shippingMethod" | "note" | "adminNote" | "stripeCheckoutSessionId" | "stripePaymentIntentId" | "stripePaymentStatus" | "glsPickupPointId" | "glsPickupPointName" | "glsPickupPointAddress" | "paidAt" | "paymentFailedAt" | "paymentCancelledAt" | "paymentErrorMessage" | "checkoutExpiresAt" | "viewed" | "glsShipmentId" | "glsParcelNumber" | "glsLabelData" | "glsStatusData" | "glsCreatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.Order$customerArgs<ExtArgs>
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
@@ -2418,6 +2514,8 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     shippingTotal: number
     taxTotal: number
     discountTotal: number
+    couponCode: string | null
+    couponDiscount: number | null
     total: number
     currency: string
     status: string
@@ -2884,6 +2982,8 @@ export interface OrderFieldRefs {
   readonly shippingTotal: Prisma.FieldRef<"Order", 'Float'>
   readonly taxTotal: Prisma.FieldRef<"Order", 'Float'>
   readonly discountTotal: Prisma.FieldRef<"Order", 'Float'>
+  readonly couponCode: Prisma.FieldRef<"Order", 'String'>
+  readonly couponDiscount: Prisma.FieldRef<"Order", 'Float'>
   readonly total: Prisma.FieldRef<"Order", 'Float'>
   readonly currency: Prisma.FieldRef<"Order", 'String'>
   readonly status: Prisma.FieldRef<"Order", 'String'>

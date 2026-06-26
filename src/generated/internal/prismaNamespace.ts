@@ -1754,6 +1754,8 @@ export const OrderScalarFieldEnum = {
   shippingTotal: 'shippingTotal',
   taxTotal: 'taxTotal',
   discountTotal: 'discountTotal',
+  couponCode: 'couponCode',
+  couponDiscount: 'couponDiscount',
   total: 'total',
   currency: 'currency',
   status: 'status',
