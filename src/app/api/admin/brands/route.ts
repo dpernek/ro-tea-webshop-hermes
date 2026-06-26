@@ -18,9 +18,12 @@ const brandCreateSchema = z.object({
 });
 
 export async function GET() {
-  const access = await requirePermission("brands", "write");
+  const access = await requirePermission("brands", "read");
   if (access) return access;
-  return NextResponse.json(await db.brand.findMany({ orderBy: { createdAt: "desc" } }));
+  return NextResponse.json(await db.brand.findMany({
+    select: { id: true, slug: true, name: true, description: true, image: true, seoTitle: true, seoDescription: true, introText: true },
+    orderBy: { createdAt: "desc" },
+  }));
 }
 
 export async function POST(req: NextRequest) {

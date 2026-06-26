@@ -21,9 +21,12 @@ const categoryCreateSchema = z.object({
 });
 
 export async function GET() {
-  const access = await requirePermission("categories", "write");
+  const access = await requirePermission("categories", "read");
   if (access) return access;
-  const data = await db.category.findMany({ orderBy: { sortOrder: "asc" } });
+  const data = await db.category.findMany({
+    select: { id: true, slug: true, name: true, description: true, image: true, parentId: true, sortOrder: true, status: true },
+    orderBy: { sortOrder: "asc" },
+  });
   return NextResponse.json(data);
 }
 
