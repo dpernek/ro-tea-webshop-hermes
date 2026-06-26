@@ -11,7 +11,7 @@ export async function GET(req: Request) {
 
   const select = {
     orderNumber: true, paymentMethod: true, paymentStatus: true, status: true,
-    subtotal: true, shippingTotal: true, couponDiscount: true, couponCode: true,
+    subtotal: true, shippingTotal: true, discountTotal: true,
     total: true, shippingMethod: true, shippingAddress: true,
   };
   const order = sessionId
