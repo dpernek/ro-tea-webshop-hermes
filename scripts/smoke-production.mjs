@@ -1,36 +1,65 @@
 #!/usr/bin/env node
 /**
  * RO-TEA Production Smoke Test
+ * Dynamically fetches real product/category slugs from live API.
  * Usage: node scripts/smoke-production.mjs [base-url]
  * Default: https://ro-tea-webshop-hermes.vercel.app
  */
 
 const BASE = process.argv[2] || "https://ro-tea-webshop-hermes.vercel.app";
-const FAIL = "\x1b[31mFAIL\x1b[0m";
-const PASS = "\x1b[32mPASS\x1b[0m";
+const R = "\x1b[31mFAIL\x1b[0m";
+const G = "\x1b[32mPASS\x1b[0m";
 
+const ERROR_SHELLS = ["This page couldn't load", "Application error", "A server error occurred", "DIGEST"];
+
+async function fetchJson(path) {
+  const res = await fetch(BASE + path);
+  if (!res.ok) throw new Error(`${path} → HTTP ${res.status}`);
+  const text = await res.text();
+  if (!text.trim()) throw new Error(`${path} → empty body`);
+  return JSON.parse(text);
+}
+
+// --- Fetch real slugs from API ---
+console.log("Fetching live data for slugs...");
+let productSlugs = [];
+let categorySlugs = [];
+try {
+  const productsData = await fetchJson("/api/catalog/products");
+  productSlugs = (productsData.products || []).slice(0, 3).map(p => p.slug).filter(Boolean);
+  console.log(`  Products: ${productSlugs.length} slugs`);
+} catch (e) {
+  console.error(`${R} Cannot fetch products API: ${e.message}`);
+  process.exit(1);
+}
+try {
+  const categoriesData = await fetchJson("/api/catalog/categories");
+  categorySlugs = (Array.isArray(categoriesData) ? categoriesData : []).slice(0, 2).map(c => c.slug).filter(Boolean);
+  console.log(`  Categories: ${categorySlugs.length} slugs`);
+} catch (e) {
+  console.error(`${R} Cannot fetch categories API: ${e.message}`);
+  process.exit(1);
+}
+
+if (productSlugs.length < 1 || categorySlugs.length < 1) {
+  console.error(`${R} Not enough slugs from API (products: ${productSlugs.length}, categories: ${categorySlugs.length})`);
+  process.exit(1);
+}
+
+// --- Build route list ---
 const ROUTES = [
-  { path: "/", label: "Homepage", checkBody: true },
-  { path: "/proizvodi", label: "Katalog", checkBody: true },
-  { path: "/proizvodi/adapter-festa-industry-1-2-1-4-hex-crmo", label: "Product detail 1", checkBody: true },
-  { path: "/proizvodi/brusna-ploca-za-kutnu-brusilicu", label: "Product detail 2", checkBody: true },
-  { path: "/proizvodi/tanjurasta-cetka", label: "Product detail 3", checkBody: true },
-  { path: "/kategorije/turpije", label: "Category 1", checkBody: true },
-  { path: "/kategorije/roto-glodala", label: "Category 2", checkBody: true },
-  { path: "/katalozi", label: "Katalozi", checkBody: true },
-  { path: "/api/catalog/categories", label: "API categories", checkBody: true, checkJson: true },
-  { path: "/api/catalog/brands", label: "API brands", checkBody: true, checkJson: true },
-  { path: "/api/catalog/products", label: "API products", checkBody: true, checkJson: true },
-  { path: "/sitemap.xml", label: "Sitemap", checkBody: true, checkXml: true },
+  { label: "Homepage", path: "/" },
+  { label: "Katalog", path: "/proizvodi" },
+  ...productSlugs.map((slug, i) => ({ label: `Product ${i + 1}`, path: `/proizvodi/${slug}` })),
+  ...categorySlugs.map((slug, i) => ({ label: `Category ${i + 1}`, path: `/kategorije/${slug}` })),
+  { label: "Katalozi", path: "/katalozi" },
+  { label: "API categories", path: "/api/catalog/categories", json: true },
+  { label: "API brands", path: "/api/catalog/brands", json: true },
+  { label: "API products", path: "/api/catalog/products", json: true },
+  { label: "Sitemap", path: "/sitemap.xml", xml: true },
 ];
 
-const ERROR_SHELLS = [
-  "This page couldn't load",
-  "Application error",
-  "A server error occurred",
-  "DIGEST",
-];
-
+// --- Run tests ---
 let passed = 0;
 let failed = 0;
 
@@ -41,30 +70,26 @@ for (const route of ROUTES) {
     const body = await res.text();
     const status = res.status;
     const hasBody = body.trim().length > 0;
-    const hasErrorShell = ERROR_SHELLS.some(s => body.includes(s));
+    const hasShell = ERROR_SHELLS.some(s => body.includes(s));
+    let ok = status === 200 && hasBody && !hasShell;
 
-    let ok = status === 200;
-    if (route.checkBody && !hasBody) ok = false;
-    if (route.checkJson) {
-      try { JSON.parse(body); } catch { ok = false; }
-    }
-    if (route.checkXml) {
-      if (!body.includes("<urlset") && !body.trim().startsWith("<?xml")) ok = false;
-    }
-    if (hasErrorShell) ok = false;
+    if (route.json) { try { JSON.parse(body); } catch { ok = false; } }
+    if (route.xml) { if (!body.includes("<urlset") && !body.trim().startsWith("<?xml")) ok = false; }
 
-    const issues = [];
-    if (status !== 200) issues.push(`status=${status}`);
-    if (!hasBody) issues.push("empty body");
-    if (hasErrorShell) issues.push("error shell");
-    if (issues.length === 0) issues.push("ok");
+    const parts = [];
+    parts.push(ok ? G : R);
+    parts.push(route.label.padEnd(18));
+    parts.push(String(status).padEnd(5));
+    parts.push(`body=${hasBody ? "✓" : "✗"}`.padEnd(9));
+    parts.push(`err=${hasShell ? "✓" : "✗"}`.padEnd(8));
+    parts.push(url);
 
-    if (ok) { passed++; console.log(`${PASS} ${route.label} (${url})`); }
-    else { failed++; console.log(`${FAIL} ${route.label} (${url}) — ${issues.join(", ")}`); }
+    if (ok) passed++; else failed++;
+    console.log(parts.join(" | "));
 
   } catch (e) {
     failed++;
-    console.log(`${FAIL} ${route.label} (${url}) — ${e.message}`);
+    console.log(`${R} | ${route.label.padEnd(18)} | ERR  | body=✗ | err=✗ | ${url} — ${e.message}`);
   }
 }
 
