@@ -44,7 +44,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
           freeAboveAmount: m.freeAboveAmount ?? null,
         })));
       })
-      .catch(() => setShippingError("Nije moguće učitati načine dostave."));
+      .catch(() => setShippingError("Nije moguće učitati načine dostave."))
       .finally(() => setShippingLoading(false));
   }, []);
 
