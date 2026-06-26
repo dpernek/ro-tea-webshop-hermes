@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Create Stripe Checkout Session
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || "https://ro-tea-webshop-hermes.vercel.app";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://ro-tea-webshop-hermes.vercel.app";
     const baseUrl = siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`;
 
     const session = await stripe.checkout.sessions.create({
