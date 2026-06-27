@@ -160,9 +160,6 @@ export async function POST(
   } else {
     serviceList.push({ Code: "PSD" });
   }
-  if (isCod) {
-    serviceList.push({ Code: "COD", Parameter: [{ Code: "COD", Value: order.total?.toFixed(2) || "0" }] });
-  }
 
   const parcelInfo: Record<string, unknown> = {
     ClientNumber: config.clientNumber,
