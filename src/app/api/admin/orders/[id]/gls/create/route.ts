@@ -44,6 +44,9 @@ export async function POST(
       total: true,
       glsShipmentId: true,
       glsParcelNumber: true,
+      glsPickupPointId: true,
+      glsPickupPointName: true,
+      glsPickupPointAddress: true,
     },
   });
 
@@ -51,7 +54,10 @@ export async function POST(
     return NextResponse.json({ error: "Narudžba nije pronađena." }, { status: 404 });
   }
 
-  if (!order.shippingAddress) {
+  const isPaketomat = order.shippingMethod === "GLS Paketomat";
+  const isGls = order.shippingMethod === "GLS dostava" || isPaketomat;
+
+  if (!order.shippingAddress && !isPaketomat) {
     return NextResponse.json(
       { error: "Narudžba nema adresu za dostavu. Nije moguće kreirati GLS pošiljku." },
       { status: 400 },
@@ -65,41 +71,52 @@ export async function POST(
     );
   }
 
-  // Parse shipping address: "Street 123, 10000 City"
-  const addrParts = order.shippingAddress.split(",").map(s => s.trim());
-  let street = addrParts[0] || "";
-  const cityPostal = addrParts[1] || "";
-  let houseNumber = "";
-  let city = "";
-  let zipCode = "";
+  let deliveryAddress: any;
 
-  // Try to extract house number from street
-  const hnMatch = street.match(/^(.+?)\s+(\d+[a-zA-Z]?)$/);
-  if (hnMatch) {
-    street = hnMatch[1];
-    houseNumber = hnMatch[2];
-  }
-
-  const cpMatch = cityPostal.match(/^(\d{5})\s+(.+)$/);
-  if (cpMatch) {
-    zipCode = cpMatch[1];
-    city = cpMatch[2];
+  if (isPaketomat && order.glsPickupPointAddress) {
+    // GLS Paketomat: use paketomat address as delivery address
+    // Format: "Name, Street, City ZipCode"
+    const addr = order.glsPickupPointAddress;
+    const parts = addr.split(",").map(s => s.trim());
+    const name = order.glsPickupPointName || parts[0] || "Paketomat";
+    const streetPart = parts[1] || parts[0] || "";
+    const cityZip = parts[parts.length - 1] || "";
+    const zipMatch = cityZip.match(/^(\d{5})\s+(.+)/);
+    deliveryAddress = {
+      Name: order.customerName,
+      Street: streetPart,
+      HouseNumber: undefined,
+      City: zipMatch ? zipMatch[2] : cityZip,
+      ZipCode: zipMatch ? zipMatch[1] : "",
+      CountryIsoCode: "HR",
+      ContactName: order.customerName,
+      ContactPhone: order.customerPhone,
+      ContactEmail: order.customerEmail,
+    };
   } else {
-    city = cityPostal;
-  }
+    // Standard GLS dostava: parse shipping address
+    const addrParts = (order.shippingAddress || "").split(",").map(s => s.trim());
+    let street = addrParts[0] || "";
+    const cityPostal = addrParts[1] || "";
+    let houseNumber = "";
+    let city = "";
+    let zipCode = "";
 
-  const isCod = order.shippingMethod?.toLowerCase().includes("pouzeće") || false;
+    const hnMatch = street.match(/^(.+?)\s+(\d+[a-zA-Z]?)$/);
+    if (hnMatch) {
+      street = hnMatch[1];
+      houseNumber = hnMatch[2];
+    }
 
-  const config = getGlsConfig();
+    const cpMatch = cityPostal.match(/^(\d{5})\s+(.+)$/);
+    if (cpMatch) {
+      zipCode = cpMatch[1];
+      city = cpMatch[2];
+    } else {
+      city = cityPostal;
+    }
 
-  const parcelInfo = {
-    ClientNumber: config.clientNumber,
-    ClientReference: order.orderNumber,
-    CODAmount: isCod ? order.total : undefined,
-    CODReference: isCod ? order.orderNumber : undefined,
-    Content: `RO-TEA narudžba ${order.orderNumber}`,
-    Count: 1,
-    DeliveryAddress: {
+    deliveryAddress = {
       Name: order.customerName,
       Street: street,
       HouseNumber: houseNumber || undefined,
@@ -109,7 +126,21 @@ export async function POST(
       ContactName: order.customerName,
       ContactPhone: order.customerPhone,
       ContactEmail: order.customerEmail,
-    },
+    };
+  }
+
+  const isCod = order.shippingMethod?.toLowerCase().includes("pouzeće") || false;
+
+  const config = getGlsConfig();
+
+  const parcelInfo: Record<string, unknown> = {
+    ClientNumber: config.clientNumber,
+    ClientReference: order.orderNumber,
+    CODAmount: isCod ? order.total : undefined,
+    CODReference: isCod ? order.orderNumber : undefined,
+    Content: `RO-TEA narudžba ${order.orderNumber}`,
+    Count: 1,
+    DeliveryAddress: deliveryAddress,
     PickupAddress: {
       Name: "RO-TEA d.o.o.",
       Street: "Badalićeva",
@@ -121,6 +152,11 @@ export async function POST(
     Service: isCod ? { Code: "PSD", Parameter: [{ Code: "COD", Value: order.total?.toFixed(2) || "0" }] } : { Code: "PSD" },
     Weight: 1,
   };
+
+  // If Paketomat, add ParcelShopId
+  if (isPaketomat && order.glsPickupPointId) {
+    (parcelInfo as any).ParcelShopId = order.glsPickupPointId;
+  }
 
   try {
     const result = await prepareLabels([parcelInfo]);
