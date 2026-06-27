@@ -73,7 +73,7 @@ export async function PATCH(
   // Sanitize: convert empty strings to null/undefined where appropriate
   const sanitized = sanitizeInput(body as Record<string, unknown>);
   // Pre-process numeric fields: convert string inputs to numbers (comma→dot)
-  for (const field of ["price", "regularPrice", "salePrice"]) {
+  for (const field of ["price", "regularPrice", "salePrice", "stock"]) {
     const val = (sanitized as any)[field];
     if (typeof val === "string") {
       const num = Number(val.replace(",", "."));
@@ -81,7 +81,7 @@ export async function PATCH(
     }
   }
   // Remove null/undefined enum/string fields that aren't being changed in PATCH
-  for (const field of ["type", "stockStatus", "status"]) {
+  for (const field of ["type", "stockStatus", "status", "benefits", "usage", "warranty", "deliveryNote"]) {
     if ((sanitized as any)[field] == null) {
       delete (sanitized as any)[field];
     }
