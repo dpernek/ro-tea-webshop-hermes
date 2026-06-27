@@ -29,7 +29,7 @@ export async function DELETE(
     where: { id },
     data: { status: "ARCHIVED" },
   });
-  logAction("products", "archive", `Arhiviran proizvod: ${existing?.name || id}`, id).catch(() => {});
+  logAction("products", "archive", `Arhiviran proizvod: ${id}`, id).catch(() => {});
   return NextResponse.json({ ok: true, archived: true, message: "Proizvod je arhiviran." });
 }
 
