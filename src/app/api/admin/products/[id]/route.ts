@@ -72,11 +72,12 @@ export async function PATCH(
 
   // Sanitize: convert empty strings to null/undefined where appropriate
   const sanitized = sanitizeInput(body as Record<string, unknown>);
-  // Pre-process numeric fields: replace comma decimal with dot
+  // Pre-process numeric fields: convert string inputs to numbers (comma→dot)
   for (const field of ["price", "regularPrice", "salePrice"]) {
     const val = (sanitized as any)[field];
-    if (typeof val === "string" && val.includes(",")) {
-      (sanitized as any)[field] = Number(val.replace(",", "."));
+    if (typeof val === "string") {
+      const num = Number(val.replace(",", "."));
+      (sanitized as any)[field] = Number.isFinite(num) ? num : null;
     }
   }
 
