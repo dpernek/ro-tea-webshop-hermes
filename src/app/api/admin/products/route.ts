@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const access = await requirePermission("products", "read");
+  const access = await requirePermission("products", "write");
   if (access) return access;
 
   const raw = await request.json();
