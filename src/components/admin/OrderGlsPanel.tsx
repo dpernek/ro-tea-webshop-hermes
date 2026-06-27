@@ -33,6 +33,8 @@ interface OrderGlsPanelProps {
     glsCreatedAt?: string | null;
     shippingMethod?: string | null;
     shippingAddress?: string | null;
+    glsPickupPointName?: string | null;
+    glsPickupPointAddress?: string | null;
   };
 }
 
@@ -188,7 +190,19 @@ export default function OrderGlsPanel({ orderId, order}: OrderGlsPanelProps) {
             </div>
           </div>
 
-          {order.shippingAddress && (
+          {order.glsPickupPointName && (
+            <div className="rounded-lg bg-slate-50 px-3 py-2">
+              <div className="mb-0.5 text-xs text-slate-500">Paketomat</div>
+              <div className="flex items-start gap-1.5 text-sm font-medium text-slate-800">
+                <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-slate-400" />
+                <div>
+                  <div>{order.glsPickupPointName}</div>
+                  {order.glsPickupPointAddress && <div className="text-xs text-slate-500 mt-0.5">{order.glsPickupPointAddress}</div>}
+                </div>
+              </div>
+            </div>
+          )}
+          {!order.glsPickupPointName && order.shippingAddress && (
             <div className="rounded-lg bg-slate-50 px-3 py-2">
               <div className="mb-0.5 text-xs text-slate-500">Adresa dostave</div>
               <div className="flex items-start gap-1.5 text-sm font-medium text-slate-800">
