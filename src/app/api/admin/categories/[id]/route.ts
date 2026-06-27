@@ -42,8 +42,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   }
 
-  await db.category.update({ where: { id }, data });
-  return NextResponse.json({ ok: true });
+  try {
+    await db.category.update({ where: { id }, data });
+    await logAction("categories", "update", `Ažurirana kategorija`, id).catch(() => {});
+    return NextResponse.json({ ok: true });
+  } catch (e: any) {
+    return NextResponse.json({ error: e?.message || "Greška pri ažuriranju kategorije." }, { status: 500 });
+  }
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
