@@ -161,6 +161,9 @@ export async function PATCH(
       where: { id },
       data: updateData,
     });
+    // Audit log (non-blocking)
+    logAction("products", "update", `Ažuriran proizvod: ${String(updated.name).slice(0, 40)}`, id)
+      .catch((e) => console.error("[PATCH audit]", e));
     return NextResponse.json({ ok: true, product: updated });
   } catch (error) {
     console.error("[PATCH /api/admin/products/[id]]", error);
