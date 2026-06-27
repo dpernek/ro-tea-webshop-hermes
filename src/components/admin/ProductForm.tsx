@@ -19,7 +19,8 @@ interface ProductData {
 
 function n(val: string): number | null {
   if (!val) return null;
-  const num = Number(val);
+  const clean = val.replace(",", ".");
+  const num = Number(clean);
   return Number.isFinite(num) ? num : null;
 }
 
@@ -48,7 +49,7 @@ export function ProductForm({ product, categories, brands }: {
       const form = new FormData(e.currentTarget);
       const body: Record<string, any> = {
         name: form.get("name"), slug: form.get("slug"),
-        price: Number(form.get("price")) || 0,
+        price: Number(String(form.get("price")).replace(",", ".")) || 0,
         image: form.get("image") || "/images/placeholder.svg",
         stock: Number(form.get("stock")) || 0,
         stockStatus: form.get("stockStatus"), status: form.get("status"), type: form.get("type"),

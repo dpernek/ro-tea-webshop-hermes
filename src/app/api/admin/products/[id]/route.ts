@@ -92,19 +92,22 @@ export async function PATCH(
   if (data.name !== undefined) updateData.name = data.name;
   if (data.slug !== undefined) updateData.slug = data.slug;
   
-  // Slug validation for PATCH (same as create)
+  // Slug validation for PATCH — only validate if slug changed
   if (updateData.slug) {
-    const newSlug = String(updateData.slug).trim();
+    const newSlug = String(updateData.slug).trim().toLowerCase();
     if (!newSlug) {
       delete updateData.slug;
+    } else if (newSlug === existing.slug) {
+      // Slug unchanged — keep legacy slug, skip validation
+      updateData.slug = existing.slug;
     } else {
       if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(newSlug)) {
-        return NextResponse.json({ errors: { slug: "Slug mora sadržavati samo mala slova, brojke i crtice (npr. moj-proizvod)." } }, { status: 400 });
+        return NextResponse.json({ errors: { slug: "Slug mora sadrzavati samo mala slova, brojke i crtice (npr. moj-proizvod)." } }, { status: 400 });
       }
       // Check collision (ignore current product)
-      const existing = await db.product.findFirst({ where: { slug: newSlug, id: { not: id } } });
-      if (existing) {
-        return NextResponse.json({ errors: { slug: `Slug "${newSlug}" već postoji. Odaberite drugi slug.` } }, { status: 400 });
+      const collides = await db.product.findFirst({ where: { slug: newSlug, id: { not: id } } });
+      if (collides) {
+        return NextResponse.json({ errors: { slug: `Slug "${newSlug}" vec postoji. Odaberite drugi slug.` } }, { status: 400 });
       }
       updateData.slug = newSlug;
     }
