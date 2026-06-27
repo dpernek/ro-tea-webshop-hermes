@@ -27,8 +27,7 @@ export async function generateMetadata({
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
   const product = await db.product.findUnique({
-    select: { id: true, name: true, slug: true, price: true, salePrice: true, regularPrice: true, description: true, image: true, images: true, status: true, stockStatus: true, stock: true, brand: true, category: true, sku: true, ean: true, specifications: true, benefits: true, usage: true, warranty: true, deliveryNote: true, badge: true },
- where: { slug }, select: { name: true, shortDescription: true, image: true } });
+    where: { slug }, select: { name: true, shortDescription: true, image: true, price: true, salePrice: true, regularPrice: true, images: true, category: true } });
   if (!product) return { title: "Proizvod nije pronađen | RO-TEA" };
   return {
     title: `${product.name} | RO-TEA`,
