@@ -43,7 +43,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 
   await db.category.update({ where: { id }, data });
-  await logAction("categories", "update", `Ažurirana kategorija`, id).catch(() => {});
   return NextResponse.json({ ok: true });
 }
 
