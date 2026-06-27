@@ -9,6 +9,5 @@ export async function GET() {
     select: { id: true, name: true, email: true, phone: true, createdAt: true },
     orderBy: { createdAt: "desc" },
     take: 50,
-    select: { id: true, name: true, email: true, phone: true, createdAt: true },
   }));
 }
