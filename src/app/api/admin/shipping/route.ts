@@ -23,7 +23,7 @@ const shippingCreateSchema = z.object({
 export async function GET() {
   const access = await requirePermission("shipping", "read");
   if (access) return access;
-  return NextResponse.json(await db.shippingMethod.findMany({ orderBy: { sortOrder: "asc" } }));
+  return NextResponse.json(await db.shippingMethod.findMany({ select: { id: true, name: true, description: true, price: true, freeAboveAmount: true, active: true, sortOrder: true }, orderBy: { sortOrder: "asc" } }));
 }
 
 export async function POST(req: NextRequest) {

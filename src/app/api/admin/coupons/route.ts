@@ -25,7 +25,7 @@ const couponCreateSchema = z.object({
 export async function GET() {
   const access = await requirePermission("coupons", "write");
   if (access) return access;
-  return NextResponse.json(await db.coupon.findMany({ orderBy: { createdAt: "desc" } }));
+  return NextResponse.json(await db.coupon.findMany({ select: { id: true, code: true, type: true, value: true, active: true, usageLimit: true, usageCount: true, startsAt: true, endsAt: true, minimumOrderAmount: true, createdAt: true }, orderBy: { createdAt: "desc" } }));
 }
 
 export async function POST(req: NextRequest) {

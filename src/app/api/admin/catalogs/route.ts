@@ -19,7 +19,8 @@ const catalogSchema = z.object({
 export async function GET() {
   const access = await requirePermission("catalogs", "read");
   if (access) return access;
-  const catalogs = await db.catalog.findMany({ orderBy: { sortOrder: "asc" } });
+  const catalogs = await db.catalog.findMany({
+    select: { id: true, name: true, brand: true, description: true, image: true, fileUrl: true, featured: true, active: true, createdAt: true }, orderBy: { sortOrder: "asc" } });
   return NextResponse.json(catalogs);
 }
 
