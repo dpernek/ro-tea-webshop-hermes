@@ -49,11 +49,13 @@ export async function proxy(request: NextRequest) {
       return rateLimitedResponse(headers, retryAfter);
     }
 
-    // Per-IP+email limit (extract email from body)
+    // Per-IP+email limit (extract email from form-urlencoded body)
     try {
       const cloned = request.clone();
-      const body = await cloned.json().catch(() => ({}));
-      const email = typeof body.email === "string" ? body.email.toLowerCase().trim() : "";
+      const text = await cloned.text();
+      // NextAuth sends credentials as application/x-www-form-urlencoded
+      const params = new URLSearchParams(text);
+      const email = params.get("email")?.toLowerCase().trim() || "";
       if (email) {
         const emailKey = `${clientKey}:email:${email}`;
         const { allowed: emailAllowed, reset: emailReset } = loginLimiter.check(emailKey);
