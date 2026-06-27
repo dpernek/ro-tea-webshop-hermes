@@ -164,9 +164,14 @@ export async function POST(
     Weight: 1,
   };
 
-  // If Paketomat, add ParcelShopId
+  // If Paketomat, add ParcelShopId as service parameter
   if (isPaketomat && order.glsPickupPointId) {
     (parcelInfo as any).ParcelShopId = order.glsPickupPointId;
+    const svc = (parcelInfo as any).Service;
+    if (svc && typeof svc === "object") {
+      svc.Parameter = svc.Parameter || [];
+      (svc.Parameter as any[]).push({ Code: "PSS", Value: order.glsPickupPointId });
+    }
   }
 
   try {
