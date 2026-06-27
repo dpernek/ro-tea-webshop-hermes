@@ -79,5 +79,6 @@ export async function POST(request: NextRequest) {
     });
   }
 
+  await logAction("settings", "update", `Ažurirane postavke trgovine`, "store").catch(() => {});
   return NextResponse.json({ success: true });
 }

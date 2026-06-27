@@ -52,9 +52,11 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   if (usedCount > 0) {
     // Deactivate instead of deleting
     await db.shippingMethod.update({ where: { id }, data: { active: false } });
+    await logAction("shipping", "deactivate", `Deaktivirana dostava: ${id}`, id).catch(() => {});
     return NextResponse.json({ ok: true, deactivated: true, message: "Metoda dostave je deaktivirana jer je korištena u postojećim narudžbama." });
   }
 
   await db.shippingMethod.delete({ where: { id } });
+  await logAction("shipping", "delete", `Obrisana dostava: ${id}`, id).catch(() => {});
   return NextResponse.json({ ok: true });
 }
