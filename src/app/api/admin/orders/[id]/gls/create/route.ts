@@ -87,13 +87,16 @@ export async function POST(
     const cityZip = parts.length > 1 ? parts[parts.length - 1] : "";
     let street = streetPartRaw;
     let houseNumber = "";
-    const hnMatch = streetPartRaw.match(/^(.+?)\s+(\d+[a-zA-Z]?\s*[a-zA-Z]?)$/);
+    let houseNumberInfo = "";
+    // Parse: "Letovanićka ulica 21 a" → street="Letovanićka ulica", hn="21", hnInfo="a"
+    const hnMatch = streetPartRaw.match(/^(.+?)\s+(\d+)(\s*[a-zA-Z]*)$/);
     if (hnMatch) {
       street = hnMatch[1];
-      houseNumber = hnMatch[2].replace(/\s/g, "");
+      houseNumber = hnMatch[2];
+      houseNumberInfo = (hnMatch[3] || "").trim();
     }
     const zipMatch = cityZip.match(/^(\d{5})\s+(.+)/);
-    deliveryAddress = {
+    const addr: any = {
       Name: order.glsPickupPointName || order.customerName,
       Street: street,
       HouseNumber: houseNumber || undefined,
@@ -104,6 +107,8 @@ export async function POST(
       ContactPhone: order.customerPhone,
       ContactEmail: order.customerEmail,
     };
+    if (houseNumberInfo) addr.HouseNumberInfo = houseNumberInfo;
+    deliveryAddress = addr;
   } else {
     // Standard GLS dostava: parse shipping address
     const addrParts = (order.shippingAddress || "").split(",").map(s => s.trim());
@@ -164,13 +169,12 @@ export async function POST(
     Weight: 1,
   };
 
-  // If Paketomat, add ParcelShopId as service parameter
+  // If Paketomat, add DropOffPointId to PSD service
   if (isPaketomat && order.glsPickupPointId) {
-    (parcelInfo as any).ParcelShopId = order.glsPickupPointId;
     const svc = (parcelInfo as any).Service;
     if (svc && typeof svc === "object") {
       svc.Parameter = svc.Parameter || [];
-      (svc.Parameter as any[]).push({ Code: "PSS", Value: order.glsPickupPointId });
+      (svc.Parameter as any[]).push({ Code: "DropOffPointId", Value: order.glsPickupPointId });
     }
   }
 
