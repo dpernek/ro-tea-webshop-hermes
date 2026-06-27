@@ -42,8 +42,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   }
 
-  const cat = await db.category.update({ where: { id }, data });
-  await logAction("categories", "update", `Ažurirana kategorija ${cat.name}`, id).catch(() => {});
+  await db.category.update({ where: { id }, data });
+  await logAction("categories", "update", `Ažurirana kategorija`, id).catch(() => {});
   return NextResponse.json({ ok: true });
 }
 
@@ -61,7 +61,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     );
   }
 
-  const cat = await db.category.delete({ where: { id } });
-  await logAction("categories", "delete", `Obrisana kategorija ${cat.name}`, id).catch(() => {});
+  await db.category.delete({ where: { id } });
+  await logAction("categories", "delete", `Obrisana kategorija`, id).catch(() => {});
   return NextResponse.json({ ok: true });
 }
