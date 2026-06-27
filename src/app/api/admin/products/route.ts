@@ -140,5 +140,6 @@ export async function POST(request: NextRequest) {
   }
 
   const product = await db.product.create({ data: { ...body, slug } });
-  return NextResponse.json(product);
+  await logAction("products", "create", `Kreiran proizvod: ${product.name}`, product.id).catch(() => {});
+  return NextResponse.json(product, { status: 201 });
 }
