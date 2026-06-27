@@ -8,7 +8,7 @@ interface AuditEntry {
   id: string; userEmail: string; resource: string; action: string; summary: string; createdAt: string; entityId?: string;
 }
 
-const RESOURCES = ["", "products", "categories", "brands", "orders", "users", "coupons", "shipping", "settings", "catalogs"];
+const RESOURCES = ["", "products", "categories", "brands", "orders", "users", "coupons", "shipping", "settings", "catalogs", "content"];
 
 export default function AuditLogPage() {
   const [logs, setLogs] = useState<AuditEntry[]>([]);

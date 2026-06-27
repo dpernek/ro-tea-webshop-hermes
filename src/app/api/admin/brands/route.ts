@@ -45,5 +45,7 @@ export async function POST(req: NextRequest) {
   const body = parsed.data;
   const slug = body.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
-  return NextResponse.json(await db.brand.create({ data: { ...body, slug, id: slug } }));
+  const brand = await db.brand.create({ data: { ...body, slug, id: slug } });
+  await logAction("brands", "create", `Kreiran brend ${brand.name}`, brand.id).catch(() => {});
+  return NextResponse.json(brand);
 }

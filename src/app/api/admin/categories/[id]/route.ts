@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
+import { logAction } from "@/lib/audit";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +42,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   }
 
-  await db.category.update({ where: { id }, data });
+  const cat = await db.category.update({ where: { id }, data });
+  await logAction("categories", "update", `Ažurirana kategorija ${cat.name}`, id).catch(() => {});
   return NextResponse.json({ ok: true });
 }
 
@@ -59,6 +61,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     );
   }
 
-  await db.category.delete({ where: { id } });
+  const cat = await db.category.delete({ where: { id } });
+  await logAction("categories", "delete", `Obrisana kategorija ${cat.name}`, id).catch(() => {});
   return NextResponse.json({ ok: true });
 }
