@@ -19,10 +19,11 @@ function rateLimitedResponse(
   retryAfterSec: number
 ): NextResponse {
   headers.set("Retry-After", String(retryAfterSec));
-  return new NextResponse("Previše zahtjeva. Pokušajte ponovo kasnije.", {
-    status: 429,
-    headers,
-  });
+  headers.set("Content-Type", "application/json");
+  return new NextResponse(
+    JSON.stringify({ error: "Previše zahtjeva. Pokušajte ponovno kasnije." }),
+    { status: 429, headers }
+  );
 }
 
 export async function proxy(request: NextRequest) {
@@ -36,14 +37,33 @@ export async function proxy(request: NextRequest) {
   const clientKey = getClientKey(request);
 
   // Admin login (POST to NextAuth credentials endpoint)
+  // Dual-layer rate-limit: per IP and per IP+email (brute-force protection)
   if (
     request.method === "POST" &&
     pathname === "/api/auth/callback/credentials"
   ) {
-    const { allowed, reset } = loginLimiter.check(clientKey);
-    if (!allowed) {
-      const retryAfter = Math.max(1, Math.ceil(reset - Date.now() / 1000));
+    // Per-IP limit
+    const { allowed: ipAllowed, reset: ipReset } = loginLimiter.check(clientKey);
+    if (!ipAllowed) {
+      const retryAfter = Math.max(1, Math.ceil(ipReset - Date.now() / 1000));
       return rateLimitedResponse(headers, retryAfter);
+    }
+
+    // Per-IP+email limit (extract email from body)
+    try {
+      const cloned = request.clone();
+      const body = await cloned.json().catch(() => ({}));
+      const email = typeof body.email === "string" ? body.email.toLowerCase().trim() : "";
+      if (email) {
+        const emailKey = `${clientKey}:email:${email}`;
+        const { allowed: emailAllowed, reset: emailReset } = loginLimiter.check(emailKey);
+        if (!emailAllowed) {
+          const retryAfter = Math.max(1, Math.ceil(emailReset - Date.now() / 1000));
+          return rateLimitedResponse(headers, retryAfter);
+        }
+      }
+    } catch {
+      // Body parse failed — fall through (IP limit still applies)
     }
   }
 
