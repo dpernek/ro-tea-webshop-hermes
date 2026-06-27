@@ -80,6 +80,12 @@ export async function PATCH(
       (sanitized as any)[field] = Number.isFinite(num) ? num : null;
     }
   }
+  // Remove null/undefined enum/string fields that aren't being changed in PATCH
+  for (const field of ["type", "stockStatus", "status"]) {
+    if ((sanitized as any)[field] == null) {
+      delete (sanitized as any)[field];
+    }
+  }
 
   // Validate with Zod — partial for PATCH (all fields optional)
   const patchSchema = productSchema.partial();

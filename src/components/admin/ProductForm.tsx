@@ -52,7 +52,7 @@ export function ProductForm({ product, categories, brands }: {
         price: Number(String(form.get("price")).replace(",", ".")) || 0,
         image: form.get("image") || "/images/placeholder.svg",
         stock: Number(form.get("stock")) || 0,
-        stockStatus: form.get("stockStatus"), status: form.get("status"), type: form.get("type"),
+        stockStatus: form.get("stockStatus"), status: form.get("status"),
         featured: form.get("featured") === "on",
         shortDescription: form.get("shortDescription") || "",
         description: form.get("description") || "",
