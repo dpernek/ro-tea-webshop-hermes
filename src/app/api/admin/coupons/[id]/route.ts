@@ -40,7 +40,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 
   await db.coupon.update({ where: { id }, data: parsed.data });
-  await logAction("coupons", "delete", `Obrisan kupon`, id);
+  await logAction("coupons", "update", `Ažuriran kupon`, id).catch(() => {});
   return NextResponse.json({ ok: true });
 }
 
@@ -49,6 +49,6 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   if (access) return access;
   const { id } = await params;
   await db.coupon.delete({ where: { id } });
-  await logAction("coupons", "delete", `Obrisan kupon`, id);
+  await logAction("coupons", "delete", `Obrisan kupon`, id).catch(() => {});
   return NextResponse.json({ ok: true });
 }

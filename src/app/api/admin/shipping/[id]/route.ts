@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
+import { logAction } from "@/lib/audit";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +38,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 
   await db.shippingMethod.update({ where: { id }, data: parsed.data });
+  await logAction("shipping", "update", `Ažurirana dostava`, id).catch(() => {});
   return NextResponse.json({ ok: true });
 }
 

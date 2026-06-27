@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
+import { logAction } from "@/lib/audit";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
