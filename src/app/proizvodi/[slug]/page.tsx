@@ -103,8 +103,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
 
   const product = await db.product.findUnique({
-    select: { id: true, name: true, slug: true, price: true, salePrice: true, regularPrice: true, description: true, image: true, images: true, status: true, stockStatus: true, stock: true, brand: true, category: true, sku: true, ean: true, specifications: true, benefits: true, usage: true, warranty: true, deliveryNote: true, badge: true },
-
     where: { slug },
     select: {
       id: true, slug: true, name: true, sku: true,
