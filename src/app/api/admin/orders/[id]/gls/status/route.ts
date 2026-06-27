@@ -43,6 +43,12 @@ export async function POST(
   }
 
   if (!order.glsParcelNumber) {
+    if (order.glsShipmentId) {
+      return NextResponse.json(
+        { success: true, message: "GLS pošiljka je kreirana, ali broj za praćenje još nije dostupan. Status će biti dostupan kada GLS dodijeli broj za praćenje.", statuses: [] },
+        { status: 200 },
+      );
+    }
     return NextResponse.json(
       { error: "Ova narudžba nema GLS pošiljku. Prvo kreirajte pošiljku." },
       { status: 400 },
