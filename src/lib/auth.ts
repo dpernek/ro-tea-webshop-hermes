@@ -2,7 +2,6 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
-import { checkLoginBruteForce } from "@/lib/rate-limiter";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -17,10 +16,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const email = String(credentials.email).toLowerCase().trim();
         const password = String(credentials.password);
-
-        // Brute-force protection: block after 5 failed attempts per email per minute
-        const bruteForce = checkLoginBruteForce("0.0.0.0", email);
-        if (bruteForce.blocked) return null;
 
         const user = await db.user.findUnique({ where: { email } });
         if (!user) return null;

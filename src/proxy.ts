@@ -9,6 +9,8 @@ import {
   checkoutLimiter,
   contactLimiter,
   uploadLimiter,
+  adminWriteLimiter,
+  couponValidateLimiter,
   getClientKey,
 } from "@/lib/rate-limit";
 
@@ -72,6 +74,30 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/admin/upload"
   ) {
     const { allowed, reset } = uploadLimiter.check(clientKey);
+    if (!allowed) {
+      const retryAfter = Math.max(1, Math.ceil(reset - Date.now() / 1000));
+      return rateLimitedResponse(headers, retryAfter);
+    }
+  }
+
+  // Admin write routes (POST/PUT/PATCH/DELETE)
+  if (
+    pathname.startsWith("/api/admin/") &&
+    ["POST", "PUT", "PATCH", "DELETE"].includes(request.method)
+  ) {
+    const { allowed, reset } = adminWriteLimiter.check(clientKey);
+    if (!allowed) {
+      const retryAfter = Math.max(1, Math.ceil(reset - Date.now() / 1000));
+      return rateLimitedResponse(headers, retryAfter);
+    }
+  }
+
+  // Coupon validation
+  if (
+    request.method === "POST" &&
+    pathname === "/api/coupons/validate"
+  ) {
+    const { allowed, reset } = couponValidateLimiter.check(clientKey);
     if (!allowed) {
       const retryAfter = Math.max(1, Math.ceil(reset - Date.now() / 1000));
       return rateLimitedResponse(headers, retryAfter);

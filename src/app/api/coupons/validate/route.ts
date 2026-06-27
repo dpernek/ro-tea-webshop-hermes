@@ -1,12 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
+const validateSchema = z.object({
+  code: z.string().min(1, "Unesite kod kupona.").max(50, "Kod kupona je predugačak.").transform((v) => v.trim().toUpperCase()),
+  subtotal: z.number().min(0, "Iznos ne može biti negativan.").optional().default(0),
+});
+
 export async function POST(req: NextRequest) {
   try {
-    const { code, subtotal } = await req.json();
-    if (!code) return NextResponse.json({ valid: false, error: "Unesite kod kupona." }, { status: 400 });
+    const raw = await req.json();
+    const parsed = validateSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of parsed.error.issues) {
+        fieldErrors[issue.path.join(".")] = issue.message;
+      }
+      return NextResponse.json({ valid: false, errors: fieldErrors }, { status: 400 });
+    }
+
+    const { code, subtotal } = parsed.data;
 
     const coupon = await db.coupon.findFirst({
       where: { code: { equals: code, mode: "insensitive" }, active: true },

@@ -3,7 +3,6 @@ import { z } from "zod";
 import { requirePermission } from "@/lib/admin-auth";
 import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
-import { checkRateLimitAdmin } from "@/lib/rate-limit-admin";
 import { canTransition, validateOrderPaymentConsistency } from "@/lib/order-lifecycle";
 import { sendEmail } from "@/lib/email";
 import { isGlsConfigured } from "@/lib/shipping/gls/config";
@@ -61,8 +60,6 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const rl = checkRateLimitAdmin(req, "orders");
-  if (rl) return rl;
   const access = await requirePermission("orders", "write");
   if (access) return access;
   const { id } = await params;

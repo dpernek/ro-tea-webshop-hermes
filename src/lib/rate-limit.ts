@@ -103,6 +103,12 @@ export const contactLimiter = createRateLimiter({ maxTokens: 3, windowSec: 60 })
 /** File upload: 20 requests per 60 seconds */
 export const uploadLimiter = createRateLimiter({ maxTokens: 20, windowSec: 60 });
 
+/** Admin write routes: 60 requests per 60 seconds */
+export const adminWriteLimiter = createRateLimiter({ maxTokens: 60, windowSec: 60 });
+
+/** Coupon validation: 30 requests per 60 seconds */
+export const couponValidateLimiter = createRateLimiter({ maxTokens: 30, windowSec: 60 });
+
 /**
  * Extract a semi-stable client key from the request.
  * Uses X-Forwarded-For (Vercel), falling back to request metadata.
