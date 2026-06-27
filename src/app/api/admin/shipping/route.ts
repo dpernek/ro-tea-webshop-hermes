@@ -17,7 +17,7 @@ const shippingCreateSchema = z.object({
   price: z.preprocess((v) => (v === "" ? undefined : Number(v)), z.number({ error: "Cijena dostave je obavezna" }).min(0, "Cijena ne može biti negativna")),
   freeAboveAmount: z.preprocess(emptyStringToNull, z.preprocess((v) => (v === "" ? undefined : Number(v)), z.number().min(0, "Prag besplatne dostave ne može biti negativan").nullable().optional())),
   active: z.boolean().default(true),
-  sortOrder: z.preprocess((v) => (v === "" ? undefined : Number(v)), z.number().int().default(0)),
+  sortOrder: z.preprocess((v) => (v === "" || v === undefined ? 0 : Number(v)), z.number().int().default(0)),
 });
 
 export async function GET() {
