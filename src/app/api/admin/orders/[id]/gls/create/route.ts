@@ -149,6 +149,20 @@ export async function POST(
 
   const config = getGlsConfig();
 
+  // Build ServiceList (WooCommerce plugin uses ServiceList array with PSDParameter nested inside)
+  const serviceList: any[] = [];
+  if (isPaketomat && order.glsPickupPointId) {
+    serviceList.push({
+      Code: "PSD",
+      PSDParameter: { StringValue: order.glsPickupPointId },
+    });
+  } else {
+    serviceList.push({ Code: "PSD" });
+  }
+  if (isCod) {
+    serviceList.push({ Code: "COD", Parameter: [{ Code: "COD", Value: order.total?.toFixed(2) || "0" }] });
+  }
+
   const parcelInfo: Record<string, unknown> = {
     ClientNumber: config.clientNumber,
     ClientReference: order.orderNumber,
@@ -165,14 +179,9 @@ export async function POST(
       ZipCode: "10000",
       CountryIsoCode: "HR",
     },
-    Service: isCod ? { Code: "PSD", Parameter: [{ Code: "COD", Value: order.total?.toFixed(2) || "0" }] } : { Code: "PSD" },
+    ServiceList: serviceList,
     Weight: 1,
   };
-
-  // If Paketomat, add PSDParameter (FinalDeliveryAddress not supported by GLS Croatia REST)
-  if (isPaketomat && order.glsPickupPointId) {
-    (parcelInfo as any).PSDParameter = { StringValue: order.glsPickupPointId };
-  }
 
   try {
     const result = await prepareLabels([parcelInfo]);
