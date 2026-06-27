@@ -57,3 +57,24 @@ Vercel edge distribucija: svaki edge node ima vlastiti in-memory store. Pod heav
 
 ## Commit
 `2e4e07e`
+
+## Update 2026-06-28 — Login Rate-Limit Improvement
+
+### Changes
+- Login rate limit sada koristi **IP+email** kombinaciju (dual-layer)
+  1. Prvo se provjerava per-IP limit (`loginLimiter`, 5/15s)
+  2. Zatim se iz POST bodyja čita email i provjerava per-IP+email limit
+- Rate-limited response sada vraća **JSON** (`{"error": "Previše zahtjeva..."}`) umjesto plain texta
+- `Retry-After` header postavljen za sve 429 response
+
+### Login limiter model
+| Sloj | Ključ | Limit | Window |
+|------|-------|-------|--------|
+| IP-based | `X-Forwarded-For IP` | 5 pokušaja | 15s |
+| IP+email-based | `IP:email:{email}` | 5 pokušaja | 15s |
+
+### Ograničenja
+- Vercel edge distribucija: svaki edge node ima vlastiti in-memory store
+- Pod heavy loadom različiti edge nodeovi mogu dopustiti više pokušaja
+- Body parse u middlewareu: koristi `request.clone()` da ne konzumira original body
+- Ako body parse padne (malformirani JSON), fallback na IP-only limit
