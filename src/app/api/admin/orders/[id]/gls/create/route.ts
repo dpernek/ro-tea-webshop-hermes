@@ -75,17 +75,26 @@ export async function POST(
 
   if (isPaketomat && order.glsPickupPointAddress) {
     // GLS Paketomat: use paketomat address as delivery address
-    // Format: "Name, Street, City ZipCode"
+    // Format: "Street HouseNumber, ZipCode City" (e.g. "Letovanićka ulica 21 a, 10000 Zagreb")
     const addr = order.glsPickupPointAddress;
     const parts = addr.split(",").map(s => s.trim());
-    const name = order.glsPickupPointName || parts[0] || "Paketomat";
-    const streetPart = parts[1] || parts[0] || "";
-    const cityZip = parts[parts.length - 1] || "";
+    // parts[0] = "Street HouseNumber", parts[1] = "ZipCode City" (or parts[-1] for last)
+    const streetPartRaw = parts[0] || "";
+    const cityZip = parts.length > 1 ? parts[parts.length - 1] : "";
+    // Parse street + house number: "Letovanićka ulica 21 a"
+    let street = streetPartRaw;
+    let houseNumber = "";
+    const hnMatch = streetPartRaw.match(/^(.+?)\s+(\d+[a-zA-Z]?\s*[a-zA-Z]?)$/);
+    if (hnMatch) {
+      street = hnMatch[1];
+      houseNumber = hnMatch[2].replace(/\s/g, "");
+    }
+    // Parse zip + city: "10000 Zagreb"
     const zipMatch = cityZip.match(/^(\d{5})\s+(.+)/);
     deliveryAddress = {
-      Name: order.customerName,
-      Street: streetPart,
-      HouseNumber: undefined,
+      Name: order.glsPickupPointName || order.customerName,
+      Street: street,
+      HouseNumber: houseNumber || undefined,
       City: zipMatch ? zipMatch[2] : cityZip,
       ZipCode: zipMatch ? zipMatch[1] : "",
       CountryIsoCode: "HR",
@@ -93,6 +102,11 @@ export async function POST(
       ContactPhone: order.customerPhone,
       ContactEmail: order.customerEmail,
     };
+  } else if (isPaketomat) {
+    return NextResponse.json(
+      { error: "GLS Paketomat narudžba nema spremljene podatke paketomata." },
+      { status: 400 },
+    );
   } else {
     // Standard GLS dostava: parse shipping address
     const addrParts = (order.shippingAddress || "").split(",").map(s => s.trim());
