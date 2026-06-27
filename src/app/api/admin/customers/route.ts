@@ -6,6 +6,7 @@ export async function GET() {
   const access = await requirePermission("customers", "read");
   if (access) return access;
   return NextResponse.json(await db.customer.findMany({
+    select: { id: true, name: true, email: true, phone: true, createdAt: true },
     orderBy: { createdAt: "desc" },
     take: 50,
     select: { id: true, name: true, email: true, phone: true, createdAt: true },

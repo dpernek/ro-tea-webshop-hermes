@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
 
   const [payments, total] = await Promise.all([
     db.payment.findMany({
+      select: { id: true, orderId: true, provider: true, method: true, status: true, transactionId: true, stripeCheckoutSessionId: true, createdAt: true },
       where,
       skip: (page - 1) * limit,
       take: limit,
