@@ -72,6 +72,13 @@ export async function PATCH(
 
   // Sanitize: convert empty strings to null/undefined where appropriate
   const sanitized = sanitizeInput(body as Record<string, unknown>);
+  // Pre-process numeric fields: replace comma decimal with dot
+  for (const field of ["price", "regularPrice", "salePrice"]) {
+    const val = (sanitized as any)[field];
+    if (typeof val === "string" && val.includes(",")) {
+      (sanitized as any)[field] = Number(val.replace(",", "."));
+    }
+  }
 
   // Validate with Zod — partial for PATCH (all fields optional)
   const patchSchema = productSchema.partial();
