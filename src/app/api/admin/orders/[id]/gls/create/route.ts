@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { logAction } from "@/lib/audit";
-import { isGlsConfigured } from "@/lib/shipping/gls/config";
+import { isGlsConfigured, getGlsConfig } from "@/lib/shipping/gls/config";
 
 import { prepareLabels } from "@/lib/shipping/gls/restClient";
 
@@ -90,7 +90,10 @@ export async function POST(
 
   const isCod = order.shippingMethod?.toLowerCase().includes("pouzeće") || false;
 
+  const config = getGlsConfig();
+
   const parcelInfo = {
+    ClientNumber: config.clientNumber,
     ClientReference: order.orderNumber,
     CODAmount: isCod ? order.total : undefined,
     CODReference: isCod ? order.orderNumber : undefined,
@@ -106,6 +109,14 @@ export async function POST(
       ContactName: order.customerName,
       ContactPhone: order.customerPhone,
       ContactEmail: order.customerEmail,
+    },
+    PickupAddress: {
+      Name: "RO-TEA d.o.o.",
+      Street: "Badalićeva",
+      HouseNumber: "26b",
+      City: "Zagreb",
+      ZipCode: "10000",
+      CountryCode: "HR",
     },
     Service: isCod ? { Code: "PSD", Parameter: [{ Code: "COD", Value: order.total?.toFixed(2) || "0" }] } : { Code: "PSD" },
     Weight: 1,

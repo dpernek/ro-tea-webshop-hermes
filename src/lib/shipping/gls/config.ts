@@ -52,11 +52,11 @@ let _config: GlsConfig | null = null;
 export function getGlsConfig(): GlsConfig {
   if (_config) return _config;
 
-  const testMode = getEnv("GLS_TEST_MODE", "true").toLowerCase() === "true";
+  const testMode = getEnv("GLS_TEST_MODE", "false").toLowerCase() === "true";
 
   const apiBaseUrl = getEnv(
     "GLS_API_BASE_URL",
-    "https://api.test.mygls.hr",
+    "https://api.mygls.hr",
   );
 
   const wsdlUrl = `${apiBaseUrl}/ParcelService.svc/soap`;
