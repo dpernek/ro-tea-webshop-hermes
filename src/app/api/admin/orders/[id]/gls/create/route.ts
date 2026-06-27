@@ -172,33 +172,6 @@ export async function POST(
   // If Paketomat, add PSDParameter + FinalDeliveryAddress
   if (isPaketomat && order.glsPickupPointId) {
     (parcelInfo as any).PSDParameter = { StringValue: order.glsPickupPointId };
-    // Add customer home address as FinalDeliveryAddress (backup)
-    const homeParts = (order.shippingAddress || "").split(",").map((s: string) => s.trim());
-    const homeStreetRaw = homeParts[0] || "";
-    const homeCityZip = homeParts.length > 1 ? homeParts[homeParts.length - 1] : "";
-    let homeStreet = homeStreetRaw;
-    let homeHouseNumber = "";
-    let homeHouseNumberInfo = "";
-    const homeHnMatch = homeStreetRaw.match(/^(.+?)\s+(\d+)(\s*[a-zA-Z]*)$/);
-    if (homeHnMatch) {
-      homeStreet = homeHnMatch[1];
-      homeHouseNumber = homeHnMatch[2];
-      homeHouseNumberInfo = (homeHnMatch[3] || "").trim();
-    }
-    const homeZipMatch = homeCityZip.match(/^(\d{5})\s+(.+)/);
-    const homeAddr: any = {
-      Name: order.customerName,
-      Street: homeStreet,
-      HouseNumber: homeHouseNumber || undefined,
-      City: homeZipMatch ? homeZipMatch[2] : homeCityZip,
-      ZipCode: homeZipMatch ? homeZipMatch[1] : "",
-      CountryIsoCode: "HR",
-      ContactName: order.customerName,
-      ContactPhone: order.customerPhone,
-      ContactEmail: order.customerEmail,
-    };
-    if (homeHouseNumberInfo) homeAddr.HouseNumberInfo = homeHouseNumberInfo;
-    (parcelInfo as any).FinalDeliveryAddress = homeAddr;
   }
 
   try {
