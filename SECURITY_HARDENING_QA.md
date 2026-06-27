@@ -78,3 +78,14 @@ Vercel edge distribucija: svaki edge node ima vlastiti in-memory store. Pod heav
 - Pod heavy loadom različiti edge nodeovi mogu dopustiti više pokušaja
 - Body parse u middlewareu: koristi `request.clone()` da ne konzumira original body
 - Ako body parse padne (malformirani JSON), fallback na IP-only limit
+
+## Update 2026-06-28 — Login Limiter Body Parsing Fix
+
+### Fix
+- NextAuth signIn("credentials") šalje `application/x-www-form-urlencoded`, ne JSON
+- Proxy sada koristi `new URLSearchParams(text)` za parsanje bodyja
+- Email se čita s `params.get("email")`
+
+### Potvrđeni request format
+- Content-Type: `application/x-www-form-urlencoded`
+- Body: `email=...&password=...&csrfToken=...`
