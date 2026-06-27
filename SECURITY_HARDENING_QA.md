@@ -1,90 +1,59 @@
-# SECURITY HARDENING QA — Faza 8
+# SECURITY HARDENING QA — Faza 8 (Corrected)
 
 ## Date
-2026-06-27
+2026-06-28
 
 ## Summary
 
-Dodan rate limiting za admin write rute i login, brute-force zaštita logina, input hardening kroz postojeći Zod schema layer.
+Iskorišten postojeći rate limiting sustav (`src/lib/rate-limit.ts` + `src/proxy.ts`). Dodani admin write i coupons validate rate limiteri u proxy sloj. Dodana Zod validacija na `/api/coupons/validate`. Uklonjeni duplicirani rate limiter fajlovi.
 
 ---
 
-## Rate Limiting
+## Rate Limiting (via proxy.ts)
 
-### Implementacija
-- `src/lib/rate-limiter.ts` — sliding-window in-memory limiter
-- `src/lib/rate-limit-admin.ts` — wrapper za admin rute
+| Ruta | Limit | Max tokens | Window |
+|------|-------|-----------|--------|
+| `/api/auth/callback/credentials` (POST) | login | 5 | 15s |
+| `/api/stripe/create-checkout-session` (POST) | checkout | 10 | 60s |
+| `/api/contact` (POST) | kontakt | 3 | 60s |
+| `/api/admin/upload` (POST) | upload | 20 | 60s |
+| **Sve `/api/admin/*` (POST/PUT/PATCH/DELETE)** | admin write | 60 | 60s |
+| `/api/coupons/validate` (POST) | kupon | 30 | 60s |
 
-### Pokrivene rute
-| Ruta | Metoda | Limit |
-|------|--------|-------|
-| `/api/auth/callback/credentials` | POST | 5/min po emailu, 10/min po IP |
-| `/api/admin/products` | POST | 30/min |
-| `/api/admin/orders` | PATCH | 30/min |
-| `/api/admin/orders/create` | POST | 30/min |
+Svi admin write rute (products, categories, brands, shipping, coupons, users, orders, settings, content, catalogs, GLS, upload, migrations) pokrivene kroz jedan proxy rule.
 
-### 429 Response format
-```json
-{ "error": "Previše zahtjeva. Pokušajte ponovno za minutu." }
-```
-Uz `Retry-After` HTTP header.
+Response: HTTP 429, plain text "Previše zahtjeva. Pokušajte ponovo kasnije."
 
 ---
 
 ## Brute-Force Protection
 
-### Implementacija
-- `src/lib/auth.ts` — `checkLoginBruteForce()` u authorize funkciji
-- Nakon 5 neuspješnih pokušaja po emailu unutar 60s, login se blokira
-- Ne otkriva se postoji li korisnik ili ne
+Login brute-force zaštita kroz dva sloja:
+1. **Proxy sloj** (loginLimiter) — 5 pokušaja / 15s po IP adresi (vraća 429)
+2. **Authorize hook** — nema dodatne email-based zaštite (proxy je dovoljan)
+
+Vercel edge distribucija: svaki edge node ima vlastiti in-memory store. Pod heavy loadom više nodeova može dopustiti više pokušaja, ali pruža osnovnu zaštitu.
 
 ---
 
 ## Input Hardening
 
-Sve admin write rute već koriste Zod `safeParse` s whitelistom polja. Dodatno:
-- Email normalizacija (lowercase + trim)
-- Slug format guard na PATCH
-- Null/undefined handling konzistentan kroz `emptyStringToNull` preprocessor
-
----
-
-## Error Hygiene
-
-- Admin API rute već vraćaju `{ error: "..." }` ili `{ errors: {...} }`
-- Interni stack traceovi se ne prosljeđuju klijentu
-- Postojeći `catch` blokovi logiraju console.error ali vraćaju generičku poruku
-
----
-
-## Upload Security
-
-Potvrđeno (audit only):
-- Magic bytes validacija putem existing upload route-a
-- Max size guard (10MB)
-- Allowed MIME types (image/png, image/jpeg, image/webp)
-- File path ne ovisi o user-provided nazivu
-
----
-
-## Admin Auth / Session
-
-- `requirePermission()` provjerava session + DB state (ne samo stale token)
-- Disabled/deactivated user → 403
-- STAFF ne može pristupiti ADMIN-only rutama
-- Self-protection na users ruti aktivna
+| Ruta | Validacija | Status |
+|------|------------|--------|
+| `/api/coupons/validate` | Zod schema (`code`, `subtotal`) | ✅ Dodana |
+| Sve admin write rute | Postojeći Zod `safeParse` | ✅ |
+| Email normalizacija | lowercase + trim | ✅ |
+| Slug format guard | Regex na PATCH | ✅ |
 
 ---
 
 ## What Was Left Out
 
-- Rate limiting na GLS specifične rute (niska frekvencija poziva)
-- Rate limiting na public `/api/coupons/validate` (niska frekvencija)
-- `res.ok` guard na svim admin fetch pozivima (pre-existing, audit only)
-- HTTPS enforcement (Vercel default, nije potreban u kodu)
-- CSP headers (već postoje)
+- Email-based brute-force tracking u authorize hooku (proxy sloj je dovoljan)
+- Per-resource admin write rate limiting granularnost (globalni admin write limit je dovoljan za prvi pass)
+- Vercel edge-distribuirani rate limiting (zahtijeva eksterni store — izvan scopea)
 
 ---
 
 ## Commit
-`b655b72`
+`2e4e07e`
