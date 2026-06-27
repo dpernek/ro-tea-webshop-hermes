@@ -60,6 +60,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const rl = checkRateLimitAdmin(req, "orders");
+  if (rl) return rl;
   const access = await requirePermission("orders", "write");
   if (access) return access;
   const { id } = await params;

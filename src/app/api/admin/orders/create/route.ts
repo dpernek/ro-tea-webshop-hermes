@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
+import { checkRateLimitAdmin } from "@/lib/rate-limit-admin";
 import { logAction } from "@/lib/audit";
 import { z } from "zod";
 

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requirePermission } from "@/lib/admin-auth";
 import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
+import { checkRateLimitAdmin } from "@/lib/rate-limit-admin";
 
 export const dynamic = "force-dynamic";
 
@@ -95,6 +96,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const rl = checkRateLimitAdmin(request, "products");
+  if (rl) return rl;
   const access = await requirePermission("products", "write");
   if (access) return access;
 
