@@ -169,30 +169,9 @@ export async function POST(
     Weight: 1,
   };
 
-  // If Paketomat, add PSDParameter + FinalDeliveryAddress
+  // If Paketomat, add PSDParameter (FinalDeliveryAddress not supported by GLS Croatia REST)
   if (isPaketomat && order.glsPickupPointId) {
     (parcelInfo as any).PSDParameter = { StringValue: order.glsPickupPointId };
-    // Add customer home address as FinalDeliveryAddress (backup)
-    if (order.shippingAddress) {
-      const faParts = order.shippingAddress.split(",").map((s: string) => s.trim());
-      const faStreetRaw = faParts[0] || "";
-      const faCityZip = faParts.length > 1 ? faParts[faParts.length - 1] : "";
-      let faStreet = faStreetRaw;
-      let faHouseNumber = "";
-      let faHouseNumberInfo = "";
-      const faHn = faStreetRaw.match(/^(.+?)\s+(\d+)(\s*[a-zA-Z]*)$/);
-      if (faHn) { faStreet = faHn[1]; faHouseNumber = faHn[2]; faHouseNumberInfo = (faHn[3] || "").trim(); }
-      const faZip = faCityZip.match(/^(\d{5})\s+(.+)/);
-      const fa: any = {
-        Name: order.customerName,
-        Street: faStreet, HouseNumber: faHouseNumber || undefined,
-        City: faZip ? faZip[2] : faCityZip, ZipCode: faZip ? faZip[1] : "",
-        CountryIsoCode: "HR", ContactName: order.customerName,
-        ContactPhone: order.customerPhone, ContactEmail: order.customerEmail,
-      };
-      if (faHouseNumberInfo) fa.HouseNumberInfo = faHouseNumberInfo;
-      (parcelInfo as any).FinalDeliveryAddress = fa;
-    }
   }
 
   try {
