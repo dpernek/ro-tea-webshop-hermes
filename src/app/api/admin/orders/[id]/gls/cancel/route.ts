@@ -51,25 +51,8 @@ export async function POST(
 
   try {
     const results = await cancelLabels([order.glsShipmentId]);
-    const result = results[0];
 
-    if (!result) {
-      return NextResponse.json(
-        { error: "GLS nije vratio rezultat storniranja." },
-        { status: 500 },
-      );
-    }
-
-    if (!result.success) {
-      return NextResponse.json(
-        {
-          error: `GLS nije uspio stornirati naljepnicu: ${"Failed"}`,
-        },
-        { status: 500 },
-      );
-    }
-
-    // Clear GLS data from order
+    // GLS successful if no error thrown — clear local GLS data regardless of response shape
     await db.order.update({
       where: { id },
       data: {
@@ -89,6 +72,20 @@ export async function POST(
     });
   } catch (error: any) {
     console.error("[GLS CANCEL]", error);
+    // If GLS parcel already deleted/stale, still clear local data
+    const isAlreadyGone = error?.message?.includes("not exist") || error?.message?.includes("not found") || error?.message?.includes("doesn't exist");
+    if (isAlreadyGone) {
+      await db.order.update({
+        where: { id },
+        data: {
+          glsShipmentId: null, glsParcelNumber: null,
+          glsLabelData: null,
+          glsStatusData: JSON.stringify({ status: "CLEANED_UP", cleanedAt: new Date().toISOString() }),
+          glsCreatedAt: null,
+        },
+      });
+      return NextResponse.json({ success: true, message: "GLS pošiljka je već bila uklonjena. Lokalno stanje očišćeno." });
+    }
     const message = error.code
       ? `GLS greška (${error.code}): ${error.message}`
       : error.message || "Nepoznata greška pri storniranju GLS naljepnice.";
