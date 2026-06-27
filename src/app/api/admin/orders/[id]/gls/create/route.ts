@@ -47,6 +47,7 @@ export async function POST(
       glsPickupPointId: true,
       glsPickupPointName: true,
       glsPickupPointAddress: true,
+      paymentMethod: true,
     },
   });
 
@@ -145,7 +146,7 @@ export async function POST(
     };
   }
 
-  const isCod = order.shippingMethod?.toLowerCase().includes("pouzeće") || false;
+  const isCod = order.paymentMethod === "cod";
 
   const config = getGlsConfig();
 
