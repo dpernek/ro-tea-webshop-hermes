@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
+import { logAction } from "@/lib/audit";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -46,7 +47,8 @@ export async function POST(request: NextRequest) {
   }
 
   const { name, brand, description, fileUrl, active, sortOrder } = parsed.data;
-  await db.catalog.create({ data: { name, brand, description, fileUrl, active, sortOrder } });
+  const catalog = await db.catalog.create({ data: { name, brand, description, fileUrl, active, sortOrder } });
+  await logAction("catalogs", "create", `Dodan katalog: ${name}`, catalog.id).catch(() => {});
   revalidatePath("/admin/katalozi");
   return NextResponse.json({ success: true });
 }
