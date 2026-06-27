@@ -157,8 +157,6 @@ export async function POST(
       Code: "PSD",
       PSDParameter: { StringValue: order.glsPickupPointId },
     });
-  } else {
-    serviceList.push({ Code: "PSD" });
   }
 
   const parcelInfo: Record<string, unknown> = {
