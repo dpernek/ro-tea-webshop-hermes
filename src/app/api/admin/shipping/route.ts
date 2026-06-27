@@ -44,5 +44,7 @@ export async function POST(req: NextRequest) {
 
   const body = parsed.data;
   const id = body.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  return NextResponse.json(await db.shippingMethod.create({ data: { ...body, id } }));
+  const method = await db.shippingMethod.create({ data: { ...body, id } });
+  await logAction("shipping", "create", `Dodana dostava: ${method.name}`, method.id).catch(() => {});
+  return NextResponse.json(method);
 }

@@ -137,6 +137,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   await db.order.update({ where: { id }, data: updateData });
 
+  // Audit log for order changes
+  const changes: string[] = [];
+  if (parsed.data.status && parsed.data.status !== oldOrder?.status) changes.push(`status: ${oldOrder?.status} → ${parsed.data.status}`);
+  if (parsed.data.paymentStatus && parsed.data.paymentStatus !== oldOrder?.paymentStatus) changes.push(`plaćanje: ${oldOrder?.paymentStatus} → ${parsed.data.paymentStatus}`);
+  if (changes.length > 0) {
+    logAction("orders", "update", `Ažurirana narudžba (${changes.join(", ")})`, id).catch(() => {});
+  }
+
   // Status email — simplified (statusChangeEmail not exported)
   if (parsed.data.status && parsed.data.status !== oldOrder?.status) {
     try {
