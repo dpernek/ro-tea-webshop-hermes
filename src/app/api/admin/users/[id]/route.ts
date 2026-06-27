@@ -61,10 +61,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (parsed.data.active !== undefined) data.active = parsed.data.active;
   if (parsed.data.newPassword) data.passwordHash = await bcrypt.hash(parsed.data.newPassword, 12);
 
-  const updated = await db.user.update({ where: { id }, data, select: { id: true, name: true, email: true, role: true, active: true } });
-  const action = parsed.data.newPassword ? "password_change" : "edit";
-  await logAction("users", action, `Ažuriran korisnik ${updated.email}`, updated.id);
-  return NextResponse.json(updated);
+  try {
+    const updated = await db.user.update({ where: { id }, data, select: { id: true, name: true, email: true, role: true, active: true } });
+    const action = parsed.data.newPassword ? "password_change" : "edit";
+    await logAction("users", action, `Ažuriran korisnik ${updated.email}`, updated.id).catch(() => {});
+    return NextResponse.json(updated);
+  } catch (e: any) {
+    return NextResponse.json({ error: e?.message || "Greška" }, { status: 500 });
+  }
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
