@@ -27,7 +27,7 @@ export default async function AdminDashboardPage() {
     db.order.count(),
     db.order.count({ where: { viewed: false } }),
     db.order.count({ where: { status: { in: ["PENDING"] } } }),
-    db.order.count({ where: { paymentStatus: "UNPAID" } }),
+    db.order.count({ where: { paymentStatus: "UNPAID", status: { notIn: ["CANCELLED", "REFUNDED"] } } }),
     db.order.count({ where: { shippingMethod: { startsWith: "GLS" }, glsShipmentId: null } }),
     db.product.count({ where: { status: "ACTIVE", stock: 0 } }),
     db.product.count({ where: { status: "ACTIVE", stock: { gt: 0, lte: 3 } } }),
@@ -71,12 +71,12 @@ export default async function AdminDashboardPage() {
 
   // ── KPI cards data ──────────────────────────────────────
   const kpis = [
-    { title: "Nove narudžbe", value: unreadOrders, subtitle: "nepregledane", href: "/admin/orders", color: "bg-red-50 text-red-700" },
-    { title: "Na čekanju", value: pendingOrders, subtitle: "status PENDING", href: "/admin/orders?status=PENDING", color: "bg-amber-50 text-amber-700" },
-    { title: "Neplaćene", value: unpaidOrders, subtitle: "čekaju uplatu", href: "/admin/orders?paymentStatus=UNPAID", color: "bg-orange-50 text-orange-700" },
-    { title: "Ukupna prodaja", value: `${revenue.toFixed(2)} €`, subtitle: "bez otkazanih", color: "bg-green-50 text-green-700" },
+    { title: "Nepregledane narudžbe", value: unreadOrders, subtitle: "još nisu pregledane", href: "/admin/orders", color: "bg-red-50 text-red-700" },
+    { title: "Na čekanju", value: pendingOrders, subtitle: "čekaju obradu", href: "/admin/orders?status=PENDING", color: "bg-amber-50 text-amber-700" },
+    { title: "Neplaćene", value: unpaidOrders, subtitle: "čekaju uplatu / pouzeće", href: "/admin/orders?paymentStatus=UNPAID", color: "bg-orange-50 text-orange-700" },
+    { title: "Prodaja (sveukupno)", value: `${revenue.toFixed(2)} €`, subtitle: "lifetime, bez otkazanih/refundiranih", color: "bg-green-50 text-green-700" },
     { title: "Aktivni proizvodi", value: activeProducts, subtitle: "u katalogu", href: "/admin/products", color: "bg-blue-50 text-blue-700" },
-    { title: "Bez zalihe", value: productsWithoutStock, subtitle: productsLowStock > 0 ? `+ ${productsLowStock} s niskom` : "treba dopuniti", href: "/admin/products", color: "bg-red-50 text-red-700" },
+    { title: "Niska zaliha", value: productsWithoutStock + productsLowStock, subtitle: `${productsWithoutStock} bez zalihe • ${productsLowStock} ≤ 3 kom.`, href: "/admin/products", color: "bg-red-50 text-red-700" },
   ];
 
   const hasAttention = unreadOrders > 0 || pendingOrders > 0 || unpaidOrders > 0 || glsOrdersWithoutShipment > 0 || stockAlerts.length > 0;
@@ -121,7 +121,7 @@ export default async function AdminDashboardPage() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {unreadOrders > 0 && (
               <Link href="/admin/orders" className="rounded-lg border border-amber-200 bg-amber-50 p-4 hover:shadow-sm transition-shadow">
-                <p className="font-semibold text-amber-800">{unreadOrders} novih narudžbi</p>
+                <p className="font-semibold text-amber-800">{unreadOrders} novih narudžbi (nepregledano)</p>
                 <p className="text-xs text-amber-600 mt-0.5">Pregledaj nepročitane narudžbe →</p>
               </Link>
             )}
@@ -216,7 +216,7 @@ export default async function AdminDashboardPage() {
       {/* ── Stock Alerts ──────────────────────────────────── */}
       {stockAlerts.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-slate-900 mb-3">Zalihe za dopuniti</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-3">Zalihe za dopuniti <span className="text-xs font-normal text-slate-400">(≤ 3 kom.)</span></h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {stockAlerts.map(p => (
               <Card key={p.id} className="hover:shadow-sm transition-shadow">
@@ -262,6 +262,7 @@ export default async function AdminDashboardPage() {
             <Card>
               <CardContent className="p-4">
                 <p className="text-sm text-slate-500">Bez pošiljke</p>
+                {glsOrdersWithoutShipment > 0 && <p className="text-xs text-slate-400 mt-0.5">(uklj. stornirane)</p>}
                 <p className={`text-2xl font-bold mt-1 ${glsOrdersWithoutShipment > 0 ? "text-red-700" : "text-slate-900"}`}>{glsOrdersWithoutShipment}</p>
               </CardContent>
             </Card>
@@ -305,7 +306,7 @@ export default async function AdminDashboardPage() {
             {auditEntries.map((e, i) => (
               <div key={i} className="flex items-center gap-3 rounded-lg border border-slate-100 bg-white px-4 py-2.5 text-sm">
                 <span className="text-xs text-slate-400 min-w-[60px]">
-                  {new Date(e.createdAt).toLocaleTimeString("hr-HR", { hour: "2-digit", minute: "2-digit" })}
+                  {(new Date(e.createdAt).toDateString() === new Date().toDateString() ? "danas " : "") + new Date(e.createdAt).toLocaleTimeString("hr-HR", { hour: "2-digit", minute: "2-digit" })}
                 </span>
                 <span className="text-xs text-slate-500">{e.userEmail}</span>
                 <span className="font-medium text-slate-700">{e.resource}</span>
