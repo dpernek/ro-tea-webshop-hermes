@@ -28,7 +28,38 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     glsPickupPointId: "", glsPickupPointName: "", glsPickupPointAddress: "",
   });
   const [couponCode, setCouponCode] = useState("");
-  const [couponDiscount] = useState(0);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponValidating, setCouponValidating] = useState(false);
+  const [couponMessage, setCouponMessage] = useState("");
+
+  async function applyCoupon() {
+    if (!couponCode.trim()) return;
+    setCouponValidating(true); setCouponMessage("");
+    try {
+      const subtotal = cartTotal();
+      const r = await fetch("/api/coupons/validate", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode.trim(), subtotal }),
+      });
+      const d = await r.json();
+      if (!r.ok || !d.valid) {
+        setCouponMessage(d.error || "Kupon nije valjan.");
+        setCouponDiscount(0);
+      } else {
+        setCouponMessage(`Popust: -${d.discount.toFixed(2)} €`);
+        setCouponDiscount(d.discount);
+      }
+    } catch {
+      setCouponMessage("Greška pri provjeri kupona.");
+    } finally { setCouponValidating(false); }
+  }
+
+  function cartTotal() {
+    return items.reduce((sum, item) => {
+      const price = item.product.salePrice != null && item.product.salePrice > 0 && item.product.salePrice < item.product.price ? item.product.salePrice : item.product.price;
+      return sum + price * item.quantity;
+    }, 0);
+  }
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [shippingMethods, setShippingMethods] = useState<Array<{ id: string; name: string; price: number; freeAboveAmount?: number | null }>>([]);
@@ -126,7 +157,8 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
 
     setIsSubmitting(true);
     try {
-      const order = await createOrder({
+      const order = // Pass couponCode to server-side createOrder
+    await createOrder({
         customerName: formData.fullName, customerEmail: formData.email,
         customerPhone: formData.phone, address: formData.address,
         city: formData.city, postalCode: formData.postalCode, note: formData.note,
