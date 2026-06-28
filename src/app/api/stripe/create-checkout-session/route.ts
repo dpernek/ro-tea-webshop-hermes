@@ -107,9 +107,9 @@ export async function POST(req: NextRequest) {
         subtotal: pricing.subtotal, shippingTotal: shippingTotal, taxTotal: pricing.tax, total: total,
         currency: "EUR", status: "PENDING", paymentStatus: "UNPAID", paymentMethod: "card",
         shippingMethod: shipMethod?.name || body.shippingMethodId, note: body.note || null,
-        glsPickupPointId: body.glsPickupPointId || null,
-        glsPickupPointName: body.glsPickupPointName || null,
-        glsPickupPointAddress: body.glsPickupPointAddress || null,
+        glsPickupPointId: shipMethod?.name === "GLS Paketomat" ? (body.glsPickupPointId || null) : null,
+        glsPickupPointName: shipMethod?.name === "GLS Paketomat" ? (body.glsPickupPointName || null) : null,
+        glsPickupPointAddress: shipMethod?.name === "GLS Paketomat" ? (body.glsPickupPointAddress || null) : null,
         couponCode: couponCode || null,
         couponDiscount: couponDiscount || 0,
         items: {

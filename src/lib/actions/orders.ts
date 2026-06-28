@@ -87,9 +87,9 @@ export async function createOrder(data: {
       subtotal: pricing.subtotal, shippingTotal: shippingTotal, taxTotal: pricing.tax, total: total,
       currency: "EUR", status: initialStatus, paymentStatus: "UNPAID", paymentMethod: data.paymentMethod,
       shippingMethod: shippingMethod?.name || data.shippingMethodId, note: data.note || null,
-      glsPickupPointId: data.glsPickupPointId || null,
-      glsPickupPointName: data.glsPickupPointName || null,
-      glsPickupPointAddress: data.glsPickupPointAddress || null,
+      glsPickupPointId: shipMethodName === "GLS Paketomat" ? (data.glsPickupPointId || null) : null,
+      glsPickupPointName: shipMethodName === "GLS Paketomat" ? (data.glsPickupPointName || null) : null,
+      glsPickupPointAddress: shipMethodName === "GLS Paketomat" ? (data.glsPickupPointAddress || null) : null,
       couponCode: couponCode || null,
       couponDiscount: couponDiscount || 0,
       items: {
