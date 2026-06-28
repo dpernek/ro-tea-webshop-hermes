@@ -87,13 +87,21 @@ export default function AdminContentPage() {
   }
 
   async function toggleActive(key: string, currentActive: boolean) {
-    setToggling(key);
+    setToggling(key); setMsg(null);
     try {
-      await fetch("/api/admin/content", {
+      const r = await fetch("/api/admin/content", {
         method: "PUT", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key, active: !currentActive }),
       });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        setMsg({ type: "error", text: d.error || "Greška pri promjeni statusa." });
+        return;
+      }
+      setMsg({ type: "success", text: `Sekcija ${currentActive ? "sakrivena" : "aktivirana"}.` });
       load();
+    } catch {
+      setMsg({ type: "error", text: "Greška pri promjeni statusa." });
     } finally { setToggling(null); }
   }
 
@@ -159,8 +167,8 @@ export default function AdminContentPage() {
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
-                    <a href="/" target="_blank" rel="noopener" className="text-xs text-slate-400 hover:text-indigo-600 flex items-center gap-1 transition-colors" title="Pogledaj na webu">
-                      <ExternalLink size={12} /> Web
+                    <a href="/" target="_blank" rel="noopener" className="text-xs text-slate-400 hover:text-indigo-600 flex items-center gap-1 transition-colors" title="Otvori početnu stranicu u novom tabu da vidiš ovu sekciju">
+                      <ExternalLink size={12} /> Otvori na webu
                     </a>
                     <Button size="sm" variant="outline" onClick={() => startEdit(s || { key: def.key, title: "", subtitle: "", eyebrow: "", ctaLabel: "", ctaHref: "", body: "", active: true, sortOrder: 0 } as Section)}>
                       Uredi
@@ -169,24 +177,32 @@ export default function AdminContentPage() {
                 </div>
 
                 {/* Preview */}
-                {!isEditing && s && (
+                {!isEditing && (
                   <div className="mt-3 pt-3 border-t border-slate-100 space-y-1">
-                    {s.eyebrow && <p className="text-[11px] font-semibold uppercase tracking-wider text-indigo-600">{s.eyebrow}</p>}
-                    {s.title && <p className="text-sm font-semibold text-slate-800 line-clamp-1">{s.title}</p>}
-                    {s.subtitle && <p className="text-xs text-slate-500 line-clamp-2">{s.subtitle}</p>}
-                    {def.key === "trust" && (
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
-                        {parseTrustItems(s.body || "").slice(0, 4).map((item, i) => (
-                          <div key={i} className="text-[11px] text-slate-500">
-                            <span className="font-medium text-slate-700">{item.icon} {item.title}</span>
-                            {item.description && <span className="block text-[10px] text-slate-400 line-clamp-1">{item.description}</span>}
+                    {s ? (
+                      <>
+                        {s.eyebrow && <p className="text-[11px] font-semibold uppercase tracking-wider text-indigo-600">{s.eyebrow}</p>}
+                        {s.title ? <p className="text-sm font-semibold text-slate-800 line-clamp-1">{s.title}</p> : <p className="text-xs text-slate-400 italic">Nema naslova</p>}
+                        {s.subtitle ? <p className="text-xs text-slate-500 line-clamp-2">{s.subtitle}</p> : (def.key !== "trust" && <p className="text-xs text-slate-400 italic">Nema podnaslova</p>)}
+                        {def.key === "trust" && (
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
+                            {parseTrustItems(s.body || "").slice(0, 4).map((item, i) => (
+                              <div key={i} className="text-[11px] text-slate-500">
+                                <span className="font-medium text-slate-700">{item.icon} {item.title}</span>
+                                {item.description && <span className="block text-[10px] text-slate-400 line-clamp-1">{item.description}</span>}
+                              </div>
+                            ))}
+                            {!s.body && <p className="text-xs text-slate-400 italic col-span-full">Nema stavki prednosti</p>}
                           </div>
-                        ))}
-                      </div>
+                        )}
+                        {s.ctaLabel ? (s.ctaHref
+                          ? <a href={s.ctaHref} className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700 mt-1"><ExternalLink size={10} />{s.ctaLabel} → {s.ctaHref}</a>
+                          : <p className="text-xs font-medium text-indigo-600 mt-1">Gumb: {s.ctaLabel}</p>)
+                          : <p className="text-xs text-slate-400 italic mt-1">Nema CTA gumba</p>}
+                      </>
+                    ) : (
+                      <p className="text-xs text-slate-400 italic">Sadržaj još nije postavljen. Klikni &quot;Uredi&quot; za postavljanje.</p>
                     )}
-                    {s.ctaLabel && (s.ctaHref
-                      ? <a href={s.ctaHref} className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700 mt-1"><ExternalLink size={10} />{s.ctaLabel}</a>
-                      : <p className="text-xs font-medium text-indigo-600 mt-1">{s.ctaLabel}</p>)}
                   </div>
                 )}
               </div>
@@ -194,49 +210,72 @@ export default function AdminContentPage() {
               {/* Inline editor */}
               {isEditing && (
                 <div className="border-t border-slate-200 bg-slate-50/50 p-5 space-y-4">
-                  {/* Trust section: repeater UI */}
                   {def.key === "trust" ? (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-slate-600 uppercase">Stavke prednosti</span>
-                        <Button size="sm" variant="ghost" onClick={() => setTrustItems([...trustItems, { icon: "", title: "", description: "" }])}>
-                          <Plus size={12} className="mr-1" />Dodaj stavku
-                        </Button>
+                    <div className="space-y-4">
+                      {/* Standard fields for trust section */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs font-medium text-slate-500">Naslov</label>
+                          <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm mt-1" value={form.title || ""}
+                            onChange={e => { setForm(f => ({ ...f, title: e.target.value })); setErrors(e => ({ ...e, title: "" })); }} />
+                          {errors.title && <p className="text-xs text-red-600 mt-1">{errors.title}</p>}
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-slate-500">Podnaslov</label>
+                          <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm mt-1" value={form.subtitle || ""}
+                            onChange={e => { setForm(f => ({ ...f, subtitle: e.target.value })); setErrors(e => ({ ...e, subtitle: "" })); }} />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-slate-500">Eyebrow</label>
+                          <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm mt-1" value={form.eyebrow || ""}
+                            onChange={e => setForm(f => ({ ...f, eyebrow: e.target.value }))} />
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                          <input type="checkbox" checked={form.active || false} onChange={e => setForm(f => ({ ...f, active: e.target.checked }))} id={`active-${def.key}`} />
+                          <label htmlFor={`active-${def.key}`} className="text-xs text-slate-500">Vidljivo</label>
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        {trustItems.map((item, i) => (
-                          <div key={i} className="flex items-start gap-2 bg-white rounded-lg border border-slate-200 p-3 group">
-                            <GripVertical size={14} className="text-slate-300 mt-2 shrink-0 cursor-grab" />
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 flex-1">
-                              <input
-                                className="w-full rounded border border-slate-200 px-2 py-1.5 text-xs"
-                                placeholder="Ikona (npr. 🚚)"
-                                value={item.icon}
-                                onChange={e => { const next = [...trustItems]; next[i] = { ...next[i], icon: e.target.value }; setTrustItems(next); }}
-                              />
-                              <input
-                                className="w-full rounded border border-slate-200 px-2 py-1.5 text-xs"
-                                placeholder="Naslov"
-                                value={item.title}
-                                onChange={e => { const next = [...trustItems]; next[i] = { ...next[i], title: e.target.value }; setTrustItems(next); }}
-                              />
-                              <div className="flex gap-1">
-                                <input
-                                  className="w-full rounded border border-slate-200 px-2 py-1.5 text-xs"
-                                  placeholder="Opis"
-                                  value={item.description}
-                                  onChange={e => { const next = [...trustItems]; next[i] = { ...next[i], description: e.target.value }; setTrustItems(next); }}
-                                />
-                                <button onClick={() => setTrustItems(trustItems.filter((_, j) => j !== i))} className="text-slate-300 hover:text-red-500 shrink-0 self-center" title="Ukloni">
-                                  <X size={14} />
-                                </button>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-xs font-medium text-slate-500">CTA label</label>
+                          <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm mt-1" value={form.ctaLabel || ""}
+                            onChange={e => setForm(f => ({ ...f, ctaLabel: e.target.value }))} />
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium text-slate-500">CTA link</label>
+                          <input className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm mt-1" value={form.ctaHref || ""}
+                            onChange={e => setForm(f => ({ ...f, ctaHref: e.target.value }))} />
+                        </div>
+                      </div>
+
+                      <div className="border-t border-slate-200 pt-4">
+                        <span className="text-xs font-semibold text-slate-600 uppercase">Stavke prednosti</span>
+                        <div className="mt-3 space-y-2">
+                          {trustItems.map((item, i) => (
+                            <div key={i} className="flex items-start gap-2 bg-white rounded-lg border border-slate-200 p-3 group">
+                              <GripVertical size={14} className="text-slate-300 mt-2 shrink-0 cursor-grab" />
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 flex-1">
+                                <input className="w-full rounded border border-slate-200 px-2 py-1.5 text-xs" placeholder="Ikona (npr. 🚚)" value={item.icon}
+                                  onChange={e => { const next = [...trustItems]; next[i] = { ...next[i], icon: e.target.value }; setTrustItems(next); }} />
+                                <input className="w-full rounded border border-slate-200 px-2 py-1.5 text-xs" placeholder="Naslov" value={item.title}
+                                  onChange={e => { const next = [...trustItems]; next[i] = { ...next[i], title: e.target.value }; setTrustItems(next); }} />
+                                <div className="flex gap-1">
+                                  <input className="w-full rounded border border-slate-200 px-2 py-1.5 text-xs" placeholder="Opis" value={item.description}
+                                    onChange={e => { const next = [...trustItems]; next[i] = { ...next[i], description: e.target.value }; setTrustItems(next); }} />
+                                  <button onClick={() => setTrustItems(trustItems.filter((_, j) => j !== i))} className="text-slate-300 hover:text-red-500 shrink-0 self-center" title="Ukloni">
+                                    <X size={14} />
+                                  </button>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
-                        {trustItems.length === 0 && (
-                          <p className="text-xs text-slate-400 text-center py-4">Još nema stavki. Klikni &quot;Dodaj stavku&quot;.</p>
-                        )}
+                          ))}
+                          {trustItems.length === 0 && (
+                            <p className="text-xs text-slate-400 text-center py-2">Još nema stavki.</p>
+                          )}
+                        </div>
+                        <Button size="sm" variant="ghost" className="mt-2" onClick={() => setTrustItems([...trustItems, { icon: "", title: "", description: "" }])}>
+                          <Plus size={12} className="mr-1" />Dodaj stavku
+                        </Button>
                       </div>
                     </div>
                   ) : (
