@@ -293,6 +293,13 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
       <Button type="submit" size="lg" className="w-full" isLoading={isSubmitting || isCreatingSession || shippingLoading} disabled={isSubmitting || isCreatingSession || shippingLoading || !!shippingError}>
         {isCreatingSession ? "Preusmjeravanje na plaćanje…" : "Potvrdi narudžbu"}
       </Button>
+
+      {/* Trust strip */}
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400">
+        <span className="flex items-center gap-1"><svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> SSL enkripcija</span>
+        <span className="flex items-center gap-1"><svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Sigurno plaćanje</span>
+        <span className="flex items-center gap-1"><svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Zaštita podataka</span>
+      </div>
     </form>
   );
 }
