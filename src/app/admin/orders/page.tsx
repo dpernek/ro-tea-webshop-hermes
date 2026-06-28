@@ -257,6 +257,7 @@ export default function AdminOrdersPage() {
                   <th className="px-4 py-3 font-medium text-slate-600">Ukupno</th>
                   <th className="px-4 py-3 font-medium text-slate-600">Status</th>
                   <th className="px-4 py-3 font-medium text-slate-600">Način plaćanja</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Dostava</th>
                   <th className="px-4 py-3 font-medium text-slate-600">Plaćanje</th>
                   <th className="px-4 py-3 font-medium text-slate-600">Datum</th>
                 </tr>
@@ -274,6 +275,7 @@ export default function AdminOrdersPage() {
                     <td className="px-4 py-3 font-medium">{o.total?.toFixed(2)} €</td>
                     <td className="px-4 py-3"><StatusBadge status={o.status} /></td>
                     <td className="px-4 py-3"><PaymentMethodBadge method={o.paymentMethod} /></td>
+                    <td className="px-4 py-3 text-slate-600 text-xs max-w-[100px] truncate">{o.shippingMethod || "-"}</td>
                     <td className="px-4 py-3"><PaymentStatusBadge status={o.paymentStatus} /></td>
                     <td className="px-4 py-3 text-slate-500">{new Date(o.createdAt).toLocaleDateString("hr-HR")}</td>
                   </tr>

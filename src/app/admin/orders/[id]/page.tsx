@@ -337,6 +337,9 @@ export default function AdminOrderDetailPage() {
               <p className="text-sm text-slate-600"><strong>Email:</strong> {order.customerEmail}</p>
               <p className="text-sm text-slate-600"><strong>Telefon:</strong> {order.customerPhone}</p>
               <p className="text-sm text-slate-600"><strong>Adresa:</strong> {order.shippingAddress || order.billingAddress || "-"}</p>
+              {order.shippingMethod === "GLS Paketomat" && order.glsPickupPointName && (
+                <p className="text-sm text-slate-600"><strong>Paketomat:</strong> {order.glsPickupPointName} — {order.glsPickupPointAddress}</p>
+              )}
             </div>
           </Card>
 
@@ -458,9 +461,14 @@ export default function AdminOrderDetailPage() {
               </tbody>
             </table>
             </div>
-            <div className="mt-4 text-right">
+            <div className="mt-4 text-right space-y-1">
               <p className="text-sm text-slate-500">Subtotal: {order.subtotal?.toFixed(2)} €</p>
               <p className="text-sm text-slate-500">Dostava: {order.shippingTotal?.toFixed(2)} €</p>
+              {order.couponCode && (
+                <p className="text-sm text-indigo-600">
+                  Kupon {order.couponCode}: −{order.couponDiscount?.toFixed(2)} €
+                </p>
+              )}
               <p className="text-lg font-bold text-slate-900">Ukupno: {order.total?.toFixed(2)} €</p>
             </div>
           </Card>
