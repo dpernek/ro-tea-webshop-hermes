@@ -118,10 +118,10 @@ export function ProductCard({ product, index }: ProductCardProps) {
           )}
 
           {product.stockStatus === "instock" && (
-            <p className="text-sm font-medium text-green-600">Dostupno</p>
+            <p className="text-xs font-medium text-green-700 flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500" /> Dostupno</p>
           )}
           {product.stockStatus === "outofstock" && (
-            <p className="text-sm font-medium text-slate-400">Nedostupno</p>
+            <p className="text-xs font-medium text-red-500 flex items-center gap-1"><span className="inline-block h-1.5 w-1.5 rounded-full bg-red-400" /> Nema na zalihi</p>
           )}
           {product.stockStatus === "onbackorder" && (
             <p className="text-sm font-medium text-slate-400">Na upit</p>

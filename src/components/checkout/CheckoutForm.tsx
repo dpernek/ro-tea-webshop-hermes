@@ -259,9 +259,9 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         <p className="mb-3 text-sm font-medium text-slate-700">Način plaćanja</p>
         <div className="space-y-2">
           {[
-            { value: "card", label: "Karticom", icon: CreditCard, hint: "Plaćanje karticom — brzo i sigurno." },
-            { value: "bank_transfer", label: "Bankovna uplata / predračun", icon: Building, hint: "Nakon narudžbe šaljemo vam račun za uplatu na e-mail." },
-            { value: "cod", label: "Pouzeće", icon: Banknote, hint: "Plaćanje pouzećem prilikom preuzimanja pošiljke." },
+            { value: "card", label: "Karticom", icon: CreditCard, hint: "Brza i sigurna online uplata. Vaši podaci su zaštićeni SSL enkripcijom." },
+            { value: "bank_transfer", label: "Bankovna uplata / predračun", icon: Building, hint: "Nakon narudžbe šaljemo predračun na e-mail. Rok plaćanja 7 dana." },
+            { value: "cod", label: "Pouzeće", icon: Banknote, hint: "Plaćate tek kad primite paket. Dostupno za GLS dostavu i Paketomat." },
           ].map(pm => {
             const sel = formData.paymentMethod === pm.value;
             const Icon = pm.icon;

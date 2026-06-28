@@ -138,8 +138,12 @@ export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAbov
         )}
       </div>
 
-      <div className="mt-4 border-t border-slate-100 pt-4">
-        <div className="flex justify-between text-lg font-bold text-slate-900"><span>Ukupno za platiti</span><span>{formatPrice(total)}</span></div>
+      <div className="mt-5 border-t-2 border-slate-200 pt-5">
+        <div className="flex justify-between items-baseline">
+          <span className="text-sm font-medium text-slate-500">Ukupno za platiti</span>
+          <span className="text-2xl font-bold text-slate-900">{formatPrice(total)}</span>
+        </div>
+        <p className="mt-1 text-xs text-slate-400">Cijena uključuje PDV i dostavu prema odabiru</p>
       </div>
 
       {showCheckoutButton && <Button asChild className="mt-5 w-full" size="lg"><Link href="/checkout">Nastavi na blagajnu</Link></Button>}

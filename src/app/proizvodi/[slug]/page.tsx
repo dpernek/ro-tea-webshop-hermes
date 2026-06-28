@@ -386,19 +386,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </div>
               ) : (
                 <div>
-                  <div className="flex flex-wrap items-baseline gap-3">
-                    <span className="text-3xl font-bold text-slate-900 sm:text-4xl">
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl font-bold text-green-700 sm:text-4xl">
                       {formatPrice(effectivePrice)}
                     </span>
-                    {oldPrice && (
-                      <span className="text-xl text-slate-400 line-through">
-                        {formatPrice(oldPrice)}
+                    {hasDiscount && discountPercent > 0 && (
+                      <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
+                        –{discountPercent}%
                       </span>
                     )}
                   </div>
-                  {hasDiscount && discountPercent > 0 && (
-                    <span className="mt-2 inline-block rounded bg-red-100 px-2 py-0.5 text-sm font-semibold text-red-700">
-                      –{discountPercent}%
+                  {oldPrice && (
+                    <span className="text-lg text-slate-400 line-through">
+                      {formatPrice(oldPrice)}
                     </span>
                   )}
                   <p className="mt-1 text-xs text-slate-400">
