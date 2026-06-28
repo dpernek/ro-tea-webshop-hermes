@@ -205,6 +205,31 @@ export default function AdminOrdersPage() {
         </Button>
       </div>
 
+      {/* Quick filter chips */}
+      <div className="mb-3 flex flex-wrap gap-2">
+        {[
+          { label: "Nepregledane", onClick: () => { setStatusFilter("PENDING"); setPaymentStatusFilter(""); setPage(1); }, active: statusFilter === "PENDING" && !paymentStatusFilter },
+          { label: "Na čekanju", onClick: () => { setStatusFilter("PENDING"); setPaymentStatusFilter(""); setPage(1); }, active: statusFilter === "PENDING" },
+          { label: "Neplaćene", onClick: () => { setPaymentStatusFilter("UNPAID"); setStatusFilter(""); setPage(1); }, active: paymentStatusFilter === "UNPAID" },
+          { label: "Pouzeće", onClick: () => { setStatusFilter(""); setPaymentStatusFilter(""); setPage(1); /* TODO: filter by paymentMethod=cod via API */ }, active: false },
+          { label: "Očisti filtere", onClick: () => { setStatusFilter(""); setPaymentStatusFilter(""); setDateFrom(""); setDateTo(""); setPage(1); }, active: !statusFilter && !paymentStatusFilter && !dateFrom && !dateTo, reset: true },
+        ].map(chip => (
+          <button
+            key={chip.label}
+            onClick={chip.onClick}
+            className={`rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
+              chip.reset
+                ? "border-slate-300 text-slate-500 hover:bg-slate-100"
+                : chip.active
+                  ? "bg-indigo-100 border-indigo-300 text-indigo-700"
+                  : "border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300"
+            }`}
+          >
+            {chip.label}
+          </button>
+        ))}
+      </div>
+
       <div className="mb-4 flex flex-wrap gap-2 items-end">
         <select className="rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white" value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}>
           <option value="">Svi statusi narudžbe</option>

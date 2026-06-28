@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import OrderGlsPanel from "@/components/admin/OrderGlsPanel";
+import { useState, useEffect } from "react";
 import { ArrowLeft, Save, RefreshCw, ExternalLink, CheckCircle2, Package, Truck, Clock, XCircle, RotateCcw, AlertTriangle, Loader2 } from "lucide-react";
 import Link from "next/link";
 
@@ -146,6 +146,38 @@ function TestModeBanner() {
           Stripe je u testnom načinu rada (koriste se testni ključevi). Ova narudžba nije stvarna transakcija.
         </p>
       </div>
+    </div>
+  );
+}
+
+function ActivityBlock({ orderId }: { orderId: string }) {
+  const [entries, setEntries] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`/api/admin/audit-log?resource=orders&entityId=${orderId}&limit=20`)
+      .then(r => r.ok ? r.json() : [])
+      .then(data => setEntries(Array.isArray(data) ? data : (data.entries || [])))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [orderId]);
+
+  if (loading) return <div className="flex justify-center py-4"><Loader2 size={16} className="animate-spin text-slate-300" /></div>;
+  if (entries.length === 0) return <p className="text-sm text-slate-400 text-center py-2">Nema zabilježenih aktivnosti za ovu narudžbu.</p>;
+
+  return (
+    <div className="space-y-2">
+      {entries.slice(0, 15).map((e: any, i: number) => (
+        <div key={i} className="flex items-start gap-3 text-xs">
+          <span className="text-slate-400 min-w-[55px] pt-0.5">
+            {new Date(e.createdAt).toLocaleTimeString("hr-HR", { hour: "2-digit", minute: "2-digit" })}
+          </span>
+          <div className="flex-1">
+            <span className="font-medium text-slate-700">{e.action}</span>
+            <span className="text-slate-500 ml-1.5">{e.summary}</span>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -517,6 +549,23 @@ export default function AdminOrderDetailPage() {
           <Card className="p-6">
             <h2 className="mb-4 text-lg font-semibold">Status narudžbe</h2>
             <StatusTimeline order={order} />
+            {/* Operational helper — what to do next */}
+            <div className="mt-4 pt-4 border-t border-slate-100">
+              <p className="text-xs font-semibold uppercase text-slate-400 mb-2">Što sljedeće</p>
+              {(() => {
+                const s = order.status; const p = order.paymentStatus; const hasGls = order.shippingMethod?.startsWith?.("GLS");
+                const hasShipment = !!order.glsShipmentId;
+                if (s === "CANCELLED") return <p className="text-sm text-red-600">Narudžba je otkazana. Nema daljnjih radnji.</p>;
+                if (s === "REFUNDED") return <p className="text-sm text-blue-600">Sredstva su vraćena. Nema daljnjih radnji.</p>;
+                if (s === "COMPLETED") return <p className="text-sm text-emerald-600">Narudžba je završena. Nema daljnjih radnji.</p>;
+                if (s === "SHIPPED") return <p className="text-sm text-purple-600">Pošiljka je na putu. Pričekajte isporuku.</p>;
+                if (s === "PENDING" && p === "UNPAID") return <p className="text-sm text-amber-600">Pričekajte uplatu ili ručno potvrdite narudžbu promjenom statusa.</p>;
+                if (s === "CONFIRMED" && hasGls && !hasShipment) return <p className="text-sm text-blue-600">Kreirajte GLS pošiljku u panelu ispod.</p>;
+                if (s === "CONFIRMED") return <p className="text-sm text-blue-600">Narudžba je potvrđena. Promijenite status u &quot;U obradi&quot; kad počne priprema.</p>;
+                if (s === "PROCESSING") return <p className="text-sm text-indigo-600">Narudžba se obrađuje. Promijenite status u &quot;Poslano&quot; nakon otpreme.</p>;
+                return <p className="text-sm text-slate-500">Pregledajte narudžbu i po potrebi promijenite status.</p>;
+              })()}
+            </div>
           </Card>
 
           <Card className="p-6">
@@ -543,6 +592,12 @@ export default function AdminOrderDetailPage() {
                 <span className="text-slate-700">{new Date(order.updatedAt).toLocaleString("hr-HR")}</span>
               </div>
             </div>
+          </Card>
+
+          {/* Activity block — from audit log */}
+          <Card className="p-6">
+            <h2 className="mb-4 text-lg font-semibold">Aktivnosti</h2>
+            <ActivityBlock orderId={id} />
           </Card>
         </div>
       </div>
