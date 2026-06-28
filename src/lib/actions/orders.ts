@@ -180,11 +180,11 @@ export async function createOrder(data: {
 }
 
 export async function getOrderByStripeSessionId(sessionId: string) {
-  return db.order.findFirst({ where: { stripeCheckoutSessionId: sessionId }, include: { items: true } });
+  return db.order.findFirst({ where: { stripeCheckoutSessionId: sessionId }, select: { id: true, orderNumber: true, customerName: true, customerEmail: true, subtotal: true, shippingTotal: true, taxTotal: true, total: true, status: true, paymentMethod: true, paymentStatus: true, shippingMethod: true, couponCode: true, couponDiscount: true, items: { select: { id: true, productId: true, productName: true, sku: true, quantity: true, unitPrice: true, total: true } } } });
 }
 
 export async function getOrderByNumber(orderNumber: string) {
-  return db.order.findUnique({ where: { orderNumber }, include: { items: true } });
+  return db.order.findUnique({ where: { orderNumber }, select: { id: true, orderNumber: true, customerName: true, customerEmail: true, subtotal: true, shippingTotal: true, taxTotal: true, total: true, status: true, paymentMethod: true, paymentStatus: true, shippingMethod: true, couponCode: true, couponDiscount: true, items: { select: { id: true, productId: true, productName: true, sku: true, quantity: true, unitPrice: true, total: true } } } });
 }
 
 export async function getOrders({ page = 1, pageSize = 20, search, status, paymentStatus }: {
@@ -194,12 +194,12 @@ export async function getOrders({ page = 1, pageSize = 20, search, status, payme
   if (search) where.OR = [{ orderNumber: { contains: search } }, { customerName: { contains: search } }, { customerEmail: { contains: search } }];
   if (status) where.status = status;
   if (paymentStatus) where.paymentStatus = paymentStatus;
-  const [orders, total] = await Promise.all([db.order.findMany({ where, orderBy: { createdAt: "desc" }, skip: (page - 1) * pageSize, take: pageSize }), db.order.count({ where })]);
+  const [orders, total] = await Promise.all([db.order.findMany({ select: { id: true, orderNumber: true, customerName: true, customerEmail: true, total: true, status: true, paymentMethod: true, paymentStatus: true, shippingMethod: true, createdAt: true }, where, orderBy: { createdAt: "desc" }, skip: (page - 1) * pageSize, take: pageSize }), db.order.count({ where })]);
   return { orders, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
 }
 
 export async function getOrder(id: string) {
-  return db.order.findUnique({ where: { id }, include: { items: { include: { product: true } }, payments: true, customer: true } });
+  return db.order.findUnique({ where: { id }, select: { id: true, orderNumber: true, customerName: true, customerEmail: true, customerPhone: true, shippingAddress: true, billingAddress: true, subtotal: true, shippingTotal: true, taxTotal: true, total: true, currency: true, status: true, paymentMethod: true, paymentStatus: true, shippingMethod: true, note: true, adminNote: true, glsPickupPointId: true, glsPickupPointName: true, glsPickupPointAddress: true, glsShipmentId: true, glsParcelNumber: true, glsStatusData: true, glsLabelData: true, couponCode: true, couponDiscount: true, stripeCheckoutSessionId: true, checkoutExpiresAt: true, createdAt: true, updatedAt: true, items: { select: { id: true, productId: true, productName: true, sku: true, quantity: true, unitPrice: true, total: true } }, payments: { select: { id: true, provider: true, method: true, status: true, amount: true, stripeCheckoutSessionId: true, createdAt: true } }, customer: { select: { id: true, name: true, email: true, phone: true } } } });
 }
 
 const ALLOWED_STATUSES = ["PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "COMPLETED", "CANCELLED", "REFUNDED"];
