@@ -284,9 +284,19 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         <label className="flex cursor-pointer items-start gap-2.5">
           <input type="checkbox" checked={acceptedTerms} onChange={e => setAcceptedTerms(e.target.checked)} className="mt-0.5 text-[#0055a8]" required />
           <span className="text-sm text-slate-600">
-            Prihvaćam{" "}<a href="/uvjeti-kupnje" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">uvjete kupnje</a>,{" "}<a href="/pravila-o-privatnosti" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">pravila privatnosti</a>,{" "}<a href="/pravila-povrata-i-zamjene" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">uvjete povrata</a>,{" "}<a href="/jednostrani-raskid-ugovora" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">jednostrani raskid</a>{" "}i{" "}<a href="/izjava-o-sigurnosti-online-placanja" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">sigurnost plaćanja</a>.
+            Prihvaćam{" "}
+            <a href="/uvjeti-kupnje" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">uvjete kupnje</a>{" "}
+            i{" "}
+            <a href="/pravila-o-privatnosti" className="text-[#0055a8] underline underline-offset-2 hover:text-blue-800">pravila privatnosti</a>.
           </span>
         </label>
+        <div className="mt-2 ml-7 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-400">
+          <a href="/pravila-povrata-i-zamjene" className="hover:text-[#0055a8] underline underline-offset-2">Povrat i zamjena</a>
+          <span>·</span>
+          <a href="/jednostrani-raskid-ugovora" className="hover:text-[#0055a8] underline underline-offset-2">Jednostrani raskid</a>
+          <span>·</span>
+          <a href="/izjava-o-sigurnosti-online-placanja" className="hover:text-[#0055a8] underline underline-offset-2">Sigurnost plaćanja</a>
+        </div>
         {errors.terms && <p className="mt-1.5 text-sm text-red-600" role="alert">{errors.terms}</p>}
       </div>
 
