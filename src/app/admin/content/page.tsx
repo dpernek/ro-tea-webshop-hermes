@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Save, Loader2, Eye, EyeOff, AlertCircle, CheckCircle, Plus, X, GripVertical, ExternalLink } from "lucide-react";
+import { Save, Loader2, Eye, EyeOff, AlertCircle, CheckCircle, Plus, X, ExternalLink } from "lucide-react";
 
 interface Section {
   id: string; key: string; title: string; subtitle: string; eyebrow: string;
@@ -17,10 +17,10 @@ interface TrustItem {
 }
 
 const SECTION_DEFINITIONS = [
-  { key: "hero", label: "Hero sekcija", description: "Glavni banner na vrhu početne stranice. Sadrži veliki naslov, podnaslov i CTA gumb.", location: "Vrh početne stranice" },
-  { key: "categories_intro", label: "Kategorije — uvod", description: "Kratki uvodni tekst iznad mreže kategorija.", location: "Ispod hero sekcije" },
-  { key: "trust", label: "Prednosti kupnje", description: "Lista prednosti / zašto kupiti kod nas. Body polje koristi JSON format za stavke.", location: "Ispod kategorija", isJson: true },
-  { key: "cta", label: "CTA sekcija", description: "Poziv na akciju pri dnu početne stranice.", location: "Dno početne stranice" },
+  { key: "hero", label: "Hero sekcija", description: "Glavni banner na vrhu početne stranice. Sadrži veliki naslov, podnaslov i CTA gumb.", location: "Vrh početne stranice", anchor: "#hero" },
+  { key: "categories_intro", label: "Kategorije — uvod", description: "Kratki uvodni tekst iznad mreže kategorija.", location: "Ispod hero sekcije", anchor: "#kategorije" },
+  { key: "trust", label: "Prednosti kupnje", description: "Lista prednosti / zašto kupiti kod nas. Body polje koristi JSON format za stavke.", location: "Ispod kategorija", anchor: "#prednosti", isJson: true },
+  { key: "cta", label: "CTA sekcija", description: "Poziv na akciju pri dnu početne stranice.", location: "Dno početne stranice", anchor: "#cta" },
 ];
 
 function parseTrustItems(body: string): TrustItem[] {
@@ -167,7 +167,7 @@ export default function AdminContentPage() {
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
-                    <a href="/" target="_blank" rel="noopener" className="text-xs text-slate-400 hover:text-indigo-600 flex items-center gap-1 transition-colors" title="Otvori početnu stranicu u novom tabu da vidiš ovu sekciju">
+                    <a href={`/${def.anchor || ""}`} target="_blank" rel="noopener" className="text-xs text-slate-400 hover:text-indigo-600 flex items-center gap-1 transition-colors" title={`Otvori na webu: ${def.location}`}>
                       <ExternalLink size={12} /> Otvori na webu
                     </a>
                     <Button size="sm" variant="outline" onClick={() => startEdit(s || { key: def.key, title: "", subtitle: "", eyebrow: "", ctaLabel: "", ctaHref: "", body: "", active: true, sortOrder: 0 } as Section)}>
@@ -185,14 +185,24 @@ export default function AdminContentPage() {
                         {s.title ? <p className="text-sm font-semibold text-slate-800 line-clamp-1">{s.title}</p> : <p className="text-xs text-slate-400 italic">Nema naslova</p>}
                         {s.subtitle ? <p className="text-xs text-slate-500 line-clamp-2">{s.subtitle}</p> : (def.key !== "trust" && <p className="text-xs text-slate-400 italic">Nema podnaslova</p>)}
                         {def.key === "trust" && (
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
-                            {parseTrustItems(s.body || "").slice(0, 4).map((item, i) => (
-                              <div key={i} className="text-[11px] text-slate-500">
-                                <span className="font-medium text-slate-700">{item.icon} {item.title}</span>
-                                {item.description && <span className="block text-[10px] text-slate-400 line-clamp-1">{item.description}</span>}
-                              </div>
-                            ))}
-                            {!s.body && <p className="text-xs text-slate-400 italic col-span-full">Nema stavki prednosti</p>}
+                          <div className="mt-1.5">
+                            {(() => {
+                              const items = parseTrustItems(s?.body || "");
+                              if (items.length === 0) return <p className="text-xs text-slate-400 italic">Nema stavki prednosti</p>;
+                              return (
+                                <>
+                                  <p className="text-xs text-slate-500">{items.length} stavk{items.length === 1 ? 'a' : items.length < 5 ? 'e' : 'i'} prednosti</p>
+                                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-1.5">
+                                    {items.slice(0, 4).map((item, i) => (
+                                      <div key={i} className="text-[11px] text-slate-600 bg-white rounded border border-slate-100 px-2 py-1">
+                                        <div className="font-medium text-slate-800">{item.icon} {item.title}</div>
+                                        {item.description && <div className="text-[10px] text-slate-400 line-clamp-1 mt-0.5">{item.description}</div>}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </>
+                              );
+                            })()}
                           </div>
                         )}
                         {s.ctaLabel ? (s.ctaHref
@@ -252,8 +262,15 @@ export default function AdminContentPage() {
                         <span className="text-xs font-semibold text-slate-600 uppercase">Stavke prednosti</span>
                         <div className="mt-3 space-y-2">
                           {trustItems.map((item, i) => (
-                            <div key={i} className="flex items-start gap-2 bg-white rounded-lg border border-slate-200 p-3 group">
-                              <GripVertical size={14} className="text-slate-300 mt-2 shrink-0 cursor-grab" />
+                            <div key={i} className="flex items-start gap-2 bg-white rounded-lg border border-slate-200 p-3">
+                              <div className="flex flex-col gap-0.5 shrink-0 pt-0.5">
+                                <button onClick={() => { if (i === 0) return; const next = [...trustItems]; [next[i-1], next[i]] = [next[i], next[i-1]]; setTrustItems(next); }} disabled={i === 0} className="text-slate-300 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed" title="Pomakni gore">
+                                  <span className="text-[10px] leading-none">▲</span>
+                                </button>
+                                <button onClick={() => { if (i >= trustItems.length-1) return; const next = [...trustItems]; [next[i], next[i+1]] = [next[i+1], next[i]]; setTrustItems(next); }} disabled={i >= trustItems.length-1} className="text-slate-300 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed" title="Pomakni dolje">
+                                  <span className="text-[10px] leading-none">▼</span>
+                                </button>
+                              </div>
                               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 flex-1">
                                 <input className="w-full rounded border border-slate-200 px-2 py-1.5 text-xs" placeholder="Ikona (npr. 🚚)" value={item.icon}
                                   onChange={e => { const next = [...trustItems]; next[i] = { ...next[i], icon: e.target.value }; setTrustItems(next); }} />

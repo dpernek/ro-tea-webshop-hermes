@@ -45,9 +45,9 @@ export default function HomePage() {
   return (
     <>
       {/* hero content: server-loaded */}
-      <Hero />
+      <div id="hero"><Hero /></div>
 
-      <FeaturedCategories />
+      <div id="kategorije"><FeaturedCategories /></div>
 
       {/* Target audience: Za koga je RO-TEA */}
       <section className="bg-slate-50 py-16">
@@ -74,7 +74,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <PopularProducts />
+      <div id="popularno"><PopularProducts /></div>
 
       {/* Brand credibility strip */}
       <section className="border-y border-slate-100 bg-white py-8">
@@ -115,8 +115,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <Benefits />
-      <CTASection />
+      <div id="prednosti"><Benefits /></div>
+      <div id="cta"><CTASection /></div>
     </>
   );
 }
