@@ -157,8 +157,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
 
     setIsSubmitting(true);
     try {
-      const order = // Pass couponCode to server-side createOrder
-    await createOrder({
+      const order = await createOrder({
         customerName: formData.fullName, customerEmail: formData.email,
         customerPhone: formData.phone, address: formData.address,
         city: formData.city, postalCode: formData.postalCode, note: formData.note,
