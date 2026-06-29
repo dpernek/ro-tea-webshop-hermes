@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
   if (sale === "no") {
     where.salePrice = null;
   }
-  if (lowStock === "yes") {
+  if (lowStock === "yes" || lowStock === "1") {
     where.stock = { gt: 0, lte: 3 };
   }
 

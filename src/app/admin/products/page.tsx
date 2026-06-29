@@ -101,6 +101,20 @@ export default function AdminProductsPage() {
   const [saleFilter, setSaleFilter] = useState("");
   const [lowStockFilter, setLowStockFilter] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+
+  // Read initial filters from URL params on mount (deep-link support)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("search")) { setSearchInput(params.get("search")!); setAppliedSearch(params.get("search")!); }
+    if (params.get("categoryId")) setCategoryId(params.get("categoryId")!);
+    if (params.get("brandId")) setBrandId(params.get("brandId")!);
+    if (params.get("status")) setStatusFilter(params.get("status")!);
+    if (params.get("stockStatus")) setStockStatusFilter(params.get("stockStatus")!);
+    if (params.get("sale")) setSaleFilter(params.get("sale")!);
+    if (params.get("lowStock")) setLowStockFilter(params.get("lowStock")!);
+    if (params.get("sort")) setSortBy(params.get("sort")!);
+  }, []);
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [page, setPage] = useState(1);
