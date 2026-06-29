@@ -32,11 +32,13 @@ function fulfillmentType(name?: string): "shipping" | "pickup" | "none" {
 
 export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAboveAmount, shippingMethodName }: CartSummaryProps) {
   const items = useCartStore(s => s.items);
-  const [couponCode, setCouponCode] = useState("");
+  const couponCode = useCartStore(s => s.couponCode);
+  const couponDiscount = useCartStore(s => s.couponDiscount);
+  const setCoupon = useCartStore(s => s.setCoupon);
+  const clearCoupon = useCartStore(s => s.clearCoupon);
+  const [couponInput, setCouponInput] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
-  const [couponDiscount, setCouponDiscount] = useState(0);
-  const [activeCoupon, setActiveCoupon] = useState("");
 
   const itemCount = items.reduce((s, i) => s + i.quantity, 0);
   const subtotalWithVat = items.reduce((s, i) => s + i.product.price * i.quantity, 0);
@@ -57,24 +59,23 @@ export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAbov
   const total = subtotalWithVat + shipping - couponDiscount;
 
   const applyCoupon = async () => {
-    if (!couponCode.trim()) return;
+    if (!couponInput.trim()) return;
     setCouponLoading(true);
     setCouponError("");
     try {
       const res = await fetch("/api/coupons/validate", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: couponCode.trim(), subtotal: subtotalWithVat }),
+        body: JSON.stringify({ code: couponInput.trim(), subtotal: subtotalWithVat }),
       });
       const data = await res.json();
       if (!res.ok || !data.valid) { setCouponError(data.error || "Kupon nije valjan."); return; }
-      setActiveCoupon(data.code || couponCode.trim());
-      setCouponDiscount(data.discount || 0);
-      trackEvent("apply_coupon", { code: data.code || couponCode.trim(), discount: data.discount || 0, subtotal: subtotalWithVat });
+      setCoupon(data.code || couponInput.trim(), data.discount || 0);
+      trackEvent("apply_coupon", { code: data.code || couponInput.trim(), discount: data.discount || 0, subtotal: subtotalWithVat });
     } catch { setCouponError("Greška pri provjeri kupona."); }
     finally { setCouponLoading(false); }
   };
 
-  const removeCoupon = () => { setActiveCoupon(""); setCouponDiscount(0); setCouponCode(""); setCouponError(""); };
+  const removeCoupon = () => { clearCoupon(); setCouponInput(""); setCouponError(""); };
 
   if (items.length === 0) return null;
 
@@ -94,7 +95,7 @@ export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAbov
 
         {couponDiscount > 0 && (
           <div className="flex items-center justify-between text-sm text-emerald-600">
-            <div className="flex items-center gap-1.5"><Tag className="h-3.5 w-3.5" /><span>Kupon <span className="font-medium">{activeCoupon}</span></span>
+            <div className="flex items-center gap-1.5"><Tag className="h-3.5 w-3.5" /><span>Kupon <span className="font-medium">{couponCode}</span></span>
               <button onClick={removeCoupon} className="ml-1 text-slate-400 hover:text-red-500"><X className="h-3.5 w-3.5" /></button></div>
             <span className="font-medium">−{formatPrice(couponDiscount)}</span>
           </div>
@@ -125,12 +126,12 @@ export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAbov
       </div>
 
       <div className="mt-4 border-t border-slate-100 pt-4">
-        {activeCoupon ? (
+        {couponCode ? (
           <p className="text-sm text-slate-500">Kupon primijenjen. <button onClick={removeCoupon} className="text-[#0055a8] underline hover:text-blue-800">Ukloni</button></p>
         ) : (
           <div>
             <div className="flex gap-2">
-              <input className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm placeholder:text-slate-400 focus:border-[#0055a8] focus:outline-none" placeholder="Kod za popust" value={couponCode} onChange={e => { setCouponCode(e.target.value); setCouponError(""); }} onKeyDown={e => e.key === "Enter" && applyCoupon()} />
+              <input className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm placeholder:text-slate-400 focus:border-[#0055a8] focus:outline-none" placeholder="Kod za popust" value={couponInput} onChange={e => { setCouponInput(e.target.value); setCouponError(""); }} onKeyDown={e => e.key === "Enter" && applyCoupon()} />
               <Button size="sm" variant="outline" onClick={applyCoupon} disabled={couponLoading}>{couponLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Primijeni"}</Button>
             </div>
             {couponError && <p className="mt-1.5 text-xs text-red-600">{couponError}</p>}
@@ -143,7 +144,7 @@ export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAbov
           <span className="text-sm font-medium text-slate-500">Ukupno za platiti</span>
           <span className="text-2xl font-bold text-slate-900">{formatPrice(total)}</span>
         </div>
-        <p className="mt-1 text-xs text-slate-400">Cijena uključuje PDV i dostavu prema odabiru</p>
+        <p className="mt-1 text-xs text-slate-400">Cijene su iskazane s PDV-om. Trošak dostave izračunava se na blagajni.</p>
       </div>
 
       {showCheckoutButton && <Button asChild className="mt-5 w-full" size="lg"><Link href="/checkout">Nastavi na blagajnu</Link></Button>}

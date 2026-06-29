@@ -27,8 +27,10 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     note: "", paymentMethod: "bank_transfer", shippingMethod: "",
     glsPickupPointId: "", glsPickupPointName: "", glsPickupPointAddress: "",
   });
-  const [couponCode, setCouponCode] = useState("");
-  const [couponDiscount, setCouponDiscount] = useState(0);
+  const cartCouponCode = useCartStore(s => s.couponCode);
+  const cartCouponDiscount = useCartStore(s => s.couponDiscount);
+  const [couponCode, setCouponCode] = useState(cartCouponCode);
+  const [couponDiscount, setCouponDiscount] = useState(cartCouponDiscount);
   const [couponValidating, setCouponValidating] = useState(false);
   const [couponMessage, setCouponMessage] = useState("");
 
