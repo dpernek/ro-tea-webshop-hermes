@@ -71,7 +71,7 @@ export default async function AdminDashboardPage() {
 
   // ── KPI cards data ──────────────────────────────────────
   const kpis = [
-    { title: "Nepregledane narudžbe", value: unreadOrders, subtitle: "još nisu pregledane", href: "/admin/orders", color: "bg-red-50 text-red-700" },
+    { title: "Nepregledane narudžbe", value: unreadOrders, subtitle: "još nisu pregledane", href: "/admin/orders?unread=1", color: "bg-red-50 text-red-700" },
     { title: "Na čekanju", value: pendingOrders, subtitle: "čekaju obradu", href: "/admin/orders?status=PENDING", color: "bg-amber-50 text-amber-700" },
     { title: "Neplaćene", value: unpaidOrders, subtitle: "čekaju uplatu / pouzeće", href: "/admin/orders?paymentStatus=UNPAID", color: "bg-orange-50 text-orange-700" },
     { title: "Prodaja (sveukupno)", value: `${revenue.toFixed(2)} €`, subtitle: "lifetime, bez otkazanih/refundiranih", color: "bg-green-50 text-green-700" },
@@ -120,7 +120,7 @@ export default async function AdminDashboardPage() {
           </h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {unreadOrders > 0 && (
-              <Link href="/admin/orders" className="rounded-lg border border-amber-200 bg-amber-50 p-4 hover:shadow-sm transition-shadow">
+              <Link href="/admin/orders?unread=1" className="rounded-lg border border-amber-200 bg-amber-50 p-4 hover:shadow-sm transition-shadow">
                 <p className="font-semibold text-amber-800">{unreadOrders} novih narudžbi (nepregledano)</p>
                 <p className="text-xs text-amber-600 mt-0.5">Pregledaj nepročitane narudžbe →</p>
               </Link>
@@ -138,7 +138,7 @@ export default async function AdminDashboardPage() {
               </Link>
             )}
             {glsOrdersWithoutShipment > 0 && (
-              <Link href="/admin/orders" className="rounded-lg border border-blue-200 bg-blue-50 p-4 hover:shadow-sm transition-shadow">
+              <Link href="/admin/orders?gls=1" className="rounded-lg border border-blue-200 bg-blue-50 p-4 hover:shadow-sm transition-shadow">
                 <p className="font-semibold text-blue-800">{glsOrdersWithoutShipment} GLS narudžbi bez pošiljke</p>
                 <p className="text-xs text-blue-600 mt-0.5">Kreiraj GLS naljepnice →</p>
               </Link>

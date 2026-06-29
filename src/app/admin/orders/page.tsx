@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -124,8 +125,11 @@ export default function AdminOrdersPage() {
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const [statusFilter, setStatusFilter] = useState("");
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
+  const searchParams = useSearchParams();
+  const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "");
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState(searchParams.get("paymentStatus") || "");
+  const [unreadFilter, setUnreadFilter] = useState(searchParams.get("unread") === "1");
+  const [glsFilter, setGlsFilter] = useState(searchParams.get("gls") === "1");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [exporting, setExporting] = useState(false);
@@ -135,6 +139,8 @@ export default function AdminOrdersPage() {
     const params = new URLSearchParams({ page: String(page), limit: "20" });
     if (statusFilter) params.set("status", statusFilter);
     if (paymentStatusFilter) params.set("paymentStatus", paymentStatusFilter);
+    if (unreadFilter) params.set("unread", "1");
+    if (glsFilter) params.set("gls", "1");
     if (dateFrom) params.set("dateFrom", dateFrom);
     if (dateTo) params.set("dateTo", dateTo);
     return params;
@@ -155,9 +161,16 @@ export default function AdminOrdersPage() {
       setLoading(false);
     }
     // buildParams accesses only the same deps
-  }, [page, statusFilter, paymentStatusFilter, dateFrom, dateTo]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [page, statusFilter, paymentStatusFilter, unreadFilter, glsFilter, dateFrom, dateTo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
+
+  // Re-fetch when returning from order detail (component stays mounted)
+  useEffect(() => {
+    const onVisibilityChange = () => { if (document.visibilityState === "visible") load(); };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, [load]);
 
   const handleExportCsv = async () => {
     setExporting(true);
@@ -208,11 +221,12 @@ export default function AdminOrdersPage() {
       {/* Quick filter chips */}
       <div className="mb-3 flex flex-wrap gap-2">
         {[
-          { label: "Nepregledane", onClick: () => { setStatusFilter("PENDING"); setPaymentStatusFilter(""); setPage(1); }, active: statusFilter === "PENDING" && !paymentStatusFilter },
+          { label: "Nepregledane", onClick: () => { setUnreadFilter(true); setGlsFilter(false); setStatusFilter(""); setPaymentStatusFilter(""); setPage(1); }, active: unreadFilter },
           { label: "Na čekanju", onClick: () => { setStatusFilter("PENDING"); setPaymentStatusFilter(""); setPage(1); }, active: statusFilter === "PENDING" },
           { label: "Neplaćene", onClick: () => { setPaymentStatusFilter("UNPAID"); setStatusFilter(""); setPage(1); }, active: paymentStatusFilter === "UNPAID" },
+          { label: "GLS bez pošiljke", onClick: () => { setGlsFilter(true); setUnreadFilter(false); setStatusFilter(""); setPaymentStatusFilter(""); setPage(1); }, active: glsFilter },
           { label: "Pouzeće", onClick: () => { setStatusFilter(""); setPaymentStatusFilter(""); setPage(1); /* TODO: filter by paymentMethod=cod via API */ }, active: false },
-          { label: "Očisti filtere", onClick: () => { setStatusFilter(""); setPaymentStatusFilter(""); setDateFrom(""); setDateTo(""); setPage(1); }, active: !statusFilter && !paymentStatusFilter && !dateFrom && !dateTo, reset: true },
+          { label: "Očisti filtere", onClick: () => { setStatusFilter(""); setPaymentStatusFilter(""); setDateFrom(""); setDateTo(""); setPage(1); }, active: !statusFilter && !paymentStatusFilter && !dateFrom && !dateTo && !unreadFilter && !glsFilter, reset: true },
         ].map(chip => (
           <button
             key={chip.label}
