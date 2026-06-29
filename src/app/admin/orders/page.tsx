@@ -132,14 +132,24 @@ function AdminOrdersPage() {
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  // Read URL params from Next.js router (stable in App Router)
-  const initParams = useSearchParams();
+  const searchParams = useSearchParams();
+  const [ready, setReady] = useState(false);
 
-  const [statusFilter, setStatusFilter] = useState(initParams.get("status") || "");
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState(initParams.get("paymentStatus") || "");
-  const [unreadFilter, setUnreadFilter] = useState(initParams.get("unread") === "1");
-  const [glsFilter, setGlsFilter] = useState(initParams.get("gls") === "1");
-  const [paymentMethodFilter, setPaymentMethodFilter] = useState(initParams.get("paymentMethod") || "");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
+  const [unreadFilter, setUnreadFilter] = useState(false);
+  const [glsFilter, setGlsFilter] = useState(false);
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState("");
+
+  // Sync searchParams → filter state once on mount (after hydration)
+  useEffect(() => {
+    setStatusFilter(searchParams.get("status") || "");
+    setPaymentStatusFilter(searchParams.get("paymentStatus") || "");
+    setUnreadFilter(searchParams.get("unread") === "1");
+    setGlsFilter(searchParams.get("gls") === "1");
+    setPaymentMethodFilter(searchParams.get("paymentMethod") || "");
+    setReady(true);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [exporting, setExporting] = useState(false);
@@ -174,7 +184,7 @@ function AdminOrdersPage() {
     // buildParams accesses only the same deps
   }, [page, statusFilter, paymentStatusFilter, unreadFilter, glsFilter, paymentMethodFilter, dateFrom, dateTo]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { if (ready) load(); }, [load, ready]);
 
   // Re-fetch when returning from order detail (component stays mounted)
   useEffect(() => {

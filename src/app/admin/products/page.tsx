@@ -98,20 +98,35 @@ export default function Wrapper() {
 function AdminProductsPage() {
   const router = useRouter();
 
-  // Read URL params from Next.js router (stable in App Router)
-  const initParams = useSearchParams();
+  const searchParams = useSearchParams();
+  const [ready, setReady] = useState(false);
 
   // --- Data state ---
   const [products, setProducts] = useState<Product[]>([]);
-  const [searchInput, setSearchInput] = useState(initParams.get("search") || "");
-  const [appliedSearch, setAppliedSearch] = useState(initParams.get("search") || "");
-  const [categoryId, setCategoryId] = useState(initParams.get("categoryId") || "");
-  const [brandId, setBrandId] = useState(initParams.get("brandId") || "");
-  const [statusFilter, setStatusFilter] = useState(initParams.get("status") || "");
-  const [stockStatusFilter, setStockStatusFilter] = useState(initParams.get("stockStatus") || "");
-  const [saleFilter, setSaleFilter] = useState(initParams.get("sale") || "");
-  const [lowStockFilter, setLowStockFilter] = useState(initParams.get("lowStock") || "");
-  const [sortBy, setSortBy] = useState(initParams.get("sort") || "newest");
+  const [searchInput, setSearchInput] = useState("");
+  const [appliedSearch, setAppliedSearch] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [brandId, setBrandId] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [stockStatusFilter, setStockStatusFilter] = useState("");
+  const [saleFilter, setSaleFilter] = useState("");
+  const [lowStockFilter, setLowStockFilter] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
+
+  // Sync searchParams → filter state once on mount (after hydration)
+  useEffect(() => {
+    const s = searchParams.get("search") || "";
+    setSearchInput(s);
+    setAppliedSearch(s);
+    setCategoryId(searchParams.get("categoryId") || "");
+    setBrandId(searchParams.get("brandId") || "");
+    setStatusFilter(searchParams.get("status") || "");
+    setStockStatusFilter(searchParams.get("stockStatus") || "");
+    setSaleFilter(searchParams.get("sale") || "");
+    setLowStockFilter(searchParams.get("lowStock") || "");
+    setSortBy(searchParams.get("sort") || "newest");
+    setReady(true);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
