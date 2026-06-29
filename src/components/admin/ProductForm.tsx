@@ -66,8 +66,14 @@ export function ProductForm({ product, categories, brands }: {
 
       const rp = n(form.get("regularPrice") as string);
       const sp = n(form.get("salePrice") as string);
-      if (rp !== null) body.regularPrice = rp;
-      if (sp !== null) body.salePrice = sp;
+      // Always send price fields when editing (null = clear), only send when set for new products
+      if (isEdit) {
+        body.regularPrice = rp;
+        body.salePrice = sp;
+      } else {
+        if (rp !== null) body.regularPrice = rp;
+        if (sp !== null) body.salePrice = sp;
+      }
 
       const url = isEdit ? `/api/admin/products/${product!.id}` : "/api/admin/products";
       const res = await fetch(url, { method: isEdit ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
