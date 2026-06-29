@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Download, Calendar, X, Loader2, AlertCircle } from "lucide-react";
@@ -118,14 +118,22 @@ function Skeleton() {
   );
 }
 
-export default function AdminOrdersPage() {
+export default function Wrapper() {
+  return (
+    <Suspense fallback={<div className="p-8">Učitavanje...</div>}>
+      <AdminOrdersPage />
+    </Suspense>
+  );
+}
+
+function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  // Read URL params synchronously so first fetch already includes filters
-  const initParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+  // Read URL params from Next.js router (stable in App Router)
+  const initParams = useSearchParams();
 
   const [statusFilter, setStatusFilter] = useState(initParams.get("status") || "");
   const [paymentStatusFilter, setPaymentStatusFilter] = useState(initParams.get("paymentStatus") || "");

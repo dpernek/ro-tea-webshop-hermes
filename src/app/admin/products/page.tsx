@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -87,11 +87,19 @@ const BULK_ACTIONS: { value: BulkActionType | ""; label: string; icon: React.Rea
 
 const LIMIT = 20;
 
-export default function AdminProductsPage() {
+export default function Wrapper() {
+  return (
+    <Suspense fallback={<div className="p-8">Učitavanje...</div>}>
+      <AdminProductsPage />
+    </Suspense>
+  );
+}
+
+function AdminProductsPage() {
   const router = useRouter();
 
-  // Read URL params synchronously so first fetch already includes filters
-  const initParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+  // Read URL params from Next.js router (stable in App Router)
+  const initParams = useSearchParams();
 
   // --- Data state ---
   const [products, setProducts] = useState<Product[]>([]);
