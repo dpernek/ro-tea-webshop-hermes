@@ -95,6 +95,10 @@ export default function AdminProductsPage() {
   const [appliedSearch, setAppliedSearch] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [brandId, setBrandId] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [stockStatusFilter, setStockStatusFilter] = useState("");
+  const [saleFilter, setSaleFilter] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [page, setPage] = useState(1);
@@ -150,6 +154,10 @@ export default function AdminProductsPage() {
       });
       if (categoryId) params.set("categoryId", categoryId);
       if (brandId) params.set("brandId", brandId);
+      if (statusFilter) params.set("status", statusFilter);
+      if (stockStatusFilter) params.set("stockStatus", stockStatusFilter);
+      if (saleFilter) params.set("sale", saleFilter);
+      if (sortBy) params.set("sort", sortBy);
 
       const res = await fetch(`/api/admin/products?${params.toString()}`);
       if (!res.ok) throw new Error("Neuspješno dohvaćanje proizvoda");
@@ -380,6 +388,31 @@ export default function AdminProductsPage() {
         </Button>
       </div>
 
+      {/* ── Quick chips ── */}
+      <div className="mb-3 flex flex-wrap gap-2">
+        {[
+          { label: "Bez zalihe", onClick: () => { setStockStatusFilter("OUTOFSTOCK"); setSaleFilter(""); setStatusFilter(""); setPage(1); triggerReload(); }, active: stockStatusFilter === "OUTOFSTOCK" },
+          { label: "Niska zaliha", onClick: () => { setStockStatusFilter(""); setSaleFilter(""); setStatusFilter(""); setPage(1); triggerReload(); /* TODO: low stock filter */ }, active: false },
+          { label: "Na akciji", onClick: () => { setSaleFilter("yes"); setStockStatusFilter(""); setStatusFilter(""); setPage(1); triggerReload(); }, active: saleFilter === "yes" },
+          { label: "Arhivirani", onClick: () => { setStatusFilter("ARCHIVED"); setStockStatusFilter(""); setSaleFilter(""); setPage(1); triggerReload(); }, active: statusFilter === "ARCHIVED" },
+          { label: "Očisti", onClick: () => { setStatusFilter(""); setStockStatusFilter(""); setSaleFilter(""); setCategoryId(""); setBrandId(""); setSearchInput(""); setAppliedSearch(""); setSortBy("newest"); setPage(1); triggerReload(); }, active: false, reset: true },
+        ].map(chip => (
+          <button
+            key={chip.label}
+            onClick={chip.onClick}
+            className={`rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
+              chip.reset
+                ? "border-slate-300 text-slate-500 hover:bg-slate-100"
+                : chip.active
+                  ? "bg-indigo-100 border-indigo-300 text-indigo-700"
+                  : "border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300"
+            }`}
+          >
+            {chip.label}
+          </button>
+        ))}
+      </div>
+
       {/* ── Filters row ── */}
       <div className="mb-4 flex flex-wrap gap-2 items-end">
         {/* Search */}
@@ -436,6 +469,23 @@ export default function AdminProductsPage() {
                 {b.name}
               </option>
             ))}
+          </select>
+          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+        </div>
+
+        {/* Sort */}
+        <div className="relative min-w-[140px]">
+          <select
+            className="h-[38px] w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-sm"
+            value={sortBy}
+            onChange={(e) => { setSortBy(e.target.value); setPage(1); setSelectedIds(new Set()); triggerReload(); }}
+          >
+            <option value="newest">Najnovije</option>
+            <option value="oldest">Najstarije</option>
+            <option value="name-asc">Naziv A–Ž</option>
+            <option value="name-desc">Naziv Ž–A</option>
+            <option value="price-asc">Cijena ↑</option>
+            <option value="price-desc">Cijena ↓</option>
           </select>
           <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
         </div>
@@ -773,7 +823,8 @@ export default function AdminProductsPage() {
                   Prethodna
                 </Button>
                 <span className="text-sm text-slate-500">
-                  Stranica {page} od {totalPages}
+                  Stranica {page} od {totalPages} · Ukupno {total} proizvoda
+                  {(statusFilter || stockStatusFilter || saleFilter || appliedSearch || categoryId || brandId) && ` · Filtrirano`}
                 </span>
                 <Button
                   variant="outline"

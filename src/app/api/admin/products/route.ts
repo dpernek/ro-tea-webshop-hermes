@@ -59,8 +59,18 @@ export async function GET(request: NextRequest) {
   const categoryId = url.searchParams.get("categoryId") || "";
   const brandId = url.searchParams.get("brandId") || "";
   const status = url.searchParams.get("status") || "";
+  const stockStatus = url.searchParams.get("stockStatus") || "";
+  const sale = url.searchParams.get("sale") || "";
+  const sort = url.searchParams.get("sort") || "newest";
 
   const where: any = {};
+  const orderBy: any = [{ createdAt: "desc" }];
+  if (sort === "name-asc") orderBy[0] = { name: "asc" };
+  if (sort === "name-desc") orderBy[0] = { name: "desc" };
+  if (sort === "price-asc") orderBy[0] = { price: "asc" };
+  if (sort === "price-desc") orderBy[0] = { price: "desc" };
+  if (sort === "newest") orderBy[0] = { createdAt: "desc" };
+  if (sort === "oldest") orderBy[0] = { createdAt: "asc" };
   // Default: exclude ARCHIVED, unless explicitly requested
   if (status) {
     where.status = status;
@@ -79,13 +89,22 @@ export async function GET(request: NextRequest) {
   if (brandId) {
     where.brandId = brandId;
   }
+  if (stockStatus) {
+    where.stockStatus = stockStatus;
+  }
+  if (sale === "yes") {
+    where.salePrice = { not: null };
+  }
+  if (sale === "no") {
+    where.salePrice = null;
+  }
 
   const [products, total] = await Promise.all([
     db.product.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
-      orderBy: { createdAt: "desc" },
+      orderBy,
       select: { id: true, name: true, slug: true, sku: true, price: true, salePrice: true, regularPrice: true, status: true, stockStatus: true, image: true },
     }),
     db.product.count({ where }),
