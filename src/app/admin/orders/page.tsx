@@ -203,6 +203,9 @@ function AdminOrdersPage() {
         body: JSON.stringify({
           status: statusFilter || undefined,
           paymentStatus: paymentStatusFilter || undefined,
+          unread: unreadFilter || undefined,
+          gls: glsFilter || undefined,
+          paymentMethod: paymentMethodFilter || undefined,
           dateFrom: dateFrom || undefined,
           dateTo: dateTo || undefined,
         }),

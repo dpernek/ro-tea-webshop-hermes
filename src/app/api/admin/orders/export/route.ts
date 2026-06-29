@@ -49,11 +49,15 @@ export async function POST(req: NextRequest) {
   if (access) return access;
 
   const body = await req.json().catch(() => ({}));
-  const { status, paymentStatus, dateFrom, dateTo } = body;
+  const { status, paymentStatus, unread, gls, paymentMethod, dateFrom, dateTo } = body;
 
   const where: any = {};
   if (status) where.status = status;
   if (paymentStatus) where.paymentStatus = paymentStatus;
+  if (paymentStatus === "UNPAID") where.status = { notIn: ["CANCELLED", "REFUNDED"] };
+  if (unread) where.viewed = false;
+  if (gls) { where.shippingMethod = { startsWith: "GLS" }; where.glsShipmentId = null; }
+  if (paymentMethod) where.paymentMethod = paymentMethod;
   if (dateFrom || dateTo) {
     where.createdAt = {};
     if (dateFrom) where.createdAt.gte = new Date(dateFrom);
