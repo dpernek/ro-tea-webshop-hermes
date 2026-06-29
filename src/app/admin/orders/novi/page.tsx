@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Save, Loader2, ArrowLeft, Plus, Trash2, Search } from "lucide-react";
+import { Save, ArrowLeft, Trash2, Search } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminNewOrderPage() {

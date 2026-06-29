@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
-import { Loader2, AlertCircle, FileText, Search, X } from "lucide-react";
+import { Loader2, AlertCircle, FileText, X } from "lucide-react";
 
 interface AuditEntry {
   id: string; userEmail: string; resource: string; action: string; summary: string; createdAt: string; entityId?: string;
