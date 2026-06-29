@@ -164,7 +164,7 @@ export default function AdminOrdersPage() {
       setLoading(false);
     }
     // buildParams accesses only the same deps
-  }, [page, statusFilter, paymentStatusFilter, unreadFilter, glsFilter, dateFrom, dateTo]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [page, statusFilter, paymentStatusFilter, unreadFilter, glsFilter, paymentMethodFilter, dateFrom, dateTo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(); }, [load]);
 
