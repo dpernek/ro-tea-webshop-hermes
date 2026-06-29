@@ -31,30 +31,6 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   const cartCouponDiscount = useCartStore(s => s.couponDiscount);
   const [couponCode, setCouponCode] = useState(cartCouponCode);
   const [couponDiscount, setCouponDiscount] = useState(cartCouponDiscount);
-  const [couponValidating, setCouponValidating] = useState(false);
-  const [couponMessage, setCouponMessage] = useState("");
-
-  async function applyCoupon() {
-    if (!couponCode.trim()) return;
-    setCouponValidating(true); setCouponMessage("");
-    try {
-      const subtotal = cartTotal();
-      const r = await fetch("/api/coupons/validate", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: couponCode.trim(), subtotal }),
-      });
-      const d = await r.json();
-      if (!r.ok || !d.valid) {
-        setCouponMessage(d.error || "Kupon nije valjan.");
-        setCouponDiscount(0);
-      } else {
-        setCouponMessage(`Popust: -${d.discount.toFixed(2)} €`);
-        setCouponDiscount(d.discount);
-      }
-    } catch {
-      setCouponMessage("Greška pri provjeri kupona.");
-    } finally { setCouponValidating(false); }
-  }
 
   function cartTotal() {
     return items.reduce((sum, item) => {
