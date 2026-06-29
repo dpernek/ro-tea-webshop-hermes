@@ -70,8 +70,8 @@ export async function GET(request: NextRequest) {
   if (sort === "name-desc") orderBy[0] = { name: "desc" };
   if (sort === "price-asc") orderBy[0] = { price: "asc" };
   if (sort === "price-desc") orderBy[0] = { price: "desc" };
-  if (sort === "stock-asc") orderBy[0] = { stock: { sort: "asc", nulls: "last" } };
-  if (sort === "stock-desc") orderBy[0] = { stock: { sort: "desc", nulls: "last" } };
+  if (sort === "stock-asc") orderBy[0] = { stock: "asc" };
+  if (sort === "stock-desc") orderBy[0] = { stock: "desc" };
   if (sort === "newest") orderBy[0] = { createdAt: "desc" };
   if (sort === "oldest") orderBy[0] = { createdAt: "asc" };
   // Default: exclude ARCHIVED, unless explicitly requested
