@@ -172,7 +172,7 @@ function AdminProductsPage() {
   }, []);
 
   // --- Load products ---
-  const load = useCallback(async () => { // eslint-disable-line
+  const load = useCallback(async () => {
     setLoading(true);
     setError("");
     setSuccess("");

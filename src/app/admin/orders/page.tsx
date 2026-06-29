@@ -183,7 +183,7 @@ function AdminOrdersPage() {
       setLoading(false);
     }
     // buildParams accesses only the same deps
-  }, [page, statusFilter, paymentStatusFilter, unreadFilter, glsFilter, paymentMethodFilter, dateFrom, dateTo]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [page, statusFilter, paymentStatusFilter, unreadFilter, glsFilter, paymentMethodFilter, dateFrom, dateTo]);
 
   useEffect(() => { if (ready) load(); }, [load, ready]);
 
