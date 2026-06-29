@@ -16,12 +16,14 @@ export async function GET(req: NextRequest) {
   const dateTo = url.searchParams.get("dateTo") || "";
   const unread = url.searchParams.get("unread") || "";
   const gls = url.searchParams.get("gls") || "";
+  const paymentMethod = url.searchParams.get("paymentMethod") || "";
 
   const where: any = {};
   if (status) where.status = status;
   if (paymentStatus) where.paymentStatus = paymentStatus;
   if (unread === "1") where.viewed = false;
   if (gls === "1") { where.shippingMethod = { startsWith: "GLS" }; where.glsShipmentId = null; }
+  if (paymentMethod) where.paymentMethod = paymentMethod;
   if (dateFrom || dateTo) {
     where.createdAt = {};
     if (dateFrom) where.createdAt.gte = new Date(dateFrom);
