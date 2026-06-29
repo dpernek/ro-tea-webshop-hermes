@@ -103,6 +103,8 @@ export async function GET(request: NextRequest) {
   }
   if (lowStock === "yes" || lowStock === "1") {
     where.stock = { not: null, lte: 3 };
+    // Match dashboard: only ACTIVE products (not just 'not ARCHIVED')
+    if (!status) where.status = "ACTIVE";
   }
 
   const [products, total] = await Promise.all([

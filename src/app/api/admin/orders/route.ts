@@ -20,7 +20,11 @@ export async function GET(req: NextRequest) {
 
   const where: any = {};
   if (status) where.status = status;
-  if (paymentStatus) where.paymentStatus = paymentStatus;
+  if (paymentStatus) {
+    where.paymentStatus = paymentStatus;
+    // Match dashboard: exclude CANCELLED/REFUNDED orders from unpaid count
+    if (paymentStatus === "UNPAID") where.status = { notIn: ["CANCELLED", "REFUNDED"] };
+  }
   if (unread === "1") where.viewed = false;
   if (gls === "1") { where.shippingMethod = { startsWith: "GLS" }; where.glsShipmentId = null; }
   if (paymentMethod) where.paymentMethod = paymentMethod;
