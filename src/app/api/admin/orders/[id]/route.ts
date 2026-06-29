@@ -48,6 +48,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   const order = await db.order.findUnique({ where: { id }, include: { items: true } });
   if (!order) return NextResponse.json(null);
 
+  // Mark as viewed server-side (atomic, no client race condition)
+  if (order.viewed === false) {
+    await db.order.update({ where: { id }, data: { viewed: true } }).catch(() => {});
+  }
+
   // Attach GLS status: test mode vs configured
   let glsTestMode = false;
   let glsConfigured = false;

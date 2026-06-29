@@ -228,12 +228,12 @@ export default function AdminOrdersPage() {
       {/* Quick filter chips */}
       <div className="mb-3 flex flex-wrap gap-2">
         {[
-          { label: "Nepregledane", onClick: () => { setUnreadFilter(true); setGlsFilter(false); setStatusFilter(""); setPaymentStatusFilter(""); setPage(1); }, active: unreadFilter },
-          { label: "Na čekanju", onClick: () => { setStatusFilter("PENDING"); setPaymentStatusFilter(""); setPage(1); }, active: statusFilter === "PENDING" },
-          { label: "Neplaćene", onClick: () => { setPaymentStatusFilter("UNPAID"); setStatusFilter(""); setPage(1); }, active: paymentStatusFilter === "UNPAID" },
-          { label: "GLS bez pošiljke", onClick: () => { setGlsFilter(true); setUnreadFilter(false); setStatusFilter(""); setPaymentStatusFilter(""); setPage(1); }, active: glsFilter },
-          { label: "Pouzeće", onClick: () => { setStatusFilter(""); setPaymentStatusFilter(""); setPage(1); /* TODO: filter by paymentMethod=cod via API */ }, active: false },
-          { label: "Očisti filtere", onClick: () => { setStatusFilter(""); setPaymentStatusFilter(""); setDateFrom(""); setDateTo(""); setPage(1); }, active: !statusFilter && !paymentStatusFilter && !dateFrom && !dateTo && !unreadFilter && !glsFilter, reset: true },
+          { label: "Nepregledane", onClick: () => { setUnreadFilter(true); setGlsFilter(false); setStatusFilter(""); setPaymentStatusFilter(""); setDateFrom(""); setDateTo(""); setPage(1); }, active: unreadFilter && !glsFilter && !statusFilter && !paymentStatusFilter },
+          { label: "Na čekanju", onClick: () => { setUnreadFilter(false); setGlsFilter(false); setStatusFilter("PENDING"); setPaymentStatusFilter(""); setDateFrom(""); setDateTo(""); setPage(1); }, active: statusFilter === "PENDING" && !unreadFilter && !glsFilter },
+          { label: "Neplaćene", onClick: () => { setUnreadFilter(false); setGlsFilter(false); setStatusFilter(""); setPaymentStatusFilter("UNPAID"); setDateFrom(""); setDateTo(""); setPage(1); }, active: paymentStatusFilter === "UNPAID" && !unreadFilter && !glsFilter && !statusFilter },
+          { label: "GLS bez pošiljke", onClick: () => { setGlsFilter(true); setUnreadFilter(false); setStatusFilter(""); setPaymentStatusFilter(""); setDateFrom(""); setDateTo(""); setPage(1); }, active: glsFilter && !unreadFilter && !statusFilter && !paymentStatusFilter },
+          { label: "Pouzeće", onClick: () => { setUnreadFilter(false); setGlsFilter(false); setStatusFilter(""); setPaymentStatusFilter(""); setDateFrom(""); setDateTo(""); setPage(1); }, active: false },
+          { label: "Očisti filtere", onClick: () => { setUnreadFilter(false); setGlsFilter(false); setStatusFilter(""); setPaymentStatusFilter(""); setDateFrom(""); setDateTo(""); setPage(1); }, active: !statusFilter && !paymentStatusFilter && !dateFrom && !dateTo && !unreadFilter && !glsFilter, reset: true },
         ].map(chip => (
           <button
             key={chip.label}
