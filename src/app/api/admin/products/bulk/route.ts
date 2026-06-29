@@ -34,9 +34,11 @@ const R = (v: number) => Math.round(v * 100) / 100;
 
 function buildFilterWhere(filters?: { search?: string; categoryId?: string; brandId?: string; status?: string; stockStatus?: string; sale?: string; lowStock?: string }): Record<string, unknown> {
   const w: Record<string, unknown> = {};
-  // Default: exclude ARCHIVED, unless explicitly requested
+  // Default: exclude ARCHIVED, unless explicitly requested (same as products GET)
   if (filters?.status) {
     w.status = filters.status;
+  } else {
+    w.status = { not: "ARCHIVED" };
   }
   if (filters?.search) w.OR = [{ name: { contains: filters.search, mode: "insensitive" } }, { sku: { contains: filters.search, mode: "insensitive" } }];
   if (filters?.categoryId) w.categoryId = filters.categoryId;
