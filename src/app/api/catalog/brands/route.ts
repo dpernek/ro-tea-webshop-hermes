@@ -10,7 +10,7 @@ export async function GET() {
       orderBy: { name: "asc" },
     });
     return NextResponse.json(brands);
-  } catch (e: any) {
+  } catch {
     return NextResponse.json({ error: "Greška pri dohvaćanju brendova." }, { status: 500 });
   }
 }

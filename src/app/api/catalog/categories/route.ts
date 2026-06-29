@@ -24,7 +24,7 @@ export async function GET() {
       .filter((c) => c.count > 0);
 
     return NextResponse.json(data);
-  } catch (e: any) {
+  } catch {
     return NextResponse.json({ error: "Greška pri dohvaćanju kategorija." }, { status: 500 });
   }
 }
