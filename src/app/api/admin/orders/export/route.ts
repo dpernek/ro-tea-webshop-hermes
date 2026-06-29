@@ -45,7 +45,7 @@ function esc(val: string): string {
 }
 
 export async function POST(req: NextRequest) {
-  const access = await requirePermission("orders", "write");
+  const access = await requirePermission("orders", "read");
   if (access) return access;
 
   const body = await req.json().catch(() => ({}));
