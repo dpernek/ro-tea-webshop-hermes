@@ -152,6 +152,8 @@ function AdminProductsPage() {
   const [previewData, setPreviewData] = useState<PreviewItem[]>([]);
   const [previewUpdatedCount, setPreviewUpdatedCount] = useState(0);
   const [previewSkippedCount, setPreviewSkippedCount] = useState(0);
+  const [previewMatchedCount, setPreviewMatchedCount] = useState(0);
+  const [previewSelectedCount, setPreviewSelectedCount] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
 
   // --- Apply state ---
@@ -322,6 +324,8 @@ function AdminProductsPage() {
       setPreviewData(data.items || []);
       setPreviewUpdatedCount(data.updatedCount || 0);
       setPreviewSkippedCount(data.skippedCount || 0);
+      setPreviewMatchedCount(data.matchedCount || 0);
+      setPreviewSelectedCount(data.selectedCount || 0);
       setShowPreview(true);
     } catch (e: unknown) {
       setError(
@@ -1008,6 +1012,20 @@ function AdminProductsPage() {
                   </>
                 )}
               </p>
+              <p className="text-xs text-slate-400 mb-2">
+                Odabrano: {previewSelectedCount} · Backend zahvaća: {previewMatchedCount}
+              </p>
+
+              {/* Mismatch guard: block Apply when selectAll but counts don't match */}
+              {selectAllFiltered && previewMatchedCount !== total && (
+                <div className="rounded-lg border border-red-200 bg-red-50 p-3 mb-4">
+                  <p className="text-sm font-semibold text-red-700">Upozorenje: nepodudaranje filtera</p>
+                  <p className="text-xs text-red-600 mt-1">
+                    Broj proizvoda na listi ({total}) i broj proizvoda koje backend zahvaća ({previewMatchedCount}) se ne podudaraju.
+                    Osvježite filter prije primjene.
+                  </p>
+                </div>
+              )}
 
               {/* Warning */}
               <div className="flex items-start gap-2 text-xs text-slate-500 mb-4">
@@ -1030,7 +1048,7 @@ function AdminProductsPage() {
                 <Button
                   size="sm"
                   onClick={handleApply}
-                  disabled={previewUpdatedCount === 0 || bulking}
+                  disabled={previewUpdatedCount === 0 || bulking || (selectAllFiltered && previewMatchedCount !== total)}
                   isLoading={bulking}
                 >
                   <Check className="h-3.5 w-3.5" />

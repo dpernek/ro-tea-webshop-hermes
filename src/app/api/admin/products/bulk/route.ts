@@ -155,12 +155,16 @@ export async function POST(request: NextRequest) {
         items,
         updatedCount: items.filter(i => i.updated).length,
         skippedCount: items.filter(i => !i.updated).length,
+        matchedCount: products.length,
+        selectedCount: selectAll && filters ? targetIds.length : ids.length,
       });
     }
     return NextResponse.json({
       preview: true,
       items: products.map(p => ({ productId: p.id, productName: p.name, oldPrice: p.price, oldRegularPrice: p.regularPrice, oldSalePrice: p.salePrice, newPrice: p.price, newRegularPrice: p.regularPrice, newSalePrice: p.salePrice, updated: true })),
       updatedCount: products.length, skippedCount: 0,
+      matchedCount: products.length,
+      selectedCount: selectAll && filters ? targetIds.length : ids.length,
     });
   }
 
