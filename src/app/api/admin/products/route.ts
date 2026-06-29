@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
     where.salePrice = null;
   }
   if (lowStock === "yes" || lowStock === "1") {
-    where.stock = { gt: 0, lte: 3 };
+    where.stock = { not: null, lte: 3 };
   }
 
   const [products, total] = await Promise.all([

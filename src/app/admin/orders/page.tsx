@@ -124,21 +124,14 @@ export default function AdminOrdersPage() {
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const [statusFilter, setStatusFilter] = useState("");
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
-  const [unreadFilter, setUnreadFilter] = useState(false);
-  const [glsFilter, setGlsFilter] = useState(false);
-  const [paymentMethodFilter, setPaymentMethodFilter] = useState("");
+  // Read URL params synchronously so first fetch already includes filters
+  const initParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
 
-  // Read initial filters from URL params on mount
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("status")) setStatusFilter(params.get("status")!);
-    if (params.get("paymentStatus")) setPaymentStatusFilter(params.get("paymentStatus")!);
-    if (params.get("unread") === "1") setUnreadFilter(true);
-    if (params.get("gls") === "1") setGlsFilter(true);
-    if (params.get("paymentMethod")) setPaymentMethodFilter(params.get("paymentMethod")!);
-  }, []);
+  const [statusFilter, setStatusFilter] = useState(initParams.get("status") || "");
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState(initParams.get("paymentStatus") || "");
+  const [unreadFilter, setUnreadFilter] = useState(initParams.get("unread") === "1");
+  const [glsFilter, setGlsFilter] = useState(initParams.get("gls") === "1");
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState(initParams.get("paymentMethod") || "");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [exporting, setExporting] = useState(false);

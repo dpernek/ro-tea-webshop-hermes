@@ -90,30 +90,20 @@ const LIMIT = 20;
 export default function AdminProductsPage() {
   const router = useRouter();
 
+  // Read URL params synchronously so first fetch already includes filters
+  const initParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+
   // --- Data state ---
   const [products, setProducts] = useState<Product[]>([]);
-  const [searchInput, setSearchInput] = useState("");
-  const [appliedSearch, setAppliedSearch] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [brandId, setBrandId] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [stockStatusFilter, setStockStatusFilter] = useState("");
-  const [saleFilter, setSaleFilter] = useState("");
-  const [lowStockFilter, setLowStockFilter] = useState("");
-  const [sortBy, setSortBy] = useState("newest");
-
-  // Read initial filters from URL params on mount (deep-link support)
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("search")) { setSearchInput(params.get("search")!); setAppliedSearch(params.get("search")!); }
-    if (params.get("categoryId")) setCategoryId(params.get("categoryId")!);
-    if (params.get("brandId")) setBrandId(params.get("brandId")!);
-    if (params.get("status")) setStatusFilter(params.get("status")!);
-    if (params.get("stockStatus")) setStockStatusFilter(params.get("stockStatus")!);
-    if (params.get("sale")) setSaleFilter(params.get("sale")!);
-    if (params.get("lowStock")) setLowStockFilter(params.get("lowStock")!);
-    if (params.get("sort")) setSortBy(params.get("sort")!);
-  }, []);
+  const [searchInput, setSearchInput] = useState(initParams.get("search") || "");
+  const [appliedSearch, setAppliedSearch] = useState(initParams.get("search") || "");
+  const [categoryId, setCategoryId] = useState(initParams.get("categoryId") || "");
+  const [brandId, setBrandId] = useState(initParams.get("brandId") || "");
+  const [statusFilter, setStatusFilter] = useState(initParams.get("status") || "");
+  const [stockStatusFilter, setStockStatusFilter] = useState(initParams.get("stockStatus") || "");
+  const [saleFilter, setSaleFilter] = useState(initParams.get("sale") || "");
+  const [lowStockFilter, setLowStockFilter] = useState(initParams.get("lowStock") || "");
+  const [sortBy, setSortBy] = useState(initParams.get("sort") || "newest");
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
