@@ -173,7 +173,7 @@ export default function AdminProductsPage() {
       );
     }
     setLoading(false);
-  }, [page, appliedSearch, categoryId, brandId]);
+  }, [page, appliedSearch, categoryId, brandId, statusFilter, stockStatusFilter, saleFilter, lowStockFilter, sortBy]);
 
   // --- Reload counter (bumps on any filter/search/pagination change) ---
   const [reloadKey, setReloadKey] = useState(0);
@@ -397,8 +397,8 @@ export default function AdminProductsPage() {
           { label: "Bez zalihe", onClick: () => { setStockStatusFilter("OUTOFSTOCK"); setSaleFilter(""); setStatusFilter(""); setLowStockFilter(""); setPage(1); triggerReload(); }, active: stockStatusFilter === "OUTOFSTOCK" },
           { label: "Niska zaliha", onClick: () => { setLowStockFilter("yes"); setStockStatusFilter(""); setSaleFilter(""); setStatusFilter(""); setPage(1); triggerReload(); }, active: lowStockFilter === "yes" },
           { label: "Na akciji", onClick: () => { setSaleFilter("yes"); setStockStatusFilter(""); setStatusFilter(""); setPage(1); triggerReload(); }, active: saleFilter === "yes" },
+          { label: "Aktivni", onClick: () => { setStatusFilter("ACTIVE"); setStockStatusFilter(""); setSaleFilter(""); setLowStockFilter(""); setPage(1); triggerReload(); }, active: statusFilter === "ACTIVE" },
           { label: "Arhivirani", onClick: () => { setStatusFilter("ARCHIVED"); setStockStatusFilter(""); setSaleFilter(""); setLowStockFilter(""); setPage(1); triggerReload(); }, active: statusFilter === "ARCHIVED" },
-          { label: "Aktivni", onClick: () => { setStatusFilter(""); setStockStatusFilter(""); setSaleFilter(""); setLowStockFilter(""); setPage(1); triggerReload(); }, active: !statusFilter && !stockStatusFilter && !saleFilter && !lowStockFilter },
           { label: "Očisti", onClick: () => { setStatusFilter(""); setStockStatusFilter(""); setSaleFilter(""); setLowStockFilter(""); setCategoryId(""); setBrandId(""); setSearchInput(""); setAppliedSearch(""); setSortBy("newest"); setPage(1); triggerReload(); }, active: false, reset: true },
         ].map(chip => (
           <button

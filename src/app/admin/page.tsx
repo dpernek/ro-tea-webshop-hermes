@@ -76,7 +76,7 @@ export default async function AdminDashboardPage() {
     { title: "Neplaćene", value: unpaidOrders, subtitle: "čekaju uplatu / pouzeće", href: "/admin/orders?paymentStatus=UNPAID", color: "bg-orange-50 text-orange-700" },
     { title: "Prodaja (sveukupno)", value: `${revenue.toFixed(2)} €`, subtitle: "lifetime, bez otkazanih/refundiranih", color: "bg-green-50 text-green-700" },
     { title: "Aktivni proizvodi", value: activeProducts, subtitle: "u katalogu", href: "/admin/products", color: "bg-blue-50 text-blue-700" },
-    { title: "Niska zaliha", value: productsWithoutStock + productsLowStock, subtitle: `${productsWithoutStock} bez zalihe • ${productsLowStock} ≤ 3 kom.`, href: "/admin/products", color: "bg-red-50 text-red-700" },
+    { title: "Niska zaliha", value: productsWithoutStock + productsLowStock, subtitle: `${productsWithoutStock} bez zalihe • ${productsLowStock} ≤ 3 kom.`, href: "/admin/products?lowStock=1", color: "bg-red-50 text-red-700" },
   ];
 
   const hasAttention = unreadOrders > 0 || pendingOrders > 0 || unpaidOrders > 0 || glsOrdersWithoutShipment > 0 || stockAlerts.length > 0;
@@ -144,7 +144,7 @@ export default async function AdminDashboardPage() {
               </Link>
             )}
             {stockAlerts.length > 0 && (
-              <Link href="/admin/products" className="rounded-lg border border-red-200 bg-red-50 p-4 hover:shadow-sm transition-shadow">
+              <Link href="/admin/products?lowStock=1" className="rounded-lg border border-red-200 bg-red-50 p-4 hover:shadow-sm transition-shadow">
                 <p className="font-semibold text-red-800">{stockAlerts.length} artikala s niskom zalihom</p>
                 <p className="text-xs text-red-600 mt-0.5">Dopuni zalihe →</p>
               </Link>
@@ -237,7 +237,7 @@ export default async function AdminDashboardPage() {
             ))}
           </div>
           <div className="mt-3">
-            <Link href="/admin/products" className="text-xs font-medium text-indigo-600 hover:text-indigo-700">Svi proizvodi →</Link>
+            <Link href="/admin/products?lowStock=1" className="text-xs font-medium text-indigo-600 hover:text-indigo-700">Svi proizvodi niske zalihe →</Link>
           </div>
         </div>
       )}
