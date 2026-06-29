@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -125,11 +124,19 @@ export default function AdminOrdersPage() {
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const searchParams = useSearchParams();
-  const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "");
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState(searchParams.get("paymentStatus") || "");
-  const [unreadFilter, setUnreadFilter] = useState(searchParams.get("unread") === "1");
-  const [glsFilter, setGlsFilter] = useState(searchParams.get("gls") === "1");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState("");
+  const [unreadFilter, setUnreadFilter] = useState(false);
+  const [glsFilter, setGlsFilter] = useState(false);
+
+  // Read initial filters from URL params on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("status")) setStatusFilter(params.get("status")!);
+    if (params.get("paymentStatus")) setPaymentStatusFilter(params.get("paymentStatus")!);
+    if (params.get("unread") === "1") setUnreadFilter(true);
+    if (params.get("gls") === "1") setGlsFilter(true);
+  }, []);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [exporting, setExporting] = useState(false);
