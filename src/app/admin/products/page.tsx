@@ -148,7 +148,7 @@ export default function AdminProductsPage() {
   }, []);
 
   // --- Load products ---
-  const load = useCallback(async () => {
+  const load = useCallback(async () => { // eslint-disable-line
     setLoading(true);
     setError("");
     setSuccess("");
@@ -156,7 +156,7 @@ export default function AdminProductsPage() {
       const params = new URLSearchParams({
         page: String(page),
         limit: String(LIMIT),
-        appliedSearch,
+        search: appliedSearch,
       });
       if (categoryId) params.set("categoryId", categoryId);
       if (brandId) params.set("brandId", brandId);
