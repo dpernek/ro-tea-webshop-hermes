@@ -141,15 +141,16 @@ function AdminOrdersPage() {
   const [glsFilter, setGlsFilter] = useState(false);
   const [paymentMethodFilter, setPaymentMethodFilter] = useState("");
 
-  // Sync searchParams → filter state once on mount (after hydration)
+  // Sync searchParams → filter state on mount and when URL changes
+  // Chips update state directly; this effect only handles external URL changes
   useEffect(() => {
     setStatusFilter(searchParams.get("status") || "");
     setPaymentStatusFilter(searchParams.get("paymentStatus") || "");
     setUnreadFilter(searchParams.get("unread") === "1");
     setGlsFilter(searchParams.get("gls") === "1");
     setPaymentMethodFilter(searchParams.get("paymentMethod") || "");
-    setReady(true);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!ready) setReady(true);
+  }, [searchParams]);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [exporting, setExporting] = useState(false);

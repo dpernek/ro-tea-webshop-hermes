@@ -113,7 +113,8 @@ function AdminProductsPage() {
   const [lowStockFilter, setLowStockFilter] = useState("");
   const [sortBy, setSortBy] = useState("newest");
 
-  // Sync searchParams → filter state once on mount (after hydration)
+  // Sync searchParams → filter state on mount and when URL changes
+  // Chips update state directly; this effect only handles external URL changes
   useEffect(() => {
     const s = searchParams.get("search") || "";
     setSearchInput(s);
@@ -125,8 +126,8 @@ function AdminProductsPage() {
     setSaleFilter(searchParams.get("sale") || "");
     setLowStockFilter(searchParams.get("lowStock") || "");
     setSortBy(searchParams.get("sort") || "newest");
-    setReady(true);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!ready) setReady(true);
+  }, [searchParams, ready]);
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
