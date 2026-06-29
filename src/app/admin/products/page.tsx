@@ -35,6 +35,7 @@ interface Product {
   regularPrice: number | null;
   stockStatus: string;
   status: string;
+  stock: number | null;
   image: string;
   sku: string;
   categoryId?: string;
@@ -98,6 +99,7 @@ export default function AdminProductsPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [stockStatusFilter, setStockStatusFilter] = useState("");
   const [saleFilter, setSaleFilter] = useState("");
+  const [lowStockFilter, setLowStockFilter] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -157,6 +159,7 @@ export default function AdminProductsPage() {
       if (statusFilter) params.set("status", statusFilter);
       if (stockStatusFilter) params.set("stockStatus", stockStatusFilter);
       if (saleFilter) params.set("sale", saleFilter);
+      if (lowStockFilter) params.set("lowStock", lowStockFilter);
       if (sortBy) params.set("sort", sortBy);
 
       const res = await fetch(`/api/admin/products?${params.toString()}`);
@@ -391,11 +394,12 @@ export default function AdminProductsPage() {
       {/* ── Quick chips ── */}
       <div className="mb-3 flex flex-wrap gap-2">
         {[
-          { label: "Bez zalihe", onClick: () => { setStockStatusFilter("OUTOFSTOCK"); setSaleFilter(""); setStatusFilter(""); setPage(1); triggerReload(); }, active: stockStatusFilter === "OUTOFSTOCK" },
-          { label: "Niska zaliha", onClick: () => { setStockStatusFilter(""); setSaleFilter(""); setStatusFilter(""); setPage(1); triggerReload(); /* TODO: low stock filter */ }, active: false },
+          { label: "Bez zalihe", onClick: () => { setStockStatusFilter("OUTOFSTOCK"); setSaleFilter(""); setStatusFilter(""); setLowStockFilter(""); setPage(1); triggerReload(); }, active: stockStatusFilter === "OUTOFSTOCK" },
+          { label: "Niska zaliha", onClick: () => { setLowStockFilter("yes"); setStockStatusFilter(""); setSaleFilter(""); setStatusFilter(""); setPage(1); triggerReload(); }, active: lowStockFilter === "yes" },
           { label: "Na akciji", onClick: () => { setSaleFilter("yes"); setStockStatusFilter(""); setStatusFilter(""); setPage(1); triggerReload(); }, active: saleFilter === "yes" },
-          { label: "Arhivirani", onClick: () => { setStatusFilter("ARCHIVED"); setStockStatusFilter(""); setSaleFilter(""); setPage(1); triggerReload(); }, active: statusFilter === "ARCHIVED" },
-          { label: "Očisti", onClick: () => { setStatusFilter(""); setStockStatusFilter(""); setSaleFilter(""); setCategoryId(""); setBrandId(""); setSearchInput(""); setAppliedSearch(""); setSortBy("newest"); setPage(1); triggerReload(); }, active: false, reset: true },
+          { label: "Arhivirani", onClick: () => { setStatusFilter("ARCHIVED"); setStockStatusFilter(""); setSaleFilter(""); setLowStockFilter(""); setPage(1); triggerReload(); }, active: statusFilter === "ARCHIVED" },
+          { label: "Aktivni", onClick: () => { setStatusFilter(""); setStockStatusFilter(""); setSaleFilter(""); setLowStockFilter(""); setPage(1); triggerReload(); }, active: !statusFilter && !stockStatusFilter && !saleFilter && !lowStockFilter },
+          { label: "Očisti", onClick: () => { setStatusFilter(""); setStockStatusFilter(""); setSaleFilter(""); setLowStockFilter(""); setCategoryId(""); setBrandId(""); setSearchInput(""); setAppliedSearch(""); setSortBy("newest"); setPage(1); triggerReload(); }, active: false, reset: true },
         ].map(chip => (
           <button
             key={chip.label}
@@ -486,6 +490,8 @@ export default function AdminProductsPage() {
             <option value="name-desc">Naziv Ž–A</option>
             <option value="price-asc">Cijena ↑</option>
             <option value="price-desc">Cijena ↓</option>
+            <option value="stock-asc">Zaliha ↑</option>
+            <option value="stock-desc">Zaliha ↓</option>
           </select>
           <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
         </div>
@@ -761,21 +767,16 @@ export default function AdminProductsPage() {
                           {/* Stock status */}
                           <td className="px-4 py-3">
                             {p.stockStatus === "INSTOCK" ? (
-                              <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                                Dostupno
+                              <span className="inline-flex items-center gap-1.5">
+                                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">Dostupno</span>
+                                {p.stock != null && p.stock > 0 && <span className="text-xs text-slate-500 tabular-nums">{p.stock}</span>}
                               </span>
                             ) : p.stockStatus === "OUTOFSTOCK" ? (
-                              <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
-                                Nema
-                              </span>
+                              <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">Nema</span>
                             ) : p.stockStatus === "ONBACKORDER" ? (
-                              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
-                                Narudžba
-                              </span>
+                              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">Narudžba</span>
                             ) : (
-                              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
-                                —
-                              </span>
+                              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">—</span>
                             )}
                           </td>
                           {/* Actions */}

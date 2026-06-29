@@ -60,6 +60,7 @@ export async function GET(request: NextRequest) {
   const brandId = url.searchParams.get("brandId") || "";
   const status = url.searchParams.get("status") || "";
   const stockStatus = url.searchParams.get("stockStatus") || "";
+  const lowStock = url.searchParams.get("lowStock") || "";
   const sale = url.searchParams.get("sale") || "";
   const sort = url.searchParams.get("sort") || "newest";
 
@@ -69,6 +70,8 @@ export async function GET(request: NextRequest) {
   if (sort === "name-desc") orderBy[0] = { name: "desc" };
   if (sort === "price-asc") orderBy[0] = { price: "asc" };
   if (sort === "price-desc") orderBy[0] = { price: "desc" };
+  if (sort === "stock-asc") orderBy[0] = { stock: { sort: "asc", nulls: "last" } };
+  if (sort === "stock-desc") orderBy[0] = { stock: { sort: "desc", nulls: "last" } };
   if (sort === "newest") orderBy[0] = { createdAt: "desc" };
   if (sort === "oldest") orderBy[0] = { createdAt: "asc" };
   // Default: exclude ARCHIVED, unless explicitly requested
@@ -98,6 +101,9 @@ export async function GET(request: NextRequest) {
   if (sale === "no") {
     where.salePrice = null;
   }
+  if (lowStock === "yes") {
+    where.stock = { gt: 0, lte: 3 };
+  }
 
   const [products, total] = await Promise.all([
     db.product.findMany({
@@ -105,7 +111,7 @@ export async function GET(request: NextRequest) {
       skip: (page - 1) * limit,
       take: limit,
       orderBy,
-      select: { id: true, name: true, slug: true, sku: true, price: true, salePrice: true, regularPrice: true, status: true, stockStatus: true, image: true },
+      select: { id: true, name: true, slug: true, sku: true, price: true, salePrice: true, regularPrice: true, status: true, stockStatus: true, stock: true, image: true },
     }),
     db.product.count({ where }),
   ]);
