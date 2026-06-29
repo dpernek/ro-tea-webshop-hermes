@@ -15,7 +15,15 @@ const saleHandlingEnum = z.enum(["keep", "clear", "recalculateSameDiscount"]).op
 const bulkSchema = z.object({
   ids: z.array(z.string()).optional().default([]),
   selectAll: z.boolean().optional().default(false),
-  filters: z.object({ search: z.string().optional(), categoryId: z.string().optional(), brandId: z.string().optional() }).optional(),
+  filters: z.object({ 
+    search: z.string().optional(), 
+    categoryId: z.string().optional(), 
+    brandId: z.string().optional(),
+    status: z.string().optional(),
+    stockStatus: z.string().optional(),
+    sale: z.string().optional(),
+    lowStock: z.string().optional(),
+  }).optional(),
   action: bulkActionEnum,
   value: z.any(),
   saleHandling: saleHandlingEnum,
@@ -24,11 +32,22 @@ const bulkSchema = z.object({
 
 const R = (v: number) => Math.round(v * 100) / 100;
 
-function buildFilterWhere(filters?: { search?: string; categoryId?: string; brandId?: string }): Record<string, unknown> {
+function buildFilterWhere(filters?: { search?: string; categoryId?: string; brandId?: string; status?: string; stockStatus?: string; sale?: string; lowStock?: string }): Record<string, unknown> {
   const w: Record<string, unknown> = {};
+  // Default: exclude ARCHIVED, unless explicitly requested
+  if (filters?.status) {
+    w.status = filters.status;
+  }
   if (filters?.search) w.OR = [{ name: { contains: filters.search, mode: "insensitive" } }, { sku: { contains: filters.search, mode: "insensitive" } }];
   if (filters?.categoryId) w.categoryId = filters.categoryId;
   if (filters?.brandId) w.brandId = filters.brandId;
+  if (filters?.stockStatus) w.stockStatus = filters.stockStatus;
+  if (filters?.sale === "yes") w.salePrice = { not: null };
+  if (filters?.sale === "no") w.salePrice = null;
+  if (filters?.lowStock === "yes" || filters?.lowStock === "1") {
+    w.stock = { not: null, lte: 3 };
+    if (!filters?.status) w.status = "ACTIVE"; // Match dashboard/products API
+  }
   return w;
 }
 
