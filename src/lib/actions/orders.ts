@@ -136,6 +136,8 @@ export async function createOrder(data: {
           total,
           paymentMethod: data.paymentMethod,
           shippingMethod: shipMethodName || data.shippingMethodId,
+          pickupPointName: data.glsPickupPointName || undefined,
+          pickupPointAddress: data.glsPickupPointAddress || undefined,
           items: pricing.lineItems.map(li => ({
             name: productMap.get(li.productId)!.name,
             quantity: li.quantity,
@@ -163,6 +165,8 @@ export async function createOrder(data: {
             total,
             paymentMethod: data.paymentMethod,
             shippingMethod: shipMethodName || data.shippingMethodId,
+            pickupPointName: data.glsPickupPointName || undefined,
+            pickupPointAddress: data.glsPickupPointAddress || undefined,
             customerName: data.customerName,
             customerEmail: data.customerEmail,
             customerPhone: data.customerPhone,

@@ -101,6 +101,7 @@ function bankPaymentBox(orderNumber: string, total: number): string {
 export function customerEmail(data: {
   orderNumber: string; subtotal?: number; shipping?: number; couponDiscount?: number; couponCode?: string;
   total: number; paymentMethod: string; shippingMethod?: string;
+  pickupPointName?: string; pickupPointAddress?: string;
   items: { name: string; quantity: number; price: number }[];
 }): string {
   const isBank = data.paymentMethod === "bank_transfer";
@@ -116,6 +117,8 @@ export function customerEmail(data: {
           <tr><td style="color:#64748b;padding:2px 0">Broj narudžbe:</td><td style="font-weight:600">${data.orderNumber}</td></tr>
           <tr><td style="color:#64748b;padding:2px 0">Način plaćanja:</td><td>${paymentLabel(data.paymentMethod)}</td></tr>
           ${data.shippingMethod ? `<tr><td style="color:#64748b;padding:2px 0">Dostava:</td><td>${data.shippingMethod}</td></tr>` : ""}
+          ${data.pickupPointName ? `<tr><td style="color:#64748b;padding:2px 0">Paketomat:</td><td style="font-weight:600">${data.pickupPointName}</td></tr>` : ""}
+          ${data.pickupPointAddress ? `<tr><td style="color:#64748b;padding:2px 0">Adresa paketomata:</td><td>${data.pickupPointAddress}</td></tr>` : ""}
         </table>
         <table style="width:100%;font-size:14px;margin-top:12px;border-top:1px solid #e2e8f0;padding-top:12px">
           ${data.subtotal != null ? `<tr><td style="color:#64748b;padding:2px 0">Međuzbroj</td><td style="text-align:right;font-weight:600">${data.subtotal.toFixed(2)} €</td></tr>` : ""}
@@ -126,6 +129,11 @@ export function customerEmail(data: {
       </div>
 
       ${isBank ? bankPaymentBox(data.orderNumber, data.total) : ""}
+      ${data.pickupPointName ? `<div class="card" style="border-color:#0055a8;background:#f0f7ff">
+        <h3 style="color:#0055a8">📦 Paketomat</h3>
+        <p style="margin:0;font-size:14px;font-weight:600">${data.pickupPointName}</p>
+        ${data.pickupPointAddress ? `<p style="margin:4px 0 0;font-size:13px;color:#64748b">${data.pickupPointAddress}</p>` : ""}
+      </div>` : ""}
       ${isPickup ? `<div class="card" style="border-color:#0055a8;background:#f0f7ff">
         <h3 style="color:#0055a8">📍 Osobno preuzimanje</h3>
         <p style="margin:0;font-size:14px">Narudžbu možete preuzeti na adresi:</p>
@@ -147,7 +155,8 @@ export function adminNewOrderEmail(data: {
   orderNumber: string; subtotal?: number; shipping?: number; couponDiscount?: number; couponCode?: string;
   total: number; paymentMethod: string;
   customerName: string; customerEmail: string; customerPhone?: string;
-  shippingMethod?: string; items?: { name: string; quantity: number; price: number }[];
+  shippingMethod?: string; pickupPointName?: string; pickupPointAddress?: string;
+  items?: { name: string; quantity: number; price: number }[];
 }): string {
   return `<!DOCTYPE html><html><head>${css}</head><body><div class="wrap">
     ${header()}
@@ -163,6 +172,8 @@ export function adminNewOrderEmail(data: {
           ${data.customerPhone ? `<tr><td style="color:#64748b;padding:2px 0">Telefon:</td><td>${data.customerPhone}</td></tr>` : ""}
           <tr><td style="color:#64748b;padding:2px 0">Plaćanje:</td><td>${paymentLabel(data.paymentMethod)}</td></tr>
           ${data.shippingMethod ? `<tr><td style="color:#64748b;padding:2px 0">Dostava:</td><td>${data.shippingMethod}</td></tr>` : ""}
+          ${data.pickupPointName ? `<tr><td style="color:#64748b;padding:2px 0">Paketomat:</td><td style="font-weight:600">${data.pickupPointName}</td></tr>` : ""}
+          ${data.pickupPointAddress ? `<tr><td style="color:#64748b;padding:2px 0">Adresa paketomata:</td><td>${data.pickupPointAddress}</td></tr>` : ""}
         </table>
         <table style="width:100%;font-size:14px;margin-top:12px;border-top:1px solid #e2e8f0;padding-top:12px">
           ${data.subtotal != null ? `<tr><td style="color:#64748b;padding:2px 0">Međuzbroj</td><td style="text-align:right;font-weight:600">${data.subtotal.toFixed(2)} €</td></tr>` : ""}
