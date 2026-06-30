@@ -15,11 +15,10 @@ export async function GET(req: Request) {
     total: true, shippingMethod: true, shippingAddress: true,
     glsPickupPointId: true, glsPickupPointName: true, glsPickupPointAddress: true, glsParcelNumber: true,
     customerName: true, customerEmail: true, customerPhone: true, city: true, postalCode: true,
-    orderItems: { select: { productName: true, quantity: true, unitPrice: true } },
   };
   const order = sessionId
-    ? await db.order.findFirst({ where: { stripeCheckoutSessionId: sessionId }, select })
-    : await db.order.findUnique({ where: { orderNumber: orderNumber || "" }, select });
+    ? await db.order.findFirst({ where: { stripeCheckoutSessionId: sessionId }, select, include: { orderItems: { select: { productName: true, quantity: true, unitPrice: true } } } })
+    : await db.order.findUnique({ where: { orderNumber: orderNumber || "" }, select, include: { orderItems: { select: { productName: true, quantity: true, unitPrice: true } } });
 
   if (!order) return NextResponse.json({ error: "Narudžba nije pronađena" }, { status: 404 });
   return NextResponse.json(order);
