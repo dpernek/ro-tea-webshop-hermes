@@ -13,6 +13,9 @@ export async function GET(req: Request) {
     orderNumber: true, paymentMethod: true, paymentStatus: true, status: true,
     subtotal: true, shippingTotal: true, discountTotal: true, couponCode: true, couponDiscount: true,
     total: true, shippingMethod: true, shippingAddress: true,
+    glsPickupPointId: true, glsPickupPointName: true, glsPickupPointAddress: true, glsParcelNumber: true,
+    customerName: true, customerEmail: true, customerPhone: true, city: true, postalCode: true,
+    orderItems: { select: { productName: true, quantity: true, unitPrice: true } },
   };
   const order = sessionId
     ? await db.order.findFirst({ where: { stripeCheckoutSessionId: sessionId }, select })
