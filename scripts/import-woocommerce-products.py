@@ -191,7 +191,7 @@ def main() -> None:
                 if url and url not in gallery:
                     gallery.append(url)
             if not gallery:
-                gallery = [image]
+                gallery = []
 
             # Categories and brand
             product_categories: list[tuple[str, str]] = []

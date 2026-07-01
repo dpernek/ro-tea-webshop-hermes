@@ -171,10 +171,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   // --- Derived data ---
-  const galleryImages: string[] = [
-    product.image,
-    ...(parseJsonArray(product.gallery) as string[]).filter((url) => typeof url === "string" && url !== product.image),
-  ].filter(Boolean);
+  const galleryImages: string[] = (() => {
+    const seen = new Set<string>();
+    return [product.image, ...(parseJsonArray(product.gallery) as string[])]
+      .filter((url): url is string => typeof url === "string" && !!url && !seen.has(url) && !!seen.add(url));
+  })();
 
   const categoryList = parseJsonArray(product.categories) as {
     slug: string;
