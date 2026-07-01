@@ -131,7 +131,7 @@ export async function PATCH(
   if (data.price !== undefined) updateData.price = data.price;
   if (data.regularPrice !== undefined) updateData.regularPrice = data.regularPrice === null ? null : data.regularPrice;
   if (data.salePrice !== undefined) updateData.salePrice = data.salePrice === null ? null : data.salePrice;
-  if (data.stock !== undefined) updateData.stock = data.stock === null ? 0 : (data.stock ?? 0);
+  if (data.stock !== undefined) updateData.stock = data.stock === null ? null : (data.stock ?? 0);
   if (data.stockStatus !== undefined) updateData.stockStatus = data.stockStatus;
   if (data.status !== undefined) updateData.status = data.status;
   if (data.featured !== undefined) updateData.featured = data.featured;

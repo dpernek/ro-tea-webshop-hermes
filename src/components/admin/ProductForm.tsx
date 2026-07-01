@@ -51,7 +51,7 @@ export function ProductForm({ product, categories, brands }: {
         name: form.get("name"), slug: form.get("slug"),
         price: Number(String(form.get("price")).replace(",", ".")) || 0,
         image: form.get("image") || "/images/placeholder.svg",
-        stock: Number(form.get("stock")) || 0,
+        stock: form.get("stock") === "" ? null : Number(form.get("stock")) ?? 0,
         stockStatus: form.get("stockStatus"), status: form.get("status"),
         featured: form.get("featured") === "on",
         shortDescription: form.get("shortDescription") || "",
@@ -141,7 +141,7 @@ export function ProductForm({ product, categories, brands }: {
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium">Zaliha</label>
-              <input name="stock" type="number" step="1" min="0" defaultValue={product?.stock || 0} onChange={() => clearError("stock")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+              <input name="stock" type="number" step="1" min="0" defaultValue={product?.stock != null ? product.stock : ""} placeholder="Ne prati" onChange={() => clearError("stock")} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
               {fieldErrors.stock && <p className="mt-1 text-xs text-red-600">{fieldErrors.stock}</p>}
             </div>
             <div>
