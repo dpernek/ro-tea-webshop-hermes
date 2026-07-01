@@ -5,7 +5,7 @@ import { Benefits } from "@/components/home/Benefits";
 import { CTASection } from "@/components/home/CTASection";
 import Image from "next/image";
 import type { Metadata } from "next";
-
+import { getContentSection } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "RO-TEA | Profesionalni alati i oprema za industriju i obrt",
@@ -41,11 +41,28 @@ const targetAudience = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Fetch CMS content (safe — falls back to defaults on error)
+  let heroContent = null, trustContent = null, ctaContent = null;
+  try {
+    [heroContent, trustContent, ctaContent] = await Promise.all([
+      getContentSection("hero"), getContentSection("trust"), getContentSection("cta"),
+    ]);
+  } catch { /* DB not available locally — use defaults */ }
+
+  // Parse trust/benefits items from CMS JSON body
+  let trustItems: { icon: string; title: string; description: string }[] | undefined;
+  try {
+    if (trustContent?.body) {
+      const parsed = JSON.parse(trustContent.body);
+      if (Array.isArray(parsed)) trustItems = parsed;
+    }
+  } catch { /* ignore invalid JSON */ }
+
   return (
     <>
-      {/* hero content: server-loaded */}
-      <div id="hero"><Hero /></div>
+      {/* hero section — CMS-driven */}
+      <div id="hero"><Hero title={heroContent?.title} subtitle={heroContent?.subtitle} /></div>
 
       <div id="kategorije"><FeaturedCategories /></div>
 
@@ -115,8 +132,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      <div id="prednosti"><Benefits /></div>
-      <div id="cta"><CTASection /></div>
+      {/* Benefits / trust — CMS-driven */}
+      <div id="prednosti"><Benefits title={trustContent?.title} items={trustItems} /></div>
+
+      {/* CTA — CMS-driven */}
+      <div id="cta"><CTASection title={ctaContent?.title} body={ctaContent?.body} ctaLabel={ctaContent?.ctaLabel} ctaHref={ctaContent?.ctaHref} /></div>
     </>
   );
 }
