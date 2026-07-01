@@ -44,10 +44,10 @@ const targetAudience = [
 
 export default async function HomePage() {
   // Fetch CMS content (safe — falls back to defaults on error)
-  let heroContent = null, trustContent = null, ctaContent = null;
+  let heroContent = null, trustContent = null, ctaContent = null, catIntroContent = null;
   try {
-    [heroContent, trustContent, ctaContent] = await Promise.all([
-      getContentSection("hero"), getContentSection("trust"), getContentSection("cta"),
+    [heroContent, trustContent, ctaContent, catIntroContent] = await Promise.all([
+      getContentSection("hero"), getContentSection("trust"), getContentSection("cta"), getContentSection("categories_intro"),
     ]);
   } catch { /* DB not available locally — use defaults */ }
 
@@ -64,6 +64,17 @@ export default async function HomePage() {
     <>
       {/* hero section — CMS-driven */}
       <div id="hero"><Hero title={heroContent?.title} subtitle={heroContent?.subtitle} /></div>
+
+      {/* Categories intro — CMS-driven */}
+      {catIntroContent && (
+        <section className="border-b border-slate-100 bg-white py-10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+            {catIntroContent.eyebrow && <p className="text-sm font-semibold uppercase tracking-wider text-[#0055a8]">{catIntroContent.eyebrow}</p>}
+            {catIntroContent.title && <h2 className="mt-2 text-3xl font-bold text-slate-900 sm:text-4xl">{catIntroContent.title}</h2>}
+            {catIntroContent.subtitle && <p className="mt-3 text-lg text-slate-500">{catIntroContent.subtitle}</p>}
+          </div>
+        </section>
+      )}
 
       <div id="kategorije"><FeaturedCategories /></div>
 
