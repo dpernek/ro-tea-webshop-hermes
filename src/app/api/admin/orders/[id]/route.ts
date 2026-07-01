@@ -85,7 +85,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (parsed.data.status || parsed.data.paymentStatus) {
     const order = await db.order.findUnique({
       where: { id },
-      select: { paymentMethod: true, status: true, paymentStatus: true },
+      select: { paymentMethod: true, status: true, paymentStatus: true, adminNote: true },
     });
 
     if (order) {
@@ -103,6 +103,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       if (parsed.data.paymentStatus === "REFUNDED" && order.paymentStatus !== "PAID") {
         return NextResponse.json(
           { errors: { paymentStatus: "Refund nije moguć za narudžbu koja nije plaćena." } },
+          { status: 400 }
+        );
+      }
+
+      // Don't allow CANCELLED if already CANCELLED
+      if (parsed.data.status === "CANCELLED" && order.status === "CANCELLED") {
+        return NextResponse.json(
+          { errors: { status: "Narudžba je već otkazana." } },
           { status: 400 }
         );
       }
@@ -125,6 +133,25 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           );
         }
       }
+    }
+  }
+
+  // Claim guard: don't allow RESOLVED without prior OPEN
+  if (typeof (parsed.data as any).adminNote === "string") {
+    const note = (parsed.data as any).adminNote as string;
+    const currentNote = (await db.order.findUnique({ where: { id }, select: { adminNote: true } }))?.adminNote || "";
+    if (note.includes("[CLAIM:RESOLVED]") && !currentNote.includes("[CLAIM:OPEN]")) {
+      return NextResponse.json(
+        { errors: { adminNote: "Reklamacija nije prethodno otvorena." } },
+        { status: 400 }
+      );
+    }
+    // Don't allow OPEN if already OPEN
+    if (note.includes("[CLAIM:OPEN]") && currentNote.includes("[CLAIM:OPEN]")) {
+      return NextResponse.json(
+        { errors: { adminNote: "Reklamacija je već otvorena." } },
+        { status: 400 }
+      );
     }
   }
 
