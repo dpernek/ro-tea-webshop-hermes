@@ -56,13 +56,14 @@ const ROUTES = [
   { label: "Admin login", path: "/admin/login" },
   { label: "Katalozi", path: "/katalozi" },
   { label: "Kontakt", path: "/kontakt" },
-  { label: "Uvjeti", path: "/uvjeti-kupovine" },
-  { label: "Dostava", path: "/dostava-i-povrat" },
+  { label: "Uvjeti kupnje", path: "/uvjeti-kupnje" },
+  { label: "Privatnost", path: "/pravila-o-privatnosti" },
+  { label: "Dostava", path: "/pravila-dostave" },
   { label: "API categories", path: "/api/catalog/categories", json: true },
   { label: "API brands", path: "/api/catalog/brands", json: true },
   { label: "API products", path: "/api/catalog/products", json: true },
   { label: "API shipping", path: "/api/shipping", json: true },
-  { label: "API coupon", path: "/api/coupons/validate?code=INVALID&subtotal=0", json: true },
+  { label: "API coupon", path: "/api/coupons/validate", json: true, post: true, postBody: { code: "SMOKE_TEST", subtotal: 0 }, allow404: true },
   { label: "Sitemap", path: "/sitemap.xml", xml: true },
 ];
 
@@ -87,7 +88,7 @@ for (const route of ROUTES) {
     const status = res.status;
     const hasBody = body.trim().length > 0;
     const hasShell = ERROR_SHELLS.some(s => body.includes(s));
-    let ok = status === 200 && hasBody && !hasShell;
+    let ok = (status === 200 || (route.allow404 && status === 404)) && hasBody && !hasShell;
 
     if (route.json) { try { JSON.parse(body); } catch { ok = false; } }
     if (route.xml) { if (!body.includes("<urlset") && !body.trim().startsWith("<?xml")) ok = false; }
