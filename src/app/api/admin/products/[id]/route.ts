@@ -165,6 +165,16 @@ export async function PATCH(
     // Audit log (non-blocking)
     logAction("products", "update", `Ažuriran proizvod: ${String(updated.name).slice(0, 40)}`, id)
       .catch((e) => console.error("[PATCH audit]", e));
+    // Stock change log
+    if (data.stock !== undefined) {
+      const oldS = existing.stock ?? null;
+      const newS = updated.stock ?? null;
+      if (oldS !== newS) {
+        const delta = (newS ?? 0) - (oldS ?? 0);
+        logAction("stock", "update", `${String(updated.name).slice(0, 40)}: ${oldS ?? "null"} → ${newS ?? "null"} (${delta >= 0 ? "+" : ""}${delta})`, id)
+          .catch(() => {});
+      }
+    }
     return NextResponse.json({ ok: true, product: updated });
   } catch (error) {
     console.error("[PATCH /api/admin/products/[id]]", error);
