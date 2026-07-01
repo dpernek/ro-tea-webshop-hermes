@@ -6,6 +6,7 @@ import { CTASection } from "@/components/home/CTASection";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { getContentSection } from "@/lib/content";
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "RO-TEA | Profesionalni alati i oprema za industriju i obrt",
