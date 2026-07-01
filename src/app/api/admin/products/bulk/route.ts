@@ -23,6 +23,7 @@ const bulkSchema = z.object({
     stockStatus: z.string().optional(),
     sale: z.string().optional(),
     lowStock: z.string().optional(),
+    unmanagedStock: z.string().optional(),
   }).optional(),
   action: bulkActionEnum,
   value: z.any(),
@@ -32,7 +33,7 @@ const bulkSchema = z.object({
 
 const R = (v: number) => Math.round(v * 100) / 100;
 
-function buildFilterWhere(filters?: { search?: string; categoryId?: string; brandId?: string; status?: string; stockStatus?: string; sale?: string; lowStock?: string }): Record<string, unknown> {
+function buildFilterWhere(filters?: { search?: string; categoryId?: string; brandId?: string; status?: string; stockStatus?: string; sale?: string; lowStock?: string; unmanagedStock?: string }): Record<string, unknown> {
   const w: Record<string, unknown> = {};
   // Default: exclude ARCHIVED, unless explicitly requested (same as products GET)
   if (filters?.status) {
@@ -48,7 +49,11 @@ function buildFilterWhere(filters?: { search?: string; categoryId?: string; bran
   if (filters?.sale === "no") w.salePrice = null;
   if (filters?.lowStock === "yes" || filters?.lowStock === "1") {
     w.stock = { not: null, lte: 3 };
-    if (!filters?.status) w.status = "ACTIVE"; // Match dashboard/products API
+    if (!filters?.status) w.status = "ACTIVE";
+  }
+  if (filters?.unmanagedStock === "yes" || filters?.unmanagedStock === "1") {
+    w.stock = null;
+    if (!filters?.status) w.status = "ACTIVE";
   }
   return w;
 }

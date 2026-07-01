@@ -61,6 +61,7 @@ export async function GET(request: NextRequest) {
   const status = url.searchParams.get("status") || "";
   const stockStatus = url.searchParams.get("stockStatus") || "";
   const lowStock = url.searchParams.get("lowStock") || "";
+  const unmanagedStock = url.searchParams.get("unmanagedStock") || "";
   const sale = url.searchParams.get("sale") || "";
   const sort = url.searchParams.get("sort") || "newest";
 
@@ -103,7 +104,10 @@ export async function GET(request: NextRequest) {
   }
   if (lowStock === "yes" || lowStock === "1") {
     where.stock = { not: null, lte: 3 };
-    // Match dashboard: only ACTIVE products (not just 'not ARCHIVED')
+    if (!status) where.status = "ACTIVE";
+  }
+  if (unmanagedStock === "yes" || unmanagedStock === "1") {
+    where.stock = null;
     if (!status) where.status = "ACTIVE";
   }
 

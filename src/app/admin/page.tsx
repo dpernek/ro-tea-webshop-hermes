@@ -22,6 +22,7 @@ export default async function AdminDashboardPage() {
     glsOrdersWithoutShipment,
     productsWithoutStock,
     productsLowStock,
+    unmanagedProducts,
   ] = await Promise.all([
     db.product.count({ where: { status: "ACTIVE" } }),
     db.order.count(),
@@ -31,6 +32,7 @@ export default async function AdminDashboardPage() {
     db.order.count({ where: { shippingMethod: { startsWith: "GLS" }, glsShipmentId: null } }),
     db.product.count({ where: { status: "ACTIVE", stock: 0 } }),
     db.product.count({ where: { status: "ACTIVE", stock: { gt: 0, lte: 3 } } }),
+    db.product.count({ where: { status: "ACTIVE", stock: null } }),
   ]);
 
   // Revenue (non-cancelled, non-refunded)
@@ -76,7 +78,8 @@ export default async function AdminDashboardPage() {
     { title: "Neplaćene", value: unpaidOrders, subtitle: "čekaju uplatu / pouzeće", href: "/admin/orders?paymentStatus=UNPAID", color: "bg-orange-50 text-orange-700" },
     { title: "Prodaja (sveukupno)", value: `${revenue.toFixed(2)} €`, subtitle: "lifetime, bez otkazanih/refundiranih", color: "bg-green-50 text-green-700" },
     { title: "Aktivni proizvodi", value: activeProducts, subtitle: "u katalogu", href: "/admin/products", color: "bg-blue-50 text-blue-700" },
-    { title: "Niska zaliha", value: productsWithoutStock + productsLowStock, subtitle: `${productsWithoutStock} bez zalihe • ${productsLowStock} ≤ 3 kom.`, href: "/admin/products?lowStock=yes", color: "bg-red-50 text-red-700" },
+    { title: "Niska zaliha", value: productsWithoutStock + productsLowStock, subtitle: `${productsWithoutStock} bez zalihe • ${productsLowStock} ≤ 3`, href: "/admin/products?lowStock=yes", color: "bg-red-50 text-red-700" },
+    { title: "Ne prati zalihu", value: unmanagedProducts, subtitle: "bez numeričkog praćenja", href: "/admin/products?unmanagedStock=yes", color: "bg-slate-50 text-slate-700" },
   ];
 
   const hasAttention = unreadOrders > 0 || pendingOrders > 0 || unpaidOrders > 0 || glsOrdersWithoutShipment > 0 || stockAlerts.length > 0;

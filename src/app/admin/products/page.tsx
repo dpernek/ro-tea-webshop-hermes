@@ -111,6 +111,7 @@ function AdminProductsPage() {
   const [stockStatusFilter, setStockStatusFilter] = useState("");
   const [saleFilter, setSaleFilter] = useState("");
   const [lowStockFilter, setLowStockFilter] = useState("");
+  const [unmanagedStockFilter, setUnmanagedStockFilter] = useState("");
   const [sortBy, setSortBy] = useState("newest");
 
   // Sync searchParams → filter state on mount and when URL changes
@@ -125,6 +126,7 @@ function AdminProductsPage() {
     setStockStatusFilter(searchParams.get("stockStatus") || "");
     setSaleFilter(searchParams.get("sale") || "");
     setLowStockFilter(searchParams.get("lowStock") || "");
+    setUnmanagedStockFilter(searchParams.get("unmanagedStock") || "");
     setSortBy(searchParams.get("sort") || "newest");
     if (!ready) setReady(true);
   }, [searchParams, ready]);
@@ -190,6 +192,7 @@ function AdminProductsPage() {
       if (stockStatusFilter) params.set("stockStatus", stockStatusFilter);
       if (saleFilter) params.set("sale", saleFilter);
       if (lowStockFilter) params.set("lowStock", lowStockFilter);
+      if (unmanagedStockFilter) params.set("unmanagedStock", unmanagedStockFilter);
       if (sortBy) params.set("sort", sortBy);
 
       const res = await fetch(`/api/admin/products?${params.toString()}`);
@@ -203,7 +206,7 @@ function AdminProductsPage() {
       );
     }
     setLoading(false);
-  }, [page, appliedSearch, categoryId, brandId, statusFilter, stockStatusFilter, saleFilter, lowStockFilter, sortBy]);
+  }, [page, appliedSearch, categoryId, brandId, statusFilter, stockStatusFilter, saleFilter, lowStockFilter, unmanagedStockFilter, sortBy]);
 
   // --- Reload counter (bumps on any filter/search/pagination change) ---
   const [reloadKey, setReloadKey] = useState(0);
@@ -305,6 +308,7 @@ function AdminProductsPage() {
           stockStatus: stockStatusFilter || undefined,
           sale: saleFilter || undefined,
           lowStock: lowStockFilter || undefined,
+          unmanagedStock: unmanagedStockFilter || undefined,
         },
         action: bulkAction,
         value: bulkAction === "removeSale" ? null : Number(bulkValue),
@@ -355,6 +359,7 @@ function AdminProductsPage() {
           stockStatus: stockStatusFilter || undefined,
           sale: saleFilter || undefined,
           lowStock: lowStockFilter || undefined,
+          unmanagedStock: unmanagedStockFilter || undefined,
         },
         action: bulkAction,
         value: bulkAction === "removeSale" ? null : Number(bulkValue),
