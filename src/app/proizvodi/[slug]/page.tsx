@@ -173,7 +173,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // --- Derived data ---
   const galleryImages: string[] = [
     product.image,
-    ...(parseJsonArray(product.gallery) as string[]),
+    ...(parseJsonArray(product.gallery) as string[]).filter((url) => typeof url === "string" && url !== product.image),
   ].filter(Boolean);
 
   const categoryList = parseJsonArray(product.categories) as {
