@@ -33,6 +33,8 @@ function buildWhere(params: {
   search?: string;
   categorySlug?: string;
   brandSlug?: string;
+  sale?: string;
+  inStock?: string;
 }) {
   const where: any = { status: "ACTIVE" };
   if (params.search) {
@@ -46,6 +48,12 @@ function buildWhere(params: {
   }
   if (params.brandSlug) {
     where.brand = { slug: params.brandSlug };
+  }
+  if (params.sale === "1") {
+    where.salePrice = { not: null };
+  }
+  if (params.inStock === "1") {
+    where.stock = { gt: 0 };
   }
   return where;
 }
@@ -88,6 +96,8 @@ export async function loadMoreProducts(params: {
   categorySlug?: string;
   brandSlug?: string;
   sort?: string;
+  sale?: string;
+  inStock?: string;
   skip: number;
   take: number;
 }) {
@@ -118,6 +128,8 @@ export async function loadInitialCatalog(params: {
   categorySlug?: string;
   brandSlug?: string;
   sort?: string;
+  sale?: string;
+  inStock?: string;
 }) {
   const where = buildWhere(params);
   const orderBy = buildOrderBy(params.sort);

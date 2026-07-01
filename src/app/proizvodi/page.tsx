@@ -28,17 +28,21 @@ export default async function CatalogPage({ searchParams }: PageProps) {
   const cat = typeof params.cat === "string" ? params.cat : "";
   const brand = typeof params.brand === "string" ? params.brand : "";
   const sort = typeof params.sort === "string" ? params.sort : "name-asc";
+  const sale = typeof params.sale === "string" ? params.sale : "";
+  const inStock = typeof params.inStock === "string" ? params.inStock : "";
 
   const data = await loadInitialCatalog({
     search: q || undefined,
     categorySlug: cat || undefined,
     brandSlug: brand || undefined,
     sort,
+    sale: sale || undefined,
+    inStock: inStock || undefined,
   });
 
   return (
     <CatalogContent
-      key={`${q}|${cat}|${brand}|${sort}`}
+      key={`${q}|${cat}|${brand}|${sort}|${sale}|${inStock}`}
       initialProducts={data.products}
       total={data.total}
       categories={data.categories}

@@ -119,6 +119,8 @@ export function CatalogContent({
   const cat = searchParams.get("cat") || "";
   const brand = searchParams.get("brand") || "";
   const sort = searchParams.get("sort") || "name-asc";
+  const sale = searchParams.get("sale") || "";
+  const inStock = searchParams.get("inStock") || "";
 
   // local state
   const [loadedProducts, setLoadedProducts] = useState<Product[]>(initialProducts);
@@ -187,6 +189,14 @@ export function CatalogContent({
     (value: string) => updateUrl({ sort: value }),
     [updateUrl],
   );
+  const handleSaleToggle = useCallback(
+    () => updateUrl({ sale: sale === "1" ? null : "1" }),
+    [updateUrl, sale],
+  );
+  const handleInStockToggle = useCallback(
+    () => updateUrl({ inStock: inStock === "1" ? null : "1" }),
+    [updateUrl, inStock],
+  );
   const handleClear = useCallback(
     () => router.push("/proizvodi", { scroll: false }),
     [router],
@@ -204,6 +214,8 @@ export function CatalogContent({
         search: q || undefined,
         categorySlug: cat || undefined,
         brandSlug: brand || undefined,
+        sale: sale || undefined,
+        inStock: inStock || undefined,
         sort,
         skip: loadedProducts.length,
         take: PAGE_SIZE,
@@ -215,7 +227,7 @@ export function CatalogContent({
     } finally {
       setLoadingMore(false);
     }
-  }, [q, cat, brand, sort, loadedProducts.length]);
+  }, [q, cat, brand, sort, sale, inStock, loadedProducts.length]);
 
   // ── computed ──────────────────────────────────────────────
 
@@ -225,7 +237,7 @@ export function CatalogContent({
   const selectedBrandName = brand
     ? brands.find((b) => b.slug === brand)?.name ?? brand
     : null;
-  const hasFilters = !!(q || cat || brand);
+  const hasFilters = !!(q || cat || brand || sale || inStock);
 
   // ── debounced search ──────────────────────────────────────
 
