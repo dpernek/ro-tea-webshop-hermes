@@ -134,12 +134,15 @@ export async function PATCH(
   if (data.stock !== undefined) {
     updateData.stock = data.stock === null ? null : (data.stock ?? 0);
   }
-  // Auto-derive stockStatus from stock (only if stock was changed and stockStatus not explicitly sent)
-  if (data.stock !== undefined && !("stockStatus" in (body as Record<string,unknown>))) {
+  // Derive stockStatus from stock value
+  // Only override if stock was changed AND stockStatus was NOT explicitly sent in the body
+  const stockStatusExplicit = (body as Record<string,unknown>)?.stockStatus !== undefined;
+  if (data.stock !== undefined && !stockStatusExplicit) {
     updateData.stockStatus = data.stock === null || data.stock === undefined ? "UNKNOWN" :
       data.stock === 0 ? "OUTOFSTOCK" : "INSTOCK";
+  } else if (data.stockStatus !== undefined) {
+    updateData.stockStatus = data.stockStatus;
   }
-  if (data.stockStatus !== undefined) updateData.stockStatus = data.stockStatus;
   if (data.status !== undefined) updateData.status = data.status;
   if (data.featured !== undefined) updateData.featured = data.featured;
   if (data.badge !== undefined) updateData.badge = data.badge || undefined;
