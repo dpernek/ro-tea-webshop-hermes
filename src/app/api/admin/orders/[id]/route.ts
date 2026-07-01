@@ -99,6 +99,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         );
       }
 
+      // Don't allow REFUNDED for unpaid orders
+      if (parsed.data.paymentStatus === "REFUNDED" && order.paymentStatus !== "PAID") {
+        return NextResponse.json(
+          { errors: { paymentStatus: "Refund nije moguć za narudžbu koja nije plaćena." } },
+          { status: 400 }
+        );
+      }
+
       // Don't allow COMPLETED for unpaid Stripe orders
       if (isStripe && parsed.data.status === "COMPLETED" && order.paymentStatus !== "PAID") {
         return NextResponse.json(
