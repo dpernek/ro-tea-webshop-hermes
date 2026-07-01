@@ -227,6 +227,7 @@ export default function AdminOrderDetailPage() {
   const [paymentStatus, setPaymentStatus] = useState("");
   const [adminNote, setAdminNote] = useState("");
   const [noteSaving, setNoteSaving] = useState(false);
+  const [quickAction, setQuickAction] = useState<string | null>(null);
   const [refreshingStripe, setRefreshingStripe] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
@@ -257,6 +258,25 @@ export default function AdminOrderDetailPage() {
       await fetch(`/api/admin/orders/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminNote }) });
     } catch { /* ignore */ }
     setNoteSaving(false);
+  };
+
+  const handleQuickAction = async (action: string) => {
+    setQuickAction(action);
+    const body: any = {};
+    if (action === "cancel") body.status = "CANCELLED";
+    else if (action === "refund") body.paymentStatus = "REFUNDED";
+    else if (action === "claim-open") body.adminNote = (adminNote ? adminNote + "; " : "") + "Reklamacija: otvorena";
+    else if (action === "claim-close") body.adminNote = (adminNote ? adminNote + "; " : "") + "Reklamacija: rijesena";
+    if (body.status) setStatus(body.status);
+    if (body.paymentStatus) setPaymentStatus(body.paymentStatus);
+    if (body.adminNote) setAdminNote(body.adminNote);
+    try {
+      const r = await fetch(`/api/admin/orders/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (!r.ok) throw new Error("Action failed");
+      setSaveMessage("Spremljeno.");
+      setTimeout(() => { fetch(`/api/admin/orders/${id}`).then(r => r.json()).then(o => { setOrder(o); setAdminNote(o.adminNote || ""); }).catch(() => {}); }, 300);
+    } catch (e: any) { setSaveMessage("Greska: " + (e.message || "")); }
+    setQuickAction(null);
   };
 
   const save = async () => {
@@ -538,10 +558,21 @@ export default function AdminOrderDetailPage() {
                 {saving ? "Spremanje..." : "Spremi promjene"}
               </Button>
               {saveMessage && (
-                <p className={`text-sm ${saveMessage.includes("Greška") ? "text-red-600" : "text-green-600"}`}>
+                <p className={`text-sm ${saveMessage.includes("Greska") ? "text-red-600" : "text-green-600"}`}>
                   {saveMessage}
                 </p>
               )}
+
+              {/* Quick post-purchase actions */}
+              <div className="mt-3 pt-3 border-t border-slate-100">
+                <p className="text-xs font-semibold uppercase text-slate-400 mb-2">Brze radnje</p>
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" variant="outline" disabled={!!quickAction || order?.status === "CANCELLED"} onClick={() => handleQuickAction("cancel")} className="text-red-600 border-red-200 hover:bg-red-50">Storno</Button>
+                  <Button size="sm" variant="outline" disabled={!!quickAction || order?.paymentStatus === "REFUNDED"} onClick={() => handleQuickAction("refund")} className="text-amber-600 border-amber-200 hover:bg-amber-50">Refund</Button>
+                  <Button size="sm" variant="outline" disabled={!!quickAction} onClick={() => handleQuickAction("claim-open")} className="text-orange-600 border-orange-200 hover:bg-orange-50">Otvori reklamaciju</Button>
+                  <Button size="sm" variant="outline" disabled={!!quickAction} onClick={() => handleQuickAction("claim-close")} className="text-green-600 border-green-200 hover:bg-green-50">Zatvori reklamaciju</Button>
+                </div>
+              </div>
             </div>
           </Card>
 
