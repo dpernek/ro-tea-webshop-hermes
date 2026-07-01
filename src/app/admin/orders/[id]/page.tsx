@@ -263,10 +263,37 @@ export default function AdminOrderDetailPage() {
   const handleQuickAction = async (action: string) => {
     setQuickAction(action);
     const body: any = {};
-    if (action === "cancel") body.status = "CANCELLED";
-    else if (action === "refund") body.paymentStatus = "REFUNDED";
-    else if (action === "claim-open") body.adminNote = (adminNote ? adminNote + "; " : "") + "Reklamacija: otvorena";
-    else if (action === "claim-close") body.adminNote = (adminNote ? adminNote + "; " : "") + "Reklamacija: rijesena";
+
+    // Parse current claim status from adminNote markers
+    const noteBase = adminNote.replace(/\s*\[CLAIM:(?:OPEN|RESOLVED)\]/g, "").trim();
+
+    if (action === "cancel") {
+      body.status = "CANCELLED";
+    } else if (action === "refund") {
+      // Guard: only allow refund if previously paid
+      if (order?.paymentStatus !== "PAID") {
+        setSaveMessage("Greska: Refund moguc samo za placene narudzbe.");
+        setQuickAction(null);
+        return;
+      }
+      body.paymentStatus = "REFUNDED";
+    } else if (action === "claim-open") {
+      // Guard: don't open if already open
+      if (adminNote.includes("[CLAIM:OPEN]")) {
+        setSaveMessage("Greska: Reklamacija je vec otvorena.");
+        setQuickAction(null);
+        return;
+      }
+      body.adminNote = noteBase + (noteBase ? " " : "") + "[CLAIM:OPEN] Reklamacija otvorena";
+    } else if (action === "claim-close") {
+      // Guard: must be open first
+      if (!adminNote.includes("[CLAIM:OPEN]")) {
+        setSaveMessage("Greska: Reklamacija nije otvorena.");
+        setQuickAction(null);
+        return;
+      }
+      body.adminNote = noteBase + (noteBase ? " " : "") + "[CLAIM:RESOLVED] Reklamacija rijesena";
+    }
     if (body.status) setStatus(body.status);
     if (body.paymentStatus) setPaymentStatus(body.paymentStatus);
     if (body.adminNote) setAdminNote(body.adminNote);
@@ -379,6 +406,16 @@ export default function AdminOrderDetailPage() {
           <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 border border-amber-300 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
             <AlertTriangle className="h-3 w-3" />
             Testni način
+          </span>
+        )}
+        {adminNote.includes("[CLAIM:OPEN]") && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 border border-orange-300 px-2.5 py-0.5 text-xs font-semibold text-orange-800">
+            Reklamacija otvorena
+          </span>
+        )}
+        {adminNote.includes("[CLAIM:RESOLVED]") && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-green-100 border border-green-300 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+            Reklamacija riješena
           </span>
         )}
       </div>
@@ -568,7 +605,7 @@ export default function AdminOrderDetailPage() {
                 <p className="text-xs font-semibold uppercase text-slate-400 mb-2">Brze radnje</p>
                 <div className="flex flex-wrap gap-2">
                   <Button size="sm" variant="outline" disabled={!!quickAction || order?.status === "CANCELLED"} onClick={() => handleQuickAction("cancel")} className="text-red-600 border-red-200 hover:bg-red-50">Storno</Button>
-                  <Button size="sm" variant="outline" disabled={!!quickAction || order?.paymentStatus === "REFUNDED"} onClick={() => handleQuickAction("refund")} className="text-amber-600 border-amber-200 hover:bg-amber-50">Refund</Button>
+                  <Button size="sm" variant="outline" disabled={!!quickAction || order?.paymentStatus === "REFUNDED" || order?.paymentStatus !== "PAID"} onClick={() => handleQuickAction("refund")} className="text-amber-600 border-amber-200 hover:bg-amber-50">Refund</Button>
                   <Button size="sm" variant="outline" disabled={!!quickAction} onClick={() => handleQuickAction("claim-open")} className="text-orange-600 border-orange-200 hover:bg-orange-50">Otvori reklamaciju</Button>
                   <Button size="sm" variant="outline" disabled={!!quickAction} onClick={() => handleQuickAction("claim-close")} className="text-green-600 border-green-200 hover:bg-green-50">Zatvori reklamaciju</Button>
                 </div>
