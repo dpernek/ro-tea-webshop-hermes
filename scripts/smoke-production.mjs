@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 /**
- * RO-TEA Production Smoke Test
- * Dynamically fetches real product/category slugs from live API.
+ * RO-TEA Production Smoke Test (enhanced)
  * Usage: node scripts/smoke-production.mjs [base-url]
  * Default: https://ro-tea-webshop-hermes.vercel.app
  */
@@ -52,12 +51,23 @@ const ROUTES = [
   { label: "Katalog", path: "/proizvodi" },
   ...productSlugs.map((slug, i) => ({ label: `Product ${i + 1}`, path: `/proizvodi/${slug}` })),
   ...categorySlugs.map((slug, i) => ({ label: `Category ${i + 1}`, path: `/kategorije/${slug}` })),
+  { label: "Cart", path: "/kosarica" },
+  { label: "Checkout", path: "/checkout" },
+  { label: "Admin login", path: "/admin/login" },
   { label: "Katalozi", path: "/katalozi" },
+  { label: "Kontakt", path: "/kontakt" },
+  { label: "Uvjeti", path: "/uvjeti-kupovine" },
+  { label: "Dostava", path: "/dostava-i-povrat" },
   { label: "API categories", path: "/api/catalog/categories", json: true },
   { label: "API brands", path: "/api/catalog/brands", json: true },
   { label: "API products", path: "/api/catalog/products", json: true },
+  { label: "API shipping", path: "/api/shipping", json: true },
+  { label: "API coupon", path: "/api/coupons/validate?code=INVALID&subtotal=0", json: true },
   { label: "Sitemap", path: "/sitemap.xml", xml: true },
 ];
+
+// --- QA content guard ---
+const QA_PATTERNS = ["QA-CMS", "QA-CTA", "Changed via QA", "QA Kategorije", "[CLAIM:QA]"];
 
 // --- Run tests ---
 let passed = 0;
@@ -66,7 +76,13 @@ let failed = 0;
 for (const route of ROUTES) {
   const url = BASE + route.path;
   try {
-    const res = await fetch(url, { redirect: "follow" });
+    const opts = {};
+    if (route.post) {
+      opts.method = "POST";
+      opts.headers = { "Content-Type": "application/json" };
+      opts.body = JSON.stringify(route.postBody);
+    }
+    const res = await fetch(url, { redirect: "follow", ...opts });
     const body = await res.text();
     const status = res.status;
     const hasBody = body.trim().length > 0;
@@ -75,6 +91,16 @@ for (const route of ROUTES) {
 
     if (route.json) { try { JSON.parse(body); } catch { ok = false; } }
     if (route.xml) { if (!body.includes("<urlset") && !body.trim().startsWith("<?xml")) ok = false; }
+
+    // QA content guard — only for homepage
+    if (route.path === "/" && ok) {
+      for (const qa of QA_PATTERNS) {
+        if (body.includes(qa)) {
+          console.log(`\x1b[33mWARN\x1b[0m | ${route.label.padEnd(18)} | Found QA content: "${qa}"`);
+          // Don't fail, just warn
+        }
+      }
+    }
 
     const parts = [];
     parts.push(ok ? G : R);
