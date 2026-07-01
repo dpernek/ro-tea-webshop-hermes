@@ -226,6 +226,7 @@ export default function AdminOrderDetailPage() {
   const [status, setStatus] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("");
   const [adminNote, setAdminNote] = useState("");
+  const [noteSaving, setNoteSaving] = useState(false);
   const [refreshingStripe, setRefreshingStripe] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
@@ -249,6 +250,14 @@ export default function AdminOrderDetailPage() {
       .catch(e => setError(e.message || "Greška pri učitavanju narudžbe."))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const saveNote = async () => {
+    setNoteSaving(true);
+    try {
+      await fetch(`/api/admin/orders/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ adminNote }) });
+    } catch { /* ignore */ }
+    setNoteSaving(false);
+  };
 
   const save = async () => {
     setSaveMessage("");
@@ -522,7 +531,7 @@ export default function AdminOrderDetailPage() {
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium">Interna napomena</label>
-                <textarea className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" rows={3} value={adminNote} onChange={e => setAdminNote(e.target.value)} />
+                <div> <textarea className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" rows={2} value={adminNote} onChange={e => setAdminNote(e.target.value)} onBlur={saveNote} placeholder="Interna napomena (sprema se automatski)..." /> <div className="flex items-center justify-between mt-1"> <span className="text-xs text-slate-400">{noteSaving ? "Spremam..." : adminNote ? "✓ Spremljeno" : ""}</span> </div> </div>
               </div>
               <Button onClick={save} disabled={saving}>
                 {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
@@ -557,7 +566,9 @@ export default function AdminOrderDetailPage() {
                 if (s === "COMPLETED") return <p className="text-sm text-emerald-600">Narudžba je završena. Nema daljnjih radnji.</p>;
                 if (s === "SHIPPED") return <p className="text-sm text-purple-600">Pošiljka je na putu. Pričekajte isporuku.</p>;
                 if (s === "PENDING" && p === "UNPAID") return <p className="text-sm text-amber-600">Pričekajte uplatu ili ručno potvrdite narudžbu promjenom statusa.</p>;
-                if (s === "CONFIRMED" && hasGls && !hasShipment) return <p className="text-sm text-blue-600">Kreirajte GLS pošiljku u panelu ispod.</p>;
+                if (s === "CONFIRMED" && hasGls && !hasShipment) return <p className="text-sm text-blue-600">📦 Kreirajte GLS pošiljku u panelu ispod.</p>;
+                if (s === "PENDING" && hasGls && !hasShipment) return <p className="text-sm text-amber-600">💡 Potvrdite narudžbu pa zatim kreirajte GLS pošiljku u panelu ispod.</p>;
+                if (s === "PROCESSING") return <p className="text-sm text-indigo-600">Narudžba se obrađuje. Promijenite status u &quot;Poslano&quot; nakon otpreme.</p>;
                 if (s === "CONFIRMED") return <p className="text-sm text-blue-600">Narudžba je potvrđena. Promijenite status u &quot;U obradi&quot; kad počne priprema.</p>;
                 if (s === "PROCESSING") return <p className="text-sm text-indigo-600">Narudžba se obrađuje. Promijenite status u &quot;Poslano&quot; nakon otpreme.</p>;
                 return <p className="text-sm text-slate-500">Pregledajte narudžbu i po potrebi promijenite status.</p>;

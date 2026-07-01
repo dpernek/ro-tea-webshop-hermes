@@ -132,6 +132,9 @@ function AdminOrdersPage() {
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulking, setBulking] = useState(false);
+  const [bulkMode, setBulkMode] = useState<"viewed"|"unviewed"|"CONFIRMED"|null>(null);
   const searchParams = useSearchParams();
   const [ready, setReady] = useState(false);
 
@@ -233,6 +236,25 @@ function AdminOrdersPage() {
     setPage(1);
   };
 
+  // Bulk selection
+  const toggleSelect = (id: string) => { const s = new Set(selectedIds); s.has(id) ? s.delete(id) : s.add(id); setSelectedIds(s); };
+  const selectAll = () => { setSelectedIds(new Set(orders.map((o: any) => o.id))); };
+  const deselectAll = () => { setSelectedIds(new Set()); };
+
+  // Bulk actions
+  const handleBulkAction = async (action: "viewed"|"unviewed"|"CONFIRMED") => {
+    if (selectedIds.size === 0) return;
+    setBulking(true); setBulkMode(action);
+    try {
+      const r = await fetch("/api/admin/orders/bulk", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: Array.from(selectedIds), action }), });
+      if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.error || "Bulk failed"); }
+      setSelectedIds(new Set());
+      load();
+    } catch (e: any) { alert(e.message || "Greška pri bulk akciji"); }
+    finally { setBulkMode(null); setBulking(false); }
+  };
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -303,6 +325,19 @@ function AdminOrdersPage() {
         </div>
       </div>
 
+      {selectedIds.size > 0 && (
+        <div className="mb-3 flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2">
+          <span className="text-sm font-medium text-indigo-800">{selectedIds.size} odabrano</span>
+          <div className="flex gap-1.5 ml-auto">
+            <Button size="sm" variant="outline" disabled={bulking} onClick={() => handleBulkAction("viewed")}>Označi pregledano</Button>
+            <Button size="sm" variant="outline" disabled={bulking} onClick={() => handleBulkAction("unviewed")}>Označi nepregledano</Button>
+            <Button size="sm" disabled={bulking} onClick={() => handleBulkAction("CONFIRMED")}>
+              {bulking && bulkMode === "CONFIRMED" ? "..." : "Potvrdi (CONFIRMED)"}
+            </Button>
+            <Button size="sm" variant="ghost" onClick={deselectAll}>Odustani</Button>
+          </div>
+        </div>
+      )}
       <Card>
         <div className="overflow-x-auto">
           {error ? (
@@ -316,6 +351,7 @@ function AdminOrdersPage() {
             <table className="w-full text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50">
                 <tr>
+                  <th className="px-4 py-3 font-medium text-slate-600 w-10"><input type="checkbox" checked={selectedIds.size === orders.length && orders.length > 0} onChange={() => selectedIds.size === orders.length ? deselectAll() : selectAll()} className="rounded" /></th>
                   <th className="px-4 py-3 font-medium text-slate-600">Broj</th>
                   <th className="px-4 py-3 font-medium text-slate-600">Kupac</th>
                   <th className="px-4 py-3 font-medium text-slate-600">Ukupno</th>
@@ -328,8 +364,9 @@ function AdminOrdersPage() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {orders.map(o => (
-                  <tr key={o.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => router.push(`/admin/orders/${o.id}`)}>
-                    <td className="px-4 py-3 font-medium text-[#0055a8]">
+                  <tr key={o.id} className="hover:bg-slate-50">
+                    <td className="px-4 py-3" onClick={e => e.stopPropagation()}><input type="checkbox" checked={selectedIds.has(o.id)} onChange={() => toggleSelect(o.id)} className="rounded" /></td>
+                    <td className="px-4 py-3 font-medium text-[#0055a8] cursor-pointer" onClick={() => router.push(`/admin/orders/${o.id}`)}>
                       <div className="flex items-center gap-1.5">
                         {o.orderNumber}
                         <StripeTestMethodBadge sessionId={o.stripeCheckoutSessionId} />
