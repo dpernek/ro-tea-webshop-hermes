@@ -23,6 +23,7 @@ export default async function AdminDashboardPage() {
     productsWithoutStock,
     productsLowStock,
     unmanagedProducts,
+    revToday, revMonth, ordersToday, ordersMonth, codOrders, couponOrders, avgOrder,
   ] = await Promise.all([
     db.product.count({ where: { status: "ACTIVE" } }),
     db.order.count(),
@@ -33,6 +34,20 @@ export default async function AdminDashboardPage() {
     db.product.count({ where: { status: "ACTIVE", stock: 0 } }),
     db.product.count({ where: { status: "ACTIVE", stock: { gt: 0, lte: 3 } } }),
     db.product.count({ where: { status: "ACTIVE", stock: null } }),
+    // Revenue today
+    db.order.aggregate({ _sum: { total: true }, where: { status: { notIn: ["CANCELLED", "REFUNDED"] }, createdAt: { gte: new Date(new Date().setHours(0,0,0,0)) } } }),
+    // Revenue this month
+    db.order.aggregate({ _sum: { total: true }, where: { status: { notIn: ["CANCELLED", "REFUNDED"] }, createdAt: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) } } }),
+    // Orders today
+    db.order.count({ where: { createdAt: { gte: new Date(new Date().setHours(0,0,0,0)) } } }),
+    // Orders this month
+    db.order.count({ where: { createdAt: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) } } }),
+    // COD orders
+    db.order.count({ where: { paymentMethod: "cod" } }),
+    // Coupon orders (no-cancel)
+    db.order.count({ where: { couponCode: { not: null }, status: { notIn: ["CANCELLED", "REFUNDED"] } } }),
+    // Average order value (non-cancelled)
+    db.order.aggregate({ _avg: { total: true }, where: { status: { notIn: ["CANCELLED", "REFUNDED"] } } }),
   ]);
 
   // Revenue (non-cancelled, non-refunded)
@@ -64,6 +79,46 @@ export default async function AdminDashboardPage() {
   const glsOrdersTotal = await db.order.count({ where: { shippingMethod: { startsWith: "GLS" } } });
   const glsOrdersCreated = await db.order.count({ where: { shippingMethod: { startsWith: "GLS" }, glsShipmentId: { not: null } } });
 
+  // ── Top products by quantity sold ───────────────────────
+  const topProducts = await db.orderItem.groupBy({
+    by: ["productName"],
+    _sum: { quantity: true },
+    orderBy: { _sum: { quantity: "desc" } },
+    take: 5,
+  });
+
+  // ── Top categories by order items ─────────────────────────
+  const topCategoriesRaw = await db.orderItem.findMany({
+    select: { product: { select: { category: { select: { name: true } } } } },
+    take: 200,
+  });
+  const catCount: Record<string, number> = {};
+  for (const item of topCategoriesRaw) {
+    const cn = item.product?.category?.name || "Nepoznato";
+    catCount[cn] = (catCount[cn] || 0) + 1;
+  }
+  const topCategories = Object.entries(catCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  // ── Daily revenue last 7 days ──────────────────────────────
+  const last7Days: { date: string; orders: number; revenue: number }[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const start = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const end = new Date(start.getTime() + 86400000);
+    const dayData = await db.order.aggregate({
+      _sum: { total: true },
+      _count: { id: true },
+      where: { status: { notIn: ["CANCELLED", "REFUNDED"] }, createdAt: { gte: start, lt: end } },
+    });
+    last7Days.push({
+      date: start.toLocaleDateString("hr-HR", { day: "2-digit", month: "2-digit", year: "numeric" }),
+      orders: dayData._count.id || 0,
+      revenue: dayData._sum.total || 0,
+    });
+  }
+
   // ── Audit log (last 10) ─────────────────────────────────
   const auditEntries = await db.auditLog.findMany({
     select: { resource: true, action: true, summary: true, userEmail: true, createdAt: true },
@@ -80,6 +135,11 @@ export default async function AdminDashboardPage() {
     { title: "Aktivni proizvodi", value: activeProducts, subtitle: "u katalogu", href: "/admin/products", color: "bg-blue-50 text-blue-700" },
     { title: "Niska zaliha", value: productsWithoutStock + productsLowStock, subtitle: `${productsWithoutStock} bez zalihe • ${productsLowStock} ≤ 3`, href: "/admin/products?lowStock=yes", color: "bg-red-50 text-red-700" },
     { title: "Ne prati zalihu", value: unmanagedProducts, subtitle: "bez numeričkog praćenja", href: "/admin/products?unmanagedStock=yes", color: "bg-slate-50 text-slate-700" },
+    { title: "Promet danas", value: `${((revToday._sum.total||0)).toFixed(2)} €`, subtitle: `iz ${ordersToday} narudžbi`, color: "bg-green-50 text-green-700" },
+    { title: "Promet ovaj mjesec", value: `${((revMonth._sum.total||0)).toFixed(2)} €`, subtitle: `iz ${ordersMonth} narudžbi`, color: "bg-emerald-50 text-emerald-700" },
+    { title: "Prosječna narudžba", value: `${((avgOrder._avg.total||0)).toFixed(2)} €`, subtitle: "prosječna vrijednost", color: "bg-teal-50 text-teal-700" },
+    { title: "Pouzeće", value: codOrders, subtitle: "narudžbe s pouzećem", href: "/admin/orders?paymentMethod=cod", color: "bg-violet-50 text-violet-700" },
+    { title: "S kuponom", value: couponOrders, subtitle: "narudžbe s kuponom", color: "bg-pink-50 text-pink-700" },
   ];
 
   const hasAttention = unreadOrders > 0 || pendingOrders > 0 || unpaidOrders > 0 || glsOrdersWithoutShipment > 0 || stockAlerts.length > 0;
