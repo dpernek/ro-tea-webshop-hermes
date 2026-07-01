@@ -133,11 +133,11 @@ export async function PATCH(
   if (data.salePrice !== undefined) updateData.salePrice = data.salePrice === null ? null : data.salePrice;
   if (data.stock !== undefined) {
     updateData.stock = data.stock === null ? null : (data.stock ?? 0);
-    // Derive stockStatus from stock value (unless explicitly provided)
-    if (data.stockStatus === undefined) {
-      updateData.stockStatus = data.stock === null ? "UNKNOWN" :
-        data.stock === 0 ? "OUTOFSTOCK" : "INSTOCK";
-    }
+  }
+  // Auto-derive stockStatus from stock (only if stock was changed and stockStatus not explicitly sent)
+  if (data.stock !== undefined && !("stockStatus" in (body as Record<string,unknown>))) {
+    updateData.stockStatus = data.stock === null || data.stock === undefined ? "UNKNOWN" :
+      data.stock === 0 ? "OUTOFSTOCK" : "INSTOCK";
   }
   if (data.stockStatus !== undefined) updateData.stockStatus = data.stockStatus;
   if (data.status !== undefined) updateData.status = data.status;
