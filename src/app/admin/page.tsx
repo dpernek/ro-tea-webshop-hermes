@@ -276,6 +276,59 @@ export default async function AdminDashboardPage() {
         )}
       </div>
 
+      {/* ── Daily Revenue (Last 7 Days) ──────────────────── */}
+      <Card>
+        <CardContent className="p-5">
+          <h2 className="text-base font-semibold text-slate-900 mb-3">Prodaja po danima (zadnjih 7 dana)</h2>
+          <table className="w-full text-sm">
+            <thead><tr className="text-left text-xs text-slate-400 uppercase"><th className="pb-2">Dan</th><th className="pb-2 text-right">Narudžbe</th><th className="pb-2 text-right">Promet</th></tr></thead>
+            <tbody>
+              {last7Days.map(d => (
+                <tr key={d.date} className="border-t border-slate-50">
+                  <td className="py-1.5 text-slate-600">{d.date}</td>
+                  <td className="py-1.5 text-right font-medium text-slate-700">{d.orders}</td>
+                  <td className="py-1.5 text-right font-semibold text-slate-800">{d.revenue.toFixed(2)} €</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+
+      {/* ── Top Products + Categories ──────────────────────── */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardContent className="p-5">
+            <h2 className="text-base font-semibold text-slate-900 mb-3">Top proizvodi (prodano komada)</h2>
+            {topProducts.length === 0 ? <p className="text-sm text-slate-400">Nema podataka.</p> : (
+              <div className="space-y-2">
+                {topProducts.map((p, i) => (
+                  <div key={i} className="flex justify-between text-sm border-b border-slate-50 pb-1">
+                    <span className="text-slate-700 truncate max-w-[70%]">{p.productName}</span>
+                    <span className="font-medium text-slate-800">{p._sum.quantity} kom</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-5">
+            <h2 className="text-base font-semibold text-slate-900 mb-3">Top kategorije (artikala u narudžbama)</h2>
+            {topCategories.length === 0 ? <p className="text-sm text-slate-400">Nema podataka.</p> : (
+              <div className="space-y-2">
+                {topCategories.map(([cat, cnt], i) => (
+                  <div key={i} className="flex justify-between text-sm border-b border-slate-50 pb-1">
+                    <span className="text-slate-700 truncate max-w-[70%]">{cat}</span>
+                    <span className="font-medium text-slate-800">{cnt}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       {/* ── Stock Alerts ──────────────────────────────────── */}
       {stockAlerts.length > 0 && (
         <div>
