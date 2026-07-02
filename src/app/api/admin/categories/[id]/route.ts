@@ -18,6 +18,9 @@ const categoryUpdateSchema = z.object({
   image: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
   sortOrder: z.preprocess((v) => (v === "" ? undefined : Number(v)), z.number().int()).optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "ARCHIVED"]).optional(),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+  introText: z.string().optional(),
 });
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
