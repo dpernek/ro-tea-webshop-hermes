@@ -11,18 +11,18 @@ interface CategoryPageProps { params: Promise<{ slug: string }>; }
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const cat = await db.category.findUnique({ where: { slug }, select: { name: true, description: true } });
+  const cat = await db.category.findUnique({ where: { slug }, select: { name: true, description: true, seoTitle: true, seoDescription: true } });
   if (!cat) return { title: "Kategorija | RO-TEA" };
   return {
-    title: `${cat.name} | RO-TEA`,
-    description: cat.description || "",
+    title: cat.seoTitle || `${cat.name} | RO-TEA`,
+    description: cat.seoDescription || cat.description || "",
     alternates: { canonical: `/kategorije/${slug}` },
   };
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
-  const cat = await db.category.findUnique({ where: { slug }, select: { id: true, slug: true, name: true, description: true, image: true, parentId: true, status: true } });
+  const cat = await db.category.findUnique({ where: { slug }, select: { id: true, slug: true, name: true, description: true, image: true, parentId: true, status: true, introText: true } });
   if (!cat || cat.status !== "ACTIVE") notFound();
 
   const allCatsRaw = await db.category.findMany({
@@ -63,6 +63,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             </nav>
             <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">{cat.name}</h1>
             {cat.description && <p className="mt-3 max-w-2xl text-slate-600 leading-relaxed">{cat.description}</p>}
+            {cat.introText && (
+              <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-5">
+                <p className="text-sm leading-relaxed text-slate-600">{cat.introText}</p>
+              </div>
+            )}
             <p className="mt-2 text-sm font-medium text-slate-500">{products.length} proizvoda</p>
           </AnimatedSection>
         </div>
