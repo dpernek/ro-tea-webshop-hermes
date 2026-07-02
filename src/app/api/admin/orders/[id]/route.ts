@@ -201,3 +201,35 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   return NextResponse.json({ ok: true });
 }
+
+// DELETE — cleanup only; deletes order + items + payments
+const deleteSchema = z.object({
+  confirm: z.literal("DELETE"),
+});
+
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const access = await requirePermission("orders", "write");
+  if (access) return access;
+  const { id } = await params;
+
+  let body: unknown;
+  try { body = await req.json(); } catch { body = {}; }
+  const parsed = deleteSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Pošalji {"confirm":"DELETE"} za brisanje narudžbe.' }, { status: 400 });
+  }
+
+  try {
+    const existing = await db.order.findUnique({ where: { id }, select: { id: true } });
+    if (!existing) return NextResponse.json({ error: "Narudžba nije pronađena." }, { status: 404 });
+
+    await db.orderItem.deleteMany({ where: { orderId: id } });
+    await db.payment.deleteMany({ where: { orderId: id } });
+    await db.order.delete({ where: { id } });
+
+    await logAction("orders", "delete", `Obrisana narudžba ${id}`, id).catch(() => {});
+    return NextResponse.json({ ok: true });
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message || "Greška pri brisanju." }, { status: 500 });
+  }
+}
