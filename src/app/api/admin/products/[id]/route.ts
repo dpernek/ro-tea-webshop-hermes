@@ -3,6 +3,7 @@ import { requirePermission } from "@/lib/admin-auth";
 import { logAction } from "@/lib/audit";
 import { db } from "@/lib/db";
 import { productSchema, formatZodErrors } from "@/lib/validations";
+import { checkQAFields } from "@/lib/qa-guard";
 
 export const dynamic = "force-dynamic";
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { logAction } from "@/lib/audit";
+import { checkQAFields } from "@/lib/qa-guard";
 import { z } from "zod";
 
 const contentSchema = z.object({
@@ -39,6 +40,10 @@ export async function PUT(req: NextRequest) {
   }
 
   const { key, ...data } = parsed.data;
+
+  // QA guard: block obvious test content
+  const qaError = checkQAFields({ title: data.title, subtitle: data.subtitle, body: data.body });
+  if (qaError) return NextResponse.json({ error: qaError }, { status: 400 });
   const section = await db.contentSection.upsert({
     where: { key },
     update: data,

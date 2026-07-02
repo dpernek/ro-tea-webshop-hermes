@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { warnQACustomer } from "@/lib/qa-guard";
+import { logAction } from "@/lib/audit";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { validateCoupon } from "@/lib/coupon-validation";
@@ -34,6 +36,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ errors: fieldErrors }, { status: 400 });
     }
     const body = parsed.data;
+
+    // QA guard: warn on test customer patterns (does not block order)
+    const qaWarn = warnQACustomer(body.customerName, body.customerEmail);
+    if (qaWarn) logAction("orders", "qa-warn", qaWarn).catch(() => {});
 
     // Fetch & validate products from DB
     const dbProducts = await db.product.findMany({
