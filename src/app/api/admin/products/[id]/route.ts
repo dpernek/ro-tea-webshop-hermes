@@ -25,6 +25,17 @@ export async function DELETE(
   }
 
   // Soft delete: archive instead of physical delete
+  // BUT if already archived and no orders, physically delete
+  const existing = await db.product.findUnique({ where: { id }, select: { status: true } });
+  if (!existing) {
+    return NextResponse.json({ error: "Proizvod nije pronađen." }, { status: 404 });
+  }
+  if (existing.status === "ARCHIVED") {
+    // Already archived + no orders = safe to physically delete
+    await db.product.delete({ where: { id } });
+    logAction("products", "delete", `Trajno obrisan proizvod: ${id}`, id).catch(() => {});
+    return NextResponse.json({ ok: true, deleted: true, message: "Proizvod je trajno obrisan." });
+  }
   await db.product.update({
     where: { id },
     data: { status: "ARCHIVED" },
