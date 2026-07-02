@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requirePermission } from "@/lib/admin-auth";
 import { logAction } from "@/lib/audit";
+import { checkQAFields } from "@/lib/qa-guard";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -142,6 +143,16 @@ export async function POST(request: NextRequest) {
   }
 
   const body = parsed.data;
+
+  // QA guard: block obvious test content in product fields
+  const qaError = checkQAFields({
+    name: body.name,
+    shortDescription: (body as any).shortDescription || "",
+    description: (body as any).description || "",
+    badge: (body as any).badge || "",
+    slug: body.slug,
+  });
+  if (qaError) return NextResponse.json({ error: qaError }, { status: 400 });
 
   // Slug behavior: use provided slug if present, else generate from name
   let slug: string;
