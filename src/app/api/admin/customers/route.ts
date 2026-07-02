@@ -13,7 +13,7 @@ export async function GET() {
 }
 
 export async function DELETE() {
-  const access = await requirePermission("customers", "write");
+  const access = await requirePermission("orders", "write");
   if (access) return access;
 
   // Only delete customers with no orders (orphaned)
