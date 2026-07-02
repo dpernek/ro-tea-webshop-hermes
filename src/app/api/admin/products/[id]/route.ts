@@ -112,6 +112,16 @@ export async function PATCH(
 
   const data = result.data;
 
+  // QA guard: block obvious test content in product fields
+  const qaError = checkQAFields({
+    name: (data as any).name,
+    shortDescription: (data as any).shortDescription,
+    description: (data as any).description,
+    slug: (data as any).slug,
+    badge: (data as any).badge,
+  });
+  if (qaError) return NextResponse.json({ error: qaError }, { status: 400 });
+
   // Whitelist: only pass known fields to Prisma
   // Optional string fields use undefined (not null) for Prisma compatibility
   const updateData: Record<string, unknown> = {};
