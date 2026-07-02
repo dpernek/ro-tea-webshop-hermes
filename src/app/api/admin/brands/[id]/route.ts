@@ -15,6 +15,9 @@ const brandUpdateSchema = z.object({
   name: z.string().min(1, "Naziv brenda je obavezan").optional(),
   description: z.string().optional(),
   image: z.preprocess(emptyStringToNull, z.string().nullable().optional()),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+  introText: z.string().optional(),
 });
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
