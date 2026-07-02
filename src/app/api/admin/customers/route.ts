@@ -11,3 +11,20 @@ export async function GET() {
     take: 50,
   }));
 }
+
+export async function DELETE() {
+  const access = await requirePermission("customers", "write");
+  if (access) return access;
+
+  // Only delete customers with no orders (orphaned)
+  const allCustomers = await db.customer.findMany({ select: { id: true } });
+  let deleted = 0;
+  for (const c of allCustomers) {
+    const orderCount = await db.order.count({ where: { customerId: c.id } });
+    if (orderCount === 0) {
+      await db.customer.delete({ where: { id: c.id } });
+      deleted++;
+    }
+  }
+  return NextResponse.json({ ok: true, deleted });
+}
