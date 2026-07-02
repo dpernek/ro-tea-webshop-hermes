@@ -17,6 +17,7 @@ export async function GET(req: NextRequest) {
   const unread = url.searchParams.get("unread") || "";
   const gls = url.searchParams.get("gls") || "";
   const paymentMethod = url.searchParams.get("paymentMethod") || "";
+  const claim = url.searchParams.get("claim") || "";
 
   const where: any = {};
   if (status) where.status = status;
@@ -28,6 +29,8 @@ export async function GET(req: NextRequest) {
   if (unread === "1") where.viewed = false;
   if (gls === "1") { where.shippingMethod = { startsWith: "GLS" }; where.glsShipmentId = null; }
   if (paymentMethod) where.paymentMethod = paymentMethod;
+  if (claim === "OPEN") where.adminNote = { contains: "[CLAIM:OPEN]" };
+  if (claim === "RESOLVED") where.adminNote = { contains: "[CLAIM:RESOLVED]" };
   if (dateFrom || dateTo) {
     where.createdAt = {};
     if (dateFrom) where.createdAt.gte = new Date(dateFrom);
@@ -40,7 +43,7 @@ export async function GET(req: NextRequest) {
   }
 
   const [orders, total] = await Promise.all([
-    db.order.findMany({ where, skip: (page - 1) * limit, take: limit, orderBy: { createdAt: "desc" }, select: { id: true, orderNumber: true, customerName: true, customerEmail: true, total: true, shippingTotal: true, discountTotal: true, couponCode: true, couponDiscount: true, status: true, paymentStatus: true, paymentMethod: true, shippingMethod: true, createdAt: true, viewed: true, updatedAt: true } }),
+    db.order.findMany({ where, skip: (page - 1) * limit, take: limit, orderBy: { createdAt: "desc" }, select: { id: true, orderNumber: true, customerName: true, customerEmail: true, total: true, shippingTotal: true, discountTotal: true, couponCode: true, couponDiscount: true, status: true, paymentStatus: true, paymentMethod: true, shippingMethod: true, adminNote: true, createdAt: true, viewed: true, updatedAt: true } }),
     db.order.count({ where }),
   ]);
   return NextResponse.json({ orders, total, pages: Math.ceil(total / limit) });

@@ -143,6 +143,7 @@ function AdminOrdersPage() {
   const [unreadFilter, setUnreadFilter] = useState(false);
   const [glsFilter, setGlsFilter] = useState(false);
   const [paymentMethodFilter, setPaymentMethodFilter] = useState("");
+  const [claimFilter, setClaimFilter] = useState("");
 
   // Sync searchParams → filter state on mount and when URL changes
   // Chips update state directly; this effect only handles external URL changes
@@ -165,6 +166,7 @@ function AdminOrdersPage() {
     if (paymentStatusFilter) params.set("paymentStatus", paymentStatusFilter);
     if (unreadFilter) params.set("unread", "1");
     if (paymentMethodFilter) params.set("paymentMethod", paymentMethodFilter);
+    if (claimFilter) params.set("claim", claimFilter);
     if (glsFilter) params.set("gls", "1");
     if (dateFrom) params.set("dateFrom", dateFrom);
     if (dateTo) params.set("dateTo", dateTo);
@@ -228,6 +230,13 @@ function AdminOrdersPage() {
     } finally {
       setExporting(false);
     }
+  };
+
+  const claimIndicator = (o: any) => {
+    const note = o.adminNote || "";
+    if (note.includes("[CLAIM:OPEN]")) return <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 border border-orange-300 px-2 py-0.5 text-xs font-semibold text-orange-800">Otvorena</span>;
+    if (note.includes("[CLAIM:RESOLVED]")) return <span className="inline-flex items-center gap-1 rounded-full bg-green-100 border border-green-300 px-2 py-0.5 text-xs font-semibold text-green-800">Riješena</span>;
+    return <span className="text-xs text-slate-300">—</span>;
   };
 
   const clearDateFilters = () => {
@@ -296,6 +305,11 @@ function AdminOrdersPage() {
           <option value="">Svi statusi narudžbe</option>
           {Object.entries(statusLabels).map(([k,v]) => <option key={k} value={k}>{v}</option>)}
         </select>
+        <select className="rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white" value={claimFilter} onChange={e => { setClaimFilter(e.target.value); setPage(1); }}>
+          <option value="">Sve reklamacije</option>
+          <option value="OPEN">Reklamacija otvorena</option>
+          <option value="RESOLVED">Reklamacija riješena</option>
+        </select>
         <select className="rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white" value={paymentStatusFilter} onChange={e => { setPaymentStatusFilter(e.target.value); setPage(1); }}>
           <option value="">Svi statusi plaćanja</option>
           {Object.entries(paymentLabels).map(([k,v]) => <option key={k} value={k}>{v}</option>)}
@@ -358,6 +372,7 @@ function AdminOrdersPage() {
                   <th className="px-4 py-3 font-medium text-slate-600">Status</th>
                   <th className="px-4 py-3 font-medium text-slate-600">Način plaćanja</th>
                   <th className="px-4 py-3 font-medium text-slate-600">Dostava</th>
+                  <th className="px-4 py-3 font-medium text-slate-600">Reklamacija</th>
                   <th className="px-4 py-3 font-medium text-slate-600">Plaćanje</th>
                   <th className="px-4 py-3 font-medium text-slate-600">Datum</th>
                 </tr>
@@ -375,6 +390,7 @@ function AdminOrdersPage() {
                     <td className="px-4 py-3 text-slate-700">{o.customerName}</td>
                     <td className="px-4 py-3 font-medium">{o.total?.toFixed(2)} €</td>
                     <td className="px-4 py-3"><StatusBadge status={o.status} /></td>
+                    <td className="px-4 py-3">{claimIndicator(o)}</td>
                     <td className="px-4 py-3"><PaymentMethodBadge method={o.paymentMethod} /></td>
                     <td className="px-4 py-3 text-slate-600 text-xs max-w-[100px] truncate">{o.shippingMethod || "-"}</td>
                     <td className="px-4 py-3"><PaymentStatusBadge status={o.paymentStatus} /></td>
