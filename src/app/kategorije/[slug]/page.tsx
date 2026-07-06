@@ -53,28 +53,51 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <div className="bg-white">
-      <div className="border-b border-slate-100 bg-slate-50">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      {/* Header — category identity + intro */}
+      <div className="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
           <AnimatedSection>
-            <nav className="mb-4 text-sm text-slate-500">
-              <Link href="/" className="hover:text-[#0055a8]">Početna</Link>
-              {" / "}
-              <Link href="/proizvodi" className="hover:text-[#0055a8]">Trgovina</Link>
-              {" / "}
-              <span className="text-slate-400">{cat.name}</span>
+            <nav className="mb-3 text-sm text-slate-400">
+              <Link href="/" className="hover:text-[#0055a8] transition-colors">Početna</Link>
+              <span className="mx-1.5">/</span>
+              <Link href="/proizvodi" className="hover:text-[#0055a8] transition-colors">Trgovina</Link>
+              <span className="mx-1.5">/</span>
+              <span className="text-slate-500">{cat.name}</span>
             </nav>
-            <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">{cat.name}</h1>
-            {cat.description && <p className="mt-3 max-w-2xl text-slate-600 leading-relaxed">{cat.description}</p>}
-            {cat.introText && (
-              <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-5">
-                <p className="text-sm leading-relaxed text-slate-600">{cat.introText}</p>
+            
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
+              {/* Category image — visual anchor */}
+              {cat.image && (
+                <div className="hidden h-32 w-48 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white lg:block">
+                  <img src={cat.image} alt={cat.name} className="h-full w-full object-contain p-2" />
+                </div>
+              )}
+              
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-baseline gap-3">
+                  <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">{cat.name}</h1>
+                  <span className="rounded-full bg-[#0055a8]/10 px-3 py-0.5 text-sm font-semibold text-[#0055a8]">
+                    {products.length} proizvoda
+                  </span>
+                </div>
+                
+                {cat.description && (
+                  <p className="mt-3 max-w-2xl text-slate-600 leading-relaxed">{cat.description}</p>
+                )}
+                
+                {cat.introText && (
+                  <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-500">
+                    {cat.introText}
+                  </p>
+                )}
               </div>
-            )}
-            <p className="mt-2 text-sm font-medium text-slate-500">{products.length} proizvoda</p>
+            </div>
           </AnimatedSection>
         </div>
       </div>
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+
+      {/* Product grid */}
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <ProductGrid products={mappedProducts as any} categories={allCats as any} currentCategory={{ id: cat.id, slug: cat.slug, name: cat.name, description: cat.description, image: cat.image || "", count: countMap[cat.id] || 0 } as any} />
       </div>
     </div>
