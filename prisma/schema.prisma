@@ -60,6 +60,22 @@ model Product {
   priceRangeMin    Float?
   priceRangeMax    Float?
   categories       String            @default("[]")       // JSON: {slug, name}[]
+  variants         ProductVariant[]
+}
+
+model ProductVariant {
+  id           String   @id @default(cuid())
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id])
+  sku          String?
+  price        Float
+  attributes   String   // JSON: {"Dimenzija":"115","Granulacija":"36"}
+  stock        Int?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([productId, attributes])
 }
 
 model Category {

@@ -117,6 +117,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       categoryId: true, brandId: true,
       brand: { select: { id: true, slug: true, name: true, image: true } },
       category: { select: { id: true, slug: true, name: true, description: true, image: true } },
+      variants: { where: { active: true }, select: { id: true, sku: true, price: true, attributes: true, stock: true } },
     },
   });
 
@@ -129,6 +130,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     : (Array.isArray(product.attributes) ? product.attributes : []);
   const productWithParsedAttrs = { ...product, attributes: parsedAttributes,
     priceRange: { min: product.priceRangeMin ?? 0, max: product.priceRangeMax ?? 0 },
+    variants: ((product as any).variants || []).map((v: any) => ({ ...v, attributes: typeof v.attributes === "string" ? JSON.parse(v.attributes) : v.attributes })),
   };
 
   const relatedSelect = { id: true, slug: true, name: true, price: true, salePrice: true, image: true, categoryId: true, brandId: true, status: true } as const;

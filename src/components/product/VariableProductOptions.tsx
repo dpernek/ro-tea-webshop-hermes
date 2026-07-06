@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { Button } from "@/components/ui/Button";
 import { ShoppingCart, Check } from "lucide-react";
 import type { Product } from "@/types";
 
 interface VariableProductOptionsProps {
-  product: Product;
+  product: Product & { variants?: { id: string; sku?: string; price: number; attributes: Record<string, string>; stock?: number }[] };
+}
+
+function attrKey(attrs: Record<string, string>): string {
+  return Object.entries(attrs).sort().map(([k, v]) => `${k}:${v}`).join("|");
 }
 
 export function VariableProductOptions({
@@ -26,8 +30,27 @@ export function VariableProductOptions({
       : Array.isArray(rawAttr)
         ? rawAttr
         : [];
+
   const allSelected =
     attributes.length > 0 && attributes.every((attr) => selected[attr.name]);
+
+  // Find matching variant for currently selected attributes
+  const matchedVariant = useMemo(() => {
+    if (!allSelected || !product.variants?.length) return null;
+    const selKey = attrKey(selected);
+    return product.variants.find((v) => attrKey(v.attributes) === selKey) || null;
+  }, [selected, product.variants, allSelected]);
+
+  // Price: matched variant price > selected sale/regular > base
+  const displayPrice = useMemo(() => {
+    if (matchedVariant) return matchedVariant.price;
+    if (allSelected) return product.price;
+    // Show price range when nothing selected
+    if (product.priceRange && product.priceRange.min !== product.priceRange.max) {
+      return null; // null = show range
+    }
+    return product.price;
+  }, [matchedVariant, product.price, product.priceRange, allSelected]);
 
   const handleSelect = (name: string, value: string) => {
     setSelected((prev) => ({ ...prev, [name]: value }));
@@ -35,23 +58,42 @@ export function VariableProductOptions({
 
   const handleAdd = () => {
     if (!allSelected) return;
-    addItem(product, 1, selected);
+    const variantPrice = matchedVariant?.price ?? product.price;
+    const variantSku = matchedVariant?.sku ?? null;
+    // Create a product copy with the correct price for the matched variant
+    const pricedProduct = { ...product, price: variantPrice, sku: variantSku || product.sku };
+    addItem(pricedProduct, 1, selected);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
   return (
     <div className="space-y-5">
-      {product.priceRange &&
-        product.priceRange.min !== product.priceRange.max && (
-          <div className="text-slate-700">
-            Raspon cijena:{" "}
-            <span className="font-semibold text-slate-900">
-              {formatPrice(product.priceRange.min)} –{" "}
-              {formatPrice(product.priceRange.max)}
-            </span>
-          </div>
-        )}
+      {/* Price display */}
+      {displayPrice !== null ? (
+        <div className="text-2xl font-bold text-slate-900">
+          {formatPrice(displayPrice)}
+        </div>
+      ) : product.priceRange && product.priceRange.min !== product.priceRange.max ? (
+        <div className="text-slate-700">
+          <span className="text-sm">Raspon cijena: </span>
+          <span className="text-2xl font-bold text-slate-900">
+            {formatPrice(product.priceRange.min)} – {formatPrice(product.priceRange.max)}
+          </span>
+        </div>
+      ) : (
+        <div className="text-2xl font-bold text-slate-900">
+          {formatPrice(product.price)}
+        </div>
+      )}
+
+      {/* Matched variant info */}
+      {matchedVariant && (
+        <p className="text-sm text-green-700">
+          Cijena za odabranu kombinaciju
+          {matchedVariant.sku && <span className="text-slate-400"> · {matchedVariant.sku}</span>}
+        </p>
+      )}
 
       {attributes.length > 0 && (
         <div className="space-y-4">
@@ -92,7 +134,10 @@ export function VariableProductOptions({
         ) : (
           <>
             <ShoppingCart className="mr-2 h-5 w-5" />
-            Dodaj u košaricu
+            {displayPrice !== null && matchedVariant
+              ? `Dodaj u košaricu · ${formatPrice(displayPrice)}`
+              : "Dodaj u košaricu"
+            }
           </>
         )}
       </Button>
