@@ -80,11 +80,11 @@ export function Hero({ title: titleOverride, subtitle: subtitleOverride }: HeroP
       <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/50 to-slate-950/30" />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-        <div className="max-w-3xl">
+        <div className="max-w-4xl">
           <p className="hero-animate text-sm font-semibold tracking-[0.2em] text-[#0055a8] uppercase">
             {site.name} d.o.o.
           </p>
-          <h1 className="hero-animate mt-6 text-4xl leading-tight font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <h1 className="hero-animate mt-6 text-3xl leading-tight font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
             {titleOverride || "Profesionalni alati i oprema za industriju, obrt i dom"}
           </h1>
           <p className="hero-animate mt-6 max-w-xl text-lg leading-relaxed text-slate-200">
