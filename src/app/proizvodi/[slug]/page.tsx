@@ -110,7 +110,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       image: true, gallery: true, featured: true, badge: true, type: true,
       shortDescription: true, description: true, specifications: true,
       benefits: true, usage: true, warranty: true, deliveryNote: true,
-      categories: true, priceRangeMin: true, priceRangeMax: true,
+      categories: true, attributes: true, priceRangeMin: true, priceRangeMax: true,
       stock: true, stockStatus: true, status: true,
       weight: true, width: true, height: true, depth: true,
       metaTitle: true, metaDescription: true,
@@ -121,6 +121,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
   });
 
   if (!product || product.status !== "ACTIVE") notFound();
+
+  // Parse attributes JSON string → array before passing to client component
+  // (React serialization can lose raw JSON strings with nested quotes)
+  const parsedAttributes = typeof product.attributes === "string"
+    ? (() => { try { return JSON.parse(product.attributes || "[]"); } catch { return []; } })()
+    : (Array.isArray(product.attributes) ? product.attributes : []);
+  const productWithParsedAttrs = { ...product, attributes: parsedAttributes,
+    priceRange: { min: product.priceRangeMin ?? 0, max: product.priceRangeMax ?? 0 },
+  };
 
   const relatedSelect = { id: true, slug: true, name: true, price: true, salePrice: true, image: true, categoryId: true, brandId: true, status: true } as const;
 
@@ -442,9 +451,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
             {/* Add to cart / Variable options */}
             <div className="mt-8">
               {product.type === "VARIABLE" ? (
-                <VariableProductOptions product={product as any} />
+                <VariableProductOptions product={productWithParsedAttrs as any} />
               ) : (
-                <AddToCartButton product={product as any} />
+                <AddToCartButton product={productWithParsedAttrs as any} />
               )}
             </div>
 
@@ -748,9 +757,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
           <div>
             {product.type === "VARIABLE" ? (
-              <VariableProductOptions product={product as any} />
+              <VariableProductOptions product={productWithParsedAttrs as any} />
             ) : (
-              <AddToCartButton product={product as any} />
+              <AddToCartButton product={productWithParsedAttrs as any} />
             )}
           </div>
         </div>
