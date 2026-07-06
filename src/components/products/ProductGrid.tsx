@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import type { Product, Category } from "@/types";
 import { ChevronDown, Grid3X3, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const PAGE_SIZE = 24;
 
@@ -25,6 +26,7 @@ export function ProductGrid({ products, categories, currentCategory }: ProductGr
   const [sortBy, setSortBy] = useState("name-asc");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const router = useRouter();
 
   // filtering
   const filtered = useMemo(() => {
@@ -52,6 +54,16 @@ export function ProductGrid({ products, categories, currentCategory }: ProductGr
   const remaining = sorted.length - visibleCount;
 
   const handleCategorySelect = (slug: string | null) => {
+    // On a dedicated category page, sidebar clicks navigate to the category page
+    if (currentCategory) {
+      setMobileFilterOpen(false);
+      if (slug === null) {
+        router.push("/proizvodi");
+      } else {
+        router.push(`/kategorije/${slug}`);
+      }
+      return;
+    }
     setSelectedCategory(slug);
     setVisibleCount(PAGE_SIZE);
     setMobileFilterOpen(false);
