@@ -4,6 +4,7 @@ import { ProductGrid } from "@/components/products/ProductGrid";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { mapProduct } from "@/lib/product-mapper";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,7 @@ export default async function BrandPage({ params }: BrandPageProps) {
       brand: { select: { slug: true, name: true } },
     },
   });
+  const mappedProducts = products.map(mapProduct);
 
   const allCatsRaw = await db.category.findMany({
     select: { id: true, slug: true, name: true, description: true, image: true, sortOrder: true, status: true },
@@ -96,7 +98,7 @@ export default async function BrandPage({ params }: BrandPageProps) {
             </Link>
           </div>
         ) : (
-          <ProductGrid products={products as any} categories={allCats as any} />
+          <ProductGrid products={mappedProducts as any} categories={allCats as any} />
         )}
       </div>
     </div>

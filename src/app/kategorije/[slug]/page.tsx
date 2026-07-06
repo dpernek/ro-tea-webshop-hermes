@@ -4,6 +4,7 @@ import { ProductGrid } from "@/components/products/ProductGrid";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { mapProduct } from "@/lib/product-mapper";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +49,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     orderBy: { createdAt: "desc" },
     select: { id: true, slug: true, name: true, price: true, salePrice: true, regularPrice: true, image: true, badge: true, featured: true, type: true, shortDescription: true, stock: true, stockStatus: true, category: { select: { slug: true, name: true } }, brand: { select: { slug: true, name: true } } },
   });
+  const mappedProducts = products.map(mapProduct);
 
   return (
     <div className="bg-white">
@@ -73,7 +75,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </div>
       </div>
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <ProductGrid products={products as any} categories={allCats as any} currentCategory={{ id: cat.id, slug: cat.slug, name: cat.name, description: cat.description, image: cat.image || "", count: countMap[cat.id] || 0 } as any} />
+        <ProductGrid products={mappedProducts as any} categories={allCats as any} currentCategory={{ id: cat.id, slug: cat.slug, name: cat.name, description: cat.description, image: cat.image || "", count: countMap[cat.id] || 0 } as any} />
       </div>
     </div>
   );
