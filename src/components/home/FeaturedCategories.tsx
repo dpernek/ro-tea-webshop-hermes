@@ -21,10 +21,10 @@ export function FeaturedCategories() {
 
   // Fallback images for categories without specific images
   const fallbacks = [
-    "/images/categories/openai_codex_gpt-image-2-high_20260622_165747_39242876.png",
-    "/images/categories/openai_codex_gpt-image-2-high_20260622_165854_08d6d07d.png",
-    "/images/categories/openai_codex_gpt-image-2-high_20260622_170003_90dae7e9.png",
-    "/images/categories/openai_codex_gpt-image-2-high_20260622_170123_564d16d3.png",
+    "/images/categories/elektricni-alat.png",
+    "/images/categories/brusne-ploce.png",
+    "/images/categories/svrdla.png",
+    "/images/categories/cetke.png",
   ];
 
   return (
@@ -68,6 +68,12 @@ export function FeaturedCategories() {
               </Link>
             </AnimatedSection>
           ))}
+        </div>
+
+        <div className="mt-8 flex justify-center sm:hidden">
+          <Link href="/proizvodi" className="inline-flex items-center gap-1 text-sm font-medium text-[#0055a8] hover:underline">
+            Sve kategorije <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
     </section>
