@@ -63,6 +63,8 @@ const productSelect = {
   type: true,
   shortDescription: true,
   stock: true,
+  priceRangeMin: true,
+  priceRangeMax: true,
   category: { select: { slug: true, name: true } },
   brand: { select: { slug: true, name: true } },
 } as const;

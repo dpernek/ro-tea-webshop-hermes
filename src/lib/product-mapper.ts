@@ -26,5 +26,6 @@ export function mapProduct(p: any) {
     type: (p.type?.toLowerCase() ?? "simple") as any,
     stock: p.stock ?? null,
     stockStatus: "unknown" as any,
+    priceRange: p.priceRangeMin != null ? { min: p.priceRangeMin, max: p.priceRangeMax ?? p.priceRangeMin } : (p.priceRange ?? null),
   };
 }
