@@ -69,30 +69,20 @@ export function VariableProductOptions({
 
   return (
     <div className="space-y-5">
-      {/* Price display */}
-      {displayPrice !== null ? (
-        <div className="text-2xl font-bold text-slate-900">
-          {formatPrice(displayPrice)}
-        </div>
-      ) : product.priceRange && product.priceRange.min !== product.priceRange.max ? (
-        <div className="text-slate-700">
-          <span className="text-sm">Raspon cijena: </span>
-          <span className="text-2xl font-bold text-slate-900">
-            {formatPrice(product.priceRange.min)} – {formatPrice(product.priceRange.max)}
-          </span>
+      {/* Price display — only shown when a variant is matched */}
+      {matchedVariant ? (
+        <div className="border-t border-slate-100 pt-4">
+          <div className="text-2xl font-bold text-slate-900 sm:text-3xl">
+            {formatPrice(matchedVariant.price)}
+          </div>
+          <p className="mt-1 text-sm text-green-700">
+            Cijena za odabranu kombinaciju
+            {matchedVariant.sku && <span className="text-slate-400"> · {matchedVariant.sku}</span>}
+          </p>
+          <p className="mt-1 text-xs text-slate-400">Cijena s PDV-om (25%)</p>
         </div>
       ) : (
-        <div className="text-2xl font-bold text-slate-900">
-          {formatPrice(product.price)}
-        </div>
-      )}
-
-      {/* Matched variant info */}
-      {matchedVariant && (
-        <p className="text-sm text-green-700">
-          Cijena za odabranu kombinaciju
-          {matchedVariant.sku && <span className="text-slate-400"> · {matchedVariant.sku}</span>}
-        </p>
+        <p className="text-sm text-slate-500">Odaberite opcije za prikaz cijene</p>
       )}
 
       {attributes.length > 0 && (

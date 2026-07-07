@@ -376,49 +376,29 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </p>
             )}
 
-            {/* Price */}
-            <div className="mt-6 border-t border-slate-100 pt-6">
-              {product.type === "VARIABLE" &&
-              product.priceRangeMin != null ? (
-                <div>
-                  <p className="mb-1 text-sm text-slate-500">
-                    Raspon cijena
-                  </p>
-                  <p className="text-2xl font-bold text-slate-900 sm:text-3xl">
-                    {formatPrice(product.priceRangeMin)}
-                    {product.priceRangeMax &&
-                      product.priceRangeMax !==
-                        product.priceRangeMin && (
-                        <>
-                          {" "}
-                          – {formatPrice(product.priceRangeMax)}
-                        </>
-                      )}
-                  </p>
-                </div>
-              ) : (
-                <div>
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-3xl font-bold text-green-700 sm:text-4xl">
-                      {formatPrice(effectivePrice)}
-                    </span>
-                    {hasDiscount && discountPercent > 0 && (
-                      <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
-                        –{discountPercent}%
-                      </span>
-                    )}
-                  </div>
-                  {oldPrice && (
-                    <span className="text-lg text-slate-400 line-through">
-                      {formatPrice(oldPrice)}
+            {/* Price — simple products show price here; VARIABLE products show price in options below */}
+            {product.type !== "VARIABLE" && (
+              <div className="mt-6 border-t border-slate-100 pt-6">
+                <div className="flex items-baseline gap-3">
+                  <span className="text-3xl font-bold text-green-700 sm:text-4xl">
+                    {formatPrice(effectivePrice)}
+                  </span>
+                  {hasDiscount && discountPercent > 0 && (
+                    <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
+                      –{discountPercent}%
                     </span>
                   )}
-                  <p className="mt-1 text-xs text-slate-400">
-                    Cijena s PDV-om ({product.taxRate ?? 25}%)
-                  </p>
                 </div>
-              )}
-            </div>
+                {oldPrice && (
+                  <span className="text-lg text-slate-400 line-through">
+                    {formatPrice(oldPrice)}
+                  </span>
+                )}
+                <p className="mt-1 text-xs text-slate-400">
+                  Cijena s PDV-om ({product.taxRate ?? 25}%)
+                </p>
+              </div>
+            )}
 
             {/* ===== Key Benefits ===== */}
             {productBenefits.length > 0 && (
