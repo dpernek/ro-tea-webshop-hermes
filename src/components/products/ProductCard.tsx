@@ -82,9 +82,11 @@ export function ProductCard({ product, index }: ProductCardProps) {
           </Link>
         </h3>
 
-        <p className="mb-4 line-clamp-2 text-sm text-slate-500">
-          {product.shortDescription}
-        </p>
+        {product.shortDescription && !product.shortDescription.startsWith("Kataloški broj") && (
+          <p className="mb-4 line-clamp-2 text-sm text-slate-500">
+            {product.shortDescription}
+          </p>
+        )}
 
         <div className="mt-auto space-y-4">
           {isVariable && product.priceRange ? (
