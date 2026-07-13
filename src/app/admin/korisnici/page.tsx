@@ -46,6 +46,8 @@ export default function AdminUsersPage() {
 
   useEffect(() => { load(); }, []);
 
+  if (forbidden) return <ForbiddenCard />;
+
   async function save() {
     setErrors({}); setSaving(true); setMsg(null);
     try {

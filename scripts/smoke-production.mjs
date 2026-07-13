@@ -1,13 +1,22 @@
 #!/usr/bin/env node
 /**
  * RO-TEA Production Smoke Test (enhanced)
- * Usage: node scripts/smoke-production.mjs [base-url]
+ * Usage:
+ *   node scripts/smoke-production.mjs
+ *   node scripts/smoke-production.mjs [base-url]
+ *   node scripts/smoke-production.mjs --strict
+ *   node scripts/smoke-production.mjs [base-url] --strict
  * Default: https://ro-tea-webshop-hermes.vercel.app
  */
 
-const BASE = process.argv[2] || "https://ro-tea-webshop-hermes.vercel.app";
+const args = process.argv.slice(2);
+const STRICT = args.includes("--strict");
+const BASE =
+  args.find((arg) => !arg.startsWith("--")) ||
+  "https://ro-tea-webshop-hermes.vercel.app";
 const R = "\x1b[31mFAIL\x1b[0m";
 const G = "\x1b[32mPASS\x1b[0m";
+const Y = "\x1b[33mWARN\x1b[0m";
 
 const ERROR_SHELLS = ["This page couldn't load", "Application error", "A server error occurred", "DIGEST"];
 
@@ -73,6 +82,7 @@ const QA_PATTERNS = ["QA-CMS", "QA-CTA", "Changed via QA", "QA Kategorije", "[CL
 // --- Run tests ---
 let passed = 0;
 let failed = 0;
+let qaWarnings = 0;
 
 for (const route of ROUTES) {
   const url = BASE + route.path;
@@ -97,8 +107,9 @@ for (const route of ROUTES) {
     if (route.path === "/" && ok) {
       for (const qa of QA_PATTERNS) {
         if (body.includes(qa)) {
-          console.log(`\x1b[33mWARN\x1b[0m | ${route.label.padEnd(18)} | Found QA content: "${qa}"`);
-          // Don't fail, just warn
+          qaWarnings++;
+          console.log(`${Y} | ${route.label.padEnd(18)} | Found QA content: "${qa}"`);
+          if (STRICT) ok = false;
         }
       }
     }
@@ -120,5 +131,5 @@ for (const route of ROUTES) {
   }
 }
 
-console.log(`\nPassed: ${passed}/${ROUTES.length}  Failed: ${failed}`);
+console.log(`\nPassed: ${passed}/${ROUTES.length}  Failed: ${failed}  QA warnings: ${qaWarnings}${STRICT ? " (strict mode)" : ""}`);
 process.exit(failed > 0 ? 1 : 0);

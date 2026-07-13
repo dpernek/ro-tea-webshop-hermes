@@ -29,15 +29,8 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   });
   const cartCouponCode = useCartStore(s => s.couponCode);
   const cartCouponDiscount = useCartStore(s => s.couponDiscount);
-  const [couponCode, setCouponCode] = useState(cartCouponCode);
-  const [couponDiscount, setCouponDiscount] = useState(cartCouponDiscount);
-
-  function cartTotal() {
-    return items.reduce((sum, item) => {
-      const price = item.product.salePrice != null && item.product.salePrice > 0 && item.product.salePrice < item.product.price ? item.product.salePrice : item.product.price;
-      return sum + price * item.quantity;
-    }, 0);
-  }
+  const [couponCode] = useState(cartCouponCode);
+  const [couponDiscount] = useState(cartCouponDiscount);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [shippingMethods, setShippingMethods] = useState<Array<{ id: string; name: string; price: number; freeAboveAmount?: number | null }>>([]);

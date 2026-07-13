@@ -189,14 +189,6 @@ export function CatalogContent({
     (value: string) => updateUrl({ sort: value }),
     [updateUrl],
   );
-  const handleSaleToggle = useCallback(
-    () => updateUrl({ sale: sale === "1" ? null : "1" }),
-    [updateUrl, sale],
-  );
-  const handleInStockToggle = useCallback(
-    () => updateUrl({ inStock: inStock === "1" ? null : "1" }),
-    [updateUrl, inStock],
-  );
   const handleClear = useCallback(
     () => router.push("/proizvodi", { scroll: false }),
     [router],

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { mapProduct } from "@/lib/product-mapper";
 
 export const dynamic = "force-dynamic";
 
@@ -23,16 +24,35 @@ export async function GET(request: NextRequest) {
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { createdAt: "desc" },
-      select: { id: true, slug: true, name: true, sku: true, price: true, regularPrice: true, salePrice: true, image: true, featured: true, badge: true, type: true, categoryId: true, brandId: true, shortDescription: true },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        sku: true,
+        price: true,
+        regularPrice: true,
+        salePrice: true,
+        image: true,
+        featured: true,
+        badge: true,
+        type: true,
+        categoryId: true,
+        brandId: true,
+        shortDescription: true,
+        stock: true,
+        priceRangeMin: true,
+        priceRangeMax: true,
+        category: { select: { slug: true, name: true } },
+        brand: { select: { slug: true, name: true } },
+      },
     }),
     db.product.count({ where }),
   ]);
 
   const products = data.map((p) => ({
-    ...p,
-    oldPrice: p.salePrice != null && p.salePrice > 0 && p.salePrice < p.price ? p.price : null,
-    price: p.salePrice != null && p.salePrice > 0 && p.salePrice < p.price ? p.salePrice : p.price,
-    category: "", brand: "", // placeholder, populated by client
+    ...mapProduct(p),
+    categoryId: p.categoryId,
+    brandId: p.brandId,
   }));
 
   return NextResponse.json({ products, total, page, pages: Math.ceil(total / limit) });

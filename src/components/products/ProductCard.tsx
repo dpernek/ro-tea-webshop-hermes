@@ -50,7 +50,21 @@ export function ProductCard({ product, index }: ProductCardProps) {
         )}
         <button
           type="button"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); isWished(product.id) ? removeWish(product.id) : addWish({ id: product.id, name: product.name, price: product.price, image: product.image, slug: product.slug }); }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (isWished(product.id)) {
+              removeWish(product.id);
+            } else {
+              addWish({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                slug: product.slug,
+              });
+            }
+          }}
           className={`absolute bottom-3 right-3 z-10 rounded-full p-2 shadow-sm transition-all ${isWished(product.id) ? "bg-red-500 text-white" : "bg-white/90 text-slate-400 hover:text-red-500 hover:bg-white"}`}
           aria-label={isWished(product.id) ? "Ukloni iz liste želja" : "Dodaj u listu želja"}
         >

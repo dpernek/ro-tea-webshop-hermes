@@ -20,13 +20,21 @@ vercel deploy --prod   # ili GitHub webhook auto-deploy
 ```bash
 node scripts/smoke-production.mjs
 ```
-Pokriva **20 ruta**: homepage, katalog, 3 product detaila, 2 category listinga, cart, checkout, admin login, legal stranice, 5 API endpointa, sitemap.
+Pokriva **21 rutu**: homepage, katalog, 3 product detaila, 2 category listinga, cart, checkout, admin login, legal stranice, 5 API endpointa i sitemap.
 
 ### 4. QA Content Guard
 Smoke test **WARN-uje** ako na homepageu pronađe QA/test stringove:
 - `QA-CMS`, `QA-CTA`, `Changed via QA`, `QA Kategorije`, `[CLAIM:QA]`
 
 Ne faila test — samo upozorava.
+
+### Strict mode
+Ako želiš da QA sadržaj blokira prolaz smoke testa:
+```bash
+node scripts/smoke-production.mjs --strict
+```
+
+U strict modu bilo koji pronađeni QA string pretvara homepage check u `FAIL`.
 
 ## "Verified" Discipline
 
@@ -54,13 +62,18 @@ Ne faila test — samo upozorava.
 node scripts/smoke-production.mjs
 ```
 
+Ili strože:
+```bash
+node scripts/smoke-production.mjs --strict
+```
+
 ### Primjer PASS outputa
 ```
 PASS | Homepage           | 200  | body=✓ | err=✓ | https://...
 PASS | Katalog            | 200  | body=✓ | err=✓ | https://...
 PASS | Product 1          | 200  | body=✓ | err=✓ | https://...
 ...
-Passed: 20/20  Failed: 0
+Passed: 21/21  Failed: 0  QA warnings: 0
 ```
 
 ### FAIL kriteriji
@@ -71,4 +84,7 @@ Passed: 20/20  Failed: 0
 - < 1 product/category slug
 
 ### WARN (non-blocking)
+- QA/test content otkriven na homepageu
+
+### FAIL u `--strict` modu
 - QA/test content otkriven na homepageu
