@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
-  const cat = await db.category.findUnique({ where: { slug }, select: { id: true, slug: true, name: true, description: true, image: true, parentId: true, status: true, introText: true } });
+  const cat = await db.category.findUnique({ where: { slug }, select: { id: true, slug: true, name: true, description: true, image: true, parentId: true, status: true } });
   if (!cat || cat.status !== "ACTIVE") notFound();
 
   const allCatsRaw = await db.category.findMany({
@@ -83,12 +83,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 
                 {cat.description && (
                   <p className="mt-3 max-w-2xl text-slate-600 leading-relaxed">{cat.description}</p>
-                )}
-                
-                {cat.introText && (
-                  <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-500">
-                    {cat.introText}
-                  </p>
                 )}
               </div>
             </div>

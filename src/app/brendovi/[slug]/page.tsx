@@ -28,7 +28,7 @@ export default async function BrandPage({ params }: BrandPageProps) {
   const { slug } = await params;
   const brand = await db.brand.findUnique({
     where: { slug },
-    select: { id: true, slug: true, name: true, description: true, image: true, introText: true },
+    select: { id: true, slug: true, name: true, description: true, image: true },
   });
   if (!brand) notFound();
 
@@ -76,11 +76,6 @@ export default async function BrandPage({ params }: BrandPageProps) {
             <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">{brand.name}</h1>
             {brand.description && (
               <p className="mt-3 max-w-2xl text-slate-600 leading-relaxed">{brand.description}</p>
-            )}
-            {brand.introText && (
-              <div className="mt-6 rounded-lg border border-slate-200 bg-white/80 p-5">
-                <p className="text-sm leading-relaxed text-slate-600">{brand.introText}</p>
-              </div>
             )}
             <p className="mt-3 text-sm font-medium text-slate-500">
               {count} proizvoda
