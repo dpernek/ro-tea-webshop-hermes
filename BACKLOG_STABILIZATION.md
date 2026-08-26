@@ -8,6 +8,9 @@ Zatvoreno u stabilizacijskom radu (29.06.–01.07.2026.): admin orders workflow,
 
 ## P1 — Riješiti uskoro
 
+> ✅ Riješeno 2026-08-26: SEO CMS rep (seoTitle/seoDescription/introText popunjeni za 16 kategorija + 3 brenda, storefront ih koristi). Lint dead code (ForbiddenCard, forbidden state), QA guard --strict i brand data (brandId popunjen: festa 661, pferd 130, metabo 55) također riješeni ranije.
+
+
 ### 1. Orders workflow QA rep — claim indikator na orders listi
 **Problem:** Reklamacija (`[CLAIM:OPEN]` / `[CLAIM:RESOLVED]`) vidljiva samo na order detailu, ne na orders listi. Operativa ne može brzo filtriati reklamacije.
 
