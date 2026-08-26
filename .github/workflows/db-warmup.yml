@@ -1,0 +1,25 @@
+name: DB Warmup (Supabase stay-alive)
+
+# Supabase free tier pauzira bazu nakon 7 dana neaktivnosti → cijeli webshop padne.
+# Ovaj job pinga DB-backed endpoint svaki dan da baza ostane aktivna.
+# Ako ping ne prođe → job faila → GitHub šalje email notifikaciju.
+
+on:
+  schedule:
+    - cron: "30 6 * * *" # svaki dan 06:30 UTC = 08:30 CEST
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /api/shipping (DB-backed)
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 \
+            "https://ro-tea-webshop-hermes.vercel.app/api/shipping")
+          echo "HTTP status: $code"
+          if [ "$code" != "200" ]; then
+            echo "::error::API ne vraća 200 — baza je vjerojatno pauzirana!"
+            exit 1
+          fi
+          echo "OK — baza aktivna"
