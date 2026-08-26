@@ -18,7 +18,7 @@ export function FeaturedCategories() {
       });
   }, []);
 
-  const fallback = "/images/categories/elektricni-alat.png";
+  const fallback = "/images/categories/elektricni-alat.webp";
 
   return (
     <section className="bg-white py-16 sm:py-20">
