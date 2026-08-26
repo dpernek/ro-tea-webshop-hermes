@@ -188,7 +188,7 @@ function AdminOrdersPage() {
       setLoading(false);
     }
     // buildParams accesses only the same deps
-  }, [page, statusFilter, paymentStatusFilter, unreadFilter, glsFilter, paymentMethodFilter, dateFrom, dateTo]);
+  }, [page, statusFilter, paymentStatusFilter, unreadFilter, glsFilter, paymentMethodFilter, claimFilter, dateFrom, dateTo]);
 
   useEffect(() => { if (ready) load(); }, [load, ready]);
 
