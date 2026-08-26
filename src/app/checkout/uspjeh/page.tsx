@@ -9,6 +9,7 @@ import {
   MapPin, ShoppingBag, TicketPercent, ExternalLink, Loader2,
 } from "lucide-react";
 import Link from "next/link";
+import { useCartStore } from "@/store/cartStore";
 
 const PAYMENT_LABELS: Record<string, string> = { card: "Kartica", bank_transfer: "Bankovna uplata", cod: "Pouzeće" };
 const PAYMENT_INSTRUCTIONS: Record<string, string> = {
@@ -38,16 +39,46 @@ function UspjehContent() {
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const clearCart = useCartStore((s) => s.clearCart);
 
   useEffect(() => {
     if (!orderNumber && !sessionId) { setLoading(false); setError(true); return; }
     const param = sessionId ? `session_id=${encodeURIComponent(sessionId)}` : `orderNumber=${encodeURIComponent(orderNumber!)}`;
-    fetch(`/api/orders/status?${param}`)
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then(data => { if (data.orderNumber) setOrder(data); else setError(true); })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, [orderNumber, sessionId]);
+    const maxAttempts = sessionId ? 10 : 1;
+    let attempts = 0;
+    let found = false;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const poll = async () => {
+      try {
+        const r = await fetch(`/api/orders/status?${param}`);
+        const data = r.ok ? await r.json() : null;
+        if (cancelled) return;
+        if (data && data.orderNumber) {
+          found = true;
+          setOrder(data);
+          if (data.paymentStatus === "PAID") {
+            if (sessionId) clearCart();
+            setLoading(false);
+            return;
+          }
+          if (!sessionId) { setLoading(false); return; }
+        }
+      } catch {
+        // privremena greška — pokušaj ponovno
+      }
+      attempts++;
+      if (attempts < maxAttempts) {
+        timer = setTimeout(poll, 3000);
+      } else {
+        setLoading(false);
+        if (!found) setError(true);
+      }
+    };
+    poll();
+    return () => { cancelled = true; if (timer) clearTimeout(timer); };
+  }, [orderNumber, sessionId, clearCart]);
 
   if (loading) {
     return (
@@ -81,7 +112,7 @@ function UspjehContent() {
   const hasTracking = isGls && order.glsParcelNumber;
 
   // Build full shipping address for home delivery
-  const shippingAddr = order.shippingAddress ? `${order.shippingAddress}, ${order.postalCode || ""} ${order.city || ""}`.trim() : order.shippingAddress;
+  const shippingAddr = (order.shippingAddress || "").trim();
 
   return (
     <div className="bg-white py-12 sm:py-16">
