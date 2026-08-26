@@ -4,6 +4,7 @@ import { PopularProducts } from "@/components/home/PopularProducts";
 import { Benefits } from "@/components/home/Benefits";
 import { CTASection } from "@/components/home/CTASection";
 import Image from "next/image";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { getContentSection } from "@/lib/content";
 export const dynamic = "force-dynamic";
@@ -112,15 +113,15 @@ export default async function HomePage() {
             Provjereni brendovi
           </p>
           <div className="flex items-center justify-center gap-8 sm:gap-12">
-            <div className="relative h-16 w-[160px] sm:h-20 sm:w-[200px]">
+            <Link href="/brendovi/pferd" aria-label="PFERD proizvodi" className="relative h-16 w-[160px] sm:h-20 sm:w-[200px]">
               <Image src="/images/brands/pferd.png" alt="PFERD" fill className="object-contain opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
-            </div>
-            <div className="relative h-16 w-[160px] sm:h-20 sm:w-[200px]">
+            </Link>
+            <Link href="/brendovi/metabo" aria-label="Metabo proizvodi" className="relative h-16 w-[160px] sm:h-20 sm:w-[200px]">
               <Image src="/images/brands/metabo.png" alt="Metabo" fill className="object-contain opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
-            </div>
-            <div className="relative h-16 w-[160px] sm:h-20 sm:w-[200px]">
+            </Link>
+            <Link href="/brendovi/festa" aria-label="Festa proizvodi" className="relative h-16 w-[160px] sm:h-20 sm:w-[200px]">
               <Image src="/images/brands/festa.webp" alt="Festa" fill className="object-contain opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300" />
-            </div>
+            </Link>
           </div>
         </div>
       </section>

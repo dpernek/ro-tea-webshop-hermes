@@ -33,6 +33,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[sitemap] Failed to fetch categories:", error);
   }
 
+  // Fetch brands for brand pages
+  let brands: { slug: string; updatedAt: Date }[] = [];
+  try {
+    brands = await db.brand.findMany({ select: { slug: true, updatedAt: true } });
+  } catch (error) {
+    console.error("[sitemap] Failed to fetch brands:", error);
+  }
+
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
     {
@@ -66,10 +74,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     },
     {
-      url: `${BASE_URL}/dostava-i-povrat`,
+      url: `${BASE_URL}/pravila-dostave`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.6,
+    },
+    {
+      url: `${BASE_URL}/usluga-brusenja`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
     {
       url: `${BASE_URL}/izjava-o-sigurnosti-online-placanja`,
@@ -134,5 +148,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  return [...staticPages, ...categoryPages, ...productPages];
+  // Brand pages
+  const brandPages: MetadataRoute.Sitemap = brands.map((brand) => ({
+    url: `${BASE_URL}/brendovi/${brand.slug}`,
+    lastModified: brand.updatedAt,
+    changeFrequency: "weekly",
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...categoryPages, ...brandPages, ...productPages];
 }
