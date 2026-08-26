@@ -21,6 +21,21 @@ export const metadata: Metadata = {
     description:
       "RO-TEA d.o.o. — specijalizirana trgovina profesionalnim alatima i opremom za industriju, radionice i obrtnike. Brusni alati, zaštitna oprema, ručni alat, električni alati. PFERD, Metabo, Festa — brza dostava i stručna podrška.",
     type: "website",
+    images: [
+      {
+        url: "/images/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "RO-TEA d.o.o.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RO-TEA | Profesionalni alati i oprema za industriju i obrt",
+    description:
+      "RO-TEA d.o.o. — specijalizirana trgovina profesionalnim alatima i opremom za industriju, radionice i obrtnike.",
+    images: ["/images/og-image.png"],
   },
 };
 
