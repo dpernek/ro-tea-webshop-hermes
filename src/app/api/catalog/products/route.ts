@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { mapProduct } from "@/lib/product-mapper";
+import { rankProducts } from "@/lib/search";
 
 export const dynamic = "force-dynamic";
 
@@ -49,11 +50,47 @@ export async function GET(request: NextRequest) {
     db.product.count({ where }),
   ]);
 
-  const products = data.map((p) => ({
+  // Fuzzy fallback — isti kao actions.ts (paritet data pathova)
+  let resultData = data;
+  let resultTotal = total;
+  if (search && total === 0) {
+    const fuzzyWhere = { ...where };
+    delete fuzzyWhere.OR;
+    const all = await db.product.findMany({
+      where: fuzzyWhere,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        sku: true,
+        price: true,
+        regularPrice: true,
+        salePrice: true,
+        image: true,
+        featured: true,
+        badge: true,
+        type: true,
+        categoryId: true,
+        brandId: true,
+        shortDescription: true,
+        stock: true,
+        priceRangeMin: true,
+        priceRangeMax: true,
+        category: { select: { slug: true, name: true } },
+        brand: { select: { slug: true, name: true } },
+      },
+    });
+    const ranked = rankProducts(all, search);
+    resultData = ranked.slice((page - 1) * limit, (page - 1) * limit + limit).map((r) => r.item);
+    resultTotal = ranked.length;
+  }
+
+  const products = resultData.map((p) => ({
     ...mapProduct(p),
     categoryId: p.categoryId,
     brandId: p.brandId,
   }));
 
-  return NextResponse.json({ products, total, page, pages: Math.ceil(total / limit) });
+  return NextResponse.json({ products, total: resultTotal, page, pages: Math.ceil(resultTotal / limit) });
 }

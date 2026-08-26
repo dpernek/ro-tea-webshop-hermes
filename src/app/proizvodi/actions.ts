@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db";
 import { mapProduct } from "@/lib/product-mapper";
+import { rankProducts } from "@/lib/search";
 
 // ── shared mapping ──────────────────────────────────────────────
 
@@ -71,7 +72,7 @@ const productSelect = {
 
 // ── server action (called from client on Load More) ────────────
 
-export async function loadMoreProducts(params: {
+async function queryProductsWithFuzzy(params: {
   search?: string;
   categorySlug?: string;
   brandSlug?: string;
@@ -95,10 +96,41 @@ export async function loadMoreProducts(params: {
     db.product.count({ where }),
   ]);
 
+  // Fuzzy fallback: contains nije našao ništa (tipfeleri, dijakritika) →
+  // skeniraj sve aktivne s ostalim filterima i rankaj po Levenshteinu.
+  if (params.search && total === 0) {
+    const fuzzyWhere = buildWhere({ ...params, search: undefined });
+    const all = await db.product.findMany({
+      where: fuzzyWhere,
+      orderBy: { name: "asc" },
+      select: productSelect,
+    });
+    const ranked = rankProducts(all, params.search);
+    return {
+      products: ranked
+        .slice(params.skip, params.skip + params.take)
+        .map((r) => mapProduct(r.item)),
+      total: ranked.length,
+    };
+  }
+
   return {
     products: rows.map(mapProduct),
     total,
   };
+}
+
+export async function loadMoreProducts(params: {
+  search?: string;
+  categorySlug?: string;
+  brandSlug?: string;
+  sort?: string;
+  sale?: string;
+  inStock?: string;
+  skip: number;
+  take: number;
+}) {
+  return queryProductsWithFuzzy(params);
 }
 
 // ── server-side initial load helpers (used by page.tsx) ────────
@@ -111,9 +143,6 @@ export async function loadInitialCatalog(params: {
   sale?: string;
   inStock?: string;
 }) {
-  const where = buildWhere(params);
-  const orderBy = buildOrderBy(params.sort);
-
   const allowedBrands = [
     "pferd",
     "metabo",
@@ -134,15 +163,17 @@ export async function loadInitialCatalog(params: {
     if (g.categoryId) catCountMap[g.categoryId] = g._count.id;
   }
 
-  const [products, total, categories, brands] = await Promise.all([
-    db.product.findMany({
-      where,
+  const [catalog, categories, brands] = await Promise.all([
+    queryProductsWithFuzzy({
+      search: params.search,
+      categorySlug: params.categorySlug,
+      brandSlug: params.brandSlug,
+      sort: params.sort,
+      sale: params.sale,
+      inStock: params.inStock,
       skip: 0,
       take: 24,
-      orderBy,
-      select: productSelect,
     }),
-    db.product.count({ where }),
     db.category.findMany({
       where: { status: "ACTIVE" },
       select: { id: true, slug: true, name: true, description: true, image: true },
@@ -151,8 +182,8 @@ export async function loadInitialCatalog(params: {
   ]);
 
   return {
-    products: products.map(mapProduct),
-    total,
+    products: catalog.products,
+    total: catalog.total,
     categories: categories
       .map((c) => ({
         id: c.id,
