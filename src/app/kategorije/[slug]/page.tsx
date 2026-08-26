@@ -66,13 +66,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             </nav>
             
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
-              {/* Category image — visual anchor */}
-              {cat.image && (
-                <div className="hidden h-32 w-48 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white lg:block">
-                  <img src={cat.image} alt={cat.name} className="h-full w-full object-contain p-2" />
-                </div>
-              )}
-              
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-baseline gap-3">
                   <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">{cat.name}</h1>
