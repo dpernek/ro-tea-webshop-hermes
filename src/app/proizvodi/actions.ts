@@ -98,7 +98,8 @@ async function queryProductsWithFuzzy(params: {
 
   // Fuzzy fallback: contains nije našao ništa (tipfeleri, dijakritika) →
   // skeniraj sve aktivne s ostalim filterima i rankaj po Levenshteinu.
-  if (params.search && total === 0) {
+  // Samo za upite od 3+ znaka — kratki parcijalni upiti ne vrijede full skena.
+  if (params.search && params.search.trim().length >= 3 && total === 0) {
     const fuzzyWhere = buildWhere({ ...params, search: undefined });
     const all = await db.product.findMany({
       where: fuzzyWhere,

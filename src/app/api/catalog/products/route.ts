@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
   // Fuzzy fallback — isti kao actions.ts (paritet data pathova)
   let resultData = data;
   let resultTotal = total;
-  if (search && total === 0) {
+  if (search && search.trim().length >= 3 && total === 0) {
     const fuzzyWhere = { ...where };
     delete fuzzyWhere.OR;
     const all = await db.product.findMany({

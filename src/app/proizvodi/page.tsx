@@ -42,7 +42,6 @@ export default async function CatalogPage({ searchParams }: PageProps) {
 
   return (
     <CatalogContent
-      key={`${q}|${cat}|${brand}|${sort}|${sale}|${inStock}`}
       initialProducts={data.products}
       total={data.total}
       categories={data.categories}

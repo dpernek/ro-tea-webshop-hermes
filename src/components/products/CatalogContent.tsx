@@ -137,6 +137,13 @@ export function CatalogContent({
     setShowAllBrands(false);
   }, []);
 
+  // Reset list state when URL filteri se promijene (server isporučuje nove podatke).
+  // Bez key-propa na CatalogContent — remount bi ubio fokus search inputa.
+  useEffect(() => {
+    setLoadedProducts(initialProducts);
+    setTotal(serverTotal);
+  }, [q, cat, brand, sort, sale, inStock, initialProducts, serverTotal]);
+
   // lock body scroll when drawer is open
   useEffect(() => {
     if (drawerOpen) {
