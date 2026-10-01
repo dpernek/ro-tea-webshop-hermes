@@ -12,25 +12,19 @@ export function PopularProducts() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/catalog/products?limit=1000")
+    fetch("/api/catalog/products?home=true")
       .then((r) => (r.ok ? r.json() : { products: [] }))
       .then((d) => setProducts(d.products || []))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);
 
-  const featured = products.filter((p) => p.featured);
-  const display =
-    featured.length > 0
-      ? featured.slice(0, 8)
-      : products
-          .filter((p) => p.price > 0 && p.image !== "/images/placeholder.svg")
-          .slice(0, 8);
+  const hasFeatured = products.some((p) => p.featured);
 
   const title =
-    featured.length > 0 ? "Istaknuti proizvodi" : "Popularni proizvodi";
+    hasFeatured ? "Istaknuti proizvodi" : "Popularni proizvodi";
   const subtitle =
-    featured.length > 0
+    hasFeatured
       ? "Odabrani artikli iz naše ponude."
       : "Najtraženiji artikli iz naše ponude.";
 
@@ -55,7 +49,7 @@ export function PopularProducts() {
               ))}
             </div>
           ) : (
-            <ProductGrid products={display} />
+            <ProductGrid products={products} />
           )}
         </AnimatedSection>
         <AnimatedSection delay={0.2} className="mt-12 text-center">

@@ -28,9 +28,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
     glsPickupPointId: "", glsPickupPointName: "", glsPickupPointAddress: "",
   });
   const cartCouponCode = useCartStore(s => s.couponCode);
-  const cartCouponDiscount = useCartStore(s => s.couponDiscount);
   const [couponCode] = useState(cartCouponCode);
-  const [couponDiscount] = useState(cartCouponDiscount);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [shippingMethods, setShippingMethods] = useState<Array<{ id: string; name: string; price: number; freeAboveAmount?: number | null }>>([]);
@@ -64,7 +62,6 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
   const freeAbove = currentMethod?.freeAboveAmount ?? null;
   const isFreeShipping = freeAbove !== null && subtotal >= freeAbove;
   const shippingPrice = isFreeShipping ? 0 : methodPrice;
-  const total = subtotal + shippingPrice - couponDiscount;
 
   useEffect(() => { onShippingChange?.(shippingPrice, freeAbove, currentMethod?.name); }, [shippingPrice, freeAbove, currentMethod?.name, onShippingChange]);
 
@@ -110,7 +107,7 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
             customerName: formData.fullName, customerEmail: formData.email,
             customerPhone: formData.phone, address: formData.address,
             city: formData.city, postalCode: formData.postalCode, note: formData.note,
-            items: items.map(i => ({ productId: i.product.id, productName: i.product.name, sku: i.product.sku ?? undefined, quantity: i.quantity, unitPrice: i.product.price })),
+            items: items.map(i => ({ productId: i.product.id, quantity: i.quantity })),
             shippingMethodId: formData.shippingMethod, paymentMethod: formData.paymentMethod,
             glsPickupPointId: formData.glsPickupPointId || undefined,
             glsPickupPointName: formData.glsPickupPointName || undefined,
@@ -132,9 +129,8 @@ export function CheckoutForm({ onShippingChange }: { onShippingChange?: (price: 
         customerName: formData.fullName, customerEmail: formData.email,
         customerPhone: formData.phone, address: formData.address,
         city: formData.city, postalCode: formData.postalCode, note: formData.note,
-        items: items.map(i => ({ productId: i.product.id, productName: i.product.name, sku: i.product.sku ?? undefined, quantity: i.quantity, unitPrice: i.product.price })),
+        items: items.map(i => ({ productId: i.product.id, quantity: i.quantity })),
         paymentMethod: formData.paymentMethod, shippingMethodId: formData.shippingMethod,
-        shippingTotal: shippingPrice, subtotal, taxTotal: 0, total,
         glsPickupPointId: formData.glsPickupPointId || undefined,
         glsPickupPointName: formData.glsPickupPointName || undefined,
         glsPickupPointAddress: formData.glsPickupPointAddress || undefined,

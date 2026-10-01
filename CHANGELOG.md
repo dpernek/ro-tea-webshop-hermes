@@ -1,5 +1,14 @@
 # CHANGELOG — RO-TEA Webshop
 
+## Checkout i početna (2026-10-01)
+
+- Usklađen PDV u košarici i novim narudžbama: izdvaja se iz bruto cijene (8 € uključuje 1,60 € PDV-a).
+- Bankovna uplata/pouzeće i Stripe dijele validaciju pozitivnih cjelobrojnih količina; duplikati artikala se odbijaju.
+- Dostava se uvijek računa iz aktivnog zapisa u bazi, bez klijentskih iznosa. Paketomat zahtijeva odabranu lokaciju.
+- CMS naslov kategorija prikazuje se jednom, a početna preuzima najviše osam proizvoda.
+- Ažurirana dokumentacija dostave i dodani regresijski testovi (`npm test`).
+- Stripe se inicijalizira pri zahtjevu, pa preview build radi bez ključa. Bez konfiguracije kartični checkout vraća 503 prije pristupa bazi.
+
 ## fix/ecommerce-production-hardening (2026-06-23)
 
 ### Faza 0: Baseline Audit

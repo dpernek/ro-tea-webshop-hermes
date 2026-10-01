@@ -6,8 +6,7 @@ import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { Tag, X, Loader2, Truck, ShieldCheck, Store } from "lucide-react";
-
-const VAT_RATE = 0.25;
+import { includedVat } from "@/lib/tax";
 
 function pluralArtikala(n: number): string {
   if (n % 10 === 1 && n % 100 !== 11) return "artikl";
@@ -44,8 +43,8 @@ export function CartSummary({ showCheckoutButton = true, shippingPrice, freeAbov
   const subtotalWithVat = items.reduce((s, i) => s + i.product.price * i.quantity, 0);
   const totalRegular = items.reduce((s, i) => s + ((i.product as any).regularPrice || i.product.price) * i.quantity, 0);
   const savings = Math.max(0, totalRegular - subtotalWithVat);
-  const subtotalNoVat = subtotalWithVat / (1 + VAT_RATE);
-  const vatAmount = subtotalWithVat - subtotalNoVat;
+  const vatAmount = includedVat(subtotalWithVat);
+  const subtotalNoVat = subtotalWithVat - vatAmount;
 
   const fType = fulfillmentType(shippingMethodName);
   const effectiveShipping = shippingPrice ?? 0;

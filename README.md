@@ -98,7 +98,9 @@ Sigurnost:
 - `createOrder` NE vjeruje klijentskim cijenama
 - Cijene i ukupno se računaju server-side iz baze
 - Provjerava se da su proizvodi ACTIVE
-- Dostava: 6.64 €, besplatno iznad 66.36 €, osobno preuzimanje = 0 €
+- Dostava se računa iz aktivnog načina dostave u bazi (admin „Dostava”): trenutačno GLS 8 €, besplatno od 70 €, osobno preuzimanje 0 €
+- Količine moraju biti pozitivni cijeli brojevi; bankovna uplata/pouzeće i kartice koriste zajedničku serversku validaciju
+- Cijene uključuju PDV 25 %; prikazani PDV izdvaja se iz bruto međuzbroja artikala
 - Smanjenje zalihe nakon narudžbe
 
 ## SEO
@@ -120,4 +122,3 @@ ADMIN_PASSWORD=...      # Lozinka za auto-seed početnog admina
 NEXT_PUBLIC_SUPABASE_URL=https://fmqcjvoemdmghikrzulk.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=...
 ```
-

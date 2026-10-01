@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePermission } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +43,7 @@ export async function POST(
   }
 
   try {
+    const stripe = getStripe();
     const updateData: Record<string, unknown> = {};
 
     // Fetch from Stripe: prefer payment intent, fallback to checkout session
