@@ -1,25 +1,29 @@
 # RO-TEA Hermes — stanje 2026-10-01
 
-## Cilj i granice
+## Cilj i odluke
 
-Korisnik je nakon pregleda online webshopa odobrio popravljanje nalaza redom. Aktivni projekt je `/Users/macbookair/Documents/ro-tea web + shop/hermes`, GitHub `dpernek/ro-tea-webshop-hermes`. Roditeljski direktorij je stariji projekt s korisnikovim lokalnim izmjenama; ne dirati ga. Radna grana: `codex/checkout-and-home-fixes`, polazište main `e08541bf2dad634326ed2073773a374349379d62`.
+Korisnik je zatražio analizu NN PDF-a, plan zakonskih obveza i zatim „Kreni redom”. Potvrdio: **samo webshop; redovne cijene nisu se mijenjale**. Implementiran je prvi blok sidrenih cijena i javnih dnevnih cjenika. Plan: `work/LEGAL_IMPLEMENTATION_PLAN.md`; aktivacija i prihvat: `work/LEGAL_PRICE_LIST_RUNBOOK.md`.
 
-Produkcija: https://ro-tea-webshop-hermes.vercel.app. Vercel projekt `prj_qSJwfEYirr9jiezRLLhgdNDfxKKP`, team `team_9Rv8XaptaeM9SWtERRp5tFz8`. Početni produkcijski deployment `dpl_3scg1f2NVR4UHimp4tua3bdiThkJ` bio je READY i odgovarao mainu. Ne stvarati stvarne narudžbe, naplate, e-mailove ni GLS pošiljke tijekom provjera. Nema promjene baze, migracije ili prepisivanja povijesnih narudžbi.
+Službeni NN 101/2026 br. 1212/1213 uređuju sidrene cijene i CSV/XML. NN 110/2026 br. 1309/1310 odgađaju početak obiju odluka na **17. 11. 2026.** Opće sidro ostaje 10. 9. 2026.; ranije kategorije zadržavaju 2. 5. 2025. Izjava vlasnika služi kao dokumentirani izvor prijedloga iz sadašnjih redovnih cijena. Ne potvrđivati automatski nepoznatu povijest; provjeriti novije artikle i ranije kategorije. Sidro nije najniža cijena u 30 dana prije akcije.
 
-## Implementirane odluke
+## Implementacija
 
-- `src/lib/tax.ts` izdvaja PDV iz bruto cijena; dijele ga `pricing.ts` i `CartSummary.tsx`. Primjer 8 € = 1,60 € PDV. `taxTotal` ostaje PDV međuzbroja artikala, prije dostave/kupona, kao prikaz u košarici.
-- `checkout-validation.ts` sadrži zajedničku Zod validaciju za ručni i Stripe checkout. Količine moraju biti pozitivni cijeli brojevi; prazna košarica i ponovljeni ID artikla se odbijaju. Klijentske cijene, nazivi i iznosi se uklanjaju. Ručni checkout dopušta samo bank_transfer/cod.
-- `shipping-pricing.ts` računa dostavu iz aktivnog zapisa baze i praga besplatne dostave. Oba serverska puta koriste isti helper; ne oslanjaju se na ID koji sadrži “osobno”. GLS Paketomat zahtijeva lokaciju. `actions/orders.ts` više ne koristi klijentski shippingTotal i ne ponavlja DB upit za dostavu. Admin e-mail koristi nazive/cijene iz baze.
-- Početna daje CMS intro izravno komponenti FeaturedCategories, bez drugog naslova. PopularProducts poziva `/api/catalog/products?home=true`; API odabire aktivne featured proizvode ili valjane fallback proizvode prije ograničenja na osam. Ostali katalog upiti ostaju isti.
-- README dostava usklađena s pregledanim postavkama 8 €/70 €; baza ostaje izvor postavki. CHANGELOG bilježi izmjene.
+Prisma model i migracija `20261001120000_legal_price_lists`: sidra proizvoda/varijanti, metadata barkoda, jedinice i količine pakiranja (i po varijanti), settings jednog webshopa, audit, CSV snapshots i zapis objava. SQL triggeri štite potvrđena sidra od prepisivanja i audit/datoteke od izmjene ili brisanja. Sidra i metadata spremaju se parametriziranim skupnim SQL-om unutar transakcije.
 
-## Provjere
+`src/lib/compliance/`: prijedlog, fingerprint kataloga, validacija punog pregleda, potvrda s administratorskim identitetom/izvorom, CSV i atomarna dnevna objava. Jedan zapis po zagrebačkom danu, advisory lock, ponavljanje serialization konflikta; SHA-256 i nepromjenjiv sadržaj arhive. Nepotpuni podaci blokiraju objavu. Arhiva se ne briše, pa zadržavanje prelazi 30 dana.
 
-Pročitani relevantni Next.js 16.2.9 lokalni vodiči prije pisanja koda. Dependencies instalirane, tsx dodan kao devDependency. `npm test`: 13/13 PASS, bez stvarne baze ili Stripe poziva. Testovi pokrivaju bruto PDV/akcije, manipulirane iznose, nevaljane količine/duplikate, aktivnu dostavu/paketomat i stvarne API handlere s testnim DB klijentom. `npm run build` PASS uz mrežni pristup za Google font i javno označen placeholder Stripe ključ samo za build. `npm run lint`: 0 errors, 9 postojećih warnings. `git diff --check` PASS. Logovi `/private/tmp/ro-tea-hermes-{build,lint,tests}.log`.
+`/admin/cjenici`: pregled i potvrda, zajednička marka/vrsta prodaje, zasebne jedinice varijanti, postavke i ručna objava. `/cjenici` + javni CSV download bez prijave i s ETag. Footer/admin navigacija dodani. `vercel.json` cron 04:00 UTC, endpoint zaštićen `CRON_SECRET`; objava početno isključena. Nema vanjskog alarma za izostanak cron poziva; potreban operativni nadzor.
 
-Početni produkcijski smoke bio je 21/21 PASS i browser pregled kataloga, pretrage, detalja, košarice i blagajne bez console grešaka. Nisu potvrđeni stvarna naplata, e-mail i GLS. Slične kategorije električnog alata imaju različite brand slugove; taxonomy nije mijenjana.
+Prikaz sidra na karticama, detalju, odabranim varijantama, povezanim proizvodima, mobilnoj cijeni, košarici i novim stavkama liste želja. Najjeftinija varijanta ima svoju aktualnu cijenu i sidro. Lista želja otvara proizvod za provjeru cijene/odabir varijante. Zajednički helper odbija nevažeću akcijsku cijenu.
 
-## Sljedeći korak
+## Provjere i granice
 
-Korisnik je izričito odobrio push, PR i preview. Commit `c662e2c` je poslan; draft PR https://github.com/dpernek/ro-tea-webshop-hermes/pull/1 je povezan s chatom. Prvi preview `dpl_5heNdV1euTTAEUxwuNCYinrmwNK3` pao je zbog nedostajućeg Stripe ključa (potvrđeno build logom). `getStripe()` sada inicijalizira SDK pri zahtjevu; checkout bez ključa vraća 503 prije DB pristupa, ostali importi prilagođeni. Dodan regresijski test: 14/14 PASS; lint 0 errors/9 postojećih warnings; build bez Stripe ključa PASS. Slijedi push dopune i provjera novog previewa. Produkcijski merge/deploy nije napravljen niti odobren.
+28/28 testova PASS; lint 0 errors/9 postojećih warnings; TypeScript i produkcijski build PASS. PGlite izvršava stvarni migracijski PostgreSQL SQL i skupne upise; provjereni triggeri, posebne jedinice varijanti i jedinstvena dnevna objava. Testovi obuhvaćaju fingerprint, preview bez upisa, blokiranje nepotpunog CSV-a, idempotenciju, cron auth i javni download. Stvarni Prisma/PostgreSQL end-to-end još nije potvrđen. Build je trebao mrežni pristup postojećem Google fontu.
+
+Produkcijska migracija, podaci, potvrde sidara i cron aktivacija **nisu izvršeni**. Nema novih produkcijskih narudžbi/naplata/e-mailova/GLS. Sljedeće: izolirana preview baza, migracija, pregled stvarnog kataloga i browser prihvat prema runbooku. Zasebna povijest najniže cijene za 30 dana prije akcije još je otvorena; postojeći oldPrice nije dokaz minimuma. Ne tvrditi potpunu usklađenost.
+
+## Repo i ovlasti
+
+Repo `/Users/macbookair/Documents/ro-tea web + shop/hermes`, remote `dpernek/ro-tea-webshop-hermes`. Grana `codex/legal-prices-and-price-lists` temelji se na `2f6c846` iz `codex/checkout-and-home-fixes`; novi draft PR treba imati tu granu kao base. Korisnik je ranije odobrio push/PR/preview, ne produkcijski merge/deploy. PR #1 ostaje draft: https://github.com/dpernek/ro-tea-webshop-hermes/pull/1.
+
+Produkcija https://ro-tea-webshop-hermes.vercel.app ostaje main. Vercel project `prj_qSJwfEYirr9jiezRLLhgdNDfxKKP`, team `team_9Rv8XaptaeM9SWtERRp5tFz8`. Raniji preview nije imao DATABASE_URL ni Stripe ključ. get_project connector trenutačno vraća nesklad projectId/idOrName sheme; gh radi uz mrežni pristup. Roditeljski projekt i korisnikove izmjene ne dirati. Pročitani instalirani Next 16.2.9 vodiči i Next/cron skills. Neočekivane duplikate generiranih datoteka „ 2.ts” sačuvani su u `/private/tmp/ro-tea-generated-copies`, izvan izvornog koda.

@@ -5,6 +5,7 @@ import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { mapProduct } from "@/lib/product-mapper";
+import { storefrontAnchorSelect } from "@/lib/anchor-price";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +48,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const products = await db.product.findMany({
     where: { categoryId: cat.id, status: "ACTIVE" },
     orderBy: { createdAt: "desc" },
-    select: { id: true, slug: true, name: true, price: true, salePrice: true, regularPrice: true, image: true, badge: true, featured: true, type: true, shortDescription: true, stock: true, stockStatus: true, priceRangeMin: true, priceRangeMax: true, category: { select: { slug: true, name: true } }, brand: { select: { slug: true, name: true } } },
+    select: { ...storefrontAnchorSelect, id: true, slug: true, name: true, price: true, salePrice: true, regularPrice: true, image: true, badge: true, featured: true, type: true, shortDescription: true, stock: true, stockStatus: true, priceRangeMin: true, priceRangeMax: true, category: { select: { slug: true, name: true } }, brand: { select: { slug: true, name: true } } },
   });
   const mappedProducts = products.map(mapProduct);
 

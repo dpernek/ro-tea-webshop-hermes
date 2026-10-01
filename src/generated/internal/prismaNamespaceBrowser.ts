@@ -54,6 +54,10 @@ export const ModelName = {
   User: 'User',
   Product: 'Product',
   ProductVariant: 'ProductVariant',
+  PriceListSettings: 'PriceListSettings',
+  PriceAnchorAudit: 'PriceAnchorAudit',
+  PriceListSnapshot: 'PriceListSnapshot',
+  PriceListRun: 'PriceListRun',
   Category: 'Category',
   Brand: 'Brand',
   Customer: 'Customer',
@@ -112,6 +116,17 @@ export const ProductScalarFieldEnum = {
   price: 'price',
   regularPrice: 'regularPrice',
   salePrice: 'salePrice',
+  anchorPriceCents: 'anchorPriceCents',
+  anchorDate: 'anchorDate',
+  anchorRegime: 'anchorRegime',
+  anchorConfirmedAt: 'anchorConfirmedAt',
+  barcode: 'barcode',
+  barcodeNotApplicable: 'barcodeNotApplicable',
+  unitMeasure: 'unitMeasure',
+  unitQuantity: 'unitQuantity',
+  unitNotApplicable: 'unitNotApplicable',
+  brandNotApplicable: 'brandNotApplicable',
+  saleLabel: 'saleLabel',
   taxRate: 'taxRate',
   image: 'image',
   gallery: 'gallery',
@@ -150,6 +165,15 @@ export const ProductVariantScalarFieldEnum = {
   productId: 'productId',
   sku: 'sku',
   price: 'price',
+  anchorPriceCents: 'anchorPriceCents',
+  anchorDate: 'anchorDate',
+  anchorRegime: 'anchorRegime',
+  anchorConfirmedAt: 'anchorConfirmedAt',
+  barcode: 'barcode',
+  barcodeNotApplicable: 'barcodeNotApplicable',
+  unitMeasure: 'unitMeasure',
+  unitQuantity: 'unitQuantity',
+  unitNotApplicable: 'unitNotApplicable',
   attributes: 'attributes',
   stock: 'stock',
   active: 'active',
@@ -158,6 +182,54 @@ export const ProductVariantScalarFieldEnum = {
 } as const
 
 export type ProductVariantScalarFieldEnum = (typeof ProductVariantScalarFieldEnum)[keyof typeof ProductVariantScalarFieldEnum]
+
+
+export const PriceListSettingsScalarFieldEnum = {
+  id: 'id',
+  address: 'address',
+  objectCode: 'objectCode',
+  enabled: 'enabled',
+  sequence: 'sequence',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PriceListSettingsScalarFieldEnum = (typeof PriceListSettingsScalarFieldEnum)[keyof typeof PriceListSettingsScalarFieldEnum]
+
+
+export const PriceAnchorAuditScalarFieldEnum = {
+  id: 'id',
+  itemKey: 'itemKey',
+  before: 'before',
+  after: 'after',
+  reason: 'reason',
+  actor: 'actor',
+  createdAt: 'createdAt'
+} as const
+
+export type PriceAnchorAuditScalarFieldEnum = (typeof PriceAnchorAuditScalarFieldEnum)[keyof typeof PriceAnchorAuditScalarFieldEnum]
+
+
+export const PriceListSnapshotScalarFieldEnum = {
+  id: 'id',
+  filename: 'filename',
+  localDate: 'localDate',
+  content: 'content',
+  checksum: 'checksum',
+  rowCount: 'rowCount',
+  publishedAt: 'publishedAt'
+} as const
+
+export type PriceListSnapshotScalarFieldEnum = (typeof PriceListSnapshotScalarFieldEnum)[keyof typeof PriceListSnapshotScalarFieldEnum]
+
+
+export const PriceListRunScalarFieldEnum = {
+  id: 'id',
+  status: 'status',
+  detail: 'detail',
+  createdAt: 'createdAt'
+} as const
+
+export type PriceListRunScalarFieldEnum = (typeof PriceListRunScalarFieldEnum)[keyof typeof PriceListRunScalarFieldEnum]
 
 
 export const CategoryScalarFieldEnum = {

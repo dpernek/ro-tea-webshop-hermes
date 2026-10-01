@@ -1,6 +1,7 @@
 // Unified server-side pricing for orders.
 // Line-item pricing only. Shipping is handled by src/lib/shipping-pricing.ts (DB).
 import { includedVat } from "./tax";
+import { currentProductPrice } from "./product-price";
 
 export { TAX_RATE } from "./tax";
 
@@ -32,10 +33,7 @@ export function computePrices(
   let subtotal = 0;
 
   for (const item of items) {
-    const unitPrice =
-      item.salePrice != null && item.salePrice > 0 && item.salePrice < item.price
-        ? item.salePrice
-        : item.price;
+    const unitPrice = currentProductPrice(item);
     const total = unitPrice * item.quantity;
     lineItems.push({ productId: item.productId, quantity: item.quantity, unitPrice, total });
     subtotal += total;

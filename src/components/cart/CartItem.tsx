@@ -7,6 +7,7 @@ import { formatPrice } from "@/lib/utils";
 import { QuantitySelector } from "./QuantitySelector";
 import { Trash2 } from "lucide-react";
 import type { CartItem as CartItemType } from "@/types";
+import { AnchorPrice } from "@/components/products/AnchorPrice";
 
 interface CartItemProps {
   item: CartItemType;
@@ -64,9 +65,16 @@ export function CartItem({ item }: CartItemProps) {
             />
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-lg font-semibold text-slate-900">
-              {formatPrice(item.product.price * item.quantity)}
-            </span>
+            <div>
+              <span className="text-lg font-semibold text-slate-900">
+                {formatPrice(item.product.price * item.quantity)}
+              </span>
+              <AnchorPrice
+                unit
+                cents={item.product.anchorPriceCents}
+                date={item.product.anchorDate}
+              />
+            </div>
             <button
               type="button"
               onClick={() => removeItem(item.id)}

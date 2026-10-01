@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db";
 import { mapProduct } from "@/lib/product-mapper";
+import { storefrontAnchorSelect } from "@/lib/anchor-price";
 import { rankProducts } from "@/lib/search";
 
 // ── shared mapping ──────────────────────────────────────────────
@@ -51,6 +52,7 @@ function buildOrderBy(sort?: string) {
 }
 
 const productSelect = {
+  ...storefrontAnchorSelect,
   id: true,
   slug: true,
   name: true,
@@ -64,6 +66,7 @@ const productSelect = {
   type: true,
   shortDescription: true,
   stock: true,
+  stockStatus: true,
   priceRangeMin: true,
   priceRangeMax: true,
   category: { select: { slug: true, name: true } },

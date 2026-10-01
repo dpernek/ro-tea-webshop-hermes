@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { mapProduct } from "@/lib/product-mapper";
+import { storefrontAnchorSelect } from "@/lib/anchor-price";
 import { rankProducts } from "@/lib/search";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +39,7 @@ export async function GET(request: NextRequest) {
       take: limit,
       orderBy: { createdAt: "desc" },
       select: {
+        ...storefrontAnchorSelect,
         id: true,
         slug: true,
         name: true,
@@ -53,6 +55,7 @@ export async function GET(request: NextRequest) {
         brandId: true,
         shortDescription: true,
         stock: true,
+        stockStatus: true,
         priceRangeMin: true,
         priceRangeMax: true,
         category: { select: { slug: true, name: true } },
@@ -72,6 +75,7 @@ export async function GET(request: NextRequest) {
       where: fuzzyWhere,
       orderBy: { createdAt: "desc" },
       select: {
+        ...storefrontAnchorSelect,
         id: true,
         slug: true,
         name: true,
@@ -87,6 +91,7 @@ export async function GET(request: NextRequest) {
         brandId: true,
         shortDescription: true,
         stock: true,
+        stockStatus: true,
         priceRangeMin: true,
         priceRangeMax: true,
         category: { select: { slug: true, name: true } },

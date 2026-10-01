@@ -5,6 +5,7 @@ import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { mapProduct } from "@/lib/product-mapper";
+import { storefrontAnchorSelect } from "@/lib/anchor-price";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,7 @@ export default async function BrandPage({ params }: BrandPageProps) {
     where: { brandId: brand.id, status: "ACTIVE" },
     orderBy: { createdAt: "desc" },
     select: {
+      ...storefrontAnchorSelect,
       id: true, slug: true, name: true, price: true, salePrice: true, regularPrice: true,
       image: true, badge: true, featured: true, type: true, shortDescription: true,
       stock: true, stockStatus: true, priceRangeMin: true, priceRangeMax: true,

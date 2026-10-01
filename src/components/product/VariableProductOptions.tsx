@@ -5,9 +5,10 @@ import { useCartStore } from "@/store/cartStore";
 import { Button } from "@/components/ui/Button";
 import { ShoppingCart, Check } from "lucide-react";
 import type { Product } from "@/types";
+import { AnchorPrice } from "@/components/products/AnchorPrice";
 
 interface VariableProductOptionsProps {
-  product: Product & { variants?: { id: string; sku?: string; price: number; attributes: Record<string, string>; stock?: number }[] };
+  product: Product & { variants?: { id: string; sku?: string; price: number; attributes: Record<string, string>; stock?: number; anchorPriceCents?: number | null; anchorDate?: string | null }[] };
 }
 
 function attrKey(attrs: Record<string, string>): string {
@@ -57,11 +58,12 @@ export function VariableProductOptions({
   };
 
   const handleAdd = () => {
-    if (!allSelected) return;
+    if (!allSelected || !matchedVariant) return;
     const variantPrice = matchedVariant?.price ?? product.price;
     const variantSku = matchedVariant?.sku ?? null;
     // Create a product copy with the correct price for the matched variant
-    const pricedProduct = { ...product, price: variantPrice, sku: variantSku || product.sku };
+    const pricedProduct = { ...product, price: variantPrice, sku: variantSku || product.sku,
+      oldPrice: null, salePrice: null, anchorPriceCents: matchedVariant.anchorPriceCents, anchorDate: matchedVariant.anchorDate };
     addItem(pricedProduct, 1, selected);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
@@ -75,6 +77,7 @@ export function VariableProductOptions({
           <div className="text-2xl font-bold text-slate-900 sm:text-3xl">
             {formatPrice(matchedVariant.price)}
           </div>
+          <AnchorPrice cents={matchedVariant.anchorPriceCents} date={matchedVariant.anchorDate} />
           <p className="mt-1 text-sm text-green-700">
             Cijena za odabranu kombinaciju
             {matchedVariant.sku && <span className="text-slate-400"> · {matchedVariant.sku}</span>}
@@ -112,7 +115,7 @@ export function VariableProductOptions({
       <Button
         onClick={handleAdd}
         size="lg"
-        disabled={!allSelected}
+        disabled={!allSelected || !matchedVariant}
         className="w-full sm:w-auto"
         variant={added ? "secondary" : "primary"}
       >

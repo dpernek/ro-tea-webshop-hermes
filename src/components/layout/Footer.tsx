@@ -10,6 +10,7 @@ const footerLinks = {
     { href: "/izjava-o-sigurnosti-online-placanja", label: "Sigurnost plaćanja" },
     { href: "/pravila-o-privatnosti", label: "Pravila o privatnosti" },
     { href: "/proizvodi", label: "Trgovina" },
+    { href: "/cjenici", label: "Cjenici" },
   ],
   podrska: [
     { href: "/kontakt", label: "Kontakt" },
