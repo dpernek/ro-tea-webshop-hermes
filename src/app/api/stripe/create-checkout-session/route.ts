@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { warnQACustomer } from "@/lib/qa-guard";
 import { logAction } from "@/lib/audit";
-import { z } from "zod";
+import { checkoutSchema } from "@/lib/checkout-validation";
+import { calculateShippingTotal } from "@/lib/shipping-pricing";
 import { db } from "@/lib/db";
 import { validateCoupon } from "@/lib/coupon-validation";
 import { stripe } from "@/lib/stripe";
@@ -10,26 +11,10 @@ import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
-const checkoutSessionSchema = z.object({
-  items: z.array(z.object({ productId: z.string().min(1), quantity: z.number().int().min(1) })).min(1, "Košarica je prazna"),
-  customerName: z.string().min(1, "Ime i prezime je obavezno"),
-  customerEmail: z.string().email("Nevažeća email adresa"),
-  customerPhone: z.string().min(1, "Telefon je obavezan"),
-  address: z.string().min(1, "Adresa je obavezna"),
-  city: z.string().min(1, "Grad je obavezan"),
-  postalCode: z.string().min(1, "Poštanski broj je obavezan"),
-  shippingMethodId: z.string().min(1, "Način dostave je obavezan"),
-  note: z.string().optional(),
-  glsPickupPointId: z.string().optional(),
-  glsPickupPointName: z.string().optional(),
-  glsPickupPointAddress: z.string().optional(),
-  couponCode: z.string().optional(),
-});
-
 export async function POST(req: NextRequest) {
   try {
     const raw = await req.json();
-    const parsed = checkoutSessionSchema.safeParse(raw);
+    const parsed = checkoutSchema.safeParse(raw);
     if (!parsed.success) {
       const fieldErrors: Record<string, string> = {};
       for (const issue of parsed.error.issues) fieldErrors[issue.path.join(".")] = issue.message;
@@ -56,20 +41,20 @@ export async function POST(req: NextRequest) {
     }
 
     // Unified server-side pricing
-    const isPickup = body.shippingMethodId?.includes("osobno");
     const pricing = computePrices(
       body.items.map(i => ({ productId: i.productId, quantity: i.quantity, price: productMap.get(i.productId)!.price, salePrice: productMap.get(i.productId)!.salePrice, stock: productMap.get(i.productId)!.stock })),
     );
 
-    // Get shipping from DB
-    const shipMethod = await db.shippingMethod.findUnique({ where: { id: body.shippingMethodId }, select: { price: true, freeAboveAmount: true, name: true } });
-    if (!shipMethod) {
-      return NextResponse.json({ error: "Odabrani način dostave više nije dostupan." }, { status: 400 });
+    const shipMethod = await db.shippingMethod.findUnique({
+      where: { id: body.shippingMethodId },
+      select: { price: true, freeAboveAmount: true, name: true, active: true },
+    });
+    let shippingTotal: number;
+    try {
+      shippingTotal = calculateShippingTotal(shipMethod, pricing.subtotal, body.glsPickupPointId);
+    } catch (error) {
+      return NextResponse.json({ error: (error as Error).message }, { status: 400 });
     }
-    const shipPrice = shipMethod?.price ?? 0;
-    const shipFreeAbove = shipMethod?.freeAboveAmount ?? null;
-    const isFreeShip = isPickup || (shipFreeAbove != null && pricing.subtotal >= shipFreeAbove);
-    const shippingTotal = isFreeShip ? 0 : shipPrice;
     // Validate coupon server-side
     const couponCode = body.couponCode?.trim() || null;
     let couponDiscount = 0;
@@ -101,9 +86,6 @@ export async function POST(req: NextRequest) {
     } else {
       customer = await db.customer.create({ data: { name: body.customerName, email: body.customerEmail, phone: body.customerPhone, shippingAddress } });
     }
-
-    // Fetch shipping method
-    
 
     // Create order BEFORE Stripe redirect
     const order = await db.order.create({

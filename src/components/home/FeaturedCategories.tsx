@@ -6,7 +6,11 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 
-export function FeaturedCategories() {
+interface FeaturedCategoriesProps {
+  intro?: { title?: string; subtitle?: string; eyebrow?: string };
+}
+
+export function FeaturedCategories({ intro }: FeaturedCategoriesProps) {
   const [cats, setCats] = useState<any[]>([]);
 
   useEffect(() => {
@@ -26,11 +30,12 @@ export function FeaturedCategories() {
         <AnimatedSection>
           <div className="mb-10 flex items-end justify-between">
             <div>
+              {intro?.eyebrow && <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-[#0055a8]">{intro.eyebrow}</p>}
               <h2 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
-                Kategorije proizvoda
+                {intro?.title || "Kategorije proizvoda"}
               </h2>
               <p className="mt-3 text-lg text-slate-500">
-                Pronađite opremu prema svojim potrebama
+                {intro?.subtitle || "Pronađite opremu prema svojim potrebama"}
               </p>
             </div>
             <Link href="/proizvodi" className="hidden items-center gap-1.5 text-sm font-medium text-[#0055a8] transition-colors hover:text-[#0070cc] sm:flex">

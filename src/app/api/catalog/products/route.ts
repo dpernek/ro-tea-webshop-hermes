@@ -7,11 +7,23 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
-  const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"));
-  const limit = Math.min(1000, Math.max(1, parseInt(url.searchParams.get("limit") || "1000")));
-  const search = url.searchParams.get("search") || "";
+  const home = url.searchParams.get("home") === "true";
+  const page = home ? 1 : Math.max(1, parseInt(url.searchParams.get("page") || "1"));
+  const limit = home ? 8 : Math.min(1000, Math.max(1, parseInt(url.searchParams.get("limit") || "1000")));
+  const search = home ? "" : url.searchParams.get("search") || "";
 
   const where: any = { status: "ACTIVE" };
+  if (home) {
+    // Select from the entire active catalog before taking eight products.
+    // The homepage must not download the full catalog to find featured items.
+    const featuredCount = await db.product.count({ where: { status: "ACTIVE", featured: true } });
+    if (featuredCount > 0) {
+      where.featured = true;
+    } else {
+      where.price = { gt: 0 };
+      where.image = { not: "/images/placeholder.svg" };
+    }
+  }
   if (search) {
     where.OR = [
       { name: { contains: search, mode: "insensitive" } },

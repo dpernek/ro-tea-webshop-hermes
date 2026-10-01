@@ -1,8 +1,8 @@
 // Unified server-side pricing for orders.
 // Line-item pricing only. Shipping is handled by src/lib/shipping-pricing.ts (DB).
-import { TAX_RATE } from "./shipping-pricing";
+import { includedVat } from "./tax";
 
-export { TAX_RATE };
+export { TAX_RATE } from "./tax";
 
 export interface PricingInput {
   product: { price: number; salePrice?: number | null };
@@ -23,7 +23,7 @@ export interface PricingResult {
 /**
  * Compute line-item prices from product data.
  * Respects salePrice: uses salePrice if valid and lower than price.
- * Shipping is NOT computed here — use getShippingPrice() from shipping-pricing.ts.
+ * Shipping is computed separately by calculateShippingTotal().
  */
 export function computePrices(
   items: Array<{ productId: string; quantity: number; price: number; salePrice?: number | null; stock?: number | null }>,
@@ -41,7 +41,7 @@ export function computePrices(
     subtotal += total;
   }
 
-  const tax = Math.round(subtotal * TAX_RATE * 100) / 100;
+  const tax = includedVat(subtotal);
 
   return { subtotal, tax, lineItems };
 }

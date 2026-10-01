@@ -4,22 +4,15 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { computePrices } from "@/lib/pricing";
+import { manualCheckoutSchema } from "@/lib/checkout-validation";
+import { calculateShippingTotal } from "@/lib/shipping-pricing";
 import { validateCoupon } from "@/lib/coupon-validation";
 import { sendEmail, customerEmail, adminNewOrderEmail } from "@/lib/email";
 
-export async function createOrder(data: {
-  customerName: string; customerEmail: string; customerPhone: string;
-  address: string; city: string; postalCode: string; note?: string;
-  items: Array<{ productId: string; productName: string; sku?: string; quantity: number; unitPrice: number }>;
-  paymentMethod: string; shippingMethodId: string;
-  shippingTotal: number; subtotal: number; taxTotal: number; total: number;
-  glsPickupPointId?: string; glsPickupPointName?: string; glsPickupPointAddress?: string;
-  couponCode?: string;
-}) {
-  if (!data.customerName || !data.customerEmail || !data.address || !data.city || !data.postalCode) {
-    throw new Error("Molimo ispunite sva obavezna polja.");
-  }
-  if (!data.items || data.items.length === 0) throw new Error("Košarica je prazna.");
+export async function createOrder(raw: unknown) {
+  const parsed = manualCheckoutSchema.safeParse(raw);
+  if (!parsed.success) throw new Error("Provjerite podatke za narudžbu.");
+  const data = parsed.data;
 
   // Fetch products from DB, validate ACTIVE + stock
   const productIds = data.items.map(i => i.productId);
@@ -31,27 +24,23 @@ export async function createOrder(data: {
 
   for (const item of data.items) {
     const p = productMap.get(item.productId);
-    if (!p) throw new Error(`Proizvod "${item.productName}" više nije dostupan.`);
+    if (!p) throw new Error(`Proizvod (${item.productId}) više nije dostupan.`);
     if (p.status !== "ACTIVE") throw new Error(`Proizvod "${p.name}" trenutno nije dostupan.`);
     if (p.stock != null && p.stock < item.quantity) throw new Error(`Proizvod "${p.name}" nema dovoljno zaliha.`);
   }
 
   // Unified pricing (line items only — no shipping)
-  const isPickup = data.shippingMethodId?.includes("osobno");
   const pricing = computePrices(
     data.items.map(i => ({ productId: i.productId, quantity: i.quantity, price: productMap.get(i.productId)!.price, salePrice: productMap.get(i.productId)!.salePrice, stock: productMap.get(i.productId)!.stock })),
   );
 
-  // Get shipping from DB
-  let shippingTotal = data.shippingTotal;
-  let shipMethodName: string | null = null;
-  if (data.shippingMethodId) {
-    const shipMethod = await db.shippingMethod.findUnique({ where: { id: data.shippingMethodId }, select: { price: true, freeAboveAmount: true, name: true } });
-    if (!shipMethod) throw new Error("Odabrani način dostave više nije dostupan.");
-    shipMethodName = shipMethod.name;
-    const isFree = shipMethod.freeAboveAmount != null && pricing.subtotal >= shipMethod.freeAboveAmount;
-    if (!shippingTotal) shippingTotal = isFree || isPickup ? 0 : shipMethod.price;
-  }
+  // Only an active method and its current database price can determine shipping.
+  const shipMethod = await db.shippingMethod.findUnique({
+    where: { id: data.shippingMethodId },
+    select: { price: true, freeAboveAmount: true, name: true, active: true },
+  });
+  const shippingTotal = calculateShippingTotal(shipMethod, pricing.subtotal, data.glsPickupPointId);
+  const shipMethodName = shipMethod!.name;
   const couponCode = data.couponCode?.trim() || null;
   let couponDiscount = 0;
   if (couponCode) {
@@ -75,8 +64,6 @@ export async function createOrder(data: {
     customer = await db.customer.create({ data: { name: data.customerName, email: data.customerEmail, phone: data.customerPhone, shippingAddress } });
   }
 
-  const shippingMethod = await db.shippingMethod.findUnique({ where: { id: data.shippingMethodId } });
-
   const initialStatus = data.paymentMethod === "cod" ? "CONFIRMED" : "PENDING";
 
   // Create order
@@ -86,7 +73,7 @@ export async function createOrder(data: {
       customerPhone: data.customerPhone, shippingAddress, billingAddress: shippingAddress,
       subtotal: pricing.subtotal, shippingTotal: shippingTotal, taxTotal: pricing.tax, total: total,
       currency: "EUR", status: initialStatus, paymentStatus: "UNPAID", paymentMethod: data.paymentMethod,
-      shippingMethod: shippingMethod?.name || data.shippingMethodId, note: data.note || null,
+      shippingMethod: shipMethodName, note: data.note || null,
       glsPickupPointId: shipMethodName === "GLS Paketomat" ? (data.glsPickupPointId || null) : null,
       glsPickupPointName: shipMethodName === "GLS Paketomat" ? (data.glsPickupPointName || null) : null,
       glsPickupPointAddress: shipMethodName === "GLS Paketomat" ? (data.glsPickupPointAddress || null) : null,
@@ -110,24 +97,52 @@ export async function createOrder(data: {
 
   // Decrease stock immediately for bank_transfer and cod
   // For card payments, stock is decreased by webhook after payment confirmation
-  if (data.paymentMethod !== "card") {
-    for (const li of pricing.lineItems) {
-      const product = productMap.get(li.productId);
-      if (product && product.stock != null && product.stock >= li.quantity) {
-        await db.product.update({ where: { id: li.productId }, data: { stock: product.stock - li.quantity } });
-        await db.orderItem.updateMany({
-          where: { orderId: order.id, productId: li.productId },
-          data: { stockAdjustedAt: new Date() },
-        });
-      }
+  for (const li of pricing.lineItems) {
+    const product = productMap.get(li.productId);
+    if (product && product.stock != null && product.stock >= li.quantity) {
+      await db.product.update({ where: { id: li.productId }, data: { stock: product.stock - li.quantity } });
+      await db.orderItem.updateMany({
+        where: { orderId: order.id, productId: li.productId },
+        data: { stockAdjustedAt: new Date() },
+      });
     }
+  }
 
-    // Send customer confirmation email
-    try {
+  // Send customer confirmation email
+  try {
+    await sendEmail({
+      to: data.customerEmail,
+      subject: `Narudžba ${orderNumber} – potvrda`,
+      html: customerEmail({
+        orderNumber,
+        subtotal: pricing.subtotal,
+        shipping: shippingTotal || 0,
+        couponDiscount,
+        couponCode: couponCode || undefined,
+        total,
+        paymentMethod: data.paymentMethod,
+        shippingMethod: shipMethodName || data.shippingMethodId,
+        pickupPointName: data.glsPickupPointName || undefined,
+        pickupPointAddress: data.glsPickupPointAddress || undefined,
+        items: pricing.lineItems.map(li => ({
+          name: productMap.get(li.productId)!.name,
+          quantity: li.quantity,
+          price: li.unitPrice,
+        })),
+      }),
+    });
+  } catch (e) {
+    console.error("[EMAIL] Failed to send customer email for order", orderNumber, e);
+  }
+
+  // Send admin notification
+  try {
+    const adminEmail = process.env.ADMIN_ORDER_EMAIL;
+    if (adminEmail) {
       await sendEmail({
-        to: data.customerEmail,
-        subject: `Narudžba ${orderNumber} – potvrda`,
-        html: customerEmail({
+        to: adminEmail,
+        subject: `Nova narudžba: ${orderNumber}`,
+        html: adminNewOrderEmail({
           orderNumber,
           subtotal: pricing.subtotal,
           shipping: shippingTotal || 0,
@@ -138,45 +153,15 @@ export async function createOrder(data: {
           shippingMethod: shipMethodName || data.shippingMethodId,
           pickupPointName: data.glsPickupPointName || undefined,
           pickupPointAddress: data.glsPickupPointAddress || undefined,
-          items: pricing.lineItems.map(li => ({
-            name: productMap.get(li.productId)!.name,
-            quantity: li.quantity,
-            price: li.unitPrice,
-          })),
+          customerName: data.customerName,
+          customerEmail: data.customerEmail,
+          customerPhone: data.customerPhone,
+          items: pricing.lineItems.map(i => ({ name: productMap.get(i.productId)!.name, quantity: i.quantity, price: i.unitPrice })),
         }),
       });
-    } catch (e) {
-      console.error("[EMAIL] Failed to send customer email for order", orderNumber, e);
     }
-
-    // Send admin notification
-    try {
-      const adminEmail = process.env.ADMIN_ORDER_EMAIL;
-      if (adminEmail) {
-        await sendEmail({
-          to: adminEmail,
-          subject: `Nova narudžba: ${orderNumber}`,
-          html: adminNewOrderEmail({
-            orderNumber,
-            subtotal: pricing.subtotal,
-            shipping: shippingTotal || 0,
-            couponDiscount,
-            couponCode: couponCode || undefined,
-            total,
-            paymentMethod: data.paymentMethod,
-            shippingMethod: shipMethodName || data.shippingMethodId,
-            pickupPointName: data.glsPickupPointName || undefined,
-            pickupPointAddress: data.glsPickupPointAddress || undefined,
-            customerName: data.customerName,
-            customerEmail: data.customerEmail,
-            customerPhone: data.customerPhone,
-            items: data.items.map(i => ({ name: i.productName, quantity: i.quantity, price: productMap.get(i.productId)!.salePrice || productMap.get(i.productId)!.price })),
-          }),
-        });
-      }
-    } catch (e) {
-      console.error("[EMAIL] Failed to send admin notification for order", orderNumber, e);
-    }
+  } catch (e) {
+    console.error("[EMAIL] Failed to send admin notification for order", orderNumber, e);
   }
 
   revalidatePath("/admin/orders");
