@@ -158,6 +158,38 @@ export default function ComplianceAdminPage() {
     );
   const maxPage = Math.max(0, Math.ceil(filtered.length / 30) - 1);
   const currentPage = Math.min(page, maxPage);
+
+  async function downloadCsvPreview() {
+    setBusy(true);
+    try {
+      const response = await fetch("/api/admin/cjenici/csv", {
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        setMessages(data.errors ?? ["Pregled CSV-a nije dostupan."]);
+        return;
+      }
+      const url = URL.createObjectURL(await response.blob());
+      const link = document.createElement("a");
+      link.href = url;
+      link.download =
+        response.headers
+          .get("content-disposition")
+          ?.match(/filename="([^"]+)"/)?.[1] ?? "pregled_webshop.csv";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setMessages([
+        "Preuzet je pregled spremljenih podataka. Datoteka nije objavljena u javnoj arhivi.",
+      ]);
+    } catch {
+      setMessages(["Pregled CSV-a nije dostupan. Pokušajte ponovno."]);
+    } finally {
+      setBusy(false);
+    }
+  }
   return (
     <div className="space-y-8">
       <h1 className="text-2xl font-bold">Cjenici i sidrene cijene</h1>
@@ -544,11 +576,19 @@ export default function ComplianceAdminPage() {
               Uključi dnevnu objavu nakon završene provjere
             </label>
             <p className="text-sm text-slate-600">
-              Dnevna objava zakazana je u 04:00 UTC (05:00 zimi / 06:00 ljeti).
+              Raspored je 07:30 po hrvatskom vremenu, s ponovnim provjerama u
+              07:40 i 07:50. Automatski se pokreće nakon aktivacije rasporeda.
               Neuspjelu objavu ponovite ovdje nakon ispravka podataka. Već
               objavljena datoteka za isti dan ostaje sačuvana.
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
+              <button
+                className={buttonClass}
+                disabled={busy}
+                onClick={downloadCsvPreview}
+              >
+                Preuzmi CSV za pregled
+              </button>
               <button
                 className={buttonClass}
                 disabled={busy}

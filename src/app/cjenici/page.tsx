@@ -24,6 +24,12 @@ export default async function PriceListsPage() {
         Preuzmite dnevni cjenik u CSV formatu. Datoteke su javno dostupne bez
         prijave. Cijene su u eurima i uključuju PDV.
       </p>
+      <a
+        className="mt-3 inline-block text-sm underline"
+        href="/cjenici/manifest.json"
+      >
+        Popis datoteka za automatsko preuzimanje (JSON)
+      </a>
       {!snapshots.length ? (
         <p className="mt-8">Cjenici su u pripremi.</p>
       ) : (

@@ -1,0 +1,29 @@
+name: Dnevni cjenik webshopa
+
+on:
+  schedule:
+    - cron: "30,40,50 7 * * *"
+      timezone: "Europe/Zagreb"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-webshop-price-list
+  cancel-in-progress: false
+
+jobs:
+  publish-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Objavi i provjeri javni CSV
+        env:
+          PRICE_LIST_ORIGIN: https://ro-tea-webshop-hermes.vercel.app
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          PRICE_LIST_ENFORCE_DEADLINE: ${{ github.event_name == 'schedule' }}
+        run: node scripts/publish-price-list.mjs

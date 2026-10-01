@@ -7,17 +7,71 @@ import {
   confirmAnchors,
   publishPriceList,
   ComplianceError,
+  previewPriceList,
 } from "../src/lib/compliance/service";
 import {
   catalogFingerprint,
   reviewTemplate,
+  zagrebDate,
 } from "../src/lib/compliance/catalog";
 import { GET as cron } from "../src/app/api/cron/cjenici/route";
+import { GET as manifest } from "../src/app/cjenici/manifest.json/route";
 import { GET as download } from "../src/app/cjenici/datoteke/[filename]/route";
 import { AnchorPrice } from "../src/components/products/AnchorPrice";
 import { sampleProduct } from "./compliance-fixture";
 
 const globalDb = globalThis as unknown as { prisma?: unknown };
+
+test("CSV preview reads the saved catalog without publishing, even when daily publishing is disabled", async () => {
+  globalDb.prisma = { product: { findMany: async () => [sampleProduct()] } };
+  try {
+    const result = await previewPriceList(new Date("2026-10-01T05:30:00Z"));
+    assert.equal(result.rowCount, 1);
+    assert.equal(result.filename, "pregled_webshop_2026-10-01_07-30-00.csv");
+    assert.ok(result.content.includes('"sidrena_cijena"'));
+    globalDb.prisma = {
+      product: { findMany: async () => [sampleProduct({ barcode: null })] },
+    };
+    await assert.rejects(previewPriceList(), ComplianceError);
+  } finally {
+    delete globalDb.prisma;
+  }
+});
+
+test("public manifest distinguishes today's file from an old archive and returns 503 when storage fails", async () => {
+  const today = zagrebDate(new Date());
+  const snapshot = {
+    filename: "webshop.csv",
+    localDate: today,
+    checksum: "hash",
+    rowCount: 1,
+    publishedAt: new Date(),
+  };
+  let archive = [{ ...snapshot, localDate: "2020-01-01" }];
+  globalDb.prisma = { priceListSnapshot: { findMany: async () => archive } };
+  try {
+    const stale = await manifest();
+    assert.equal(stale.status, 200);
+    assert.equal(stale.headers.get("cache-control"), "no-store");
+    const data = await stale.json();
+    assert.equal(data.current, null);
+    assert.equal(data.archive[0].href, "/cjenici/datoteke/webshop.csv");
+    archive = [snapshot, ...archive];
+    assert.equal((await (await manifest()).json()).current.localDate, today);
+    globalDb.prisma = {
+      priceListSnapshot: {
+        findMany: async () => {
+          throw new Error("private DB connection string");
+        },
+      },
+    };
+    const failed = await manifest();
+    assert.equal(failed.status, 503);
+    assert.ok(!(await failed.text()).includes("private"));
+  } finally {
+    delete globalDb.prisma;
+  }
+});
 
 test("review preview writes nothing and a stale catalog rejects confirmation", async () => {
   const products = [sampleProduct({ anchorConfirmedAt: null })];

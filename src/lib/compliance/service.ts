@@ -182,6 +182,21 @@ function filenamePart(value: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+export async function previewPriceList(now = new Date()) {
+  const products = await db.product.findMany({
+    where: { status: "ACTIVE" },
+    orderBy: { id: "asc" },
+    select: catalogSelect,
+  });
+  const built = buildPriceList(products);
+  if (built.errors.length) throw new ComplianceError(built.errors);
+  return {
+    content: built.content,
+    filename: `pregled_webshop_${fileTimestamp(now)}.csv`,
+    rowCount: built.rowCount,
+  };
+}
+
 export async function publishPriceList(now = new Date()) {
   try {
     const publish = () =>

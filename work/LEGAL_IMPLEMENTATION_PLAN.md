@@ -69,9 +69,9 @@ Dnevna arhivska datoteka i aktualni webshop imaju različitu svrhu. Ako uvedemo 
 
 ### Faza E — raspored i operativna odgovornost (okvirno 1–2 dana)
 
-Planirati objavu svaki dan oko 06:00 po `Europe/Zagreb`, radi rezerve do 08:00 i jednostavnijeg pokrivanja radnih dana. Raspored u UTC mora ispravno obraditi ljetno/zimsko vrijeme. Prije izbora Vercel Crona provjeriti mogućnosti postojećeg plana i preciznost pokretanja; dnevni poziv s velikim odstupanjem nije dovoljan za rok.
+Korisnik je zatražio objavu **svako jutro u 07:30 po `Europe/Zagreb`**. Implementiran je GitHub Actions raspored koji prati ljetno/zimsko vrijeme, uz ponovne provjere i oporavak u 07:40/07:50. Vercel Hobby ne osigurava potrebnu preciznost termina. Aktivacija, secret, migracija i operativni prihvat opisani su u `LEGAL_PRICE_LIST_RUNBOOK.md`; sam PR ne aktivira objavu.
 
-Dodati autentificirani interni posao, zaključavanje po objektu/danu, sigurno ponavljanje, ručno ponovno pokretanje i evidenciju uspjeha. Predloženi operativni prag: provjera uspjeha do 07:15, ponavljanje i obavijest odgovornoj osobi prije 08:00. Stari cjenik ne prikazivati kao današnji ako je novi posao pao. Kanal obavijesti dogovoriti pri implementaciji; ovim planom nije postavljena automatizacija niti poslana poruka.
+Autentificirani posao, zaključavanje po objektu/danu, sigurno ponavljanje, ručno ponovno pokretanje i evidencija uspjeha su implementirani. Automatski posao provjerava javni današnji manifest i SHA-256 preuzete datoteke, a pogreška ruši GitHub workflow. Operativni prag: provjera do 07:50 i ručni oporavak prije 08:00. Stari cjenik ne prikazuje se kao današnji. Neovisni alarm za izostanak svih poziva i stvarni rad rasporeda ostaju za operativni prihvat.
 
 Javno preuzimanje mora raditi bez admin prijave, CAPTCHA ili zaštite preview okruženja. `robots.ts` omogućiti pristup novim javnim putovima, uz zadržavanje zaštite admina. Provjeriti Vercel Firewall/CDN kako automatizirani pristup ne bi bio blokiran. Za fizičke objekte vlasnik organizira etikete i cjenike, a za oglase s cijenama ažurira predloške i već aktivne materijale.
 
