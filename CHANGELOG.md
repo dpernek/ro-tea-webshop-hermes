@@ -7,6 +7,7 @@
 - Dostava se uvijek računa iz aktivnog zapisa u bazi, bez klijentskih iznosa. Paketomat zahtijeva odabranu lokaciju.
 - CMS naslov kategorija prikazuje se jednom, a početna preuzima najviše osam proizvoda.
 - Ažurirana dokumentacija dostave i dodani regresijski testovi (`npm test`).
+- Stripe se inicijalizira pri zahtjevu, pa preview build radi bez ključa. Bez konfiguracije kartični checkout vraća 503 prije pristupa bazi.
 
 ## fix/ecommerce-production-hardening (2026-06-23)
 

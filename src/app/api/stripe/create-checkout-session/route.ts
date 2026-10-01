@@ -5,7 +5,7 @@ import { checkoutSchema } from "@/lib/checkout-validation";
 import { calculateShippingTotal } from "@/lib/shipping-pricing";
 import { db } from "@/lib/db";
 import { validateCoupon } from "@/lib/coupon-validation";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { computePrices } from "@/lib/pricing";
 import { revalidatePath } from "next/cache";
 
@@ -21,6 +21,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ errors: fieldErrors }, { status: 400 });
     }
     const body = parsed.data;
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return NextResponse.json({ error: "Kartično plaćanje trenutačno nije dostupno. Odaberite drugi način plaćanja." }, { status: 503 });
+    }
+    const stripe = getStripe();
 
     // QA guard: warn on test customer patterns (does not block order)
     const qaWarn = warnQACustomer(body.customerName, body.customerEmail);

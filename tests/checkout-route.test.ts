@@ -2,8 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { NextRequest } from "next/server";
 
-// Constructor only; these tests reject requests before contacting Stripe.
-process.env.STRIPE_SECRET_KEY = "sk_test_regression_placeholder";
+// These tests never contact Stripe.
 const checkoutRoute = import("../src/app/api/stripe/create-checkout-session/route");
 const input = {
   customerName: "Ivan Horvat", customerEmail: "ivan@example.com",
@@ -40,6 +39,7 @@ test("Stripe endpoint rejects invalid quantities and duplicate items before data
 
 test("Stripe endpoint rejects inactive shipping and unselected lockers before creating an order", async () => {
   const { POST } = await checkoutRoute;
+  process.env.STRIPE_SECRET_KEY = "sk_test_regression_placeholder";
   for (const method of [
     { name: "GLS", active: false, price: 8, freeAboveAmount: 70 },
     { name: "GLS Paketomat", active: true, price: 8, freeAboveAmount: 70 },
@@ -57,5 +57,23 @@ test("Stripe endpoint rejects inactive shipping and unselected lockers before cr
     } finally {
       delete (globalThis as unknown as { prisma?: unknown }).prisma;
     }
+  }
+});
+
+test("Unconfigured Stripe rejects checkout before database access or order creation", async () => {
+  const { POST } = await checkoutRoute;
+  const previousKey = process.env.STRIPE_SECRET_KEY;
+  delete process.env.STRIPE_SECRET_KEY;
+  (globalThis as unknown as { prisma: unknown }).prisma = new Proxy({}, {
+    get() { throw new Error("Unconfigured checkout reached the database"); },
+  });
+  try {
+    const response = await POST(request(input));
+    assert.equal(response.status, 503);
+    assert.match((await response.json()).error, /Kartično plaćanje trenutačno nije dostupno/);
+  } finally {
+    if (previousKey === undefined) delete process.env.STRIPE_SECRET_KEY;
+    else process.env.STRIPE_SECRET_KEY = previousKey;
+    delete (globalThis as unknown as { prisma?: unknown }).prisma;
   }
 });
