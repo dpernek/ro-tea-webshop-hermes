@@ -30,6 +30,7 @@ const allNavItems: NavItem[] = [
   { href: "/admin/shipping",   label: "Dostava",      icon: Truck,          resource: "shipping" },
   { href: "/admin/coupons",    label: "Kuponi",       icon: TicketPercent,  resource: "coupons" },
   { href: "/admin/katalozi",   label: "Katalozi",     icon: FileText,       resource: "catalogs" },
+  { href: "/admin/cjenici",    label: "Cjenici i sidra", icon: FileText,      resource: "settings" },
   { href: "/admin/settings",   label: "Postavke",     icon: Settings,       resource: "settings" },
   { href: "/admin/audit-log",  label: "Audit",        icon: History,        resource: "audit_log" },
   { href: "/admin/content",    label: "Sadržaj",      icon: FileText,       resource: "content" },

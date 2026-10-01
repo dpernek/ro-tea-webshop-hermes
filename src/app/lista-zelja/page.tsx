@@ -1,15 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
 import { useWishlistStore } from "@/store/wishlistStore";
-import { Heart, Trash2, ShoppingCart } from "lucide-react";
-import { useCartStore } from "@/store/cartStore";
+import { Heart, Trash2, ArrowRight } from "lucide-react";
+import { AnchorPrice } from "@/components/products/AnchorPrice";
 import { formatPrice } from "@/lib/utils";
 
 export default function WishlistPage() {
   const { items, remove } = useWishlistStore();
-  const { addItem } = useCartStore();
 
   if (items.length === 0) {
     return (
@@ -41,11 +39,12 @@ export default function WishlistPage() {
             </Link>
             <div className="flex-1 min-w-0">
               <Link href={`/proizvodi/${item.slug}`} className="font-medium text-slate-900 hover:text-[#0055a8]">{item.name}</Link>
-              <p className="text-sm text-slate-500">{formatPrice(item.price)}</p>
+              <p className="text-sm text-slate-500">{item.type === "variable" ? "Od " : ""}{formatPrice(item.price)}</p>
+              <AnchorPrice cents={item.anchorPriceCents} date={item.anchorDate} />
             </div>
-            <Button size="sm" onClick={() => { addItem({ product: { id: item.id, name: item.name, price: item.price, image: item.image || "", slug: item.slug, stock: null, status: "ACTIVE", sku: "" }, quantity: 1 } as any); }}>
-              <ShoppingCart size={14} />
-            </Button>
+            <Link href={`/proizvodi/${item.slug}`} aria-label={`Pregledaj ${item.name}`} className="rounded-lg bg-[#0055a8] p-2 text-white">
+              <ArrowRight size={14} />
+            </Link>
             <button onClick={() => remove(item.id)} className="text-slate-400 hover:text-red-500 p-1">
               <Trash2 size={16} />
             </button>

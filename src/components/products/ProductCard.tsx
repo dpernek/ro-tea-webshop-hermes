@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { ShoppingCart, Check, ArrowRight, Heart } from "lucide-react";
 import { useState } from "react";
 import type { Product } from "@/types";
+import { AnchorPrice } from "./AnchorPrice";
 
 interface ProductCardProps {
   product: Product;
@@ -60,6 +61,9 @@ export function ProductCard({ product, index }: ProductCardProps) {
                 id: product.id,
                 name: product.name,
                 price: product.price,
+                anchorPriceCents: product.anchorPriceCents,
+                anchorDate: product.anchorDate,
+                type: product.type,
                 image: product.image,
                 slug: product.slug,
               });
@@ -105,17 +109,15 @@ export function ProductCard({ product, index }: ProductCardProps) {
         <div className="mt-auto space-y-4">
           {isVariable && product.priceRange ? (
             <div className="text-lg font-semibold text-slate-900">
-              {product.priceRange.min === product.priceRange.max ? (
-                <span>{formatPrice(product.priceRange.min)}</span>
-              ) : (
-                <span>
-                  Raspon cijena: {formatPrice(product.priceRange.min)} –{" "}
-                  {formatPrice(product.priceRange.max)}
-                </span>
-              )}
+              <span>Od {formatPrice(product.priceRange.min)}</span>
+              <AnchorPrice
+                cents={product.anchorPriceCents}
+                date={product.anchorDate}
+              />
             </div>
           ) : (
-            <div className="flex flex-wrap items-baseline gap-2">
+            <div>
+              <div className="flex flex-wrap items-baseline gap-2">
               <span
                 className={
                   hasSale
@@ -130,6 +132,11 @@ export function ProductCard({ product, index }: ProductCardProps) {
                   {formatPrice(product.oldPrice!)}
                 </span>
               )}
+              </div>
+              <AnchorPrice
+                cents={product.anchorPriceCents}
+                date={product.anchorDate}
+              />
             </div>
           )}
 

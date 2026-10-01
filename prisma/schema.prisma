@@ -31,6 +31,17 @@ model Product {
   price            Float
   regularPrice     Float?
   salePrice        Float?
+  anchorPriceCents  Int?
+  anchorDate        String?
+  anchorRegime      String?
+  anchorConfirmedAt DateTime?
+  barcode          String?
+  barcodeNotApplicable Boolean @default(false)
+  unitMeasure      String?
+  unitQuantity     Float?
+  unitNotApplicable Boolean @default(false)
+  brandNotApplicable Boolean @default(false)
+  saleLabel        String?
   taxRate          Float?            @default(25.0)
   image            String
   gallery          String            @default("[]")
@@ -69,6 +80,15 @@ model ProductVariant {
   product      Product  @relation(fields: [productId], references: [id])
   sku          String?
   price        Float
+  anchorPriceCents Int?
+  anchorDate String?
+  anchorRegime String?
+  anchorConfirmedAt DateTime?
+  barcode String?
+  barcodeNotApplicable Boolean @default(false)
+  unitMeasure String?
+  unitQuantity Float?
+  unitNotApplicable Boolean @default(false)
   attributes   String   // JSON: {"Dimenzija":"115","Granulacija":"36"}
   stock        Int?
   active       Boolean  @default(true)
@@ -76,6 +96,46 @@ model ProductVariant {
   updatedAt    DateTime @updatedAt
 
   @@unique([productId, attributes])
+}
+
+// One online sales object, as confirmed by the owner. Disabled until reviewed.
+model PriceListSettings {
+  id String @id @default("webshop")
+  address String @default("")
+  objectCode String @default("WEB-01")
+  enabled Boolean @default(false)
+  sequence Int @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+// No product foreign key: evidence survives deletion/renaming of an article.
+model PriceAnchorAudit {
+  id String @id @default(cuid())
+  itemKey String
+  before String
+  after String
+  reason String
+  actor String
+  createdAt DateTime @default(now())
+  @@index([itemKey, createdAt])
+}
+
+// Durable, immutable contents; never rebuild old files from today's products.
+model PriceListSnapshot {
+  id String @id @default(cuid())
+  filename String @unique
+  localDate String @unique
+  content String
+  checksum String
+  rowCount Int
+  publishedAt DateTime @default(now())
+}
+
+model PriceListRun {
+  id String @id @default(cuid())
+  status String
+  detail String
+  createdAt DateTime @default(now())
 }
 
 model Category {

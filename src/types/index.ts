@@ -22,6 +22,8 @@ export interface Product {
   categorySlug: string;
   categories?: { slug: string; name: string }[];
   price: number;
+  anchorPriceCents?: number | null;
+  anchorDate?: string | null;
   regularPrice?: number | null;
   oldPrice?: number | null;
   salePrice?: number | null;

@@ -5,6 +5,10 @@ import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { siteUrl } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
+import { anchorFieldsSelect, confirmedAnchor, storefrontAnchorSelect } from "@/lib/anchor-price";
+import { currentProductPrice } from "@/lib/product-price";
+import { mapProduct } from "@/lib/product-mapper";
+import { AnchorPrice } from "@/components/products/AnchorPrice";
 
 export const dynamic = "force-dynamic";
 import { Badge } from "@/components/ui/Badge";
@@ -106,6 +110,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     where: { slug },
     select: {
       id: true, slug: true, name: true, sku: true,
+      ...anchorFieldsSelect,
       price: true, regularPrice: true, salePrice: true, taxRate: true,
       image: true, gallery: true, featured: true, badge: true, type: true,
       shortDescription: true, description: true, specifications: true,
@@ -117,7 +122,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       categoryId: true, brandId: true,
       brand: { select: { id: true, slug: true, name: true, image: true } },
       category: { select: { id: true, slug: true, name: true, description: true, image: true } },
-      variants: { where: { active: true }, select: { id: true, sku: true, price: true, attributes: true, stock: true } },
+      variants: { where: { active: true }, orderBy: [{ price: "asc" }, { id: "asc" }], select: { id: true, sku: true, price: true, attributes: true, stock: true, ...anchorFieldsSelect } },
     },
   });
 
@@ -129,11 +134,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
     ? (() => { try { return JSON.parse(product.attributes || "[]"); } catch { return []; } })()
     : (Array.isArray(product.attributes) ? product.attributes : []);
   const productWithParsedAttrs = { ...product, attributes: parsedAttributes,
+    price: currentProductPrice(product), ...confirmedAnchor(product),
     priceRange: { min: product.priceRangeMin ?? 0, max: product.priceRangeMax ?? 0 },
-    variants: ((product as any).variants || []).map((v: any) => ({ ...v, attributes: typeof v.attributes === "string" ? JSON.parse(v.attributes) : v.attributes })),
+    variants: ((product as any).variants || []).map((v: any) => ({ ...v, ...confirmedAnchor(v), attributes: typeof v.attributes === "string" ? JSON.parse(v.attributes) : v.attributes })),
   };
 
-  const relatedSelect = { id: true, slug: true, name: true, price: true, salePrice: true, image: true, categoryId: true, brandId: true, status: true } as const;
+  const relatedSelect = { ...storefrontAnchorSelect, type: true, id: true, slug: true, name: true, price: true, salePrice: true, image: true, categoryId: true, brandId: true, status: true } as const;
 
   // --- Related products (same category, exclude current) ---
   // Related products: same brand + category > same category > featured/dostupni
@@ -201,19 +207,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const productBenefits = parseBenefitsArray(product.benefits);
 
   // Price logic: prefer salePrice, then regular price vs. price
-  const effectivePrice =
-    product.salePrice != null ? product.salePrice : product.price;
-  const oldPrice =
-    product.salePrice != null && product.salePrice < product.price
-      ? product.price
-      : product.regularPrice && product.regularPrice > product.price
-        ? product.regularPrice
-        : null;
+  const effectivePrice = currentProductPrice(product);
+  const regular = product.regularPrice && product.regularPrice > product.price ? product.regularPrice : product.price;
+  const oldPrice = regular > effectivePrice ? regular : null;
   const hasDiscount = oldPrice !== null;
-  const discountPercent =
-    hasDiscount && product.price > 0
-      ? Math.round((1 - effectivePrice / product.price) * 100)
-      : 0;
+  const discountPercent = oldPrice ? Math.round((1 - effectivePrice / oldPrice) * 100) : 0;
 
   // --- Structured data (JSON-LD) ---
   const structuredData = {
@@ -394,6 +392,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     {formatPrice(oldPrice)}
                   </span>
                 )}
+                <AnchorPrice cents={productWithParsedAttrs.anchorPriceCents} date={productWithParsedAttrs.anchorDate} />
                 <p className="mt-1 text-xs text-slate-400">
                   Cijena s PDV-om ({product.taxRate ?? 25}%)
                 </p>
@@ -683,7 +682,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               Izdvojili smo slične proizvode koji bi vas mogli zanimati
             </p>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              {relatedProducts.map((rp) => (
+              {relatedProducts.map((raw) => { const rp = mapProduct(raw); return (
                 <Link
                   key={rp.id}
                   href={`/proizvodi/${rp.slug}`}
@@ -702,12 +701,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     {rp.name}
                   </h3>
                   <p className="mt-1 text-sm font-bold text-slate-900">
-                    {formatPrice(
-                      rp.salePrice != null ? rp.salePrice : rp.price,
-                    )}
+                    {rp.type === "variable" ? "Od " : ""}{formatPrice(rp.price)}
                   </p>
+                  <AnchorPrice cents={rp.anchorPriceCents} date={rp.anchorDate} />
                 </Link>
-              ))}
+              ); })}
             </div>
           </div>
         )}
@@ -717,12 +715,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white px-4 py-3 lg:hidden">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <div>
-            {product.type === "VARIABLE" && product.priceRangeMin != null ? (
+            {product.type === "VARIABLE" && product.variants[0] ? (
               <p className="text-lg font-bold text-slate-900">
-                {formatPrice(product.priceRangeMin)}
-                {product.priceRangeMax &&
-                  product.priceRangeMax !== product.priceRangeMin &&
-                  ` – ${formatPrice(product.priceRangeMax)}`}
+                Od {formatPrice(product.variants[0].price)}
               </p>
             ) : (
               <div className="flex items-baseline gap-2">
@@ -736,6 +731,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 )}
               </div>
             )}
+            <AnchorPrice {...(product.type === "VARIABLE"
+              ? { cents: confirmedAnchor(product.variants[0]).anchorPriceCents, date: confirmedAnchor(product.variants[0]).anchorDate }
+              : { cents: productWithParsedAttrs.anchorPriceCents, date: productWithParsedAttrs.anchorDate })} />
           </div>
           <div>
             {product.type === "VARIABLE" ? (
@@ -747,7 +745,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       </div>
       <RecentlyViewedBlock />
-      <ProductTracker product={{ id: product.id, name: product.name, price: product.price || product.salePrice || 0, image: product.image, slug: product.slug }} />
+      <ProductTracker product={{ id: product.id, name: product.name, price: effectivePrice, image: product.image, slug: product.slug }} />
     </div>
   );
 }

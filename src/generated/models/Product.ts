@@ -30,6 +30,8 @@ export type ProductAvgAggregateOutputType = {
   price: number | null
   regularPrice: number | null
   salePrice: number | null
+  anchorPriceCents: number | null
+  unitQuantity: number | null
   taxRate: number | null
   stock: number | null
   weight: number | null
@@ -44,6 +46,8 @@ export type ProductSumAggregateOutputType = {
   price: number | null
   regularPrice: number | null
   salePrice: number | null
+  anchorPriceCents: number | null
+  unitQuantity: number | null
   taxRate: number | null
   stock: number | null
   weight: number | null
@@ -64,6 +68,17 @@ export type ProductMinAggregateOutputType = {
   price: number | null
   regularPrice: number | null
   salePrice: number | null
+  anchorPriceCents: number | null
+  anchorDate: string | null
+  anchorRegime: string | null
+  anchorConfirmedAt: Date | null
+  barcode: string | null
+  barcodeNotApplicable: boolean | null
+  unitMeasure: string | null
+  unitQuantity: number | null
+  unitNotApplicable: boolean | null
+  brandNotApplicable: boolean | null
+  saleLabel: string | null
   taxRate: number | null
   image: string | null
   gallery: string | null
@@ -104,6 +119,17 @@ export type ProductMaxAggregateOutputType = {
   price: number | null
   regularPrice: number | null
   salePrice: number | null
+  anchorPriceCents: number | null
+  anchorDate: string | null
+  anchorRegime: string | null
+  anchorConfirmedAt: Date | null
+  barcode: string | null
+  barcodeNotApplicable: boolean | null
+  unitMeasure: string | null
+  unitQuantity: number | null
+  unitNotApplicable: boolean | null
+  brandNotApplicable: boolean | null
+  saleLabel: string | null
   taxRate: number | null
   image: string | null
   gallery: string | null
@@ -144,6 +170,17 @@ export type ProductCountAggregateOutputType = {
   price: number
   regularPrice: number
   salePrice: number
+  anchorPriceCents: number
+  anchorDate: number
+  anchorRegime: number
+  anchorConfirmedAt: number
+  barcode: number
+  barcodeNotApplicable: number
+  unitMeasure: number
+  unitQuantity: number
+  unitNotApplicable: number
+  brandNotApplicable: number
+  saleLabel: number
   taxRate: number
   image: number
   gallery: number
@@ -180,6 +217,8 @@ export type ProductAvgAggregateInputType = {
   price?: true
   regularPrice?: true
   salePrice?: true
+  anchorPriceCents?: true
+  unitQuantity?: true
   taxRate?: true
   stock?: true
   weight?: true
@@ -194,6 +233,8 @@ export type ProductSumAggregateInputType = {
   price?: true
   regularPrice?: true
   salePrice?: true
+  anchorPriceCents?: true
+  unitQuantity?: true
   taxRate?: true
   stock?: true
   weight?: true
@@ -214,6 +255,17 @@ export type ProductMinAggregateInputType = {
   price?: true
   regularPrice?: true
   salePrice?: true
+  anchorPriceCents?: true
+  anchorDate?: true
+  anchorRegime?: true
+  anchorConfirmedAt?: true
+  barcode?: true
+  barcodeNotApplicable?: true
+  unitMeasure?: true
+  unitQuantity?: true
+  unitNotApplicable?: true
+  brandNotApplicable?: true
+  saleLabel?: true
   taxRate?: true
   image?: true
   gallery?: true
@@ -254,6 +306,17 @@ export type ProductMaxAggregateInputType = {
   price?: true
   regularPrice?: true
   salePrice?: true
+  anchorPriceCents?: true
+  anchorDate?: true
+  anchorRegime?: true
+  anchorConfirmedAt?: true
+  barcode?: true
+  barcodeNotApplicable?: true
+  unitMeasure?: true
+  unitQuantity?: true
+  unitNotApplicable?: true
+  brandNotApplicable?: true
+  saleLabel?: true
   taxRate?: true
   image?: true
   gallery?: true
@@ -294,6 +357,17 @@ export type ProductCountAggregateInputType = {
   price?: true
   regularPrice?: true
   salePrice?: true
+  anchorPriceCents?: true
+  anchorDate?: true
+  anchorRegime?: true
+  anchorConfirmedAt?: true
+  barcode?: true
+  barcodeNotApplicable?: true
+  unitMeasure?: true
+  unitQuantity?: true
+  unitNotApplicable?: true
+  brandNotApplicable?: true
+  saleLabel?: true
   taxRate?: true
   image?: true
   gallery?: true
@@ -421,6 +495,17 @@ export type ProductGroupByOutputType = {
   price: number
   regularPrice: number | null
   salePrice: number | null
+  anchorPriceCents: number | null
+  anchorDate: string | null
+  anchorRegime: string | null
+  anchorConfirmedAt: Date | null
+  barcode: string | null
+  barcodeNotApplicable: boolean
+  unitMeasure: string | null
+  unitQuantity: number | null
+  unitNotApplicable: boolean
+  brandNotApplicable: boolean
+  saleLabel: string | null
   taxRate: number | null
   image: string
   gallery: string
@@ -484,6 +569,17 @@ export type ProductWhereInput = {
   price?: Prisma.FloatFilter<"Product"> | number
   regularPrice?: Prisma.FloatNullableFilter<"Product"> | number | null
   salePrice?: Prisma.FloatNullableFilter<"Product"> | number | null
+  anchorPriceCents?: Prisma.IntNullableFilter<"Product"> | number | null
+  anchorDate?: Prisma.StringNullableFilter<"Product"> | string | null
+  anchorRegime?: Prisma.StringNullableFilter<"Product"> | string | null
+  anchorConfirmedAt?: Prisma.DateTimeNullableFilter<"Product"> | Date | string | null
+  barcode?: Prisma.StringNullableFilter<"Product"> | string | null
+  barcodeNotApplicable?: Prisma.BoolFilter<"Product"> | boolean
+  unitMeasure?: Prisma.StringNullableFilter<"Product"> | string | null
+  unitQuantity?: Prisma.FloatNullableFilter<"Product"> | number | null
+  unitNotApplicable?: Prisma.BoolFilter<"Product"> | boolean
+  brandNotApplicable?: Prisma.BoolFilter<"Product"> | boolean
+  saleLabel?: Prisma.StringNullableFilter<"Product"> | string | null
   taxRate?: Prisma.FloatNullableFilter<"Product"> | number | null
   image?: Prisma.StringFilter<"Product"> | string
   gallery?: Prisma.StringFilter<"Product"> | string
@@ -528,6 +624,17 @@ export type ProductOrderByWithRelationInput = {
   price?: Prisma.SortOrder
   regularPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   salePrice?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorRegime?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorConfirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  barcode?: Prisma.SortOrderInput | Prisma.SortOrder
+  barcodeNotApplicable?: Prisma.SortOrder
+  unitMeasure?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitNotApplicable?: Prisma.SortOrder
+  brandNotApplicable?: Prisma.SortOrder
+  saleLabel?: Prisma.SortOrderInput | Prisma.SortOrder
   taxRate?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrder
   gallery?: Prisma.SortOrder
@@ -575,6 +682,17 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   price?: Prisma.FloatFilter<"Product"> | number
   regularPrice?: Prisma.FloatNullableFilter<"Product"> | number | null
   salePrice?: Prisma.FloatNullableFilter<"Product"> | number | null
+  anchorPriceCents?: Prisma.IntNullableFilter<"Product"> | number | null
+  anchorDate?: Prisma.StringNullableFilter<"Product"> | string | null
+  anchorRegime?: Prisma.StringNullableFilter<"Product"> | string | null
+  anchorConfirmedAt?: Prisma.DateTimeNullableFilter<"Product"> | Date | string | null
+  barcode?: Prisma.StringNullableFilter<"Product"> | string | null
+  barcodeNotApplicable?: Prisma.BoolFilter<"Product"> | boolean
+  unitMeasure?: Prisma.StringNullableFilter<"Product"> | string | null
+  unitQuantity?: Prisma.FloatNullableFilter<"Product"> | number | null
+  unitNotApplicable?: Prisma.BoolFilter<"Product"> | boolean
+  brandNotApplicable?: Prisma.BoolFilter<"Product"> | boolean
+  saleLabel?: Prisma.StringNullableFilter<"Product"> | string | null
   taxRate?: Prisma.FloatNullableFilter<"Product"> | number | null
   image?: Prisma.StringFilter<"Product"> | string
   gallery?: Prisma.StringFilter<"Product"> | string
@@ -619,6 +737,17 @@ export type ProductOrderByWithAggregationInput = {
   price?: Prisma.SortOrder
   regularPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   salePrice?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorRegime?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorConfirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  barcode?: Prisma.SortOrderInput | Prisma.SortOrder
+  barcodeNotApplicable?: Prisma.SortOrder
+  unitMeasure?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitNotApplicable?: Prisma.SortOrder
+  brandNotApplicable?: Prisma.SortOrder
+  saleLabel?: Prisma.SortOrderInput | Prisma.SortOrder
   taxRate?: Prisma.SortOrderInput | Prisma.SortOrder
   image?: Prisma.SortOrder
   gallery?: Prisma.SortOrder
@@ -667,6 +796,17 @@ export type ProductScalarWhereWithAggregatesInput = {
   price?: Prisma.FloatWithAggregatesFilter<"Product"> | number
   regularPrice?: Prisma.FloatNullableWithAggregatesFilter<"Product"> | number | null
   salePrice?: Prisma.FloatNullableWithAggregatesFilter<"Product"> | number | null
+  anchorPriceCents?: Prisma.IntNullableWithAggregatesFilter<"Product"> | number | null
+  anchorDate?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
+  anchorRegime?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
+  anchorConfirmedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Product"> | Date | string | null
+  barcode?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
+  barcodeNotApplicable?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
+  unitMeasure?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
+  unitQuantity?: Prisma.FloatNullableWithAggregatesFilter<"Product"> | number | null
+  unitNotApplicable?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
+  brandNotApplicable?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
+  saleLabel?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   taxRate?: Prisma.FloatNullableWithAggregatesFilter<"Product"> | number | null
   image?: Prisma.StringWithAggregatesFilter<"Product"> | string
   gallery?: Prisma.StringWithAggregatesFilter<"Product"> | string
@@ -705,6 +845,17 @@ export type ProductCreateInput = {
   price: number
   regularPrice?: number | null
   salePrice?: number | null
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: string | null
   taxRate?: number | null
   image: string
   gallery?: string
@@ -749,6 +900,17 @@ export type ProductUncheckedCreateInput = {
   price: number
   regularPrice?: number | null
   salePrice?: number | null
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: string | null
   taxRate?: number | null
   image: string
   gallery?: string
@@ -789,6 +951,17 @@ export type ProductUpdateInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -833,6 +1006,17 @@ export type ProductUncheckedUpdateInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -875,6 +1059,17 @@ export type ProductCreateManyInput = {
   price: number
   regularPrice?: number | null
   salePrice?: number | null
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: string | null
   taxRate?: number | null
   image: string
   gallery?: string
@@ -913,6 +1108,17 @@ export type ProductUpdateManyMutationInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -953,6 +1159,17 @@ export type ProductUncheckedUpdateManyInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -993,6 +1210,17 @@ export type ProductCountOrderByAggregateInput = {
   price?: Prisma.SortOrder
   regularPrice?: Prisma.SortOrder
   salePrice?: Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrder
+  anchorDate?: Prisma.SortOrder
+  anchorRegime?: Prisma.SortOrder
+  anchorConfirmedAt?: Prisma.SortOrder
+  barcode?: Prisma.SortOrder
+  barcodeNotApplicable?: Prisma.SortOrder
+  unitMeasure?: Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrder
+  unitNotApplicable?: Prisma.SortOrder
+  brandNotApplicable?: Prisma.SortOrder
+  saleLabel?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   image?: Prisma.SortOrder
   gallery?: Prisma.SortOrder
@@ -1027,6 +1255,8 @@ export type ProductAvgOrderByAggregateInput = {
   price?: Prisma.SortOrder
   regularPrice?: Prisma.SortOrder
   salePrice?: Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   weight?: Prisma.SortOrder
@@ -1047,6 +1277,17 @@ export type ProductMaxOrderByAggregateInput = {
   price?: Prisma.SortOrder
   regularPrice?: Prisma.SortOrder
   salePrice?: Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrder
+  anchorDate?: Prisma.SortOrder
+  anchorRegime?: Prisma.SortOrder
+  anchorConfirmedAt?: Prisma.SortOrder
+  barcode?: Prisma.SortOrder
+  barcodeNotApplicable?: Prisma.SortOrder
+  unitMeasure?: Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrder
+  unitNotApplicable?: Prisma.SortOrder
+  brandNotApplicable?: Prisma.SortOrder
+  saleLabel?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   image?: Prisma.SortOrder
   gallery?: Prisma.SortOrder
@@ -1087,6 +1328,17 @@ export type ProductMinOrderByAggregateInput = {
   price?: Prisma.SortOrder
   regularPrice?: Prisma.SortOrder
   salePrice?: Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrder
+  anchorDate?: Prisma.SortOrder
+  anchorRegime?: Prisma.SortOrder
+  anchorConfirmedAt?: Prisma.SortOrder
+  barcode?: Prisma.SortOrder
+  barcodeNotApplicable?: Prisma.SortOrder
+  unitMeasure?: Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrder
+  unitNotApplicable?: Prisma.SortOrder
+  brandNotApplicable?: Prisma.SortOrder
+  saleLabel?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   image?: Prisma.SortOrder
   gallery?: Prisma.SortOrder
@@ -1121,6 +1373,8 @@ export type ProductSumOrderByAggregateInput = {
   price?: Prisma.SortOrder
   regularPrice?: Prisma.SortOrder
   salePrice?: Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   weight?: Prisma.SortOrder
@@ -1172,6 +1426,10 @@ export type NullableIntFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type ProductCreateNestedOneWithoutVariantsInput = {
@@ -1294,6 +1552,17 @@ export type ProductCreateWithoutVariantsInput = {
   price: number
   regularPrice?: number | null
   salePrice?: number | null
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: string | null
   taxRate?: number | null
   image: string
   gallery?: string
@@ -1337,6 +1606,17 @@ export type ProductUncheckedCreateWithoutVariantsInput = {
   price: number
   regularPrice?: number | null
   salePrice?: number | null
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: string | null
   taxRate?: number | null
   image: string
   gallery?: string
@@ -1392,6 +1672,17 @@ export type ProductUpdateWithoutVariantsInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1435,6 +1726,17 @@ export type ProductUncheckedUpdateWithoutVariantsInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1474,6 +1776,17 @@ export type ProductCreateWithoutCategoryInput = {
   price: number
   regularPrice?: number | null
   salePrice?: number | null
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: string | null
   taxRate?: number | null
   image: string
   gallery?: string
@@ -1516,6 +1829,17 @@ export type ProductUncheckedCreateWithoutCategoryInput = {
   price: number
   regularPrice?: number | null
   salePrice?: number | null
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: string | null
   taxRate?: number | null
   image: string
   gallery?: string
@@ -1587,6 +1911,17 @@ export type ProductScalarWhereInput = {
   price?: Prisma.FloatFilter<"Product"> | number
   regularPrice?: Prisma.FloatNullableFilter<"Product"> | number | null
   salePrice?: Prisma.FloatNullableFilter<"Product"> | number | null
+  anchorPriceCents?: Prisma.IntNullableFilter<"Product"> | number | null
+  anchorDate?: Prisma.StringNullableFilter<"Product"> | string | null
+  anchorRegime?: Prisma.StringNullableFilter<"Product"> | string | null
+  anchorConfirmedAt?: Prisma.DateTimeNullableFilter<"Product"> | Date | string | null
+  barcode?: Prisma.StringNullableFilter<"Product"> | string | null
+  barcodeNotApplicable?: Prisma.BoolFilter<"Product"> | boolean
+  unitMeasure?: Prisma.StringNullableFilter<"Product"> | string | null
+  unitQuantity?: Prisma.FloatNullableFilter<"Product"> | number | null
+  unitNotApplicable?: Prisma.BoolFilter<"Product"> | boolean
+  brandNotApplicable?: Prisma.BoolFilter<"Product"> | boolean
+  saleLabel?: Prisma.StringNullableFilter<"Product"> | string | null
   taxRate?: Prisma.FloatNullableFilter<"Product"> | number | null
   image?: Prisma.StringFilter<"Product"> | string
   gallery?: Prisma.StringFilter<"Product"> | string
@@ -1625,6 +1960,17 @@ export type ProductCreateWithoutBrandInput = {
   price: number
   regularPrice?: number | null
   salePrice?: number | null
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: string | null
   taxRate?: number | null
   image: string
   gallery?: string
@@ -1667,6 +2013,17 @@ export type ProductUncheckedCreateWithoutBrandInput = {
   price: number
   regularPrice?: number | null
   salePrice?: number | null
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: string | null
   taxRate?: number | null
   image: string
   gallery?: string
@@ -1733,6 +2090,17 @@ export type ProductCreateWithoutOrderItemsInput = {
   price: number
   regularPrice?: number | null
   salePrice?: number | null
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: string | null
   taxRate?: number | null
   image: string
   gallery?: string
@@ -1776,6 +2144,17 @@ export type ProductUncheckedCreateWithoutOrderItemsInput = {
   price: number
   regularPrice?: number | null
   salePrice?: number | null
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: string | null
   taxRate?: number | null
   image: string
   gallery?: string
@@ -1831,6 +2210,17 @@ export type ProductUpdateWithoutOrderItemsInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1874,6 +2264,17 @@ export type ProductUncheckedUpdateWithoutOrderItemsInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1914,6 +2315,17 @@ export type ProductCreateManyCategoryInput = {
   price: number
   regularPrice?: number | null
   salePrice?: number | null
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: string | null
   taxRate?: number | null
   image: string
   gallery?: string
@@ -1952,6 +2364,17 @@ export type ProductUpdateWithoutCategoryInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1994,6 +2417,17 @@ export type ProductUncheckedUpdateWithoutCategoryInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2035,6 +2469,17 @@ export type ProductUncheckedUpdateManyWithoutCategoryInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2074,6 +2519,17 @@ export type ProductCreateManyBrandInput = {
   price: number
   regularPrice?: number | null
   salePrice?: number | null
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: string | null
   taxRate?: number | null
   image: string
   gallery?: string
@@ -2112,6 +2568,17 @@ export type ProductUpdateWithoutBrandInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2154,6 +2621,17 @@ export type ProductUncheckedUpdateWithoutBrandInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2195,6 +2673,17 @@ export type ProductUncheckedUpdateManyWithoutBrandInput = {
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   regularPrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brandNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  saleLabel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   taxRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   image?: Prisma.StringFieldUpdateOperationsInput | string
   gallery?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2275,6 +2764,17 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   price?: boolean
   regularPrice?: boolean
   salePrice?: boolean
+  anchorPriceCents?: boolean
+  anchorDate?: boolean
+  anchorRegime?: boolean
+  anchorConfirmedAt?: boolean
+  barcode?: boolean
+  barcodeNotApplicable?: boolean
+  unitMeasure?: boolean
+  unitQuantity?: boolean
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: boolean
   taxRate?: boolean
   image?: boolean
   gallery?: boolean
@@ -2320,6 +2820,17 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   price?: boolean
   regularPrice?: boolean
   salePrice?: boolean
+  anchorPriceCents?: boolean
+  anchorDate?: boolean
+  anchorRegime?: boolean
+  anchorConfirmedAt?: boolean
+  barcode?: boolean
+  barcodeNotApplicable?: boolean
+  unitMeasure?: boolean
+  unitQuantity?: boolean
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: boolean
   taxRate?: boolean
   image?: boolean
   gallery?: boolean
@@ -2362,6 +2873,17 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   price?: boolean
   regularPrice?: boolean
   salePrice?: boolean
+  anchorPriceCents?: boolean
+  anchorDate?: boolean
+  anchorRegime?: boolean
+  anchorConfirmedAt?: boolean
+  barcode?: boolean
+  barcodeNotApplicable?: boolean
+  unitMeasure?: boolean
+  unitQuantity?: boolean
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: boolean
   taxRate?: boolean
   image?: boolean
   gallery?: boolean
@@ -2404,6 +2926,17 @@ export type ProductSelectScalar = {
   price?: boolean
   regularPrice?: boolean
   salePrice?: boolean
+  anchorPriceCents?: boolean
+  anchorDate?: boolean
+  anchorRegime?: boolean
+  anchorConfirmedAt?: boolean
+  barcode?: boolean
+  barcodeNotApplicable?: boolean
+  unitMeasure?: boolean
+  unitQuantity?: boolean
+  unitNotApplicable?: boolean
+  brandNotApplicable?: boolean
+  saleLabel?: boolean
   taxRate?: boolean
   image?: boolean
   gallery?: boolean
@@ -2434,7 +2967,7 @@ export type ProductSelectScalar = {
   categories?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "sku" | "brandId" | "categoryId" | "price" | "regularPrice" | "salePrice" | "taxRate" | "image" | "gallery" | "shortDescription" | "description" | "specifications" | "stock" | "stockStatus" | "status" | "featured" | "badge" | "type" | "weight" | "width" | "height" | "depth" | "metaTitle" | "metaDescription" | "benefits" | "usage" | "warranty" | "deliveryNote" | "createdAt" | "updatedAt" | "attributes" | "priceRangeMin" | "priceRangeMax" | "categories", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "sku" | "brandId" | "categoryId" | "price" | "regularPrice" | "salePrice" | "anchorPriceCents" | "anchorDate" | "anchorRegime" | "anchorConfirmedAt" | "barcode" | "barcodeNotApplicable" | "unitMeasure" | "unitQuantity" | "unitNotApplicable" | "brandNotApplicable" | "saleLabel" | "taxRate" | "image" | "gallery" | "shortDescription" | "description" | "specifications" | "stock" | "stockStatus" | "status" | "featured" | "badge" | "type" | "weight" | "width" | "height" | "depth" | "metaTitle" | "metaDescription" | "benefits" | "usage" | "warranty" | "deliveryNote" | "createdAt" | "updatedAt" | "attributes" | "priceRangeMin" | "priceRangeMax" | "categories", ExtArgs["result"]["product"]>
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   brand?: boolean | Prisma.Product$brandArgs<ExtArgs>
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
@@ -2469,6 +3002,17 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     price: number
     regularPrice: number | null
     salePrice: number | null
+    anchorPriceCents: number | null
+    anchorDate: string | null
+    anchorRegime: string | null
+    anchorConfirmedAt: Date | null
+    barcode: string | null
+    barcodeNotApplicable: boolean
+    unitMeasure: string | null
+    unitQuantity: number | null
+    unitNotApplicable: boolean
+    brandNotApplicable: boolean
+    saleLabel: string | null
     taxRate: number | null
     image: string
     gallery: string
@@ -2933,6 +3477,17 @@ export interface ProductFieldRefs {
   readonly price: Prisma.FieldRef<"Product", 'Float'>
   readonly regularPrice: Prisma.FieldRef<"Product", 'Float'>
   readonly salePrice: Prisma.FieldRef<"Product", 'Float'>
+  readonly anchorPriceCents: Prisma.FieldRef<"Product", 'Int'>
+  readonly anchorDate: Prisma.FieldRef<"Product", 'String'>
+  readonly anchorRegime: Prisma.FieldRef<"Product", 'String'>
+  readonly anchorConfirmedAt: Prisma.FieldRef<"Product", 'DateTime'>
+  readonly barcode: Prisma.FieldRef<"Product", 'String'>
+  readonly barcodeNotApplicable: Prisma.FieldRef<"Product", 'Boolean'>
+  readonly unitMeasure: Prisma.FieldRef<"Product", 'String'>
+  readonly unitQuantity: Prisma.FieldRef<"Product", 'Float'>
+  readonly unitNotApplicable: Prisma.FieldRef<"Product", 'Boolean'>
+  readonly brandNotApplicable: Prisma.FieldRef<"Product", 'Boolean'>
+  readonly saleLabel: Prisma.FieldRef<"Product", 'String'>
   readonly taxRate: Prisma.FieldRef<"Product", 'Float'>
   readonly image: Prisma.FieldRef<"Product", 'String'>
   readonly gallery: Prisma.FieldRef<"Product", 'String'>

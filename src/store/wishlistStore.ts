@@ -8,6 +8,9 @@ interface WishlistItem {
   id: string;
   name: string;
   price: number;
+  anchorPriceCents?: number | null;
+  anchorDate?: string | null;
+  type?: string;
   image?: string;
   slug: string;
 }

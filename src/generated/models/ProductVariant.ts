@@ -28,11 +28,15 @@ export type AggregateProductVariant = {
 
 export type ProductVariantAvgAggregateOutputType = {
   price: number | null
+  anchorPriceCents: number | null
+  unitQuantity: number | null
   stock: number | null
 }
 
 export type ProductVariantSumAggregateOutputType = {
   price: number | null
+  anchorPriceCents: number | null
+  unitQuantity: number | null
   stock: number | null
 }
 
@@ -41,6 +45,15 @@ export type ProductVariantMinAggregateOutputType = {
   productId: string | null
   sku: string | null
   price: number | null
+  anchorPriceCents: number | null
+  anchorDate: string | null
+  anchorRegime: string | null
+  anchorConfirmedAt: Date | null
+  barcode: string | null
+  barcodeNotApplicable: boolean | null
+  unitMeasure: string | null
+  unitQuantity: number | null
+  unitNotApplicable: boolean | null
   attributes: string | null
   stock: number | null
   active: boolean | null
@@ -53,6 +66,15 @@ export type ProductVariantMaxAggregateOutputType = {
   productId: string | null
   sku: string | null
   price: number | null
+  anchorPriceCents: number | null
+  anchorDate: string | null
+  anchorRegime: string | null
+  anchorConfirmedAt: Date | null
+  barcode: string | null
+  barcodeNotApplicable: boolean | null
+  unitMeasure: string | null
+  unitQuantity: number | null
+  unitNotApplicable: boolean | null
   attributes: string | null
   stock: number | null
   active: boolean | null
@@ -65,6 +87,15 @@ export type ProductVariantCountAggregateOutputType = {
   productId: number
   sku: number
   price: number
+  anchorPriceCents: number
+  anchorDate: number
+  anchorRegime: number
+  anchorConfirmedAt: number
+  barcode: number
+  barcodeNotApplicable: number
+  unitMeasure: number
+  unitQuantity: number
+  unitNotApplicable: number
   attributes: number
   stock: number
   active: number
@@ -76,11 +107,15 @@ export type ProductVariantCountAggregateOutputType = {
 
 export type ProductVariantAvgAggregateInputType = {
   price?: true
+  anchorPriceCents?: true
+  unitQuantity?: true
   stock?: true
 }
 
 export type ProductVariantSumAggregateInputType = {
   price?: true
+  anchorPriceCents?: true
+  unitQuantity?: true
   stock?: true
 }
 
@@ -89,6 +124,15 @@ export type ProductVariantMinAggregateInputType = {
   productId?: true
   sku?: true
   price?: true
+  anchorPriceCents?: true
+  anchorDate?: true
+  anchorRegime?: true
+  anchorConfirmedAt?: true
+  barcode?: true
+  barcodeNotApplicable?: true
+  unitMeasure?: true
+  unitQuantity?: true
+  unitNotApplicable?: true
   attributes?: true
   stock?: true
   active?: true
@@ -101,6 +145,15 @@ export type ProductVariantMaxAggregateInputType = {
   productId?: true
   sku?: true
   price?: true
+  anchorPriceCents?: true
+  anchorDate?: true
+  anchorRegime?: true
+  anchorConfirmedAt?: true
+  barcode?: true
+  barcodeNotApplicable?: true
+  unitMeasure?: true
+  unitQuantity?: true
+  unitNotApplicable?: true
   attributes?: true
   stock?: true
   active?: true
@@ -113,6 +166,15 @@ export type ProductVariantCountAggregateInputType = {
   productId?: true
   sku?: true
   price?: true
+  anchorPriceCents?: true
+  anchorDate?: true
+  anchorRegime?: true
+  anchorConfirmedAt?: true
+  barcode?: true
+  barcodeNotApplicable?: true
+  unitMeasure?: true
+  unitQuantity?: true
+  unitNotApplicable?: true
   attributes?: true
   stock?: true
   active?: true
@@ -212,6 +274,15 @@ export type ProductVariantGroupByOutputType = {
   productId: string
   sku: string | null
   price: number
+  anchorPriceCents: number | null
+  anchorDate: string | null
+  anchorRegime: string | null
+  anchorConfirmedAt: Date | null
+  barcode: string | null
+  barcodeNotApplicable: boolean
+  unitMeasure: string | null
+  unitQuantity: number | null
+  unitNotApplicable: boolean
   attributes: string
   stock: number | null
   active: boolean
@@ -247,6 +318,15 @@ export type ProductVariantWhereInput = {
   productId?: Prisma.StringFilter<"ProductVariant"> | string
   sku?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   price?: Prisma.FloatFilter<"ProductVariant"> | number
+  anchorPriceCents?: Prisma.IntNullableFilter<"ProductVariant"> | number | null
+  anchorDate?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  anchorRegime?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  anchorConfirmedAt?: Prisma.DateTimeNullableFilter<"ProductVariant"> | Date | string | null
+  barcode?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  barcodeNotApplicable?: Prisma.BoolFilter<"ProductVariant"> | boolean
+  unitMeasure?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  unitQuantity?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
+  unitNotApplicable?: Prisma.BoolFilter<"ProductVariant"> | boolean
   attributes?: Prisma.StringFilter<"ProductVariant"> | string
   stock?: Prisma.IntNullableFilter<"ProductVariant"> | number | null
   active?: Prisma.BoolFilter<"ProductVariant"> | boolean
@@ -260,6 +340,15 @@ export type ProductVariantOrderByWithRelationInput = {
   productId?: Prisma.SortOrder
   sku?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorRegime?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorConfirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  barcode?: Prisma.SortOrderInput | Prisma.SortOrder
+  barcodeNotApplicable?: Prisma.SortOrder
+  unitMeasure?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitNotApplicable?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
   stock?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
@@ -277,6 +366,15 @@ export type ProductVariantWhereUniqueInput = Prisma.AtLeast<{
   productId?: Prisma.StringFilter<"ProductVariant"> | string
   sku?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   price?: Prisma.FloatFilter<"ProductVariant"> | number
+  anchorPriceCents?: Prisma.IntNullableFilter<"ProductVariant"> | number | null
+  anchorDate?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  anchorRegime?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  anchorConfirmedAt?: Prisma.DateTimeNullableFilter<"ProductVariant"> | Date | string | null
+  barcode?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  barcodeNotApplicable?: Prisma.BoolFilter<"ProductVariant"> | boolean
+  unitMeasure?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  unitQuantity?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
+  unitNotApplicable?: Prisma.BoolFilter<"ProductVariant"> | boolean
   attributes?: Prisma.StringFilter<"ProductVariant"> | string
   stock?: Prisma.IntNullableFilter<"ProductVariant"> | number | null
   active?: Prisma.BoolFilter<"ProductVariant"> | boolean
@@ -290,6 +388,15 @@ export type ProductVariantOrderByWithAggregationInput = {
   productId?: Prisma.SortOrder
   sku?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorRegime?: Prisma.SortOrderInput | Prisma.SortOrder
+  anchorConfirmedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  barcode?: Prisma.SortOrderInput | Prisma.SortOrder
+  barcodeNotApplicable?: Prisma.SortOrder
+  unitMeasure?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
+  unitNotApplicable?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
   stock?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
@@ -310,6 +417,15 @@ export type ProductVariantScalarWhereWithAggregatesInput = {
   productId?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   sku?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
   price?: Prisma.FloatWithAggregatesFilter<"ProductVariant"> | number
+  anchorPriceCents?: Prisma.IntNullableWithAggregatesFilter<"ProductVariant"> | number | null
+  anchorDate?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
+  anchorRegime?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
+  anchorConfirmedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ProductVariant"> | Date | string | null
+  barcode?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
+  barcodeNotApplicable?: Prisma.BoolWithAggregatesFilter<"ProductVariant"> | boolean
+  unitMeasure?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
+  unitQuantity?: Prisma.FloatNullableWithAggregatesFilter<"ProductVariant"> | number | null
+  unitNotApplicable?: Prisma.BoolWithAggregatesFilter<"ProductVariant"> | boolean
   attributes?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   stock?: Prisma.IntNullableWithAggregatesFilter<"ProductVariant"> | number | null
   active?: Prisma.BoolWithAggregatesFilter<"ProductVariant"> | boolean
@@ -321,6 +437,15 @@ export type ProductVariantCreateInput = {
   id?: string
   sku?: string | null
   price: number
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
   attributes: string
   stock?: number | null
   active?: boolean
@@ -334,6 +459,15 @@ export type ProductVariantUncheckedCreateInput = {
   productId: string
   sku?: string | null
   price: number
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
   attributes: string
   stock?: number | null
   active?: boolean
@@ -345,6 +479,15 @@ export type ProductVariantUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
   stock?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -358,6 +501,15 @@ export type ProductVariantUncheckedUpdateInput = {
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
   stock?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -370,6 +522,15 @@ export type ProductVariantCreateManyInput = {
   productId: string
   sku?: string | null
   price: number
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
   attributes: string
   stock?: number | null
   active?: boolean
@@ -381,6 +542,15 @@ export type ProductVariantUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
   stock?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -393,6 +563,15 @@ export type ProductVariantUncheckedUpdateManyInput = {
   productId?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
   stock?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -420,6 +599,15 @@ export type ProductVariantCountOrderByAggregateInput = {
   productId?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrder
+  anchorDate?: Prisma.SortOrder
+  anchorRegime?: Prisma.SortOrder
+  anchorConfirmedAt?: Prisma.SortOrder
+  barcode?: Prisma.SortOrder
+  barcodeNotApplicable?: Prisma.SortOrder
+  unitMeasure?: Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrder
+  unitNotApplicable?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   active?: Prisma.SortOrder
@@ -429,6 +617,8 @@ export type ProductVariantCountOrderByAggregateInput = {
 
 export type ProductVariantAvgOrderByAggregateInput = {
   price?: Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrder
   stock?: Prisma.SortOrder
 }
 
@@ -437,6 +627,15 @@ export type ProductVariantMaxOrderByAggregateInput = {
   productId?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrder
+  anchorDate?: Prisma.SortOrder
+  anchorRegime?: Prisma.SortOrder
+  anchorConfirmedAt?: Prisma.SortOrder
+  barcode?: Prisma.SortOrder
+  barcodeNotApplicable?: Prisma.SortOrder
+  unitMeasure?: Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrder
+  unitNotApplicable?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   active?: Prisma.SortOrder
@@ -449,6 +648,15 @@ export type ProductVariantMinOrderByAggregateInput = {
   productId?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrder
+  anchorDate?: Prisma.SortOrder
+  anchorRegime?: Prisma.SortOrder
+  anchorConfirmedAt?: Prisma.SortOrder
+  barcode?: Prisma.SortOrder
+  barcodeNotApplicable?: Prisma.SortOrder
+  unitMeasure?: Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrder
+  unitNotApplicable?: Prisma.SortOrder
   attributes?: Prisma.SortOrder
   stock?: Prisma.SortOrder
   active?: Prisma.SortOrder
@@ -458,6 +666,8 @@ export type ProductVariantMinOrderByAggregateInput = {
 
 export type ProductVariantSumOrderByAggregateInput = {
   price?: Prisma.SortOrder
+  anchorPriceCents?: Prisma.SortOrder
+  unitQuantity?: Prisma.SortOrder
   stock?: Prisma.SortOrder
 }
 
@@ -507,6 +717,15 @@ export type ProductVariantCreateWithoutProductInput = {
   id?: string
   sku?: string | null
   price: number
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
   attributes: string
   stock?: number | null
   active?: boolean
@@ -518,6 +737,15 @@ export type ProductVariantUncheckedCreateWithoutProductInput = {
   id?: string
   sku?: string | null
   price: number
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
   attributes: string
   stock?: number | null
   active?: boolean
@@ -559,6 +787,15 @@ export type ProductVariantScalarWhereInput = {
   productId?: Prisma.StringFilter<"ProductVariant"> | string
   sku?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   price?: Prisma.FloatFilter<"ProductVariant"> | number
+  anchorPriceCents?: Prisma.IntNullableFilter<"ProductVariant"> | number | null
+  anchorDate?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  anchorRegime?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  anchorConfirmedAt?: Prisma.DateTimeNullableFilter<"ProductVariant"> | Date | string | null
+  barcode?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  barcodeNotApplicable?: Prisma.BoolFilter<"ProductVariant"> | boolean
+  unitMeasure?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
+  unitQuantity?: Prisma.FloatNullableFilter<"ProductVariant"> | number | null
+  unitNotApplicable?: Prisma.BoolFilter<"ProductVariant"> | boolean
   attributes?: Prisma.StringFilter<"ProductVariant"> | string
   stock?: Prisma.IntNullableFilter<"ProductVariant"> | number | null
   active?: Prisma.BoolFilter<"ProductVariant"> | boolean
@@ -570,6 +807,15 @@ export type ProductVariantCreateManyProductInput = {
   id?: string
   sku?: string | null
   price: number
+  anchorPriceCents?: number | null
+  anchorDate?: string | null
+  anchorRegime?: string | null
+  anchorConfirmedAt?: Date | string | null
+  barcode?: string | null
+  barcodeNotApplicable?: boolean
+  unitMeasure?: string | null
+  unitQuantity?: number | null
+  unitNotApplicable?: boolean
   attributes: string
   stock?: number | null
   active?: boolean
@@ -581,6 +827,15 @@ export type ProductVariantUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
   stock?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -592,6 +847,15 @@ export type ProductVariantUncheckedUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
   stock?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -603,6 +867,15 @@ export type ProductVariantUncheckedUpdateManyWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  anchorPriceCents?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  anchorDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorRegime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anchorConfirmedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcodeNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  unitMeasure?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unitQuantity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  unitNotApplicable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   attributes?: Prisma.StringFieldUpdateOperationsInput | string
   stock?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -617,6 +890,15 @@ export type ProductVariantSelect<ExtArgs extends runtime.Types.Extensions.Intern
   productId?: boolean
   sku?: boolean
   price?: boolean
+  anchorPriceCents?: boolean
+  anchorDate?: boolean
+  anchorRegime?: boolean
+  anchorConfirmedAt?: boolean
+  barcode?: boolean
+  barcodeNotApplicable?: boolean
+  unitMeasure?: boolean
+  unitQuantity?: boolean
+  unitNotApplicable?: boolean
   attributes?: boolean
   stock?: boolean
   active?: boolean
@@ -630,6 +912,15 @@ export type ProductVariantSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   productId?: boolean
   sku?: boolean
   price?: boolean
+  anchorPriceCents?: boolean
+  anchorDate?: boolean
+  anchorRegime?: boolean
+  anchorConfirmedAt?: boolean
+  barcode?: boolean
+  barcodeNotApplicable?: boolean
+  unitMeasure?: boolean
+  unitQuantity?: boolean
+  unitNotApplicable?: boolean
   attributes?: boolean
   stock?: boolean
   active?: boolean
@@ -643,6 +934,15 @@ export type ProductVariantSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   productId?: boolean
   sku?: boolean
   price?: boolean
+  anchorPriceCents?: boolean
+  anchorDate?: boolean
+  anchorRegime?: boolean
+  anchorConfirmedAt?: boolean
+  barcode?: boolean
+  barcodeNotApplicable?: boolean
+  unitMeasure?: boolean
+  unitQuantity?: boolean
+  unitNotApplicable?: boolean
   attributes?: boolean
   stock?: boolean
   active?: boolean
@@ -656,6 +956,15 @@ export type ProductVariantSelectScalar = {
   productId?: boolean
   sku?: boolean
   price?: boolean
+  anchorPriceCents?: boolean
+  anchorDate?: boolean
+  anchorRegime?: boolean
+  anchorConfirmedAt?: boolean
+  barcode?: boolean
+  barcodeNotApplicable?: boolean
+  unitMeasure?: boolean
+  unitQuantity?: boolean
+  unitNotApplicable?: boolean
   attributes?: boolean
   stock?: boolean
   active?: boolean
@@ -663,7 +972,7 @@ export type ProductVariantSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ProductVariantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "sku" | "price" | "attributes" | "stock" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["productVariant"]>
+export type ProductVariantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "sku" | "price" | "anchorPriceCents" | "anchorDate" | "anchorRegime" | "anchorConfirmedAt" | "barcode" | "barcodeNotApplicable" | "unitMeasure" | "unitQuantity" | "unitNotApplicable" | "attributes" | "stock" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["productVariant"]>
 export type ProductVariantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }
@@ -684,6 +993,15 @@ export type $ProductVariantPayload<ExtArgs extends runtime.Types.Extensions.Inte
     productId: string
     sku: string | null
     price: number
+    anchorPriceCents: number | null
+    anchorDate: string | null
+    anchorRegime: string | null
+    anchorConfirmedAt: Date | null
+    barcode: string | null
+    barcodeNotApplicable: boolean
+    unitMeasure: string | null
+    unitQuantity: number | null
+    unitNotApplicable: boolean
     attributes: string
     stock: number | null
     active: boolean
@@ -1117,6 +1435,15 @@ export interface ProductVariantFieldRefs {
   readonly productId: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly sku: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly price: Prisma.FieldRef<"ProductVariant", 'Float'>
+  readonly anchorPriceCents: Prisma.FieldRef<"ProductVariant", 'Int'>
+  readonly anchorDate: Prisma.FieldRef<"ProductVariant", 'String'>
+  readonly anchorRegime: Prisma.FieldRef<"ProductVariant", 'String'>
+  readonly anchorConfirmedAt: Prisma.FieldRef<"ProductVariant", 'DateTime'>
+  readonly barcode: Prisma.FieldRef<"ProductVariant", 'String'>
+  readonly barcodeNotApplicable: Prisma.FieldRef<"ProductVariant", 'Boolean'>
+  readonly unitMeasure: Prisma.FieldRef<"ProductVariant", 'String'>
+  readonly unitQuantity: Prisma.FieldRef<"ProductVariant", 'Float'>
+  readonly unitNotApplicable: Prisma.FieldRef<"ProductVariant", 'Boolean'>
   readonly attributes: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly stock: Prisma.FieldRef<"ProductVariant", 'Int'>
   readonly active: Prisma.FieldRef<"ProductVariant", 'Boolean'>
