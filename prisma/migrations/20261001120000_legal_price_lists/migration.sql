@@ -79,6 +79,13 @@ CREATE UNIQUE INDEX "PriceListSnapshot_filename_key" ON "PriceListSnapshot"("fil
 -- CreateIndex
 CREATE UNIQUE INDEX "PriceListSnapshot_localDate_key" ON "PriceListSnapshot"("localDate");
 
+-- The application uses a server-side database connection. No new evidence or
+-- settings tables should be exposed through Supabase's public Data API.
+ALTER TABLE "PriceListSettings" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "PriceAnchorAudit" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "PriceListSnapshot" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "PriceListRun" ENABLE ROW LEVEL SECURITY;
+
 -- Confirmed historical prices are protected from all import/update paths.
 CREATE FUNCTION protect_confirmed_price_anchor() RETURNS trigger AS $$
 BEGIN

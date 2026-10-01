@@ -2,7 +2,11 @@
 
 Implementacija pretpostavlja jedan webshop. Vlasnik je 1. 10. 2026. potvrdio da se redovne cijene nisu mijenjale. Ta izjava dopušta pripremu prijedloga iz sadašnjih redovnih cijena; pojedinačna sidra postaju potvrđena tek nakon administratorskog pregleda. Plan i službeni izvori: `LEGAL_IMPLEMENTATION_PLAN.md`. Početak novih obveza prema NN 110/2026 je **17. 11. 2026.**
 
-## Prvo testno okruženje
+## Produkcijski postupak odobren 1. 10. 2026.
+
+Korisnik je odobrio postojeću live bazu i produkcijsku objavu. Migracija je atomarno primijenjena i provjerena na Supabase projektu `fmqcjvoemdmghikrzulk`: nova polja, četiri tablice s RLS i zaštitni triggeri; sačuvano 846 proizvoda i 152 varijante. Ne izvršavati je ponovno. Pregled i dopuna stvarnog kataloga te potvrda sidara ostaju potrebni.
+
+## Izolirani prihvat kao preporučeni postupak
 
 1. Pripremiti izoliranu PostgreSQL bazu s kopijom kataloga, bez stvarnih kupaca i narudžbi. Preview mora koristiti tu bazu. Ne dijeliti produkcijsku bazu jer preview koristi novu shemu.
 2. Spremiti backup prije migracije. Pokrenuti `npx prisma migrate deploy` nad testnom bazom i potvrditi da su stare migracije već ispravno evidentirane. Ne koristiti `db push` kao zamjenu za migraciju sa zaštitnim triggerima.
@@ -14,7 +18,7 @@ Implementacija pretpostavlja jedan webshop. Vlasnik je 1. 10. 2026. potvrdio da 
 
 ## Produkcija nakon provjere
 
-Migracija i aktivacija produkcije još nisu izvršene. Nakon prihvata testnog rezultata napraviti backup produkcije, primijeniti migraciju, objaviti aplikaciju i ponoviti pregled podataka na produkcijskom katalogu. Sidra i objavljene datoteke ne prepisuju se redovnim administratorskim postupkom; pogrešna potvrda treba zaseban pregled i dokumentiranu korekciju.
+Produkcijska migracija izvršena je 1. 10. 2026. uz izričito odobrenje vlasnika. Objavu aplikacije i pregled podataka provesti na postojećem produkcijskom katalogu; CSV aktivaciju napraviti tek nakon dopune i potvrde podataka. Sidra i objavljene datoteke ne prepisuju se redovnim administratorskim postupkom; pogrešna potvrda treba zaseban pregled i dokumentiranu korekciju.
 
 Raspored u `.github/workflows/daily-price-list.yml` je **svakog dana u 07:30 po `Europe/Zagreb`**, s dodatnim provjerama i oporavkom u **07:40 i 07:50**. Izvorni Vercel cron u 04:00 UTC uklonjen je kako ne bi objavio datoteku prije zadanog termina. Hrvatska vremenska zona automatski prati zimsko i ljetno vrijeme; UTC vrijeme nije ručno fiksirano. Svakodnevni raspored pokriva i sve radne dane webshopa.
 

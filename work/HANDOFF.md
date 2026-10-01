@@ -1,29 +1,27 @@
 # RO-TEA Hermes — stanje 2026-10-01
 
-## Cilj i odluke
+## Cilj i ovlasti
 
-Korisnik je zatražio analizu NN PDF-a i implementaciju. Potvrdio: **samo webshop; redovne cijene nisu se mijenjale**. Posljednji zahtjev: cjenik i svako jutro 07:30. Implementiran prvi blok sidrenih cijena, javnih cjenika i rasporeda. Plan: `work/LEGAL_IMPLEMENTATION_PLAN.md`; prihvat: `work/LEGAL_PRICE_LIST_RUNBOOK.md`.
+Korisnik traži sidrene cijene i javni dnevni cjenik u 07:30 Europe/Zagreb. Potvrdio samo webshop i nepromijenjene redovne cijene. Izričito je odobrio prebacivanje svega na live uz postojeću Supabase bazu. Zasebna testna baza ne postoji, oba free mjesta zauzeta, drugi projekt ne smijemo pauzirati. Ne kreirati narudžbe, naplate, e-mailove ili GLS pošiljke. Ne izmišljati metadata ni povijesne dokaze.
 
-Službeni NN 101/2026 br. 1212/1213 uređuju sidrene cijene i CSV/XML. NN 110/2026 br. 1309/1310 odgađaju početak obiju odluka na **17. 11. 2026.** Opće sidro ostaje 10. 9. 2026.; ranije kategorije zadržavaju 2. 5. 2025. Izjava vlasnika služi kao dokumentirani izvor prijedloga iz sadašnjih redovnih cijena. Ne potvrđivati automatski nepoznatu povijest; provjeriti novije artikle i ranije kategorije. Sidro nije najniža cijena u 30 dana prije akcije.
+NN 101/2026 1212/1213, izmijenjeni NN 110/2026 1309/1310: početak 17. 11. 2026.; opće sidro 10. 9. 2026., ranije kategorije 2. 5. 2025. Vlasnikova izjava je dokumentirani izvor prijedloga, ne neovisan dokaz. Pregledati novije artikle i ranije kategorije. Sidro ne zamjenjuje najnižu cijenu u 30 dana prije akcije.
 
-## Implementacija
+## Implementacija i provjere
 
-Prisma model i migracija `20261001120000_legal_price_lists`: sidra proizvoda/varijanti, metadata barkoda, jedinice i količine pakiranja (i po varijanti), settings jednog webshopa, audit, CSV snapshots i zapis objava. SQL triggeri štite potvrđena sidra od prepisivanja i audit/datoteke od izmjene ili brisanja. Sidra i metadata spremaju se parametriziranim skupnim SQL-om unutar transakcije.
+Prisma migracija 20261001120000_legal_price_lists, src/lib/compliance/, /admin/cjenici, javni /cjenici, manifest i CSV, zaštićeni cron endpoint. Sidra se potvrđuju nakon pregleda; fingerprint sprječava zastarjeli pregled. PostgreSQL triggeri štite potvrđena sidra i audit/CSV. Transakcijska objava s zaključavanjem jednom dnevno, SHA-256, trajna arhiva. Nepotpuni podaci blokiraju objavu. Sidra prikazana na karticama, detalju, varijantama, košarici i listi želja.
 
-`src/lib/compliance/`: prijedlog, fingerprint kataloga, validacija punog pregleda, potvrda s administratorskim identitetom/izvorom, CSV i atomarna dnevna objava. Jedan zapis po zagrebačkom danu, advisory lock, ponavljanje serialization konflikta; SHA-256 i nepromjenjiv sadržaj arhive. Nepotpuni podaci blokiraju objavu. Arhiva se ne briše, pa zadržavanje prelazi 30 dana.
+GitHub daily-price-list.yml: 07:30, provjere/oporavak 07:40/07:50 Europe/Zagreb. Vercel cron uklonjen. Potreban isti CRON_SECRET u GitHubu i produkcijskom Vercelu; GitHub secrets bili prazni. Raspored može kasniti/izostati. Bez aktivacije, potpune baze i jutarnjeg prihvata ne tvrditi operativnu spremnost. Povijest najniže cijene u 30 dana nedovršena.
 
-`/admin/cjenici`: potvrda, metadata, postavke, ručna objava i preuzimanje CSV pregleda bez upisa. `/cjenici`, javni CSV s ETag i `/cjenici/manifest.json` bez prijave. GitHub workflow `daily-price-list.yml` objavljuje u **07:30 Europe/Zagreb**, provjerava/opravlja u 07:40/07:50; Vercel 04:00 UTC cron uklonjen. `scripts/publish-price-list.mjs` provjerava datum, dostupnost bez prijave i SHA-256, ponavlja greške; DISABLED/stara datoteka/zakašnjela objava ruše posao. Isti CRON_SECRET potreban u Vercelu i GitHubu. GitHub secrets prazni 1. 10.; workflow radi tek na zadanoj grani. GitHub raspored može kasniti/izostati i deaktivirati se nakon neaktivnosti javnog repoa. Neovisni alarm i jutarnji operativni prihvat još nisu postavljeni.
+36/36 testova PASS, uključuju PGlite migraciju, triggere, DST, CSV, hash i cron. Lint 0 errors/9 postojećih warnings, TypeScript i build PASS. Nakon RLS ponovno 36/36 PASS i diff-check PASS. Plan work/LEGAL_IMPLEMENTATION_PLAN.md, runbook work/LEGAL_PRICE_LIST_RUNBOOK.md.
 
-Prikaz sidra na karticama, detalju, odabranim varijantama, povezanim proizvodima, mobilnoj cijeni, košarici i novim stavkama liste želja. Najjeftinija varijanta ima svoju aktualnu cijenu i sidro. Lista želja otvara proizvod za provjeru cijene/odabir varijante. Zajednički helper odbija nevažeću akcijsku cijenu.
+## Produkcijska baza — izvršeno
 
-## Provjere i granice
+Supabase fmqcjvoemdmghikrzulk / rotea-webshop-hermes, org meskazabvkjhademquop. Migracija atomarno izvršena preko SQL editora i provjerena: 4 nove tablice RLS=true; nova polja i triggeri postoje; sačuvano 846 proizvoda i 152 varijante. Prvi neuspjeli pokušaj nije izmijenio bazu; Monaco fill nije zamijenio cijeli tekst. Native select-all/paste i clipboard usporedba osigurali točan SQL. Ne ponavljati migraciju. Dokaz /private/tmp/ro-tea-live-migration.png. Nema Prisma migration ledgera; migracija je primijenjena ručno.
 
-36/36 testova PASS; lint 0 errors/9 postojećih warnings; TypeScript i produkcijski build PASS. PGlite izvršava migracijski SQL i skupne upise; provjereni triggeri i jedinstvena dnevna objava. Testovi uključuju DST, javni manifest/CSV, SHA-256, oporavak, kašnjenje i isključen posao. Stvarni Prisma/PostgreSQL end-to-end još nije potvrđen. Build treba mrežni pristup postojećem Google fontu.
+Svi proizvodi/varijante ACTIVE; brojčana zaliha samo 4 proizvoda i 0 varijanti. Barkodovi/jedinice/količine pakiranja nisu postojali. Sidra i CSV još nisu potvrđeni/objavljeni. Postojeće osobne i narudžbene podatke nismo čitali.
 
-Produkcijska migracija, podaci, potvrde sidara i cron aktivacija **nisu izvršeni**. Nema novih produkcijskih narudžbi/naplata/e-mailova/GLS. Sljedeće: izolirana preview baza, migracija, pregled stvarnog kataloga i browser prihvat prema runbooku. Zasebna povijest najniže cijene za 30 dana prije akcije još je otvorena; postojeći oldPrice nije dokaz minimuma. Ne tvrditi potpunu usklađenost.
+## Repo i sljedeći korak
 
-## Repo i ovlasti
+Repo /Users/macbookair/Documents/ro-tea web + shop/hermes; GitHub dpernek/ro-tea-webshop-hermes; grana codex/legal-prices-and-price-lists, dosadašnji HEAD a18b4c7. PR #1 base main, #2 base PR1 grana; oba mergeable i Vercel PASS, priloženi chatu. Sljedeće: commit/push RLS, merge #1 i #2 na main, produkcijski deployment i browser prihvat; cron tajna i pregled nedostajućih podataka.
 
-Repo `/Users/macbookair/Documents/ro-tea web + shop/hermes`, remote `dpernek/ro-tea-webshop-hermes`, grana `codex/legal-prices-and-price-lists`, draft PR #2 https://github.com/dpernek/ro-tea-webshop-hermes/pull/2 (base `codex/checkout-and-home-fixes`). PR je priložen chatu. Odobren push/PR/preview, ne produkcijski merge/deploy. PR #1 ostaje draft.
-
-Produkcija https://ro-tea-webshop-hermes.vercel.app ostaje main. Vercel project `prj_qSJwfEYirr9jiezRLLhgdNDfxKKP`, team `team_9Rv8XaptaeM9SWtERRp5tFz8`. Preview grane: https://ro-tea-webshop-hermes-git-codex-legal-9c3bfe-dperneks-projects.vercel.app; provjeriti status najnovijeg HEAD-a preko gh. Supabase Preview SKIPPED; nema potvrđene izolirane baze/browser prihvata. Vercel connector ima schema/404 greške; gh radi. Roditeljske izmjene ne dirati. Pročitani Next 16.2.9 vodiči i Next/cron/deployments skills. Generirani duplikati sačuvani u `/private/tmp/ro-tea-generated-copies` (novi `.next/types` u `next-types-0730`).
+Produkcija https://ro-tea-webshop-hermes.vercel.app; Vercel project prj_qSJwfEYirr9jiezRLLhgdNDfxKKP, team team_9Rv8XaptaeM9SWtERRp5tFz8. Connector schema/404 greške; gh i Chrome rade. Pročitani Next 16.2.9 vodiči i Next/cron/deployments/env-vars skills. Roditeljske izmjene ne dirati.
